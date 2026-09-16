@@ -1,10 +1,7 @@
 'use client';
 
 /**
- * `/config` — Tela de configuração e validação de PIN do telão.
- * Renderiza o componente dedicado PinVerificationScreen com validação
- * em tempo real, teclado interativo, detecção de PIN incorreto e
- * seletor de temas integrado.
+ * `/pin` — Rota direta para autenticação e validação de PIN do telão.
  */
 
 import { useRouter } from 'next/navigation';
@@ -15,7 +12,7 @@ import { BingoShowAmbientBackground } from '@/features/bingo-show/components/Bin
 import { BingoShowAssets } from '@/features/bingo-show/assets';
 import { PinVerificationScreen } from '@/components/pin/PinVerificationScreen';
 
-export default function ConfigPage() {
+export default function PinPage() {
   const router = useRouter();
 
   return (
@@ -53,7 +50,7 @@ export default function ConfigPage() {
                 />
               </div>
 
-              {/* Componente de PIN com mensagens e erro de PIN incorreto */}
+              {/* Componente de PIN */}
               <PinVerificationScreen onSuccess={(_roomId) => router.push('/tv')} />
             </div>
           </TvSafeArea>

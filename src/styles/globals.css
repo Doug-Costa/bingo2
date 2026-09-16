@@ -44,6 +44,19 @@ button {
   }
 }
 
+@keyframes bs-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15%, 55%, 85% {
+    transform: translateX(-8px);
+  }
+  35%, 70% {
+    transform: translateX(8px);
+  }
+}
+
+
 /* Usado por Ball (tvscreen/tema04) na animação de entrada — porte do
    `Animated.spring` + `rotate` do RN (ver components/tvscreen/Ball.tsx). */
 @keyframes bs-ball-enter {

@@ -64,45 +64,59 @@ export interface ResolveResponse {
  * GET /bingo/tvapp/resolve?pin=...&type=bingo
  */
 export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveResponse> {
+  const cleanPin = pin.trim();
+
+  // Permite acesso direto com PIN de teste/desenvolvimento
+  if (cleanPin === '1234' || cleanPin === 'demo') {
+    return {
+      roomId: `tv_${cleanPin}`,
+      roomName: 'Bingo Show - Sala de Demonstração',
+      theme: {
+        name: 'temaBingoShow',
+        text: 'BINGO SHOW',
+      },
+    };
+  }
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
     const res = await fetch(
-      `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(pin)}&type=bingo`,
+      `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`,
       { method: 'GET', headers: { 'Content-Type': 'application/json' }, signal: controller.signal },
     );
     clearTimeout(timeoutId);
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body?.message || `PIN inválido (${res.status})`);
+      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
+        throw new Error(body?.message || 'PIN incorreto. O código informado é inválido ou expirou.');
+      }
+      throw new Error(body?.message || `Erro no servidor (${res.status}). Tente novamente.`);
     }
+
     const data = await res.json();
     const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
     if (!finalRoomId) {
-      throw new Error('RoomId não encontrado na resposta');
+      throw new Error('Identificador da sala não encontrado na resposta.');
     }
     return { ...data, roomId: finalRoomId };
   } catch (err: unknown) {
-    const isNetworkErr =
-      err instanceof TypeError ||
-      (err instanceof Error && (err.name === 'AbortError' || err.message.includes('fetch') || err.message.includes('Network')));
-
-    if (isNetworkErr || pin === '1234' || pin === 'demo') {
-      console.warn('[API] Backend offline ou inalcançável. Ativando modo de navegação local para a sala.', err);
-      return {
-        roomId: `tv_${pin.trim() || 'demo'}`,
-        roomName: 'Bingo Show - Sala ao Vivo',
-        theme: {
-          name: 'temaBingoShow',
-          text: 'BINGO SHOW',
-        },
-      };
+    if (err instanceof Error) {
+      // Se for o erro de PIN incorreto ou mensagem tratada, repassa direto
+      if (err.message.includes('PIN incorreto') || err.message.includes('Erro no servidor')) {
+        throw err;
+      }
+      if (err.name === 'AbortError' || err.message.includes('fetch') || err.message.includes('Network')) {
+        throw new Error('Servidor inalcançável. Verifique sua conexão e tente novamente.');
+      }
+      throw err;
     }
-    throw err;
+    throw new Error('PIN incorreto. Verifique os dados informados.');
   }
 }
+
 
 // ─── Draw types ──────────────────────────────────────────────────────────────
 export interface Draw {
