@@ -1,0 +1,50 @@
+/* ==========================================================================
+   BINGO SHOW - TEMA AZUL LIVE (DESIGN TOKENS & CSS VARIABLES)
+   ========================================================================== */
+
+:root,
+html[data-theme="blue"],
+.theme-bingo-show-blue {
+  /* Cores de Fundo e Superfície */
+  --bg-page: #020617;
+  --bg-surface: rgba(3, 17, 48, 0.95);
+  --bg-surface-elevated: #06143a;
+  
+  /* Cores de Texto */
+  --text-navy: #F8FBFF;
+  --text-primary: #F8FBFF;
+  --text-secondary: #AEBBD8;
+  --text-muted: #64748B;
+  
+  /* Primária e Destaques */
+  --primary-blue: #087FFC;
+  --primary-blue-hover: #17C8FF;
+  --primary-blue-light: rgba(8, 127, 252, 0.2);
+  
+  /* Acentos */
+  --accent-gold: #FFCF12;
+  --accent-gold-dark: #FFD54F;
+  --accent-gold-light: rgba(255, 207, 18, 0.15);
+  --accent-purple: #A855F7;
+  --accent-purple-light: rgba(168, 85, 247, 0.2);
+  --accent-coral: #FF6B6B;
+  --accent-coral-light: rgba(255, 107, 107, 0.2);
+  --accent-red: #E52B21;
+  --accent-green: #34D399;
+  --accent-green-light: rgba(52, 211, 153, 0.2);
+  
+  /* Bordas */
+  --border-color: #1975D2;
+  --border-subtle: rgba(25, 117, 210, 0.3);
+  
+  /* Sombras e Brilhos Neon */
+  --shadow-subtle: 0 4px 20px rgba(0, 129, 255, 0.18);
+  --shadow-card: 0 8px 30px rgba(0, 129, 255, 0.25);
+  --shadow-hover: 0 14px 40px rgba(0, 213, 255, 0.4);
+  --shadow-glow-blue: 0 8px 24px rgba(0, 213, 255, 0.5);
+  
+  /* Raios de Arredondamento */
+  --radius-pill: 9999px;
+  --radius-card: 24px;
+  --radius-sm: 12px;
+}

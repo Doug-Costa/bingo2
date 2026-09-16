@@ -485,6 +485,8 @@ export function resolveTheme(_themeInput?: unknown): ThemeTokens {
   return temaBingoShow;
 }
 
+export { temaBingoShowBlue } from './bingo-show-blue';
+
 /**
  * TEMA_GRADIENTS — porte parcial (só a entrada `tema04`, o resto era de
  * temas fora do escopo) de `TEMA_GRADIENTS` no RN. Consumido por
@@ -518,3 +520,4 @@ export function alphaColor(color: string | undefined | null, alphaHex: string = 
   }
   return c;
 }
+

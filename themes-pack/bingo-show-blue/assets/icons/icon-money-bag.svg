@@ -1,0 +1,12 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="80" height="80" rx="12" fill="#0F142E" fill-opacity="0.8"/>
+<ellipse cx="40" cy="44" rx="18" ry="16" fill="url(#paint0_linear_39_271)"/>
+<rect x="32" y="18" width="16" height="12" rx="4" fill="#D9A626"/>
+<rect x="34" y="34" width="12" height="12" rx="2" fill="#996600"/>
+<defs>
+<linearGradient id="paint0_linear_39_271" x1="40" y1="28" x2="40" y2="60" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE666"/>
+<stop offset="1" stop-color="#D9991A"/>
+</linearGradient>
+</defs>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "id": "bingo-show-blue",
+  "name": "Bingo Show - Tema Azul Live (Padrão)",
+  "version": "1.0.0",
+  "author": "Bingo Show",
+  "description": "Tema visual imersivo azul espacial com iluminação neon e efeitos dourados, otimizado para transmissões ao vivo, TV e web.",
+  "mode": "dark",
+  "baseAssetPath": "/themes/bingo-show",
+  "colors": {
+    "bgPage": "#020617",
+    "bgSurface": "rgba(3, 17, 48, 0.95)",
+    "bgSurfaceElevated": "#06143a",
+    "primary": "#087FFC",
+    "primaryHover": "#17C8FF",
+    "gold": "#FFCF12",
+    "cyan": "#17c8ff",
+    "purple": "#A855F7",
+    "coral": "#FF6B6B",
+    "red": "#E52B21",
+    "green": "#34D399",
+    "border": "#1975D2"
+  },
+  "fonts": {
+    "primary": "Inter",
+    "heading": "Barlow Condensed"
+  }
+}
