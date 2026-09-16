@@ -113,7 +113,7 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4500);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     // Se estiver no browser e o backend for externo, usa o proxy server-side (/api/proxy-resolve)
     // para evitar bloqueios de CORS
@@ -132,34 +132,32 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
     });
     clearTimeout(timeoutId);
 
-    if (res.ok) {
-      const data = await res.json();
-      const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
-      if (finalRoomId) {
-        return { ...data, roomId: finalRoomId };
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data?.error) {
+      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404 || data?.status === 400 || data?.status === 401 || data?.status === 404) {
+        throw new Error(data?.message || 'PIN incorreto. O código informado não existe ou expirou.');
       }
+      if (res.status === 522 || res.status === 502 || res.status === 504 || data?.status === 522 || data?.status === 502) {
+        throw new Error(`Servidor offline ou sem resposta (HTTP ${res.status || data?.status || 502}). Verifique se o backend está ativo.`);
+      }
+      throw new Error(data?.message || `Erro no servidor (HTTP ${res.status}). Verifique o código e tente novamente.`);
     }
 
-    // Se o backend retornou erro ou não achou roomId, aplica fallback gracioso igual ao RN
-    console.warn('[API] Resolução pelo backend não concluiu. Ativando sala direta para o PIN:', cleanPin);
-    return {
-      roomId: `tv_${cleanPin}`,
-      roomName: 'Bingo Show - Sala ao Vivo',
-      theme: {
-        name: 'temaBingoShow',
-        text: 'BINGO SHOW',
-      },
-    };
+    const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
+    if (!finalRoomId) {
+      throw new Error('PIN incorreto. O servidor não localizou nenhuma sala para este código.');
+    }
+
+    return { ...data, roomId: finalRoomId };
   } catch (err: unknown) {
-    console.warn('[API] Backend offline ou inalcançável. Ativando navegação local para a sala:', err);
-    return {
-      roomId: `tv_${cleanPin}`,
-      roomName: 'Bingo Show - Sala ao Vivo',
-      theme: {
-        name: 'temaBingoShow',
-        text: 'BINGO SHOW',
-      },
-    };
+    if (err instanceof Error) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Tempo de resposta esgotado. O servidor em ${baseUrl} não respondeu a tempo.`);
+      }
+      throw err;
+    }
+    throw new Error('Falha ao validar PIN. Verifique os dados e tente novamente.');
   }
 }
 
