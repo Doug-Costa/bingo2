@@ -32,9 +32,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TvSafeArea } from '@/components/tv/TvSafeArea';
 import { clearCredentials, type ThemeConfig } from '@/storage/credentials';
+import { useAppTheme } from '@/contexts/ThemeContext';
 import { alphaColor, getThemeKey, resolveTheme, type ThemeTokens } from '@/theme/themes';
 import { useGameSocket, type DrawSSE, type JackpotInfo, type MyTicket, type TopWinnerRealtime, type WinnerEvent } from '@/contexts/SSEContext';
-import { ThemeBackground, ThemeBadge, ThemeCard, ThemeDivider, ThemeLogo, ThemePanel, ThemeText, TvFocusable } from '../theme';
+import { ThemeBackground, ThemeBadge, ThemeCard, ThemeDivider, ThemeLogo, ThemePanel, ThemeSelector, ThemeText, TvFocusable } from '../theme';
+
 import Icon from '../Icon';
 import AnimatedActiveBall from './AnimatedActiveBall';
 import NumberGrid from './NumberGrid';
@@ -43,6 +45,7 @@ import TopPlayers from './TopPlayers';
 import WinnerModal from './WinnerModal';
 import MyTicketsPanel from './MyTicketsPanel';
 import PostDrawCycle from './PostDrawCycle';
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtCurrency(val: number | undefined | null): string {
@@ -613,8 +616,10 @@ function TvHeader({
         </div>
       </div>
 
-      {/* Direita: Som, Idioma, Logout */}
+      {/* Direita: Tema, Som, Idioma, Logout */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <ThemeSelector variant="compact" />
+
         {onToggleSound && (
           <TvFocusable theme={theme} onPress={onToggleSound} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 6, paddingBottom: 6, borderRadius: 10, border: `1px solid ${soundOn ? theme.success : theme.borderMuted}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name={soundOn ? 'volume-on' : 'volume-off'} size={16} color={soundOn ? theme.success : theme.textMuted} />
@@ -665,9 +670,11 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
     hadDrawInSession,
   } = useGameSocket();
 
-  const themeKey = useMemo(() => getThemeKey(themeConfig), [themeConfig]);
-  const theme = useMemo(() => resolveTheme(themeKey), [themeKey]);
+  const { theme: appTheme, themeId } = useAppTheme();
+  const themeKey = themeConfig?.name || themeConfig?.type ? getThemeKey(themeConfig) : themeId;
+  const theme = themeConfig?.name || themeConfig?.type ? resolveTheme(themeConfig) : appTheme;
   const themeName = themeKey;
+
 
   // Ordenar TopWinners: minNumbersLeft ASC → targetPrize priority → playerName
   const PRIZE_ORDER: Record<string, number> = { line1: 0, line2: 1, line3: 2, bingo: 3 };

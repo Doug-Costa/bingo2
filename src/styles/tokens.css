@@ -130,3 +130,37 @@
   --tv-stage-width: 1920px;
   --tv-stage-height: 1080px;
 }
+
+[data-theme="bingo-show-blue"] {
+  --bs-color-primary: #087ffc;
+  --bs-color-primary-light: #17c8ff;
+  --bs-color-primary-dark: #0056b3;
+  --bs-color-secondary: #17c8ff;
+  --bs-color-secondary-light: #70dcff;
+  --bs-color-secondary-dark: #0088cc;
+
+  --bs-color-bg-deep: #01030d;
+  --bs-color-bg-main: #020617;
+  --bs-color-bg-surface: rgba(3, 17, 48, 0.9);
+  --bs-color-bg-elevated: rgba(6, 20, 58, 0.95);
+
+  --bs-color-glass-bg: rgba(8, 127, 252, 0.25);
+  --bs-color-glass-border: rgba(23, 200, 255, 0.25);
+
+  --bs-color-cyan-neon: #17c8ff;
+  --bs-color-green-success: #34d399;
+  --bs-color-red-danger: #e52b21;
+  --bs-color-gold-glow: rgba(255, 207, 18, 0.5);
+  --bs-color-blue-glow: rgba(23, 200, 255, 0.5);
+
+  --bs-color-text-primary: #f8fbff;
+  --bs-color-text-secondary: #aebbd8;
+  --bs-color-text-muted: #64748b;
+
+  --bs-color-border-subtle: rgba(25, 117, 210, 0.3);
+  --bs-color-border-regular: rgba(25, 117, 210, 0.6);
+  --bs-color-border-gold: #ffcf12;
+  --bs-color-border-blue: #087ffc;
+  --bs-color-border-winner: #34d399;
+}
+

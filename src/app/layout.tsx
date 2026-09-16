@@ -19,6 +19,8 @@ export const viewport: Viewport = {
   themeColor: '#060A14',
 };
 
+import { ThemeProvider } from '@/contexts/ThemeContext';
+
 export default function RootLayout({
   children,
 }: {
@@ -27,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <PwaRegister />
-        {children}
+        <ThemeProvider>
+          <PwaRegister />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+

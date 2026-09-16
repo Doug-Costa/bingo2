@@ -467,30 +467,223 @@ export const temaBingoShow: ThemeTokens = {
     particles: 40,
     debug: 999,
   },
+// ─── Tema Bingo Show Blue (Neon & Live) ───────────────────────────────────────
+import { colorsBingoShowBlue } from './bingo-show-blue/colors';
+import { assetsBingoShowBlue } from './assets';
+
+export const temaBingoShowBlueTokens: ThemeTokens = {
+  bgColor: colorsBingoShowBlue.bgPage,
+  panelBg: colorsBingoShowBlue.bgSurface,
+  headerBg: colorsBingoShowBlue.bgSurfaceElevated,
+  glassBg: 'rgba(8, 127, 252, 0.25)',
+
+  primary: colorsBingoShowBlue.primary,
+  primaryGlow: 'rgba(23, 200, 255, 0.6)',
+  secondary: colorsBingoShowBlue.cyan,
+  accent: colorsBingoShowBlue.gold,
+  jackpotText: colorsBingoShowBlue.gold,
+
+  ballBg: colorsBingoShowBlue.primary,
+  ballText: '#ffffff',
+
+  countdownBg: colorsBingoShowBlue.bgSurfaceElevated,
+  countdownText: colorsBingoShowBlue.cyan,
+
+  borderPrimary: colorsBingoShowBlue.border,
+  borderSecondary: colorsBingoShowBlue.borderSubtle,
+  borderMuted: 'rgba(25, 117, 210, 0.2)',
+
+  textPrimary: colorsBingoShowBlue.textPrimary,
+  textSecondary: colorsBingoShowBlue.textSecondary,
+  textMuted: colorsBingoShowBlue.textMuted,
+
+  success: colorsBingoShowBlue.green,
+  error: colorsBingoShowBlue.red,
+
+  gridDrawn: colorsBingoShowBlue.green,
+  gridCurrent: colorsBingoShowBlue.cyan,
+  gridEmpty: 'rgba(3, 17, 48, 0.6)',
+
+  meta: {
+    id: 'theme-bingo-show-blue',
+    name: 'bingo-show-blue',
+    displayName: 'Bingo Show Blue',
+    version: '1.0.0',
+    description: 'Tema futurista azul espacial com iluminação neon e efeitos dourados',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+
+  colorsExtended: {
+    backgroundPrimary: colorsBingoShowBlue.bgPage,
+    backgroundSecondary: colorsBingoShowBlue.bgSurfaceElevated,
+    backgroundDeep: '#01030d',
+    surfacePrimary: colorsBingoShowBlue.bgSurface,
+    surfaceSecondary: colorsBingoShowBlue.bgSurfaceElevated,
+    surfaceGlass: 'rgba(3, 17, 48, 0.8)',
+    surfaceElevated: colorsBingoShowBlue.bgSurfaceElevated,
+    goldPrimary: colorsBingoShowBlue.gold,
+    goldSecondary: colorsBingoShowBlue.goldDark,
+    goldLight: colorsBingoShowBlue.goldLight,
+    bluePrimary: colorsBingoShowBlue.primary,
+    blueSecondary: colorsBingoShowBlue.cyan,
+    blueNeon: '#17c8ff',
+    textPrimary: colorsBingoShowBlue.textPrimary,
+    textSecondary: colorsBingoShowBlue.textSecondary,
+    textMuted: colorsBingoShowBlue.textMuted,
+    textOnGold: '#000000',
+    success: colorsBingoShowBlue.green,
+    warning: colorsBingoShowBlue.gold,
+    error: colorsBingoShowBlue.red,
+    info: colorsBingoShowBlue.cyan,
+    borderPrimary: colorsBingoShowBlue.border,
+    borderSecondary: colorsBingoShowBlue.borderSubtle,
+    borderGlow: 'rgba(23, 200, 255, 0.5)',
+    overlay: 'rgba(2, 6, 23, 0.85)',
+    scrim: 'rgba(0, 0, 0, 0.9)',
+    focus: colorsBingoShowBlue.cyan,
+    disabled: colorsBingoShowBlue.textMuted,
+  },
+
+  gradients: {
+    mainBackground: ['#020617', '#031130'],
+    darkBackground: ['#01030d', '#020617'],
+    header: ['#06143a', 'transparent'],
+    footer: ['transparent', '#020617'],
+    panel: ['#031130', '#06143a'],
+    card: ['#061b4d', '#031130'],
+    buttonPrimary: ['#17C8FF', '#087FFC'],
+    buttonSecondary: ['#FFCF12', '#FFD54F'],
+    gold: ['#FFCF12', '#FFD54F', '#D4A017'],
+    blue: ['#17C8FF', '#087FFC', '#031130'],
+    focus: ['#17C8FF', '#087FFC'],
+    winner: ['#34D399', '#059669'],
+    modalOverlay: ['rgba(2,6,23,0.9)', 'rgba(0,0,0,0.96)'],
+  },
+
+  typography: temaBingoShow.typography,
+  spacing: temaBingoShow.spacing,
+  radius: temaBingoShow.radius,
+
+  borders: {
+    thin: { borderWidth: 1, borderColor: '#1975D2' },
+    regular: { borderWidth: 2, borderColor: '#1975D2' },
+    strong: { borderWidth: 3, borderColor: '#17c8ff' },
+    focus: { borderWidth: 3, borderColor: '#17c8ff' },
+    gold: { borderWidth: 2, borderColor: '#FFCF12' },
+    blue: { borderWidth: 2, borderColor: '#087FFC' },
+    glass: { borderWidth: 1.5, borderColor: 'rgba(23, 200, 255, 0.25)' },
+  },
+
+  shadows: {
+    small: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 2 },
+    medium: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+    large: { shadowColor: '#000000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.7, shadowRadius: 12, elevation: 8 },
+    glowGold: { shadowColor: '#FFCF12', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 15, elevation: 10 },
+    glowBlue: { shadowColor: '#17c8ff', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    winner: { shadowColor: '#34D399', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 20, elevation: 15 },
+    modal: { shadowColor: '#000000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.85, shadowRadius: 24, elevation: 20 },
+  },
+
+  focusState: {
+    focusScale: 1.05,
+    focusOpacity: 1.0,
+    focusBorderColor: '#17c8ff',
+    focusBorderWidth: 3,
+    focusBackground: 'rgba(8, 127, 252, 0.25)',
+    focusShadow: { shadowColor: '#17c8ff', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 10, elevation: 6 },
+    focusGlow: { shadowColor: '#17c8ff', shadowOpacity: 0.8, shadowRadius: 12 },
+    pressedScale: 0.98,
+    disabledOpacity: 0.5,
+  },
+
+  assets: assetsBingoShowBlue,
+  ballsConfig: temaBingoShow.ballsConfig,
+  components: temaBingoShow.components,
+  motion: temaBingoShow.motion,
+  zIndex: temaBingoShow.zIndex,
 };
 
-/**
- * resolveTheme/getThemeKey — no RN resolviam entre 4 temas a partir do
- * nome/objeto retornado pelo backend (`theme.name`/`theme.type`/`theme.id`),
- * com um flag de dev que forçava tema04. Como só migramos tema04, sempre
- * retornam o mesmo tema — a assinatura foi mantida (aceita o mesmo input
- * cru do backend) só para não quebrar quem chama, mas o valor de retorno
- * nunca varia nesta rodada.
- */
-export function getThemeKey(_themeInput?: unknown): 'tema04' {
-  return 'tema04';
+export interface ThemeOption {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  badge?: string;
+  previewColors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    accent: string;
+  };
 }
 
-export function resolveTheme(_themeInput?: unknown): ThemeTokens {
+export const AVAILABLE_THEMES: ThemeOption[] = [
+  {
+    id: 'bingo-show',
+    name: 'bingo-show',
+    displayName: 'Bingo Show (Ouro & Espaço)',
+    description: 'Tema clássico oficial com tons dourados nobres e ambientação estelar profunda.',
+    badge: 'Padrão',
+    previewColors: {
+      primary: '#ffde38',
+      secondary: '#4868ff',
+      background: '#040826',
+      accent: '#00d54f',
+    },
+  },
+  {
+    id: 'bingo-show-blue',
+    name: 'bingo-show-blue',
+    displayName: 'Bingo Show Blue (Azul Live & Neon)',
+    description: 'Tema futurista azul espacial com iluminação neon ciano e alta visibilidade.',
+    badge: 'Novo',
+    previewColors: {
+      primary: '#087FFC',
+      secondary: '#17C8FF',
+      background: '#020617',
+      accent: '#FFCF12',
+    },
+  },
+];
+
+/**
+ * getThemeKey — normaliza a chave do tema.
+ */
+export function getThemeKey(themeInput?: unknown): string {
+  if (!themeInput) return 'bingo-show';
+  if (typeof themeInput === 'string') {
+    const norm = themeInput.toLowerCase().trim();
+    if (norm.includes('blue') || norm === 'tema-blue' || norm === 'bingo-show-blue') {
+      return 'bingo-show-blue';
+    }
+    return 'bingo-show';
+  }
+  if (typeof themeInput === 'object' && themeInput !== null) {
+    const id = String((themeInput as any).id || (themeInput as any).name || (themeInput as any).type || '').toLowerCase();
+    if (id.includes('blue') || id === 'tema-blue') {
+      return 'bingo-show-blue';
+    }
+  }
+  return 'bingo-show';
+}
+
+/**
+ * resolveTheme — retorna o ThemeTokens correspondente ao tema selecionado ou de entrada.
+ */
+export function resolveTheme(themeInput?: unknown): ThemeTokens {
+  const key = getThemeKey(themeInput);
+  if (key === 'bingo-show-blue') {
+    return temaBingoShowBlueTokens;
+  }
   return temaBingoShow;
 }
 
 export { temaBingoShowBlue } from './bingo-show-blue';
 
 /**
- * TEMA_GRADIENTS — porte parcial (só a entrada `tema04`, o resto era de
- * temas fora do escopo) de `TEMA_GRADIENTS` no RN. Consumido por
- * `ThemeBackground` como gradiente de fallback/overlay.
+ * TEMA_GRADIENTS — gradientes mapeados para cada tema.
  */
 export const TEMA_GRADIENTS = {
   tema04: {
@@ -500,6 +693,22 @@ export const TEMA_GRADIENTS = {
     prize2: ['#0b1575', '#0a0f4f'],
     prize3: ['#0a0f4f', '#040826'],
     header: ['#0b1140', '#050824'],
+  },
+  'bingo-show': {
+    bg: ['#040826', '#020412'],
+    ball: ['#ffef49', '#ffde38', '#d38908'],
+    prize1: ['#1333f0', '#001bcb'],
+    prize2: ['#0b1575', '#0a0f4f'],
+    prize3: ['#0a0f4f', '#040826'],
+    header: ['#0b1140', '#050824'],
+  },
+  'bingo-show-blue': {
+    bg: ['#020617', '#031130'],
+    ball: ['#17C8FF', '#087FFC', '#FFCF12'],
+    prize1: ['#087FFC', '#031130'],
+    prize2: ['#06143a', '#020617'],
+    prize3: ['#031130', '#01030d'],
+    header: ['#06143a', '#031130'],
   },
 } as const;
 
@@ -520,4 +729,5 @@ export function alphaColor(color: string | undefined | null, alphaHex: string = 
   }
   return c;
 }
+
 

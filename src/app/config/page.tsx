@@ -43,11 +43,14 @@ import { BingoShowAssets } from '@/features/bingo-show/assets';
 import { BingoShowColors, BingoShowRadius, BingoShowSpacing, BingoShowTypography, glowToCssBoxShadow } from '@/features/bingo-show/design-system';
 import { resolvePin } from '@/services/api';
 import { buildBaseUrl, getCredentials, getDefaultIp, getDefaultPort, saveCredentials } from '@/storage/credentials';
+import { useAppTheme } from '@/contexts/ThemeContext';
+import { ThemeSelector } from '@/components/theme';
 
 type FocusedField = 'pin' | null;
 
 export default function ConfigPage() {
   const router = useRouter();
+  const { themeId } = useAppTheme();
 
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
@@ -89,7 +92,11 @@ export default function ConfigPage() {
         pin: cleanPin,
         roomId: data.roomId,
         roomName: data.roomName || '',
-        theme: data.theme || {},
+        theme: {
+          ...(data.theme || {}),
+          name: themeId,
+          type: themeId,
+        },
       });
       router.push('/tv');
     } catch (e) {
@@ -98,6 +105,7 @@ export default function ConfigPage() {
       setLoading(false);
     }
   }
+
 
 
 
@@ -233,6 +241,15 @@ export default function ConfigPage() {
                       onFocus={() => setFocusedField('pin')}
                       onBlur={() => setFocusedField(null)}
                     />
+                  {/* Seletor de Temas */}
+                  <div style={{ marginBottom: BingoShowSpacing.xl }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: BingoShowSpacing.xs, marginBottom: BingoShowSpacing.sm }}>
+                      <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: BingoShowColors.cyanNeon }} />
+                      <BingoShowText preset="label" color="textSecondary">
+                        TEMA VISUAL DO TELÃO
+                      </BingoShowText>
+                    </div>
+                    <ThemeSelector variant="cards" />
                   </div>
 
                   {/* Preview da URL */}
@@ -265,6 +282,7 @@ export default function ConfigPage() {
                       {buildBaseUrl(getDefaultIp(), getDefaultPort())}
                     </span>
                   </div>
+
 
                   {/* Erro */}
                   {!!error && (

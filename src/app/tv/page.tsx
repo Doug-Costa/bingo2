@@ -23,6 +23,8 @@ const DEFAULT_CREDENTIALS: SavedCredentials = {
  * Inicializa imediatamente com as credenciais (salvas ou padrão) para garantir
  * que NUNCA fique em tela em branco ou presa no carregamento.
  */
+import { ThemeSelector } from '@/components/theme';
+
 export default function TvPage() {
   const router = useRouter();
   const [credentials, setCredentials] = useState<SavedCredentials>(() => {
@@ -38,9 +40,27 @@ export default function TvPage() {
 
   return (
     <TvViewport>
+      {/* Seletor Rápido de Temas no Canto Superior */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 10,
+          right: 14,
+          zIndex: 99999,
+          pointerEvents: 'auto',
+          opacity: 0.85,
+          transition: 'opacity 200ms ease',
+        }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = '1')}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = '0.85')}
+      >
+        <ThemeSelector variant="compact" />
+      </div>
+
       <TvStage>
         <TvScreenApp credentials={credentials} onLogout={() => router.replace('/config')} />
       </TvStage>
     </TvViewport>
   );
 }
+

@@ -10,139 +10,148 @@
  * `docs/asset-inventory-tvscreen.md`.
  */
 
-const BASE = '/themes/bingo-show';
+export function createThemeAssets(basePath = '/themes/bingo-show') {
+  return {
+    backgrounds: {
+      bgBlueGradient: `${basePath}/backgrounds/bg-blue-gradient.png`,
+      bgDark: `${basePath}/backgrounds/bg-dark.png`,
+      bgGlow: `${basePath}/backgrounds/bg-glow.png`,
+      bgMain: `${basePath}/backgrounds/bg-main.png`,
+      bgParticle: `${basePath}/backgrounds/bg-particle.png`,
+      bgSpace: `${basePath}/backgrounds/bg-space.png`,
+    },
+    balls: {
+      ballBlueDefault: `${basePath}/balls/ball-blue-default.png`,
+      ballBlueFocused: `${basePath}/balls/ball-blue-focused.png`,
+      ballBlueGlow: `${basePath}/balls/ball-blue-glow.png`,
+      ballBluePressed: `${basePath}/balls/ball-blue-pressed.png`,
+      ballBlueSelected: `${basePath}/balls/ball-blue-selected.png`,
+      ballBlueTransparent: `${basePath}/balls/ball-blue-transparent.png`,
+      ballBlueWinner: `${basePath}/balls/ball-blue-winner.png`,
+      ballGoldDefault: `${basePath}/balls/ball-gold-default.png`,
+      ballGoldFocused: `${basePath}/balls/ball-gold-focused.png`,
+      ballGoldGlow: `${basePath}/balls/ball-gold-glow.png`,
+      ballGoldPressed: `${basePath}/balls/ball-gold-pressed.png`,
+      ballGoldSelected: `${basePath}/balls/ball-gold-selected.png`,
+      ballGoldTransparent: `${basePath}/balls/ball-gold-transparent.png`,
+      ballGoldWinner: `${basePath}/balls/ball-gold-winner.png`,
+      ballGreenDefault: `${basePath}/balls/ball-green-default.png`,
+      ballGreenFocused: `${basePath}/balls/ball-green-focused.png`,
+      ballGreenGlow: `${basePath}/balls/ball-green-glow.png`,
+      ballGreenPressed: `${basePath}/balls/ball-green-pressed.png`,
+      ballGreenSelected: `${basePath}/balls/ball-green-selected.png`,
+      ballGreenTransparent: `${basePath}/balls/ball-green-transparent.png`,
+      ballGreenWinner: `${basePath}/balls/ball-green-winner.png`,
+      ballPurpleDefault: `${basePath}/balls/ball-purple-default.png`,
+      ballPurpleFocused: `${basePath}/balls/ball-purple-focused.png`,
+      ballPurpleGlow: `${basePath}/balls/ball-purple-glow.png`,
+      ballPurplePressed: `${basePath}/balls/ball-purple-pressed.png`,
+      ballPurpleSelected: `${basePath}/balls/ball-purple-selected.png`,
+      ballPurpleTransparent: `${basePath}/balls/ball-purple-transparent.png`,
+      ballPurpleWinner: `${basePath}/balls/ball-purple-winner.png`,
+      ballRedDefault: `${basePath}/balls/ball-red-default.png`,
+      ballRedFocused: `${basePath}/balls/ball-red-focused.png`,
+      ballRedGlow: `${basePath}/balls/ball-red-glow.png`,
+      ballRedPressed: `${basePath}/balls/ball-red-pressed.png`,
+      ballRedSelected: `${basePath}/balls/ball-red-selected.png`,
+      ballRedTransparent: `${basePath}/balls/ball-red-transparent.png`,
+      ballRedWinner: `${basePath}/balls/ball-red-winner.png`,
+      ballSilverDefault: `${basePath}/balls/ball-silver-default.png`,
+      ballSilverFocused: `${basePath}/balls/ball-silver-focused.png`,
+      ballSilverGlow: `${basePath}/balls/ball-silver-glow.png`,
+      ballSilverPressed: `${basePath}/balls/ball-silver-pressed.png`,
+      ballSilverSelected: `${basePath}/balls/ball-silver-selected.png`,
+      ballSilverTransparent: `${basePath}/balls/ball-silver-transparent.png`,
+      ballSilverWinner: `${basePath}/balls/ball-silver-winner.png`,
+      ballYellowDefault: `${basePath}/balls/ball-yellow-default.png`,
+      ballYellowFocused: `${basePath}/balls/ball-yellow-focused.png`,
+      ballYellowGlow: `${basePath}/balls/ball-yellow-glow.png`,
+      ballYellowPressed: `${basePath}/balls/ball-yellow-pressed.png`,
+      ballYellowSelected: `${basePath}/balls/ball-yellow-selected.png`,
+      ballYellowTransparent: `${basePath}/balls/ball-yellow-transparent.png`,
+      ballYellowWinner: `${basePath}/balls/ball-yellow-winner.png`,
+    },
+    borders: {
+      borderFocused: `${basePath}/borders/border-focused.png`,
+      borderGlass: `${basePath}/borders/border-glass.png`,
+      borderNeonBlue: `${basePath}/borders/border-neon-blue.png`,
+      borderNeonGold: `${basePath}/borders/border-neon-gold.png`,
+      borderWinner: `${basePath}/borders/border-winner.png`,
+    },
+    cards: {
+      cardInfo: `${basePath}/cards/card-info.png`,
+      cardJackpot: `${basePath}/cards/card-jackpot.png`,
+      cardPlayer: `${basePath}/cards/card-player.png`,
+      cardPrize: `${basePath}/cards/card-prize.png`,
+      cardRanking: `${basePath}/cards/card-ranking.png`,
+      cardSection: `${basePath}/cards/card-section.png`,
+      cardTableHeader: `${basePath}/cards/card-table-header.png`,
+      cardTableRow: `${basePath}/cards/card-table-row.png`,
+      cardTicket: `${basePath}/cards/card-ticket.png`,
+    },
+    decorative: {
+      decoCornerTlBlue: `${basePath}/decorative/deco-corner-tl-blue.png`,
+      decoCornerTlGold: `${basePath}/decorative/deco-corner-tl-gold.png`,
+      decoCornerTrGold: `${basePath}/decorative/deco-corner-tr-gold.png`,
+    },
+    effects: {
+      effectBloom: `${basePath}/effects/effect-bloom.png`,
+      effectGlassHighlight: `${basePath}/effects/effect-glass-highlight.png`,
+      effectGlowBlue: `${basePath}/effects/effect-glow-blue.png`,
+      effectGlowGold: `${basePath}/effects/effect-glow-gold.png`,
+      effectInnerGlow: `${basePath}/effects/effect-inner-glow.png`,
+      effectLightBurst: `${basePath}/effects/effect-light-burst.png`,
+      effectLightSweep: `${basePath}/effects/effect-light-sweep.png`,
+      effectOuterGlow: `${basePath}/effects/effect-outer-glow.png`,
+      effectReflection: `${basePath}/effects/effect-reflection.png`,
+      effectShine: `${basePath}/effects/effect-shine.png`,
+    },
+    panels: {
+      panelDark: `${basePath}/panels/panel-dark.png`,
+      panelFooter: `${basePath}/panels/panel-footer.png`,
+      panelGlass: `${basePath}/panels/panel-glass.png`,
+      panelHeader: `${basePath}/panels/panel-header.png`,
+      panelMain: `${basePath}/panels/panel-main.png`,
+      panelModal: `${basePath}/panels/panel-modal.png`,
+      panelNeon: `${basePath}/panels/panel-neon.png`,
+      panelPopup: `${basePath}/panels/panel-popup.png`,
+      sidebar: `${basePath}/panels/panel-sidebar.png`,
+    },
+    particles: {
+      particleBlue: `${basePath}/particles/particle-blue.png`,
+      particleConfetti: `${basePath}/particles/particle-confetti.png`,
+      particleDust: `${basePath}/particles/particle-dust.png`,
+      particleGlowDots: `${basePath}/particles/particle-glow-dots.png`,
+      particleGold: `${basePath}/particles/particle-gold.png`,
+      particleSingleBlue: `${basePath}/particles/particle-single-blue.png`,
+      particleSingleGold: `${basePath}/particles/particle-single-gold.png`,
+      particleSingleSparkle: `${basePath}/particles/particle-single-sparkle.png`,
+      particleSingleWhite: `${basePath}/particles/particle-single-white.png`,
+      particleSparkles: `${basePath}/particles/particle-sparkles.png`,
+      particleStars: `${basePath}/particles/particle-stars.png`,
+    },
+    textures: {
+      textureBlue: `${basePath}/textures/texture-blue.png`,
+      textureDark: `${basePath}/textures/texture-dark.png`,
+      textureGlass: `${basePath}/textures/texture-glass.png`,
+      textureGradientOverlay: `${basePath}/textures/texture-gradient-overlay.png`,
+      textureNoise: `${basePath}/textures/texture-noise.png`,
+      textureSpace: `${basePath}/textures/texture-space.png`,
+    },
+  };
+}
 
-export const backgrounds = {
-  bgBlueGradient: `${BASE}/backgrounds/bg-blue-gradient.png`,
-  bgDark: `${BASE}/backgrounds/bg-dark.png`,
-  bgGlow: `${BASE}/backgrounds/bg-glow.png`,
-  bgMain: `${BASE}/backgrounds/bg-main.png`,
-  bgParticle: `${BASE}/backgrounds/bg-particle.png`,
-  bgSpace: `${BASE}/backgrounds/bg-space.png`,
-} as const;
+export const assetsBingoShow = createThemeAssets('/themes/bingo-show');
+export const assetsBingoShowBlue = createThemeAssets('/themes/bingo-show-blue');
 
-export const balls = {
-  ballBlueDefault: `${BASE}/balls/ball-blue-default.png`,
-  ballBlueFocused: `${BASE}/balls/ball-blue-focused.png`,
-  ballBlueGlow: `${BASE}/balls/ball-blue-glow.png`,
-  ballBluePressed: `${BASE}/balls/ball-blue-pressed.png`,
-  ballBlueSelected: `${BASE}/balls/ball-blue-selected.png`,
-  ballBlueTransparent: `${BASE}/balls/ball-blue-transparent.png`,
-  ballBlueWinner: `${BASE}/balls/ball-blue-winner.png`,
-  ballGoldDefault: `${BASE}/balls/ball-gold-default.png`,
-  ballGoldFocused: `${BASE}/balls/ball-gold-focused.png`,
-  ballGoldGlow: `${BASE}/balls/ball-gold-glow.png`,
-  ballGoldPressed: `${BASE}/balls/ball-gold-pressed.png`,
-  ballGoldSelected: `${BASE}/balls/ball-gold-selected.png`,
-  ballGoldTransparent: `${BASE}/balls/ball-gold-transparent.png`,
-  ballGoldWinner: `${BASE}/balls/ball-gold-winner.png`,
-  ballGreenDefault: `${BASE}/balls/ball-green-default.png`,
-  ballGreenFocused: `${BASE}/balls/ball-green-focused.png`,
-  ballGreenGlow: `${BASE}/balls/ball-green-glow.png`,
-  ballGreenPressed: `${BASE}/balls/ball-green-pressed.png`,
-  ballGreenSelected: `${BASE}/balls/ball-green-selected.png`,
-  ballGreenTransparent: `${BASE}/balls/ball-green-transparent.png`,
-  ballGreenWinner: `${BASE}/balls/ball-green-winner.png`,
-  ballPurpleDefault: `${BASE}/balls/ball-purple-default.png`,
-  ballPurpleFocused: `${BASE}/balls/ball-purple-focused.png`,
-  ballPurpleGlow: `${BASE}/balls/ball-purple-glow.png`,
-  ballPurplePressed: `${BASE}/balls/ball-purple-pressed.png`,
-  ballPurpleSelected: `${BASE}/balls/ball-purple-selected.png`,
-  ballPurpleTransparent: `${BASE}/balls/ball-purple-transparent.png`,
-  ballPurpleWinner: `${BASE}/balls/ball-purple-winner.png`,
-  ballRedDefault: `${BASE}/balls/ball-red-default.png`,
-  ballRedFocused: `${BASE}/balls/ball-red-focused.png`,
-  ballRedGlow: `${BASE}/balls/ball-red-glow.png`,
-  ballRedPressed: `${BASE}/balls/ball-red-pressed.png`,
-  ballRedSelected: `${BASE}/balls/ball-red-selected.png`,
-  ballRedTransparent: `${BASE}/balls/ball-red-transparent.png`,
-  ballRedWinner: `${BASE}/balls/ball-red-winner.png`,
-  ballSilverDefault: `${BASE}/balls/ball-silver-default.png`,
-  ballSilverFocused: `${BASE}/balls/ball-silver-focused.png`,
-  ballSilverGlow: `${BASE}/balls/ball-silver-glow.png`,
-  ballSilverPressed: `${BASE}/balls/ball-silver-pressed.png`,
-  ballSilverSelected: `${BASE}/balls/ball-silver-selected.png`,
-  ballSilverTransparent: `${BASE}/balls/ball-silver-transparent.png`,
-  ballSilverWinner: `${BASE}/balls/ball-silver-winner.png`,
-  ballYellowDefault: `${BASE}/balls/ball-yellow-default.png`,
-  ballYellowFocused: `${BASE}/balls/ball-yellow-focused.png`,
-  ballYellowGlow: `${BASE}/balls/ball-yellow-glow.png`,
-  ballYellowPressed: `${BASE}/balls/ball-yellow-pressed.png`,
-  ballYellowSelected: `${BASE}/balls/ball-yellow-selected.png`,
-  ballYellowTransparent: `${BASE}/balls/ball-yellow-transparent.png`,
-  ballYellowWinner: `${BASE}/balls/ball-yellow-winner.png`,
-} as const;
+export const backgrounds = assetsBingoShow.backgrounds;
+export const balls = assetsBingoShow.balls;
+export const borders = assetsBingoShow.borders;
+export const cards = assetsBingoShow.cards;
+export const decorative = assetsBingoShow.decorative;
+export const effects = assetsBingoShow.effects;
+export const panels = assetsBingoShow.panels;
+export const particles = assetsBingoShow.particles;
+export const textures = assetsBingoShow.textures;
 
-export const borders = {
-  borderFocused: `${BASE}/borders/border-focused.png`,
-  borderGlass: `${BASE}/borders/border-glass.png`,
-  borderNeonBlue: `${BASE}/borders/border-neon-blue.png`,
-  borderNeonGold: `${BASE}/borders/border-neon-gold.png`,
-  borderWinner: `${BASE}/borders/border-winner.png`,
-} as const;
 
-export const cards = {
-  cardInfo: `${BASE}/cards/card-info.png`,
-  cardJackpot: `${BASE}/cards/card-jackpot.png`,
-  cardPlayer: `${BASE}/cards/card-player.png`,
-  cardPrize: `${BASE}/cards/card-prize.png`,
-  cardRanking: `${BASE}/cards/card-ranking.png`,
-  cardSection: `${BASE}/cards/card-section.png`,
-  cardTableHeader: `${BASE}/cards/card-table-header.png`,
-  cardTableRow: `${BASE}/cards/card-table-row.png`,
-  cardTicket: `${BASE}/cards/card-ticket.png`,
-} as const;
-
-export const decorative = {
-  decoCornerTlBlue: `${BASE}/decorative/deco-corner-tl-blue.png`,
-  decoCornerTlGold: `${BASE}/decorative/deco-corner-tl-gold.png`,
-  decoCornerTrGold: `${BASE}/decorative/deco-corner-tr-gold.png`,
-} as const;
-
-export const effects = {
-  effectBloom: `${BASE}/effects/effect-bloom.png`,
-  effectGlassHighlight: `${BASE}/effects/effect-glass-highlight.png`,
-  effectGlowBlue: `${BASE}/effects/effect-glow-blue.png`,
-  effectGlowGold: `${BASE}/effects/effect-glow-gold.png`,
-  effectInnerGlow: `${BASE}/effects/effect-inner-glow.png`,
-  effectLightBurst: `${BASE}/effects/effect-light-burst.png`,
-  effectLightSweep: `${BASE}/effects/effect-light-sweep.png`,
-  effectOuterGlow: `${BASE}/effects/effect-outer-glow.png`,
-  effectReflection: `${BASE}/effects/effect-reflection.png`,
-  effectShine: `${BASE}/effects/effect-shine.png`,
-} as const;
-
-export const panels = {
-  panelDark: `${BASE}/panels/panel-dark.png`,
-  panelFooter: `${BASE}/panels/panel-footer.png`,
-  panelGlass: `${BASE}/panels/panel-glass.png`,
-  panelHeader: `${BASE}/panels/panel-header.png`,
-  panelMain: `${BASE}/panels/panel-main.png`,
-  panelModal: `${BASE}/panels/panel-modal.png`,
-  panelNeon: `${BASE}/panels/panel-neon.png`,
-  panelPopup: `${BASE}/panels/panel-popup.png`,
-  panelSidebar: `${BASE}/panels/panel-sidebar.png`,
-} as const;
-
-export const particles = {
-  particleBlue: `${BASE}/particles/particle-blue.png`,
-  particleConfetti: `${BASE}/particles/particle-confetti.png`,
-  particleDust: `${BASE}/particles/particle-dust.png`,
-  particleGlowDots: `${BASE}/particles/particle-glow-dots.png`,
-  particleGold: `${BASE}/particles/particle-gold.png`,
-  particleSingleBlue: `${BASE}/particles/particle-single-blue.png`,
-  particleSingleGold: `${BASE}/particles/particle-single-gold.png`,
-  particleSingleSparkle: `${BASE}/particles/particle-single-sparkle.png`,
-  particleSingleWhite: `${BASE}/particles/particle-single-white.png`,
-  particleSparkles: `${BASE}/particles/particle-sparkles.png`,
-  particleStars: `${BASE}/particles/particle-stars.png`,
-} as const;
-
-export const textures = {
-  textureBlue: `${BASE}/textures/texture-blue.png`,
-  textureDark: `${BASE}/textures/texture-dark.png`,
-  textureGlass: `${BASE}/textures/texture-glass.png`,
-  textureGradientOverlay: `${BASE}/textures/texture-gradient-overlay.png`,
-  textureNoise: `${BASE}/textures/texture-noise.png`,
-  textureSpace: `${BASE}/textures/texture-space.png`,
-} as const;

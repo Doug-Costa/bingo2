@@ -17,3 +17,5 @@ export * from './ThemeDivider';
 export * from './ThemeBadge';
 export * from './ThemeOverlay';
 export * from './resolveBallAsset';
+export * from './ThemeSelector';
+

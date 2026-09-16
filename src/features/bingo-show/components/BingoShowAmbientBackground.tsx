@@ -3,6 +3,8 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
+import { useAppTheme } from '@/contexts/ThemeContext';
+
 
 interface ParticleSpec {
   id: string;
@@ -32,8 +34,13 @@ const PARTICLES: ParticleSpec[] = [
   { id: 'p14', left: '80%', top: '60%', size: 7, duration: 2900, drift: 5, maxOpacity: 0.45, source: 'sparkles' },
 ];
 
-function AmbientParticle({ spec }: { spec: ParticleSpec }) {
-  const source = spec.source === 'stars' ? BingoShowAssets.particles.stars : BingoShowAssets.particles.sparkles;
+function AmbientParticle({ spec, isBlue }: { spec: ParticleSpec; isBlue?: boolean }) {
+  const baseSource = spec.source === 'stars' ? BingoShowAssets.particles.stars : BingoShowAssets.particles.sparkles;
+  const source = isBlue
+    ? spec.source === 'stars'
+      ? '/themes/bingo-show-blue/particles/particle-stars.png'
+      : '/themes/bingo-show-blue/particles/particle-sparkles.png'
+    : baseSource;
 
   return (
     <img
@@ -64,9 +71,7 @@ export interface BingoShowAmbientBackgroundProps {
   confetti?: boolean;
   brightness?: 'default' | 'light';
   backdrop?: 'space' | 'blue';
-  /** Multiplica a opacidade da vinheta nas bordas (1 = original, <1 = mais claro). Opt-in, não afeta chamadores existentes. */
   vignetteStrength?: number;
-  /** Adiciona dois halos de cor (ciano + dourado, tokens da marca) atrás do conteúdo pra dar vida ao fundo. Opt-in. */
   accentGlow?: boolean;
 }
 
@@ -79,8 +84,17 @@ export function BingoShowAmbientBackground({
   vignetteStrength = 1,
   accentGlow = false,
 }: BingoShowAmbientBackgroundProps) {
+  const { isBlue } = useAppTheme();
   const isLight = brightness === 'light';
-  const spaceSource = backdrop === 'blue' ? BingoShowAssets.backgrounds.bgBlueGradient : BingoShowAssets.backgrounds.bgSpace;
+  const spaceSource = isBlue
+    ? backdrop === 'blue'
+      ? '/themes/bingo-show-blue/backgrounds/bg-blue-gradient.png'
+      : '/themes/bingo-show-blue/backgrounds/bg-space.png'
+    : backdrop === 'blue'
+    ? BingoShowAssets.backgrounds.bgBlueGradient
+    : BingoShowAssets.backgrounds.bgSpace;
+
+  const glowSource = isBlue ? '/themes/bingo-show-blue/backgrounds/bg-glow.png' : BingoShowAssets.backgrounds.bgGlow;
 
   const vt = isLight ? 0.22 : 0.45;
   const vb = isLight ? 0.35 : 0.65;
@@ -92,7 +106,7 @@ export function BingoShowAmbientBackground({
   const vignetteRight = `linear-gradient(to left, rgba(1,2,10,${vr * vignetteStrength}), rgba(1,2,10,0))`;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: BingoShowColors.bgDeep, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: isBlue ? '#020617' : BingoShowColors.bgDeep, overflow: 'hidden' }}>
       {/* CAMADA 1: Fundo com deriva Ken Burns */}
       <div
         style={{
@@ -110,13 +124,14 @@ export function BingoShowAmbientBackground({
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `url(${BingoShowAssets.backgrounds.bgGlow})`,
+          backgroundImage: `url(${glowSource})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           pointerEvents: 'none',
           animation: isLight ? 'bs-ambient-glow-light 16s ease-in-out infinite alternate' : 'bs-ambient-glow-default 16s ease-in-out infinite alternate',
         }}
       />
+
 
       {/* CAMADA 2.5: Halos de cor (ciano + dourado) — opcional, dá riqueza cromática ao fundo */}
       {accentGlow && (
