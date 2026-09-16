@@ -737,6 +737,19 @@ export function GameSocketProvider({
       parts.push(`roomId=${encodeURIComponent(roomId.trim())}`);
     }
     parts.push(`_t=${String(Date.now())}`);
+
+    // Se estiver rodando no browser e baseUrl for externo, usa o proxy server-side (/api/proxy-sse)
+    // para evitar bloqueios de CORS e Mixed Content
+    if (typeof window !== 'undefined' && baseUrl && baseUrl.startsWith('http')) {
+      const currentOrigin = window.location.origin;
+      if (!baseUrl.startsWith(currentOrigin)) {
+        parts.push(`target=${encodeURIComponent(baseUrl)}`);
+        const proxyUrl = `/api/proxy-sse?${parts.join('&')}`;
+        console.log(`${TAG} 🔧 Usando proxy SSE anti-CORS → "${proxyUrl}"`);
+        return proxyUrl;
+      }
+    }
+
     const url = `${baseUrl}${DEFAULT_SSE_PATH}?${parts.join('&')}`;
     console.log(`${TAG} 🔧 URL → "${url}"`);
     return url;

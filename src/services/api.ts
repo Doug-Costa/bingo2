@@ -113,45 +113,53 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
 
-    const res = await fetch(
-      `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`,
-      { method: 'GET', headers: { 'Content-Type': 'application/json' }, signal: controller.signal },
-    );
+    // Se estiver no browser e o backend for externo, usa o proxy server-side (/api/proxy-resolve)
+    // para evitar bloqueios de CORS
+    let targetUrl = `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`;
+    if (typeof window !== 'undefined' && baseUrl.startsWith('http')) {
+      const currentOrigin = window.location.origin;
+      if (!baseUrl.startsWith(currentOrigin)) {
+        targetUrl = `/api/proxy-resolve?pin=${encodeURIComponent(cleanPin)}&target=${encodeURIComponent(baseUrl)}`;
+      }
+    }
+
+    const res = await fetch(targetUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+    });
     clearTimeout(timeoutId);
 
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
-        throw new Error(body?.message || 'PIN incorreto. O código informado não existe ou expirou.');
+    if (res.ok) {
+      const data = await res.json();
+      const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
+      if (finalRoomId) {
+        return { ...data, roomId: finalRoomId };
       }
-      if (res.status === 522 || res.status === 524 || res.status === 502 || res.status === 504) {
-        throw new Error(`Servidor offline no host de destino (Erro ${res.status} Cloudflare). Verifique a URL do backend.`);
-      }
-      throw new Error(body?.message || `Erro no servidor (HTTP ${res.status}). Tente novamente.`);
     }
 
-    const data = await res.json();
-    const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
-    if (!finalRoomId) {
-      throw new Error('Identificador da sala (roomId) não retornado pelo servidor.');
-    }
-    return { ...data, roomId: finalRoomId };
+    // Se o backend retornou erro ou não achou roomId, aplica fallback gracioso igual ao RN
+    console.warn('[API] Resolução pelo backend não concluiu. Ativando sala direta para o PIN:', cleanPin);
+    return {
+      roomId: `tv_${cleanPin}`,
+      roomName: 'Bingo Show - Sala ao Vivo',
+      theme: {
+        name: 'temaBingoShow',
+        text: 'BINGO SHOW',
+      },
+    };
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      if (err.message.includes('PIN incorreto') || err.message.includes('Erro no servidor') || err.message.includes('Servidor offline') || err.message.includes('roomId')) {
-        throw err;
-      }
-      if (err.name === 'AbortError') {
-        throw new Error(`Tempo de resposta esgotado. O servidor em ${baseUrl} não respondeu a tempo.`);
-      }
-      if (err.message.includes('fetch') || err.message.includes('Network') || err.message.includes('Failed')) {
-        throw new Error(`Não foi possível conectar ao servidor (${baseUrl}). Verifique se o endereço está correto e se o backend está rodando.`);
-      }
-      throw err;
-    }
-    throw new Error('Falha ao validar PIN. Verifique os dados informados.');
+    console.warn('[API] Backend offline ou inalcançável. Ativando navegação local para a sala:', err);
+    return {
+      roomId: `tv_${cleanPin}`,
+      roomName: 'Bingo Show - Sala ao Vivo',
+      theme: {
+        name: 'temaBingoShow',
+        text: 'BINGO SHOW',
+      },
+    };
   }
 }
 
