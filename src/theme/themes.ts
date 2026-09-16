@@ -22,7 +22,9 @@ import {
   panels,
   particles,
   textures,
+  assetsBingoShowBlue,
 } from './assets';
+import { colorsBingoShowBlue } from './bingo-show-blue/colors';
 
 // ─── Token types ─────────────────────────────────────────────────────────────
 export interface ThemeTokens {
@@ -467,10 +469,11 @@ export const temaBingoShow: ThemeTokens = {
     particles: 40,
     debug: 999,
   },
-// ─── Tema Bingo Show Blue (Neon & Live) ───────────────────────────────────────
-import { colorsBingoShowBlue } from './bingo-show-blue/colors';
-import { assetsBingoShowBlue } from './assets';
+};
 
+export const temaBingoShowTokens = temaBingoShow;
+
+// ─── Tema Bingo Show Blue (Neon & Live) ───────────────────────────────────────
 export const temaBingoShowBlueTokens: ThemeTokens = {
   bgColor: colorsBingoShowBlue.bgPage,
   panelBg: colorsBingoShowBlue.bgSurface,
