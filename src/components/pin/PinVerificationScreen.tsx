@@ -6,12 +6,11 @@ import { resolvePin } from '@/services/api';
 import { buildBaseUrl, getDefaultIp, getDefaultPort, saveCredentials, getCredentials } from '@/storage/credentials';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { ThemeSelector } from '@/components/theme';
-import { BingoShowColors, BingoShowRadius, BingoShowSpacing } from '@/features/bingo-show/design-system';
-
+ 
 export type PinStatus = 'idle' | 'validating' | 'error' | 'success';
 
 export interface PinVerificationScreenProps {
-  onSuccess?: (roomId: string) => void;
+  onSuccess?: (_roomId: string) => void;
   initialPin?: string;
 }
 

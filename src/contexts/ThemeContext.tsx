@@ -9,7 +9,7 @@ const STORAGE_THEME_KEY = 'bingo_show_selected_theme';
 export interface ThemeContextValue {
   themeId: string;
   theme: ThemeTokens;
-  setThemeId: (id: string) => void;
+  setThemeId: (_id: string) => void;
   availableThemes: ThemeOption[];
   isBlue: boolean;
 }

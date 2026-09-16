@@ -6,7 +6,7 @@ import { type ThemeOption } from '@/theme/themes';
 
 export interface ThemeSelectorProps {
   variant?: 'cards' | 'compact' | 'modal';
-  onSelect?: (themeId: string) => void;
+  onSelect?: (_themeId: string) => void;
   className?: string;
   style?: React.CSSProperties;
 }

@@ -64,7 +64,7 @@ export function ThemeBackground({
   }
 
   let gradientColors: readonly string[] = [];
-  const gradients = TEMA_GRADIENTS[themeKey];
+  const gradients = (TEMA_GRADIENTS as Record<string, { bg?: readonly string[] } | undefined>)[themeKey];
   if (gradients?.bg) {
     gradientColors = gradients.bg;
   } else if (theme.gradients?.mainBackground) {
