@@ -65,9 +65,10 @@ export interface ResolveResponse {
 export async function pingServer(baseUrl: string): Promise<{ ok: boolean; status?: number; message: string }> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    const res = await fetch(`${baseUrl}/bingo/tvapp/resolve?pin=0000&type=bingo`, {
+    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+    const res = await fetch(`${cleanBaseUrl}/bingo/tvapp/resolve?pin=0000&type=bingo`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
@@ -80,11 +81,11 @@ export async function pingServer(baseUrl: string): Promise<{ ok: boolean; status
     if (res.status === 522 || res.status === 524 || res.status === 502 || res.status === 504) {
       return { ok: false, status: res.status, message: `Servidor offline ou sem resposta do backend (HTTP ${res.status}).` };
     }
-    return { ok: false, status: res.status, message: `Servidor retornou status inesperado (HTTP ${res.status}).` };
+    return { ok: false, status: res.status, message: `Servidor retornou status (HTTP ${res.status}).` };
   } catch (err: unknown) {
     if (err instanceof Error) {
       if (err.name === 'AbortError') {
-        return { ok: false, message: 'Tempo limite esgotado (timeout). O servidor demorou muito para responder.' };
+        return { ok: false, message: 'Tempo limite esgotado (timeout de 15s). O servidor demorou para responder.' };
       }
       return { ok: false, message: `Falha de conexão: ${err.message}` };
     }
@@ -111,31 +112,46 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
     };
   }
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+  const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos de timeout
 
-    // Se estiver no browser e o backend for externo, usa o proxy server-side (/api/proxy-resolve)
-    // para evitar bloqueios de CORS
-    let targetUrl = `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`;
-    if (typeof window !== 'undefined' && baseUrl.startsWith('http')) {
-      const currentOrigin = window.location.origin;
-      if (!baseUrl.startsWith(currentOrigin)) {
-        targetUrl = `/api/proxy-resolve?pin=${encodeURIComponent(cleanPin)}&target=${encodeURIComponent(baseUrl)}`;
+  try {
+    // 1. Tenta chamada direta primeiro (CORS liberado no backend)
+    let res: Response;
+    try {
+      res = await fetch(`${cleanBaseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+      });
+    } catch (directErr: unknown) {
+      // 2. Se a chamada direta falhar (ex: bloqueio de browser ou mixed content), tenta via proxy server-side
+      if (typeof window !== 'undefined' && cleanBaseUrl.startsWith('http')) {
+        const proxyUrl = `/api/proxy-resolve?pin=${encodeURIComponent(cleanPin)}&target=${encodeURIComponent(cleanBaseUrl)}`;
+        res = await fetch(proxyUrl, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+        });
+      } else {
+        throw directErr;
       }
     }
-
-    const res = await fetch(targetUrl, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-    });
     clearTimeout(timeoutId);
 
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok || data?.error) {
-      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404 || data?.status === 400 || data?.status === 401 || data?.status === 404) {
+      if (
+        res.status === 400 ||
+        res.status === 401 ||
+        res.status === 403 ||
+        res.status === 404 ||
+        data?.status === 400 ||
+        data?.status === 401 ||
+        data?.status === 404
+      ) {
         throw new Error(data?.message || 'PIN incorreto. O código informado não existe ou expirou.');
       }
       if (res.status === 522 || res.status === 502 || res.status === 504 || data?.status === 522 || data?.status === 502) {
@@ -151,9 +167,10 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
 
     return { ...data, roomId: finalRoomId };
   } catch (err: unknown) {
+    clearTimeout(timeoutId);
     if (err instanceof Error) {
       if (err.name === 'AbortError') {
-        throw new Error(`Tempo de resposta esgotado. O servidor em ${baseUrl} não respondeu a tempo.`);
+        throw new Error(`Tempo de resposta esgotado (timeout de 15s). O servidor em ${cleanBaseUrl} demorou para responder.`);
       }
       throw err;
     }
