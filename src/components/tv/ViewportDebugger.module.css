@@ -1,0 +1,33 @@
+.debugger {
+  position: absolute;
+  top: var(--bs-spacing-md);
+  right: var(--bs-spacing-md);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--bs-spacing-sm) var(--bs-spacing-md);
+  border-radius: var(--bs-radius-sm);
+  background-color: var(--bs-color-scrim);
+  border: 1px solid var(--bs-color-border-regular);
+  font-family: var(--bs-font-digital);
+  font-size: var(--bs-font-size-small);
+  color: var(--bs-color-text-primary);
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.row {
+  display: flex;
+  gap: var(--bs-spacing-sm);
+  white-space: nowrap;
+}
+
+.label {
+  color: var(--bs-color-text-muted);
+}
+
+.value {
+  color: var(--bs-color-primary);
+  font-weight: 700;
+}

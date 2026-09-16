@@ -1,0 +1,19 @@
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tv-stage-width);
+  height: var(--tv-stage-height);
+  transform-origin: center center;
+  /* translate(-50%, -50%) centraliza o palco de 1920x1080 antes da escala;
+     o scale() é aplicado por cima via variável --tv-scale (setada inline). */
+  transform: translate(-50%, -50%) scale(var(--tv-scale, 1));
+  background-color: var(--bs-color-bg-main);
+  overflow: hidden;
+}
+
+/* Enquanto a primeira medição ainda não chegou (scale === 0), evita um frame
+   de "palco no tamanho real 1920x1080 sem escala" piscando na tela. */
+.hidden {
+  visibility: hidden;
+}

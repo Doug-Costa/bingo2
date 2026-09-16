@@ -1,0 +1,418 @@
+@import './tokens.css';
+
+/**
+ * globals.css — Reset base para app de TV.
+ *
+ * Objetivo: nunca gerar scroll, ocupar 100% da viewport, fundo sempre preto
+ * (equivalente ao `backgroundColor: '#0a0e1a'`/`bgDeep` usado nas telas raiz
+ * do RN) antes de qualquer conteúdo montar.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bs-color-bg-deep);
+  color: var(--bs-color-text-primary);
+  font-family: var(--bs-font-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#__next {
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Usado por ThemeButton (tvscreen/tema04) no estado `loading`. */
+@keyframes bs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Usado por Ball (tvscreen/tema04) na animação de entrada — porte do
+   `Animated.spring` + `rotate` do RN (ver components/tvscreen/Ball.tsx). */
+@keyframes bs-ball-enter {
+  from {
+    transform: scale(0.3) rotate(-180deg);
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Bola central — surge gigante fora do lugar (escala 18x, deslocada, girando
+   forte) e vai bem devagar (6.5s, duração setada no componente) girando até
+   assentar na posição/tamanho final, com um pequeno "quique" de acomodação
+   no fim (overshoot 70%→85%→100%). */
+@keyframes bs-active-ball-enter {
+  0% {
+    transform: scale(18) rotate(-900deg) translateY(-70px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.15) rotate(-36deg) translateY(6px);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(0.95) rotate(10deg) translateY(-3px);
+  }
+  100% {
+    transform: scale(1) rotate(0deg) translateY(0);
+  }
+}
+
+@keyframes bs-active-scale-in {
+  0% {
+    transform: scale(5.0) rotate(360deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.08) rotate(10deg);
+    opacity: 1;
+  }
+  86% {
+    transform: scale(0.96) rotate(-2deg);
+  }
+  94% {
+    transform: scale(1.02) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Bola central real do palco de sorteio (`DrawStage.tsx`, `HeroBall`) — entrada dramática
+   (Fase Final Pré-Produção): nasce enorme e deslocada, girando forte (2 voltas), e vai
+   diminuindo/girando progressivamente menos enquanto se aproxima do centro, terminando com
+   um leve assentamento (85%→94%→100%) — sensação de profundidade "vem de longe/grande e
+   encaixa no lugar", não um scale-in simples no mesmo ponto. Duração e easing (`linear`)
+   setados no componente (2800ms), dentro da geometria real do palco 1920×1080. */
+@keyframes bs-hero-ball-enter {
+  0% {
+    transform: translate3d(0, -90px, 0) scale(4.2) rotate(-720deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(0, -45px, 0) scale(3.0) rotate(-480deg);
+  }
+  65% {
+    transform: translate3d(0, -20px, 0) scale(1.8) rotate(-220deg);
+  }
+  85% {
+    transform: translate3d(0, 5px, 0) scale(1.08) rotate(-30deg);
+  }
+  94% {
+    transform: translate3d(0, -1px, 0) scale(0.97) rotate(5deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+/* Pulso da bola central depois de assentar na posição final — pedido explícito do
+   usuário: "quando a bola central chegar na posição dela, pulsar 2 a 3x antes da
+   próxima bola vir". Encadeado via `animation-delay` = duração de `bs-hero-ball-enter`
+   (ver `DrawStage.tsx`), `animation-iteration-count: 3` (não infinito — pulsa um
+   número fixo de vezes e para, parada até a próxima bola trocar via `key`). Escala
+   sutil (1 → 1.06 → 1), não repete a rotação/deslocamento da entrada. */
+@keyframes bs-hero-ball-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Flash de impacto ao pousar — expande e desaparece */
+@keyframes bs-ball-impact-flash {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.85;
+  }
+  55% {
+    transform: scale(2.2);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+/* Usado por AnimatedActiveBall — porte do `Animated.loop` de pulso do glow
+   traseiro (scale 1 → 1.25 → 1, 800ms cada trecho no RN). */
+@keyframes bs-pulse-glow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+/* Usado por NumberGrid (NumberGridCell) — porte do `Animated.sequence`
+   (timing 0.8→1.2 + spring 1.2→1.0) da célula que vira a bola atual. */
+@keyframes bs-grid-cell-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Usado por WinnerModal — porte da entrada em paralelo (overlay: opacity
+   0→1; card: scale 0.5→1, spring). */
+@keyframes bs-winner-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bs-winner-card-in {
+  from {
+    transform: scale(0.5);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Usado por WinnerModal — porte do `Animated.loop` do troféu (translateY
+   0 → -10 → 0, 600ms cada trecho no RN). */
+@keyframes bs-trophy-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Usado por WinnerModal — porte do `Animated.loop` do glow do card
+   (opacity 0.3 → 1 → 0.3, 1000ms cada trecho no RN). */
+@keyframes bs-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Usado por MyTicketsPanel (TicketCard, quando `isClosest`) — porte do
+   shake em `Animated.loop`/`Animated.sequence` (5 passos de 60ms +
+   `Animated.delay(1800)`, ciclo total 2100ms). */
+@keyframes bs-ticket-shake {
+  0% {
+    transform: translateX(0);
+  }
+  2.86% {
+    transform: translateX(-4px);
+  }
+  5.71% {
+    transform: translateX(4px);
+  }
+  8.57% {
+    transform: translateX(-3px);
+  }
+  11.43% {
+    transform: translateX(3px);
+  }
+  14.29%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Usadas por PostDrawCycle — porte do `Animated.loop` do troféu
+   (translateY 0→-10→0, 700ms cada trecho) e da barra de progresso dos 20s
+   de exibição dos ganhadores (`Animated.timing` linear de 0%→100%). */
+@keyframes bs-postdraw-trophy {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bs-postdraw-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Usado por TriggerBallStar (TvScreenInner) — porte do `Animated.loop`
+   (scale 1→1.15 em 500ms, volta a 1.0 em 500ms, `Animated.delay(1500)`,
+   ciclo total 2500ms). */
+@keyframes bs-trigger-star-pulse {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.15);
+  }
+  40%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Usado por TvHeader (indicador de conexão, quando `!connected`) — porte do
+   `Animated.loop` de opacidade (1 → 0.3 → 1, 600ms cada trecho). */
+@keyframes bs-conn-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Usado por BingoShowGlowHalo (`pulse`) — porte do `Animated.loop` de
+   opacidade (0.75 → 1 → 0.75), `animation-duration` setado inline por
+   instância (`pulseDuration * 2`, prop dinâmica). */
+@keyframes bs-glow-halo-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Usado por BingoShowGlowHalo (`shine`, não usado pela ConfigScreen — só
+   mantido por paridade de API) — aproximação CSS do sweep diagonal com
+   pausa (`shineDuration` de varredura + `shinePause` de espera). Percentuais
+   fixos, calibrados para os valores padrão (2200ms/2800ms — ~44%/56%). */
+@keyframes bs-glow-halo-shine {
+  0% {
+    transform: translateX(-320px) rotate(16deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.28;
+  }
+  36% {
+    opacity: 0.28;
+  }
+  44% {
+    transform: translateX(320px) rotate(16deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(320px) rotate(16deg);
+    opacity: 0;
+  }
+}
+
+/* Usadas por BingoShowAmbientBackground — porte das animações Reanimated do
+   fundo ambiente (Ken Burns, glow respirando, partículas cintilantes).
+   `animation-direction: alternate` reproduz o `withRepeat(withSequence(to X,
+   to Y), -1, false)` do RN (ver comentário no topo do componente). */
+@keyframes bs-ambient-kenburns {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.045) translate(-10px, 6px);
+  }
+}
+
+@keyframes bs-ambient-glow-default {
+  from {
+    opacity: 0.12;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes bs-ambient-glow-light {
+  from {
+    opacity: 0.22;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+
+/* NOTA: a animação de saída da bola central (DrawStage → meia-lua) não usa mais CSS
+   `@keyframes`/`offset-path` — trocada por uma curva de Bézier quadrática calculada
+   quadro a quadro em JS (`FlyingExitBall`, `DrawStage.tsx`), aplicada direto no DOM via
+   `ref`. `offset-path` não tinha suporte confiável em runtimes de TV embarcados (causa
+   raiz do efeito "quebrado"), e a versão em JS garante matematicamente que a bola sempre
+   termina exatamente no destino, com controle total do timing/curva.
+
+/* Usado por BingoShowDrawnBalls — flash de "acender" quando uma bola vira a mais recente
+   sorteada (estava apagada/dessaturada, acende com brilho forte e assenta na luminosidade
+   normal de bola sorteada). Roda junto com `bs-grid-cell-pop` (mesmo elemento, 2
+   animações em paralelo). */
+@keyframes bs-ball-light-up {
+  0% {
+    filter: grayscale(0.55) brightness(0.45);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+  40% {
+    filter: grayscale(0) brightness(1.9) saturate(1.3);
+    box-shadow: 0 0 16px 5px rgba(255, 255, 255, 0.85);
+  }
+  100% {
+    filter: grayscale(0) brightness(1.1) saturate(1.05);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes bs-ambient-particle-twinkle {
+  from {
+    opacity: 0.1;
+    transform: translateY(0) scale(0.65);
+  }
+  to {
+    opacity: calc(0.1 + var(--max-opacity));
+    transform: translateY(calc(var(--drift) * -1px)) scale(1.2);
+  }
+}

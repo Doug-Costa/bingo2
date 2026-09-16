@@ -1,0 +1,9 @@
+{
+  "appId": "com.bingoshow.tv",
+  "appName": "Bingo Show TV",
+  "webDir": "public",
+  "server": {
+    "url": "https://bingoshowtvtheme.vercel.app/tv",
+    "cleartext": false
+  }
+}

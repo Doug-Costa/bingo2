@@ -1,0 +1,32 @@
+/**
+ * tv.module.css — só o estado de carregamento enquanto as credenciais salvas
+ * ainda não foram lidas do `localStorage` (equivalente ao branch
+ * `if (!credentials)` do `TvScreen` original em RN).
+ *
+ * A grade de depuração da Fase 1 (bordas/linhas de centro/cantos) foi
+ * removida junto com o placeholder — a tela real (`TvScreenApp`) não usa
+ * mais essa grade.
+ */
+.loadingScreen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0e1a;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid rgba(123, 63, 228, 0.25);
+  border-top-color: #7b3fe4;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

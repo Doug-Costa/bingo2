@@ -1,0 +1,10 @@
+/**
+ * config.module.css — não usado pela ConfigScreen real.
+ *
+ * A tela real (porte de `tvapp1/src/screens/ConfigScreen.tsx`, ver
+ * `app/config/page.tsx`) segue a mesma convenção do resto do porte: estilo
+ * inline (`style={{...}}`), sem CSS Modules — os únicos estilos externos
+ * que ela precisa (glow pulsante, Ken Burns, partículas) já vivem em
+ * `globals.css` como keyframes compartilhados. Arquivo mantido vazio em vez
+ * de removido (pasta do usuário não permite exclusão sem confirmação).
+ */

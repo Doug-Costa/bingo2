@@ -1,0 +1,33 @@
+{
+  "name": "bingo-show-next",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Migração front-end do tvapp1 (React Native) para Next.js — Bingo Show V2 como aplicação principal.",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3010",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3010",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
+    "@types/node": "20.14.9",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.5",
+    "puppeteer": "^24.43.1",
+    "typescript": "5.4.5"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}

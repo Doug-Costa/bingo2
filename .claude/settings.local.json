@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /Users/cliente/.claude/projects/-Users-cliente-Documents-tvapp1/memory/ 2>&1; echo \"---\"; ls -la /Users/cliente/.claude/projects/ 2>&1)",
+      "Bash(npm run *)",
+      "Bash(xargs -I{} sh -c 'echo {}: $\\(du -h \"{}\" | cut -f1\\)')",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(ps -p 67794 -o pid,ppid,command)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/tv --max-time 5)",
+      "Bash(ps -p 67794 -o pid,command)",
+      "Bash(ps -p 67793 -o pid,ppid,command)",
+      "Bash(ps eww *)",
+      "Bash(lsof -i :3010 -sTCP:LISTEN)",
+      "Bash(ls /Users/cliente/Documents/ 2>&1 | head -5)",
+      "Bash(grep -v \"BingoShowCurrentBall.tsx$\")",
+      "Bash(grep -n \"bs-active-scale-in\\\\|RING_INNER_SIZE,$\\\\|HeroBall number\" src/features/bingo-show/components/DrawStage.tsx)",
+      "Bash(grep -n \"const WinnerCard\\\\|compact = false,\\\\|}\\) => {$\\\\|const formattedTicket\\\\|const hasRealNumbers\\\\|const isJackpot\" src/features/bingo-show/components/BingoShowWinnerPopup.tsx)",
+      "Read(//private/tmp/**)"
+    ]
+  }
+}

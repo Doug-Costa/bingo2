@@ -1,0 +1,132 @@
+/**
+ * tokens.css — Variáveis CSS globais do Bingo Show V2.
+ *
+ * Gerado manualmente a partir de `src/features/bingo-show/design-system/*.ts`
+ * nesta Fase 1 (mesmos valores, sem alteração). Os arquivos .ts continuam
+ * sendo a fonte de verdade em TypeScript (para uso em lógica/inline styles);
+ * este arquivo é a mesma informação disponível como CSS var para uso direto
+ * em CSS Modules, sem duplicar números "inventados" — qualquer alteração aqui
+ * deve ser espelhada no .ts correspondente (e vice-versa).
+ */
+
+:root {
+  /* ── Colors ─────────────────────────────────────────────────────────── */
+  --bs-color-primary: #ffde38;
+  --bs-color-primary-light: #fff299;
+  --bs-color-primary-dark: #d9991a;
+  --bs-color-secondary: #4868ff;
+  --bs-color-secondary-light: #7c93ff;
+  --bs-color-secondary-dark: #1333f0;
+
+  --bs-color-bg-deep: #020412;
+  --bs-color-bg-main: #040826;
+  --bs-color-bg-surface: rgba(6, 10, 40, 0.85);
+  --bs-color-bg-elevated: rgba(12, 18, 56, 0.9);
+
+  --bs-color-glass-bg: rgba(11, 21, 117, 0.35);
+  --bs-color-glass-border: rgba(255, 255, 255, 0.15);
+  --bs-color-overlay-dark: rgba(0, 0, 0, 0.75);
+  --bs-color-scrim: rgba(0, 0, 0, 0.85);
+
+  --bs-color-cyan-neon: #00e5ff;
+  --bs-color-green-success: #00ff88;
+  --bs-color-red-danger: #ff3333;
+  --bs-color-gold-glow: rgba(255, 222, 56, 0.5);
+  --bs-color-blue-glow: rgba(72, 104, 255, 0.5);
+  --bs-color-green-glow: rgba(0, 255, 136, 0.5);
+
+  --bs-color-text-primary: #ffffff;
+  --bs-color-text-secondary: rgba(255, 255, 255, 0.75);
+  --bs-color-text-muted: rgba(255, 255, 255, 0.45);
+  --bs-color-text-on-gold: #000000;
+  --bs-color-text-on-blue: #ffffff;
+
+  --bs-color-grid-default-bg: rgba(6, 7, 26, 0.5);
+  --bs-color-grid-default-border: rgba(255, 255, 255, 0.08);
+  --bs-color-grid-drawn-bg: rgba(0, 255, 136, 0.2);
+  --bs-color-grid-drawn-border: #00ff88;
+  --bs-color-grid-current-bg: #ffde38;
+  --bs-color-grid-current-border: #ffffff;
+
+  --bs-color-border-subtle: rgba(255, 255, 255, 0.1);
+  --bs-color-border-regular: rgba(255, 255, 255, 0.2);
+  --bs-color-border-gold: #ffde38;
+  --bs-color-border-blue: #4868ff;
+  --bs-color-border-winner: #00ff88;
+
+  /* ── Spacing ────────────────────────────────────────────────────────── */
+  --bs-spacing-none: 0px;
+  --bs-spacing-xxs: 2px;
+  --bs-spacing-xs: 4px;
+  --bs-spacing-sm: 8px;
+  --bs-spacing-md: 12px;
+  --bs-spacing-lg: 16px;
+  --bs-spacing-xl: 24px;
+  --bs-spacing-xxl: 32px;
+  --bs-spacing-xxxl: 48px;
+  --bs-spacing-huge: 64px;
+
+  --bs-spacing-screen-padding-h: 24px;
+  --bs-spacing-screen-padding-v: 16px;
+  --bs-spacing-overscan-margin-tv: 16px;
+  --bs-spacing-header-height: 70px;
+  --bs-spacing-footer-height: 50px;
+  --bs-spacing-panel-gap: 12px;
+  --bs-spacing-card-gap: 8px;
+  --bs-spacing-grid-gap: 4px;
+
+  --bs-spacing-card-padding-inner: 12px;
+  --bs-spacing-modal-padding-inner: 20px;
+  --bs-spacing-ticket-cell-gap: 6px;
+
+  /* ── Radius ─────────────────────────────────────────────────────────── */
+  --bs-radius-none: 0px;
+  --bs-radius-xs: 4px;
+  --bs-radius-sm: 8px;
+  --bs-radius-md: 12px;
+  --bs-radius-lg: 16px;
+  --bs-radius-xl: 24px;
+  --bs-radius-xxl: 32px;
+  --bs-radius-pill: 999px;
+  --bs-radius-circle: 9999px;
+
+  /* ── Typography ─────────────────────────────────────────────────────── */
+  --bs-font-base: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+  --bs-font-heading: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+  --bs-font-digital: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --bs-font-size-micro: 8px;
+  --bs-font-size-tiny: 10px;
+  --bs-font-size-small: 12px;
+  --bs-font-size-body: 14px;
+  --bs-font-size-medium: 16px;
+  --bs-font-size-large: 18px;
+  --bs-font-size-xlarge: 22px;
+  --bs-font-size-title: 26px;
+  --bs-font-size-display: 32px;
+  --bs-font-size-hero: 44px;
+  --bs-font-size-ball-current: 56px;
+
+  --bs-letter-spacing-tight: -0.5px;
+  --bs-letter-spacing-normal: 0px;
+  --bs-letter-spacing-wide: 1px;
+  --bs-letter-spacing-wider: 2px;
+  --bs-letter-spacing-widest: 3px;
+
+  /* ── Animations (duração em ms) ────────────────────────────────────── */
+  --bs-duration-instant: 0ms;
+  --bs-duration-fast: 150ms;
+  --bs-duration-normal: 300ms;
+  --bs-duration-slow: 500ms;
+  --bs-duration-very-slow: 800ms;
+  --bs-duration-modal-entry: 400ms;
+  --bs-duration-slide-cycle: 15000ms;
+
+  --bs-loop-pulse-duration: 1000ms;
+  --bs-loop-bounce-duration: 600ms;
+  --bs-loop-shine-duration: 2000ms;
+
+  /* ── Palco de referência (TvStage) ─────────────────────────────────── */
+  --tv-stage-width: 1920px;
+  --tv-stage-height: 1080px;
+}

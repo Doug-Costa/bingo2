@@ -1,0 +1,8 @@
+.viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bs-color-bg-deep);
+}

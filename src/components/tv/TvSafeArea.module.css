@@ -1,0 +1,6 @@
+.safeArea {
+  position: absolute;
+  inset: 0;
+  padding: var(--bs-spacing-overscan-margin-tv);
+  box-sizing: border-box;
+}
