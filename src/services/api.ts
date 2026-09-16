@@ -60,6 +60,39 @@ export interface ResolveResponse {
 }
 
 /**
+ * Testa a conectividade com o servidor especificado.
+ */
+export async function pingServer(baseUrl: string): Promise<{ ok: boolean; status?: number; message: string }> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const res = await fetch(`${baseUrl}/bingo/tvapp/resolve?pin=0000&type=bingo`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (res.status === 200 || res.status === 400 || res.status === 401 || res.status === 404) {
+      return { ok: true, status: res.status, message: 'Servidor online e respondendo à API de PIN.' };
+    }
+    if (res.status === 522 || res.status === 524 || res.status === 502 || res.status === 504) {
+      return { ok: false, status: res.status, message: `Servidor offline ou sem resposta do backend (HTTP ${res.status}).` };
+    }
+    return { ok: false, status: res.status, message: `Servidor retornou status inesperado (HTTP ${res.status}).` };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.name === 'AbortError') {
+        return { ok: false, message: 'Tempo limite esgotado (timeout). O servidor demorou muito para responder.' };
+      }
+      return { ok: false, message: `Falha de conexão: ${err.message}` };
+    }
+    return { ok: false, message: 'Não foi possível estabelecer contato com o servidor.' };
+  }
+}
+
+/**
  * Resolve um PIN de TV e retorna roomId + theme.
  * GET /bingo/tvapp/resolve?pin=...&type=bingo
  */
@@ -80,7 +113,7 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     const res = await fetch(
       `${baseUrl}/bingo/tvapp/resolve?pin=${encodeURIComponent(cleanPin)}&type=bingo`,
@@ -91,29 +124,34 @@ export async function resolvePin(baseUrl: string, pin: string): Promise<ResolveR
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
-        throw new Error(body?.message || 'PIN incorreto. O código informado é inválido ou expirou.');
+        throw new Error(body?.message || 'PIN incorreto. O código informado não existe ou expirou.');
       }
-      throw new Error(body?.message || `Erro no servidor (${res.status}). Tente novamente.`);
+      if (res.status === 522 || res.status === 524 || res.status === 502 || res.status === 504) {
+        throw new Error(`Servidor offline no host de destino (Erro ${res.status} Cloudflare). Verifique a URL do backend.`);
+      }
+      throw new Error(body?.message || `Erro no servidor (HTTP ${res.status}). Tente novamente.`);
     }
 
     const data = await res.json();
     const finalRoomId = data.roomId || data.tv_roomId || data.RoomId;
     if (!finalRoomId) {
-      throw new Error('Identificador da sala não encontrado na resposta.');
+      throw new Error('Identificador da sala (roomId) não retornado pelo servidor.');
     }
     return { ...data, roomId: finalRoomId };
   } catch (err: unknown) {
     if (err instanceof Error) {
-      // Se for o erro de PIN incorreto ou mensagem tratada, repassa direto
-      if (err.message.includes('PIN incorreto') || err.message.includes('Erro no servidor')) {
+      if (err.message.includes('PIN incorreto') || err.message.includes('Erro no servidor') || err.message.includes('Servidor offline') || err.message.includes('roomId')) {
         throw err;
       }
-      if (err.name === 'AbortError' || err.message.includes('fetch') || err.message.includes('Network')) {
-        throw new Error('Servidor inalcançável. Verifique sua conexão e tente novamente.');
+      if (err.name === 'AbortError') {
+        throw new Error(`Tempo de resposta esgotado. O servidor em ${baseUrl} não respondeu a tempo.`);
+      }
+      if (err.message.includes('fetch') || err.message.includes('Network') || err.message.includes('Failed')) {
+        throw new Error(`Não foi possível conectar ao servidor (${baseUrl}). Verifique se o endereço está correto e se o backend está rodando.`);
       }
       throw err;
     }
-    throw new Error('PIN incorreto. Verifique os dados informados.');
+    throw new Error('Falha ao validar PIN. Verifique os dados informados.');
   }
 }
 

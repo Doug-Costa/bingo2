@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { resolvePin } from '@/services/api';
+import { resolvePin, pingServer } from '@/services/api';
 import { buildBaseUrl, getDefaultIp, getDefaultPort, saveCredentials, getCredentials } from '@/storage/credentials';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { ThemeSelector } from '@/components/theme';
@@ -19,19 +19,34 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
   const { themeId, isBlue } = useAppTheme();
 
   const [pin, setPin] = useState(initialPin);
+  const [serverIp, setServerIp] = useState(getDefaultIp());
+  const [serverPort, setServerPort] = useState(getDefaultPort());
+  const [showServerConfig, setShowServerConfig] = useState(false);
+  const [pingStatus, setPingStatus] = useState<{ testing: boolean; ok?: boolean; message?: string } | null>(null);
+
   const [status, setStatus] = useState<PinStatus>('idle');
+  const [errorTitle, setErrorTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isServerUnreachable, setIsServerUnreachable] = useState(false);
   const [resolvedRoom, setResolvedRoom] = useState<{ roomId: string; roomName: string } | null>(null);
   const [focused, setFocused] = useState(true);
   const [isShaking, setIsShaking] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Carrega PIN salvo anteriormente se houver
+  // Carrega credenciais salvas anteriormente se houver
   useEffect(() => {
     const creds = getCredentials();
-    if (creds?.pin && !initialPin) {
-      setPin(creds.pin);
+    if (creds) {
+      if (creds.pin && !initialPin) {
+        setPin(creds.pin);
+      }
+      if (creds.ip) {
+        setServerIp(creds.ip);
+      }
+      if (creds.port !== undefined) {
+        setServerPort(creds.port);
+      }
     }
   }, [initialPin]);
 
@@ -45,23 +60,34 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
     setTimeout(() => setIsShaking(false), 600);
   }, []);
 
+  const handleTestConnection = async () => {
+    const baseUrl = buildBaseUrl(serverIp.trim() || getDefaultIp(), serverPort.trim());
+    setPingStatus({ testing: true });
+    const res = await pingServer(baseUrl);
+    setPingStatus({ testing: false, ok: res.ok, message: res.message });
+  };
+
   const handleValidatePin = useCallback(
     async (pinToValidate?: string) => {
       const pinValue = (pinToValidate ?? pin).trim();
 
       if (!pinValue) {
         setStatus('error');
+        setErrorTitle('PIN NÃO INFORMADO');
         setErrorMessage('Por favor, informe o PIN do telão.');
+        setIsServerUnreachable(false);
         triggerShake();
         inputRef.current?.focus();
         return;
       }
 
       setStatus('validating');
+      setErrorTitle('');
       setErrorMessage('');
+      setIsServerUnreachable(false);
 
-      const cleanIp = getDefaultIp();
-      const cleanPort = getDefaultPort();
+      const cleanIp = serverIp.trim() || getDefaultIp();
+      const cleanPort = serverPort.trim();
       const baseUrl = buildBaseUrl(cleanIp, cleanPort);
 
       try {
@@ -96,16 +122,31 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
         }, 1100);
       } catch (err: unknown) {
         setStatus('error');
-        const msg =
-          err instanceof Error
-            ? err.message
-            : 'PIN incorreto. O código informado não existe ou expirou.';
-        setErrorMessage(msg);
+        const rawMsg = err instanceof Error ? err.message : 'Falha na validação do PIN.';
+        
+        // Distingue erro de servidor offline / timeout vs PIN incorreto
+        if (
+          rawMsg.includes('Servidor offline') ||
+          rawMsg.includes('Não foi possível conectar') ||
+          rawMsg.includes('Tempo de resposta esgotado') ||
+          rawMsg.includes('522') ||
+          rawMsg.includes('Cloudflare')
+        ) {
+          setErrorTitle('SERVIDOR SEM RESPOSTA');
+          setErrorMessage(rawMsg);
+          setIsServerUnreachable(true);
+          setShowServerConfig(true); // Abre as configurações de servidor para o usuário verificar a URL
+        } else {
+          setErrorTitle('PIN INCORRETO');
+          setErrorMessage(rawMsg);
+          setIsServerUnreachable(false);
+        }
+
         triggerShake();
         inputRef.current?.focus();
       }
     },
-    [pin, themeId, router, onSuccess, triggerShake]
+    [pin, serverIp, serverPort, themeId, router, onSuccess, triggerShake]
   );
 
   const handleKeyPress = (num: string) => {
@@ -329,37 +370,46 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              padding: '12px 18px',
+              padding: '14px 18px',
               borderRadius: 12,
-              backgroundColor: 'rgba(229, 43, 33, 0.16)',
-              border: '1.5px solid #E52B21',
+              backgroundColor: isServerUnreachable ? 'rgba(255, 170, 0, 0.16)' : 'rgba(229, 43, 33, 0.16)',
+              border: `1.5px solid ${isServerUnreachable ? '#FFAA00' : '#E52B21'}`,
               marginBottom: 20,
-              boxShadow: '0 4px 20px rgba(229, 43, 33, 0.25)',
+              boxShadow: isServerUnreachable
+                ? '0 4px 20px rgba(255, 170, 0, 0.25)'
+                : '0 4px 20px rgba(229, 43, 33, 0.25)',
             }}
           >
             <div
               style={{
-                width: 32,
-                height: 32,
+                width: 34,
+                height: 34,
                 borderRadius: '50%',
-                backgroundColor: '#E52B21',
+                backgroundColor: isServerUnreachable ? '#FFAA00' : '#E52B21',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 18,
                 fontWeight: 900,
-                color: '#FFFFFF',
+                color: isServerUnreachable ? '#000000' : '#FFFFFF',
                 flexShrink: 0,
               }}
             >
-              ✕
+              {isServerUnreachable ? '⚠️' : '✕'}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#FF6B6B', textTransform: 'uppercase' }}>
-                PIN INCORRETO
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 900,
+                  color: isServerUnreachable ? '#FFD54F' : '#FF6B6B',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {errorTitle || 'PIN INCORRETO'}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.8)', marginTop: 2 }}>
-                {errorMessage || 'O código informado não existe ou expirou. Verifique e tente novamente.'}
+              <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.85)', marginTop: 2, lineHeight: 1.4 }}>
+                {errorMessage || 'O código informado não existe ou expirou no servidor.'}
               </div>
             </div>
             <button
@@ -556,7 +606,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                   animation: 'bs-spin 700ms linear infinite',
                 }}
               />
-              VALIDANDO PIN...
+              VALIDANDO PIN NO SERVIDOR...
             </>
           ) : status === 'success' ? (
             'CONECTADO COM SUCESSO!'
@@ -565,12 +615,144 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
           )}
         </button>
 
+        {/* Configurações de Servidor (URL / IP e Porta) */}
+        <div
+          style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            paddingTop: 14,
+            marginTop: 8,
+            marginBottom: 14,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+            }}
+            onClick={() => setShowServerConfig((prev) => !prev)}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF' }}>
+                ⚙️ ENDEREÇO DO SERVIDOR (IP / DOMÍNIO)
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  padding: '2px 6px',
+                  borderRadius: 6,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {buildBaseUrl(serverIp, serverPort)}
+              </span>
+            </div>
+            <span style={{ fontSize: 12, color: cyanColor, fontWeight: 700 }}>
+              {showServerConfig ? '▲ Ocultar' : '▼ Alterar'}
+            </span>
+          </div>
+
+          {showServerConfig && (
+            <div
+              style={{
+                marginTop: 12,
+                padding: 14,
+                borderRadius: 12,
+                backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+            >
+              <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ flex: 3 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 4 }}>
+                    IP / URL DO BACKEND
+                  </label>
+                  <input
+                    type="text"
+                    value={serverIp}
+                    onChange={(e) => setServerIp(e.target.value)}
+                    placeholder="https://backend.bingotiopatinhas.com ou http://192.168.1.X"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 4 }}>
+                    PORTA (OPCIONAL)
+                  </label>
+                  <input
+                    type="text"
+                    value={serverPort}
+                    onChange={(e) => setServerPort(e.target.value)}
+                    placeholder="3000"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFFFF',
+                      fontSize: 13,
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={handleTestConnection}
+                  disabled={pingStatus?.testing}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    backgroundColor: 'rgba(0, 229, 255, 0.15)',
+                    border: '1px solid rgba(0, 229, 255, 0.35)',
+                    color: cyanColor,
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: pingStatus?.testing ? 'default' : 'pointer',
+                  }}
+                >
+                  {pingStatus?.testing ? 'Testando Servidor...' : '🔌 Testar Conexão com Servidor'}
+                </button>
+
+                {pingStatus && !pingStatus.testing && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: pingStatus.ok ? '#34D399' : '#FF6B6B',
+                    }}
+                  >
+                    {pingStatus.ok ? '✓ ' : '✕ '} {pingStatus.message}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Seção de Seleção de Temas */}
         <div
           style={{
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            paddingTop: 18,
-            marginTop: 10,
+            paddingTop: 14,
           }}
         >
           <div
