@@ -16,7 +16,8 @@ export interface PinVerificationScreenProps {
 
 export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerificationScreenProps) {
   const router = useRouter();
-  const { themeId, isBlue } = useAppTheme();
+  const { themeId, theme, isBlue } = useAppTheme();
+
 
   const [pin, setPin] = useState(initialPin);
   const [serverIp, setServerIp] = useState(getDefaultIp());
@@ -187,9 +188,10 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
     handleValidatePin('1234');
   };
 
-  const primaryColor = isBlue ? '#087FFC' : '#FFDE38';
-  const glowColor = isBlue ? 'rgba(8, 127, 252, 0.45)' : 'rgba(255, 222, 56, 0.45)';
-  const cyanColor = isBlue ? '#17C8FF' : '#00E5FF';
+  const primaryColor = theme.primary || (isBlue ? '#087FFC' : '#FFDE38');
+  const glowColor = theme.primaryGlow || (isBlue ? 'rgba(8, 127, 252, 0.45)' : 'rgba(255, 222, 56, 0.45)');
+  const cyanColor = theme.secondary || (isBlue ? '#17C8FF' : '#00E5FF');
+  const cardBgColor = theme.panelBg || (isBlue ? 'rgba(3, 17, 48, 0.92)' : 'rgba(6, 10, 40, 0.92)');
 
   return (
     <div
@@ -207,7 +209,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
       <div
         style={{
           width: '100%',
-          backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.92)' : 'rgba(6, 10, 40, 0.92)',
+          backgroundColor: cardBgColor,
           border: `2px solid ${
             status === 'error'
               ? '#E52B21'
@@ -218,6 +220,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               : 'rgba(255, 255, 255, 0.15)'
           }`,
           borderRadius: 24,
+
           padding: '28px 32px',
           boxSizing: 'border-box',
           boxShadow:

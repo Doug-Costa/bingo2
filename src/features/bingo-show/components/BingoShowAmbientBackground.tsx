@@ -84,7 +84,7 @@ export function BingoShowAmbientBackground({
   vignetteStrength = 1,
   accentGlow = false,
 }: BingoShowAmbientBackgroundProps) {
-  const { isBlue } = useAppTheme();
+  const { theme, isBlue } = useAppTheme();
   const isLight = brightness === 'light';
   const spaceSource = isBlue
     ? backdrop === 'blue'
@@ -105,8 +105,12 @@ export function BingoShowAmbientBackground({
   const vignetteLeft = `linear-gradient(to right, rgba(1,2,10,${vl * vignetteStrength}), rgba(1,2,10,0))`;
   const vignetteRight = `linear-gradient(to left, rgba(1,2,10,${vr * vignetteStrength}), rgba(1,2,10,0))`;
 
+  const primaryAccent = theme.primary || '#FFDE38';
+  const secondaryAccent = theme.secondary || '#00E5FF';
+  const bgBaseColor = theme.bgColor || (isBlue ? '#020617' : BingoShowColors.bgDeep);
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: isBlue ? '#020617' : BingoShowColors.bgDeep, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: bgBaseColor, overflow: 'hidden' }}>
       {/* CAMADA 1: Fundo com deriva Ken Burns */}
       <div
         style={{
@@ -133,7 +137,7 @@ export function BingoShowAmbientBackground({
       />
 
 
-      {/* CAMADA 2.5: Halos de cor (ciano + dourado) — opcional, dá riqueza cromática ao fundo */}
+      {/* CAMADA 2.5: Halos de cor dinâmicos do tema — dá riqueza cromática ao fundo */}
       {accentGlow && (
         <>
           <div
@@ -143,7 +147,7 @@ export function BingoShowAmbientBackground({
               left: '-10%',
               width: '60%',
               height: '60%',
-              background: 'radial-gradient(circle, rgba(0,229,255,0.22) 0%, rgba(0,229,255,0) 70%)',
+              background: `radial-gradient(circle, ${secondaryAccent}38 0%, transparent 70%)`,
               pointerEvents: 'none',
             }}
           />
@@ -154,12 +158,13 @@ export function BingoShowAmbientBackground({
               right: '-10%',
               width: '65%',
               height: '65%',
-              background: 'radial-gradient(circle, rgba(255,222,56,0.14) 0%, rgba(255,222,56,0) 70%)',
+              background: `radial-gradient(circle, ${primaryAccent}26 0%, transparent 70%)`,
               pointerEvents: 'none',
             }}
           />
         </>
       )}
+
 
       {/* CAMADA 3: Partículas cintilantes e Confete */}
       {particles && (

@@ -671,9 +671,10 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
   } = useGameSocket();
 
   const { theme: appTheme, themeId } = useAppTheme();
-  const themeKey = themeConfig?.name || themeConfig?.type ? getThemeKey(themeConfig) : themeId;
-  const theme = themeConfig?.name || themeConfig?.type ? resolveTheme(themeConfig) : appTheme;
+  const themeKey = themeId || getThemeKey(themeConfig);
+  const theme = appTheme || resolveTheme(themeConfig);
   const themeName = themeKey;
+
 
 
   // Ordenar TopWinners: minNumbersLeft ASC → targetPrize priority → playerName

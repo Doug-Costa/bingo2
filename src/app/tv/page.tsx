@@ -40,22 +40,21 @@ export default function TvPage() {
 
   return (
     <TvViewport>
-      {/* Seletor Rápido de Temas no Canto Superior */}
+      {/* Seletor Rápido de Temas no Canto Superior (Ícone + Dropdown) */}
       <div
         style={{
           position: 'fixed',
-          top: 10,
-          right: 14,
-          zIndex: 99999,
+          top: 12,
+          right: 16,
+          zIndex: 999999,
           pointerEvents: 'auto',
-          opacity: 0.85,
+          opacity: 0.95,
           transition: 'opacity 200ms ease',
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = '1')}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = '0.85')}
       >
-        <ThemeSelector variant="compact" />
+        <ThemeSelector variant="dropdown" align="right" />
       </div>
+
 
       <TvStage>
         <TvScreenApp credentials={credentials} onLogout={() => router.replace('/config')} />

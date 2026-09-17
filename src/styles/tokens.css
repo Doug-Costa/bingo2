@@ -164,3 +164,106 @@
   --bs-color-border-winner: #34d399;
 }
 
+[data-theme="tema-ouro"],
+[data-theme="tema01"] {
+  --bs-color-primary: #ffd700;
+  --bs-color-primary-light: #fff066;
+  --bs-color-primary-dark: #b8860b;
+  --bs-color-secondary: #ff9900;
+  --bs-color-secondary-light: #ffb833;
+  --bs-color-secondary-dark: #cc7a00;
+
+  --bs-color-bg-deep: #080602;
+  --bs-color-bg-main: #120d04;
+  --bs-color-bg-surface: rgba(45, 30, 7, 0.9);
+  --bs-color-bg-elevated: rgba(64, 42, 10, 0.95);
+
+  --bs-color-glass-bg: rgba(45, 30, 7, 0.45);
+  --bs-color-glass-border: rgba(255, 215, 0, 0.25);
+
+  --bs-color-cyan-neon: #ffb833;
+  --bs-color-green-success: #00e676;
+  --bs-color-red-danger: #ff3b30;
+  --bs-color-gold-glow: rgba(255, 215, 0, 0.55);
+  --bs-color-blue-glow: rgba(255, 153, 0, 0.5);
+
+  --bs-color-text-primary: #fffdf5;
+  --bs-color-text-secondary: #e8d4a2;
+  --bs-color-text-muted: #a89260;
+
+  --bs-color-border-subtle: rgba(184, 134, 11, 0.3);
+  --bs-color-border-regular: rgba(255, 215, 0, 0.6);
+  --bs-color-border-gold: #ffd700;
+  --bs-color-border-blue: #ff9900;
+  --bs-color-border-winner: #00e676;
+}
+
+[data-theme="tema-neon"],
+[data-theme="tema02"] {
+  --bs-color-primary: #e000ff;
+  --bs-color-primary-light: #ff54ff;
+  --bs-color-primary-dark: #9a00b3;
+  --bs-color-secondary: #00f5ff;
+  --bs-color-secondary-light: #70ffff;
+  --bs-color-secondary-dark: #00b4d8;
+
+  --bs-color-bg-deep: #0a0110;
+  --bs-color-bg-main: #13021f;
+  --bs-color-bg-surface: rgba(48, 8, 76, 0.9);
+  --bs-color-bg-elevated: rgba(71, 12, 112, 0.95);
+
+  --bs-color-glass-bg: rgba(48, 8, 76, 0.45);
+  --bs-color-glass-border: rgba(224, 0, 255, 0.3);
+
+  --bs-color-cyan-neon: #00f5ff;
+  --bs-color-green-success: #00ff9d;
+  --bs-color-red-danger: #ff0055;
+  --bs-color-gold-glow: rgba(224, 0, 255, 0.6);
+  --bs-color-blue-glow: rgba(0, 245, 255, 0.6);
+
+  --bs-color-text-primary: #ffffff;
+  --bs-color-text-secondary: #e2b8ff;
+  --bs-color-text-muted: #9b74b8;
+
+  --bs-color-border-subtle: rgba(121, 40, 202, 0.4);
+  --bs-color-border-regular: rgba(224, 0, 255, 0.6);
+  --bs-color-border-gold: #e000ff;
+  --bs-color-border-blue: #00f5ff;
+  --bs-color-border-winner: #00ff9d;
+}
+
+[data-theme="tema-pub"],
+[data-theme="tema03"] {
+  --bs-color-primary: #00b4d8;
+  --bs-color-primary-light: #90e0ef;
+  --bs-color-primary-dark: #0077b6;
+  --bs-color-secondary: #06d6a0;
+  --bs-color-secondary-light: #48e5bd;
+  --bs-color-secondary-dark: #049f75;
+
+  --bs-color-bg-deep: #010b14;
+  --bs-color-bg-main: #031525;
+  --bs-color-bg-surface: rgba(8, 56, 99, 0.9);
+  --bs-color-bg-elevated: rgba(13, 78, 138, 0.95);
+
+  --bs-color-glass-bg: rgba(8, 56, 99, 0.45);
+  --bs-color-glass-border: rgba(0, 180, 216, 0.3);
+
+  --bs-color-cyan-neon: #00b4d8;
+  --bs-color-green-success: #06d6a0;
+  --bs-color-red-danger: #ef476f;
+  --bs-color-gold-glow: rgba(0, 180, 216, 0.55);
+  --bs-color-blue-glow: rgba(6, 214, 160, 0.55);
+
+  --bs-color-text-primary: #ffffff;
+  --bs-color-text-secondary: #caf0f8;
+  --bs-color-text-muted: #6b9080;
+
+  --bs-color-border-subtle: rgba(0, 119, 182, 0.4);
+  --bs-color-border-regular: rgba(0, 180, 216, 0.6);
+  --bs-color-border-gold: #00b4d8;
+  --bs-color-border-blue: #06d6a0;
+  --bs-color-border-winner: #06d6a0;
+}
+
+

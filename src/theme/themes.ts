@@ -608,6 +608,324 @@ export const temaBingoShowBlueTokens: ThemeTokens = {
   zIndex: temaBingoShow.zIndex,
 };
 
+// ─── Tema Ouro Imperial VIP (tema01 / tema-ouro) ─────────────────────────────
+export const temaOuroTokens: ThemeTokens = {
+  bgColor: Colors.temaOuro.backgroundPrimary,
+  panelBg: Colors.temaOuro.surfaceGlass,
+  headerBg: Colors.temaOuro.surfacePrimary,
+  glassBg: 'rgba(45, 30, 7, 0.45)',
+
+  primary: Colors.temaOuro.goldPrimary,
+  primaryGlow: Colors.temaOuro.borderGlow,
+  secondary: Colors.temaOuro.bluePrimary,
+  accent: Colors.temaOuro.goldLight,
+  jackpotText: Colors.temaOuro.goldPrimary,
+
+  ballBg: Colors.temaOuro.goldPrimary,
+  ballText: Colors.temaOuro.textOnGold,
+
+  countdownBg: Colors.temaOuro.backgroundSecondary,
+  countdownText: Colors.temaOuro.goldPrimary,
+
+  borderPrimary: Colors.temaOuro.borderPrimary,
+  borderSecondary: Colors.temaOuro.borderSecondary,
+  borderMuted: Colors.temaOuro.borderGlow,
+
+  textPrimary: Colors.temaOuro.textPrimary,
+  textSecondary: Colors.temaOuro.textSecondary,
+  textMuted: Colors.temaOuro.textMuted,
+
+  success: Colors.temaOuro.success,
+  error: Colors.temaOuro.error,
+
+  gridDrawn: Colors.temaOuro.success,
+  gridCurrent: Colors.temaOuro.goldPrimary,
+  gridEmpty: 'rgba(36, 24, 5, 0.65)',
+
+  meta: {
+    id: 'tema-ouro',
+    name: 'tema-ouro',
+    displayName: 'Ouro Imperial VIP',
+    version: '1.0.0',
+    description: 'Tema de gala com dourado nobre puro, tons âmbar e ambientação de alto luxo',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+
+  colorsExtended: Colors.temaOuro,
+
+  gradients: {
+    mainBackground: ['#120d04', '#080602'],
+    darkBackground: ['#080602', '#000000'],
+    header: ['#241805', 'transparent'],
+    footer: ['transparent', '#080602'],
+    panel: ['#2d1e07', '#120d04'],
+    card: ['#402a0a', '#241805'],
+    buttonPrimary: ['#FFF066', '#FFD700', '#B8860B'],
+    buttonSecondary: ['#FFB833', '#FF9900'],
+    gold: ['#FFF066', '#FFD700', '#B8860B'],
+    blue: ['#FFB833', '#FF9900', '#241805'],
+    focus: ['#FFF066', '#FFD700'],
+    winner: ['#00E676', '#007A3D'],
+    modalOverlay: ['rgba(18,13,4,0.92)', 'rgba(0,0,0,0.96)'],
+  },
+
+  typography: temaBingoShow.typography,
+  spacing: temaBingoShow.spacing,
+  radius: temaBingoShow.radius,
+
+  borders: {
+    thin: { borderWidth: 1, borderColor: '#B8860B' },
+    regular: { borderWidth: 2, borderColor: '#FFD700' },
+    strong: { borderWidth: 3, borderColor: '#FFF066' },
+    focus: { borderWidth: 3, borderColor: '#FFF066' },
+    gold: { borderWidth: 2, borderColor: '#FFD700' },
+    blue: { borderWidth: 2, borderColor: '#FF9900' },
+    glass: { borderWidth: 1.5, borderColor: 'rgba(255, 215, 0, 0.25)' },
+  },
+
+  shadows: {
+    small: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 2 },
+    medium: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+    large: { shadowColor: '#000000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.7, shadowRadius: 12, elevation: 8 },
+    glowGold: { shadowColor: '#FFD700', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    glowBlue: { shadowColor: '#FF9900', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 15, elevation: 10 },
+    winner: { shadowColor: '#00E676', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 20, elevation: 15 },
+    modal: { shadowColor: '#000000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.85, shadowRadius: 24, elevation: 20 },
+  },
+
+  focusState: {
+    focusScale: 1.05,
+    focusOpacity: 1.0,
+    focusBorderColor: '#FFD700',
+    focusBorderWidth: 3,
+    focusBackground: 'rgba(255, 215, 0, 0.2)',
+    focusShadow: { shadowColor: '#FFD700', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 10, elevation: 6 },
+    focusGlow: { shadowColor: '#FFD700', shadowOpacity: 0.85, shadowRadius: 14 },
+    pressedScale: 0.98,
+    disabledOpacity: 0.5,
+  },
+
+  assets: temaBingoShow.assets,
+  ballsConfig: temaBingoShow.ballsConfig,
+  components: temaBingoShow.components,
+  motion: temaBingoShow.motion,
+  zIndex: temaBingoShow.zIndex,
+};
+
+// ─── Tema Cyber Neon (tema02 / tema-neon) ───────────────────────────────────
+export const temaNeonTokens: ThemeTokens = {
+  bgColor: Colors.temaNeon.backgroundPrimary,
+  panelBg: Colors.temaNeon.surfaceGlass,
+  headerBg: Colors.temaNeon.surfacePrimary,
+  glassBg: 'rgba(48, 8, 76, 0.45)',
+
+  primary: Colors.temaNeon.goldPrimary,
+  primaryGlow: Colors.temaNeon.borderGlow,
+  secondary: Colors.temaNeon.blueSecondary,
+  accent: Colors.temaNeon.goldLight,
+  jackpotText: Colors.temaNeon.blueSecondary,
+
+  ballBg: Colors.temaNeon.goldPrimary,
+  ballText: '#FFFFFF',
+
+  countdownBg: Colors.temaNeon.backgroundSecondary,
+  countdownText: Colors.temaNeon.blueSecondary,
+
+  borderPrimary: Colors.temaNeon.borderPrimary,
+  borderSecondary: Colors.temaNeon.borderSecondary,
+  borderMuted: Colors.temaNeon.borderGlow,
+
+  textPrimary: Colors.temaNeon.textPrimary,
+  textSecondary: Colors.temaNeon.textSecondary,
+  textMuted: Colors.temaNeon.textMuted,
+
+  success: Colors.temaNeon.success,
+  error: Colors.temaNeon.error,
+
+  gridDrawn: Colors.temaNeon.success,
+  gridCurrent: Colors.temaNeon.blueSecondary,
+  gridEmpty: 'rgba(38, 5, 59, 0.65)',
+
+  meta: {
+    id: 'tema-neon',
+    name: 'tema-neon',
+    displayName: 'Cyber Neon (Violeta & Magenta)',
+    version: '1.0.0',
+    description: 'Estética cyberpunk futurista com iluminação neon magenta, ultravioleta e ciano elétrico',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+
+  colorsExtended: Colors.temaNeon,
+
+  gradients: {
+    mainBackground: ['#13021f', '#0a0110'],
+    darkBackground: ['#0a0110', '#000000'],
+    header: ['#26053b', 'transparent'],
+    footer: ['transparent', '#0a0110'],
+    panel: ['#30084c', '#13021f'],
+    card: ['#470c70', '#26053b'],
+    buttonPrimary: ['#FF54FF', '#E000FF', '#7928CA'],
+    buttonSecondary: ['#00F5FF', '#00B4D8'],
+    gold: ['#FF54FF', '#E000FF', '#7928CA'],
+    blue: ['#00F5FF', '#7928CA', '#26053b'],
+    focus: ['#00F5FF', '#E000FF'],
+    winner: ['#00FF9D', '#008C53'],
+    modalOverlay: ['rgba(19,2,31,0.92)', 'rgba(0,0,0,0.96)'],
+  },
+
+  typography: temaBingoShow.typography,
+  spacing: temaBingoShow.spacing,
+  radius: temaBingoShow.radius,
+
+  borders: {
+    thin: { borderWidth: 1, borderColor: '#7928CA' },
+    regular: { borderWidth: 2, borderColor: '#E000FF' },
+    strong: { borderWidth: 3, borderColor: '#00F5FF' },
+    focus: { borderWidth: 3, borderColor: '#00F5FF' },
+    gold: { borderWidth: 2, borderColor: '#E000FF' },
+    blue: { borderWidth: 2, borderColor: '#00F5FF' },
+    glass: { borderWidth: 1.5, borderColor: 'rgba(224, 0, 255, 0.3)' },
+  },
+
+  shadows: {
+    small: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 2 },
+    medium: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+    large: { shadowColor: '#000000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.7, shadowRadius: 12, elevation: 8 },
+    glowGold: { shadowColor: '#E000FF', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    glowBlue: { shadowColor: '#00F5FF', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    winner: { shadowColor: '#00FF9D', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 20, elevation: 15 },
+    modal: { shadowColor: '#000000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.85, shadowRadius: 24, elevation: 20 },
+  },
+
+  focusState: {
+    focusScale: 1.05,
+    focusOpacity: 1.0,
+    focusBorderColor: '#00F5FF',
+    focusBorderWidth: 3,
+    focusBackground: 'rgba(0, 245, 255, 0.2)',
+    focusShadow: { shadowColor: '#00F5FF', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 12, elevation: 6 },
+    focusGlow: { shadowColor: '#00F5FF', shadowOpacity: 0.85, shadowRadius: 14 },
+    pressedScale: 0.98,
+    disabledOpacity: 0.5,
+  },
+
+  assets: temaBingoShow.assets,
+  ballsConfig: temaBingoShow.ballsConfig,
+  components: temaBingoShow.components,
+  motion: temaBingoShow.motion,
+  zIndex: temaBingoShow.zIndex,
+};
+
+// ─── Tema Safira PUB (tema03 / tema-pub) ─────────────────────────────────────
+export const temaPubTokens: ThemeTokens = {
+  bgColor: Colors.temaPub.backgroundPrimary,
+  panelBg: Colors.temaPub.surfaceGlass,
+  headerBg: Colors.temaPub.surfacePrimary,
+  glassBg: 'rgba(8, 56, 99, 0.45)',
+
+  primary: Colors.temaPub.goldPrimary,
+  primaryGlow: Colors.temaPub.borderGlow,
+  secondary: Colors.temaPub.blueSecondary,
+  accent: Colors.temaPub.goldLight,
+  jackpotText: Colors.temaPub.blueSecondary,
+
+  ballBg: Colors.temaPub.goldPrimary,
+  ballText: '#FFFFFF',
+
+  countdownBg: Colors.temaPub.backgroundSecondary,
+  countdownText: Colors.temaPub.goldLight,
+
+  borderPrimary: Colors.temaPub.borderPrimary,
+  borderSecondary: Colors.temaPub.borderSecondary,
+  borderMuted: Colors.temaPub.borderGlow,
+
+  textPrimary: Colors.temaPub.textPrimary,
+  textSecondary: Colors.temaPub.textSecondary,
+  textMuted: Colors.temaPub.textMuted,
+
+  success: Colors.temaPub.success,
+  error: Colors.temaPub.error,
+
+  gridDrawn: Colors.temaPub.success,
+  gridCurrent: Colors.temaPub.goldLight,
+  gridEmpty: 'rgba(6, 40, 70, 0.65)',
+
+  meta: {
+    id: 'tema-pub',
+    name: 'tema-pub',
+    displayName: 'Safira PUB (Azul & Esmeralda)',
+    version: '1.0.0',
+    description: 'Ambiente pub e lounge moderno com azul safira noturno e toques em verde esmeralda',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+
+  colorsExtended: Colors.temaPub,
+
+  gradients: {
+    mainBackground: ['#031525', '#010b14'],
+    darkBackground: ['#010b14', '#000000'],
+    header: ['#062846', 'transparent'],
+    footer: ['transparent', '#010b14'],
+    panel: ['#083863', '#031525'],
+    card: ['#0d4e8a', '#062846'],
+    buttonPrimary: ['#90E0EF', '#00B4D8', '#0077B6'],
+    buttonSecondary: ['#06D6A0', '#049F75'],
+    gold: ['#90E0EF', '#00B4D8', '#0077B6'],
+    blue: ['#00B4D8', '#0077B6', '#062846'],
+    focus: ['#06D6A0', '#00B4D8'],
+    winner: ['#06D6A0', '#04805E'],
+    modalOverlay: ['rgba(3,21,37,0.92)', 'rgba(0,0,0,0.96)'],
+  },
+
+  typography: temaBingoShow.typography,
+  spacing: temaBingoShow.spacing,
+  radius: temaBingoShow.radius,
+
+  borders: {
+    thin: { borderWidth: 1, borderColor: '#0077B6' },
+    regular: { borderWidth: 2, borderColor: '#00B4D8' },
+    strong: { borderWidth: 3, borderColor: '#06D6A0' },
+    focus: { borderWidth: 3, borderColor: '#06D6A0' },
+    gold: { borderWidth: 2, borderColor: '#00B4D8' },
+    blue: { borderWidth: 2, borderColor: '#06D6A0' },
+    glass: { borderWidth: 1.5, borderColor: 'rgba(0, 180, 216, 0.3)' },
+  },
+
+  shadows: {
+    small: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 2 },
+    medium: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+    large: { shadowColor: '#000000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.7, shadowRadius: 12, elevation: 8 },
+    glowGold: { shadowColor: '#00B4D8', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    glowBlue: { shadowColor: '#06D6A0', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 16, elevation: 10 },
+    winner: { shadowColor: '#06D6A0', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 20, elevation: 15 },
+    modal: { shadowColor: '#000000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.85, shadowRadius: 24, elevation: 20 },
+  },
+
+  focusState: {
+    focusScale: 1.05,
+    focusOpacity: 1.0,
+    focusBorderColor: '#06D6A0',
+    focusBorderWidth: 3,
+    focusBackground: 'rgba(6, 214, 160, 0.2)',
+    focusShadow: { shadowColor: '#06D6A0', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.85, shadowRadius: 12, elevation: 6 },
+    focusGlow: { shadowColor: '#06D6A0', shadowOpacity: 0.85, shadowRadius: 14 },
+    pressedScale: 0.98,
+    disabledOpacity: 0.5,
+  },
+
+  assets: temaBingoShow.assets,
+  ballsConfig: temaBingoShow.ballsConfig,
+  components: temaBingoShow.components,
+  motion: temaBingoShow.motion,
+  zIndex: temaBingoShow.zIndex,
+};
+
 export interface ThemeOption {
   id: string;
   name: string;
@@ -627,7 +945,7 @@ export const AVAILABLE_THEMES: ThemeOption[] = [
     id: 'bingo-show',
     name: 'bingo-show',
     displayName: 'Bingo Show (Ouro & Espaço)',
-    description: 'Tema clássico oficial com tons dourados nobres e ambientação estelar profunda.',
+    description: 'Tema oficial clássico com tons dourados nobres e ambientação estelar profunda.',
     badge: 'Padrão',
     previewColors: {
       primary: '#ffde38',
@@ -649,10 +967,49 @@ export const AVAILABLE_THEMES: ThemeOption[] = [
       accent: '#FFCF12',
     },
   },
+  {
+    id: 'tema-ouro',
+    name: 'tema-ouro',
+    displayName: 'Ouro Imperial VIP',
+    description: 'Tema de gala com dourado ouro puro, tons âmbar e fundo preto ônix de alto luxo.',
+    badge: 'VIP',
+    previewColors: {
+      primary: '#FFD700',
+      secondary: '#FF9900',
+      background: '#120D04',
+      accent: '#FFF066',
+    },
+  },
+  {
+    id: 'tema-neon',
+    name: 'tema-neon',
+    displayName: 'Cyber Neon (Violeta & Magenta)',
+    description: 'Visual cyberpunk moderno com iluminação magenta neon, ultravioleta e ciano elétrico.',
+    badge: 'Cyber',
+    previewColors: {
+      primary: '#E000FF',
+      secondary: '#7928CA',
+      background: '#13021F',
+      accent: '#00F5FF',
+    },
+  },
+  {
+    id: 'tema-pub',
+    name: 'tema-pub',
+    displayName: 'Safira PUB (Azul & Esmeralda)',
+    description: 'Tema lounge sofisticado em azul safira noturno e toques em verde esmeralda.',
+    badge: 'PUB',
+    previewColors: {
+      primary: '#00B4D8',
+      secondary: '#0077B6',
+      background: '#031525',
+      accent: '#06D6A0',
+    },
+  },
 ];
 
 /**
- * getThemeKey — normaliza a chave do tema.
+ * getThemeKey — normaliza a chave do tema suportando nomes, IDs e aliases legados.
  */
 export function getThemeKey(themeInput?: unknown): string {
   if (!themeInput) return 'bingo-show';
@@ -661,13 +1018,23 @@ export function getThemeKey(themeInput?: unknown): string {
     if (norm.includes('blue') || norm === 'tema-blue' || norm === 'bingo-show-blue') {
       return 'bingo-show-blue';
     }
+    if (norm.includes('ouro') || norm.includes('gold') || norm === 'tema01' || norm === 'tema-ouro') {
+      return 'tema-ouro';
+    }
+    if (norm.includes('neon') || norm.includes('cyber') || norm.includes('ambar') || norm === 'tema02' || norm === 'tema-neon') {
+      return 'tema-neon';
+    }
+    if (norm.includes('pub') || norm.includes('safira') || norm === 'tema03' || norm === 'tema-pub') {
+      return 'tema-pub';
+    }
     return 'bingo-show';
   }
   if (typeof themeInput === 'object' && themeInput !== null) {
     const id = String((themeInput as any).id || (themeInput as any).name || (themeInput as any).type || '').toLowerCase();
-    if (id.includes('blue') || id === 'tema-blue') {
-      return 'bingo-show-blue';
-    }
+    if (id.includes('blue') || id === 'tema-blue') return 'bingo-show-blue';
+    if (id.includes('ouro') || id.includes('gold') || id === 'tema01' || id === 'tema-ouro') return 'tema-ouro';
+    if (id.includes('neon') || id.includes('cyber') || id.includes('ambar') || id === 'tema02' || id === 'tema-neon') return 'tema-neon';
+    if (id.includes('pub') || id.includes('safira') || id === 'tema03' || id === 'tema-pub') return 'tema-pub';
   }
   return 'bingo-show';
 }
@@ -677,10 +1044,19 @@ export function getThemeKey(themeInput?: unknown): string {
  */
 export function resolveTheme(themeInput?: unknown): ThemeTokens {
   const key = getThemeKey(themeInput);
-  if (key === 'bingo-show-blue') {
-    return temaBingoShowBlueTokens;
+  switch (key) {
+    case 'bingo-show-blue':
+      return temaBingoShowBlueTokens;
+    case 'tema-ouro':
+      return temaOuroTokens;
+    case 'tema-neon':
+      return temaNeonTokens;
+    case 'tema-pub':
+      return temaPubTokens;
+    case 'bingo-show':
+    default:
+      return temaBingoShow;
   }
-  return temaBingoShow;
 }
 
 export { temaBingoShowBlue } from './bingo-show-blue';
@@ -713,6 +1089,54 @@ export const TEMA_GRADIENTS = {
     prize3: ['#031130', '#01030d'],
     header: ['#06143a', '#031130'],
   },
+  'tema-ouro': {
+    bg: ['#120d04', '#080602'],
+    ball: ['#FFF066', '#FFD700', '#B8860B'],
+    prize1: ['#FF9900', '#B8860B'],
+    prize2: ['#402a0a', '#241805'],
+    prize3: ['#241805', '#120d04'],
+    header: ['#241805', '#120d04'],
+  },
+  tema01: {
+    bg: ['#120d04', '#080602'],
+    ball: ['#FFF066', '#FFD700', '#B8860B'],
+    prize1: ['#FF9900', '#B8860B'],
+    prize2: ['#402a0a', '#241805'],
+    prize3: ['#241805', '#120d04'],
+    header: ['#241805', '#120d04'],
+  },
+  'tema-neon': {
+    bg: ['#13021f', '#0a0110'],
+    ball: ['#FF54FF', '#E000FF', '#7928CA'],
+    prize1: ['#E000FF', '#7928CA'],
+    prize2: ['#470c70', '#26053b'],
+    prize3: ['#26053b', '#13021f'],
+    header: ['#26053b', '#13021f'],
+  },
+  tema02: {
+    bg: ['#13021f', '#0a0110'],
+    ball: ['#FF54FF', '#E000FF', '#7928CA'],
+    prize1: ['#E000FF', '#7928CA'],
+    prize2: ['#470c70', '#26053b'],
+    prize3: ['#26053b', '#13021f'],
+    header: ['#26053b', '#13021f'],
+  },
+  'tema-pub': {
+    bg: ['#031525', '#010b14'],
+    ball: ['#90E0EF', '#00B4D8', '#0077B6'],
+    prize1: ['#00B4D8', '#0077B6'],
+    prize2: ['#0d4e8a', '#062846'],
+    prize3: ['#062846', '#031525'],
+    header: ['#062846', '#031525'],
+  },
+  tema03: {
+    bg: ['#031525', '#010b14'],
+    ball: ['#90E0EF', '#00B4D8', '#0077B6'],
+    prize1: ['#00B4D8', '#0077B6'],
+    prize2: ['#0d4e8a', '#062846'],
+    prize3: ['#062846', '#031525'],
+    header: ['#062846', '#031525'],
+  },
 } as const;
 
 /** alphaColor — porte 1:1 (sem alteração de lógica/valores). */
@@ -732,5 +1156,6 @@ export function alphaColor(color: string | undefined | null, alphaHex: string = 
   }
   return c;
 }
+
 
 

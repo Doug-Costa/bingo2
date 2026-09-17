@@ -56,6 +56,16 @@ button {
   }
 }
 
+@keyframes bs-dropdown-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 /* Usado por Ball (tvscreen/tema04) na animação de entrada — porte do
    `Animated.spring` + `rotate` do RN (ver components/tvscreen/Ball.tsx). */
