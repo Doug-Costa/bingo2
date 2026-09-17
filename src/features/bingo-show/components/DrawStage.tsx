@@ -54,16 +54,7 @@ const CRESCENT_ARC = [
 // exatamente em `EXIT_TARGET_*` (o centro real do slot 0) em t=1, nunca "de qualquer
 // forma" — o ponto de controle (`EXIT_PEAK_*`) só arqueia o meio do caminho, a chegada é
 // garantida. Ver `FlyingExitBall` abaixo.
-const EXIT_TARGET_X = CRESCENT_ARC[0].left + CRESCENT_ARC[0].size / 2 - STAGE_CENTER;
-const EXIT_TARGET_Y = CRESCENT_ARC[0].top + CRESCENT_ARC[0].size / 2 - STAGE_CENTER;
-const EXIT_TARGET_SCALE = CRESCENT_ARC[0].size / BALL_DIAMETER;
-const EXIT_PEAK_X = EXIT_TARGET_X * 0.5;
-const EXIT_PEAK_Y = EXIT_TARGET_Y / 2 - 75;
 const EXIT_DURATION_MS = 780;
-
-function easeOutCubic(t: number): number {
-  return 1 - (1 - t) ** 3;
-}
 
 export interface DrawStageProps {
   /** Rótulo do cabeçalho do palco. */
@@ -200,134 +191,106 @@ const CrescentBall: React.FC<{
   );
 };
 
-/** Bola do efeito de saída — versão mais leve que o `HeroBall` estático (sem borda
- * grossa/gradiente radial escuro, que ficavam "pesados" encolhendo em movimento rápido):
- * só a textura + um reflexo suave + um glow ciano de rastro, para uma trilha mais bonita. */
-const ExitBall: React.FC<{ number: number }> = ({ number }) => (
-  <div
-    style={{
-      width: '100%',
-      height: '100%',
-      borderRadius: '50%',
-      overflow: 'hidden',
-      position: 'relative',
-      boxShadow: `0 0 26px 6px ${BingoShowColors.cyanNeon}88`,
-    }}
-  >
-    <BingoShowBall
-      number={number}
-      state="drawn"
-      size="current"
-      fontSizeOverride={104}
-      diameterOverride={BALL_DIAMETER}
-      style={{ position: 'absolute', inset: 0 }}
-    />
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '48%',
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.32), rgba(255,255,255,0))',
-        pointerEvents: 'none',
-      }}
-    />
-  </div>
-);
+import { useAppTheme } from '@/contexts/ThemeContext';
 
-/**
- * Bola voando do centro até o slot 0 da meia-lua — trajetória calculada quadro a quadro
- * (`requestAnimationFrame`), aplicada direto no DOM via `ref` (sem re-render do React a
- * cada frame, 60fps suave). A cada frame: `t` avança de 0→1, passa por `easeOutCubic`
- * (saída rápida, chegada suave — "assentando" no lugar, não um corte seco) e alimenta a
- * fórmula da Bézier quadrática (garantia matemática de terminar exatamente no destino).
- */
-const FlyingExitBall: React.FC<{ number: number }> = ({ number }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / EXIT_DURATION_MS);
-      const e = easeOutCubic(t);
-
-      // Bézier quadrática: P(t) = (1-e)²·P0 + 2(1-e)e·P1 + e²·P2 — P0 é o próprio centro
-      // (0,0, a bola já nasce ali), P1 é o ponto de controle (arco), P2 é o destino real.
-      const x = 2 * (1 - e) * e * EXIT_PEAK_X + e * e * EXIT_TARGET_X;
-      const y = 2 * (1 - e) * e * EXIT_PEAK_Y + e * e * EXIT_TARGET_Y;
-      const scale = 1 - (1 - EXIT_TARGET_SCALE) * e;
-      const opacity = t < 0.7 ? 1 : Math.max(0, 1 - (t - 0.7) / 0.3);
-
-      const node = ref.current;
-      if (node) {
-        node.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-        node.style.opacity = String(opacity);
-      }
-
-      if (t < 1) {
-        raf = requestAnimationFrame(tick);
-      }
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+/** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
+const ExitBall: React.FC<{ number: number }> = ({ number }) => {
+  const { theme } = useAppTheme();
+  const cyanColor = theme.secondary || BingoShowColors.cyanNeon;
 
   return (
     <div
-      ref={ref}
+      style={{
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        overflow: 'hidden',
+        position: 'relative',
+        boxShadow: `0 0 26px 6px ${cyanColor}88`,
+      }}
+    >
+      <BingoShowBall
+        number={number}
+        state="drawn"
+        size="current"
+        fontSizeOverride={104}
+        diameterOverride={BALL_DIAMETER}
+        style={{ position: 'absolute', inset: 0 }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '48%',
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.32), rgba(255,255,255,0))',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  );
+};
+
+/** Pílula de informação — mesmo visual do bloco SEQUÊNCIA */
+const InfoPill: React.FC<{ label: string; value: string }> = ({ label, value }) => {
+  const { theme } = useAppTheme();
+  const accentColor = theme.secondary || BingoShowColors.cyanNeon;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: BingoShowSpacing.sm,
+        backgroundColor: 'rgba(2, 5, 20, 0.88)',
+        border: `1.5px solid ${accentColor}66`,
+        paddingTop: 6,
+        paddingBottom: 6,
+        paddingLeft: 18,
+        paddingRight: 18,
+        borderRadius: 14,
+        boxSizing: 'border-box',
+        boxShadow: `0 0 16px ${accentColor}33`,
+      }}
+    >
+      <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1.5 }}>{label}</span>
+      <span
+        style={{
+          color: accentColor,
+          fontSize: 20,
+          fontWeight: 900,
+          letterSpacing: 1,
+          textShadow: `0 0 10px ${accentColor}`,
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+};
+
+
+const FlyingExitBall: React.FC<{ number: number }> = ({ number }) => {
+  return (
+    <div
       style={{
         position: 'absolute',
-        top: STAGE_CENTER - BALL_DIAMETER / 2,
-        left: STAGE_CENTER - BALL_DIAMETER / 2,
-        width: BALL_DIAMETER,
-        height: BALL_DIAMETER,
+        top: '50%',
+        left: '50%',
+        width: 80,
+        height: 80,
+        transform: 'translate(-50%, -50%)',
+        animation: 'bs-ball-exit-flight 700ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+        zIndex: 20,
         pointerEvents: 'none',
-        zIndex: 6,
-        willChange: 'transform, opacity',
       }}
     >
       <ExitBall number={number} />
     </div>
   );
 };
-
-/** Pílula de informação — mesmo visual do bloco SEQUÊNCIA, reaproveitado para o card
- * "BOLAS SORTEADAS" (pedido explícito do usuário). */
-const InfoPill: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: BingoShowSpacing.sm,
-      backgroundColor: 'rgba(2, 5, 20, 0.88)',
-      border: `1.5px solid ${BingoShowColors.cyanNeon}66`,
-      paddingTop: 6,
-      paddingBottom: 6,
-      paddingLeft: 18,
-      paddingRight: 18,
-      borderRadius: 14,
-      boxSizing: 'border-box',
-    }}
-  >
-    <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1.5 }}>{label}</span>
-    <span
-      style={{
-        color: BingoShowColors.cyanNeon,
-        fontSize: 20,
-        fontWeight: 900,
-        letterSpacing: 1,
-        textShadow: `0 0 10px ${BingoShowColors.cyanNeon}`,
-      }}
-    >
-      {value}
-    </span>
-  </div>
-);
 
 interface FlyingBall {
   id: number;
@@ -395,6 +358,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   sequenceNumber,
   style,
 }) => {
+  const { theme } = useAppTheme();
+  const primaryColor = theme.primary || BingoShowColors.primary;
+  const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
+  const glowColor = theme.primaryGlow || 'rgba(0, 229, 255, 0.4)';
+
   const { flyingBalls, displayedNextBalls } = useBallExitEffect(currentNumber, nextBalls);
 
   return (
@@ -404,38 +372,33 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        // `flex-start` (não mais `space-between`): com `space-between` o espaço extra do
-        // container era redistribuído entre os 3 blocos a cada mudança de margem, então
-        // "subir" a bola/sequência via margin negativa não tinha efeito visual confiável.
-        // Em `flex-start` cada bloco empilha exatamente pela sua própria margem — subir
-        // um valor realmente sobe esse tanto na tela.
         justifyContent: 'flex-start',
         boxSizing: 'border-box',
         ...style,
       }}
     >
-      {/* HEADER — agora dentro de um card (pedido explícito do usuário), mesma linguagem
-          visual das pílulas de baixo, só que na cor do título (dourado). */}
+      {/* HEADER — card com a cor primária do tema */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 22 }}>
         <div
           style={{
             backgroundColor: 'rgba(2, 5, 20, 0.88)',
-            border: `1.5px solid ${BingoShowColors.primary}66`,
+            border: `1.5px solid ${primaryColor}66`,
             paddingTop: 6,
             paddingBottom: 6,
             paddingLeft: 22,
             paddingRight: 22,
             borderRadius: 14,
             boxSizing: 'border-box',
+            boxShadow: `0 0 16px ${primaryColor}44`,
           }}
         >
           <span
             style={{
-              color: BingoShowColors.primary,
+              color: primaryColor,
               fontWeight: 900,
               fontSize: 18,
               letterSpacing: 2.5,
-              textShadow: `0 0 9px ${BingoShowColors.primaryDark}`,
+              textShadow: `0 0 10px ${glowColor}`,
             }}
           >
             {title}
@@ -484,23 +447,24 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 cx={SPIN_CENTER}
                 cy={SPIN_CENTER}
                 r={130 * STAGE_SCALE}
-                stroke={BingoShowColors.cyanNeon}
+                stroke={secondaryColor}
                 strokeWidth={2 * STAGE_SCALE}
                 strokeDasharray="14 10"
                 strokeLinecap="round"
                 fill="none"
-                opacity={0.38}
+                opacity={0.45}
               />
             </svg>
           </div>
 
-          {/* Anel interno + bola — sem glow/pulso (removido a pedido do usuário). */}
+          {/* Anel interno + bola */}
           <div
             style={{
               width: RING_INNER_SIZE,
               height: RING_INNER_SIZE,
               borderRadius: '50%',
-              border: '1.5px solid rgba(210, 240, 255, 0.85)',
+              border: `1.5px solid ${secondaryColor}cc`,
+              boxShadow: `0 0 20px ${secondaryColor}33`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -509,6 +473,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               position: 'relative',
             }}
           >
+
             {/* Flash de impacto — só acende quando a bola termina de assentar (delay
                 sincronizado com a duração da entrada abaixo: entrada 1800ms + ~folga). */}
             <div

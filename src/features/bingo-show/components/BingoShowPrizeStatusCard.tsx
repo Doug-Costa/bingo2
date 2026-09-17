@@ -1,10 +1,8 @@
-//src/components/BingoShowPrizeStatusCard.tsx
-
-
 import React from 'react';
 import { BingoShowAssets } from '../assets';
 import { BingoShowIcon, type BingoShowIconName } from './BingoShowIcon';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 export type PrizeRowStatus = 'pending' | 'active' | 'completed';
 
@@ -43,18 +41,32 @@ const PrizeRow: React.FC<{
   status: PrizeRowStatus;
   bgAsset: string;
 }> = ({ label, value, status, bgAsset }) => {
+  const { theme, isBlue } = useAppTheme();
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const statusText = isActive ? 'EM DISPUTA' : isCompleted ? 'CONCLUÍDO' : 'AGUARDANDO';
-  const opacity = isActive ? 1 : 0.45;
+  const opacity = isActive ? 1 : 0.55;
+
+  const activeColor = theme.primary || '#FFDE38';
+  const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
+  const successColor = theme.success || '#00FF88';
+
+  const cardBgStyle = isBlue
+    ? {
+        backgroundColor: isActive ? 'rgba(8, 127, 252, 0.22)' : 'rgba(3, 17, 48, 0.75)',
+        border: `1.5px solid ${isActive ? theme.borderPrimary : 'rgba(25, 117, 210, 0.3)'}`,
+        boxShadow: isActive ? '0 0 20px rgba(8, 127, 252, 0.4)' : 'none',
+      }
+    : {
+        backgroundImage: `url(${bgAsset})`,
+        backgroundSize: '100% 100%',
+      };
 
   const cardContent = (
     <div
       style={{
         width: '100%',
         height: '100%',
-        backgroundImage: `url(${bgAsset})`,
-        backgroundSize: '100% 100%',
         borderRadius: 16,
         padding: '12px 24px',
         boxSizing: 'border-box',
@@ -63,7 +75,8 @@ const PrizeRow: React.FC<{
         alignItems: 'center',
         justifyContent: 'space-between',
         opacity,
-        transition: 'opacity 300ms ease',
+        transition: 'all 300ms ease',
+        ...cardBgStyle,
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -72,7 +85,7 @@ const PrizeRow: React.FC<{
           style={{
             fontSize: 18,
             fontWeight: 800,
-            color: isActive ? BingoShowColors.cyanNeon : isCompleted ? BingoShowColors.greenSuccess : 'rgba(255,255,255,0.6)',
+            color: isActive ? secondaryColor : isCompleted ? successColor : 'rgba(255,255,255,0.6)',
             marginTop: 2,
           }}
         >
@@ -83,20 +96,24 @@ const PrizeRow: React.FC<{
 
       <div
         style={{
-          backgroundImage: `url(${BingoShowAssets.cards.prizeValue})`,
+          backgroundImage: isBlue ? undefined : `url(${BingoShowAssets.cards.prizeValue})`,
+          backgroundColor: isBlue ? 'rgba(0, 0, 0, 0.5)' : undefined,
+          border: isBlue ? `1.5px solid ${activeColor}` : undefined,
+          borderRadius: isBlue ? 12 : undefined,
           backgroundSize: '100% 100%',
           padding: '6px 20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          boxShadow: isBlue && isActive ? `0 0 14px ${activeColor}55` : undefined,
         }}
       >
         <span
           style={{
             fontSize: 26,
             fontWeight: 900,
-            color: isActive ? '#FFDE38' : '#FFFFFF',
-            textShadow: isActive ? '0 0 16px #FF9100' : 'none',
+            color: isActive ? activeColor : '#FFFFFF',
+            textShadow: isActive ? `0 0 16px ${activeColor}` : 'none',
             whiteSpace: 'nowrap',
           }}
         >
@@ -118,45 +135,52 @@ const MetaCard: React.FC<{
   label: string;
   value: string;
   accent: MetaAccent;
-}> = ({ icon, label, value, accent }) => (
-  <div
-    style={{
-      flex: 1,
-      backgroundImage: `url(${BingoShowAssets.cards.metadata})`,
-      backgroundSize: '100% 100%',
-      padding: '12px 20px',
-      boxSizing: 'border-box',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 16,
-      minWidth: 0,
-    }}
-  >
+}> = ({ icon, label, value, accent }) => {
+  const { isBlue, theme } = useAppTheme();
+
+  return (
     <div
       style={{
-        width: 64,
-        height: 64,
-        borderRadius: 16,
-        backgroundColor: accent.soft,
+        flex: 1,
+        backgroundImage: isBlue ? undefined : `url(${BingoShowAssets.cards.metadata})`,
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.85)' : undefined,
+        border: isBlue ? '1px solid rgba(25, 117, 210, 0.4)' : undefined,
+        borderRadius: isBlue ? 14 : undefined,
+        backgroundSize: '100% 100%',
+        padding: '12px 20px',
+        boxSizing: 'border-box',
         display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
+        gap: 16,
+        minWidth: 0,
       }}
     >
-      <BingoShowIcon name={icon} size={36} color={accent.color} transparentBg />
+      <div
+        style={{
+          width: 64,
+          height: 64,
+          borderRadius: 16,
+          backgroundColor: accent.soft,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        <BingoShowIcon name={icon} size={36} color={isBlue ? theme.secondary : accent.color} transparentBg />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+        <span style={{ fontSize: 20, fontWeight: 900, color: isBlue ? theme.secondary : accent.color, letterSpacing: 1.6, textTransform: 'uppercase' }}>
+          {label}
+        </span>
+        <span style={{ fontSize: 26, fontWeight: 900, color: '#FFFFFF', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value}
+        </span>
+      </div>
     </div>
-    <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-      <span style={{ fontSize: 20, fontWeight: 900, color: accent.color, letterSpacing: 1.6, textTransform: 'uppercase' }}>
-        {label}
-      </span>
-      <span style={{ fontSize: 26, fontWeight: 900, color: '#FFFFFF', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {value}
-      </span>
-    </div>
-  </div>
-);
+  );
+};
 
 export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
@@ -174,6 +198,10 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   timeStr = '',
   style,
 }) => {
+  const { theme, isBlue } = useAppTheme();
+  const primaryColor = theme.primary || '#FFDE38';
+  const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
+
   const prizes = [
     { label: '1 LINHA', value: line1Amount, status: line1Status, asset: BingoShowAssets.cards.prize },
     { label: '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
@@ -192,13 +220,17 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
         ...style,
       }}
     >
-      {/* 1. COFRE ACUMULADO HERO CARD (apagado quando a quantidade de bolas ultrapassa triggerBallLimit) */}
+      {/* 1. COFRE ACUMULADO HERO CARD */}
       <div
         style={{
           position: 'relative',
           width: '100%',
           height: 140,
-          backgroundImage: `url(${BingoShowAssets.jackpot.panel})`,
+          backgroundImage: isBlue ? undefined : `url(${BingoShowAssets.jackpot.panel})`,
+          backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : undefined,
+          border: isBlue ? `2px solid ${theme.borderPrimary}` : undefined,
+          borderRadius: isBlue ? 20 : undefined,
+          boxShadow: isBlue ? `0 0 24px rgba(8, 127, 252, 0.4)` : undefined,
           backgroundSize: '100% 100%',
           display: 'flex',
           flexDirection: 'row',
@@ -218,15 +250,15 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
 
         {/* ACCUMULATED AMOUNT */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 0, paddingLeft: 4, paddingRight: 4 }}>
-          <span style={{ fontSize: 20, fontWeight: 900, color: BingoShowColors.cyanNeon, letterSpacing: 2, textTransform: 'uppercase' }}>
+          <span style={{ fontSize: 20, fontWeight: 900, color: secondaryColor, letterSpacing: 2, textTransform: 'uppercase' }}>
             ACUMULADO
           </span>
-          <span style={{ fontSize: 32, fontWeight: 900, color: '#FFDE38', textShadow: '0 0 16px #FF9100', marginTop: 2, whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 32, fontWeight: 900, color: primaryColor, textShadow: `0 0 16px ${primaryColor}`, marginTop: 2, whiteSpace: 'nowrap' }}>
             {accumulatedAmount}
           </span>
         </div>
 
-        {/* 3D STAR WITH TRIGGER BALL (exibido apenas se houver limite real > 0) */}
+        {/* 3D STAR WITH TRIGGER BALL */}
         {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 ? (
           <div
             style={{
@@ -272,3 +304,4 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
 };
 
 export default BingoShowPrizeStatusCard;
+

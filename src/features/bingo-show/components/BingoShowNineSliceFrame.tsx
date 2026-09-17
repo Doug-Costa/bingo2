@@ -1,5 +1,6 @@
 import React from 'react';
 import { BingoShowSpacing } from '../design-system';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 export interface BingoShowNineSliceFrameSpec {
   cornerTL: string;
@@ -41,8 +42,50 @@ export const BingoShowNineSliceFrame: React.FC<BingoShowNineSliceFrameProps> = (
   contentStyle,
   children,
 }) => {
+  const { themeId, theme } = useAppTheme();
   const padVal = BingoShowSpacing[padding] ?? 8;
   const c = displayCorner;
+
+  const isDefaultTheme = themeId === 'bingo-show';
+
+  if (!isDefaultTheme) {
+    const borderColor = theme.borderPrimary || '#087FFC';
+    const glowColor = theme.primaryGlow || 'rgba(8, 127, 252, 0.4)';
+    const bgColor = theme.panelBg || 'rgba(3, 17, 48, 0.92)';
+
+    return (
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          boxSizing: 'border-box',
+          backgroundColor: bgColor,
+          border: `2px solid ${borderColor}`,
+          borderRadius: 20,
+          boxShadow: `0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px ${glowColor}`,
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          overflow: 'hidden',
+          ...style,
+        }}
+      >
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            height: '100%',
+            boxSizing: 'border-box',
+            padding: padVal,
+            ...contentStyle,
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -97,5 +140,6 @@ export const BingoShowNineSliceFrame: React.FC<BingoShowNineSliceFrameProps> = (
     </div>
   );
 };
+
 
 export default BingoShowNineSliceFrame;

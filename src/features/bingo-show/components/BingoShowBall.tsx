@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { BingoShowAssets } from '../assets';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 export type BingoShowBallState = 'default' | 'active' | 'drawn' | 'winner';
 export type BingoShowBallSize = 'sm' | 'md' | 'lg' | 'current';
@@ -29,6 +30,8 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
   diameterOverride,
   style,
 }) => {
+  const { isBlue } = useAppTheme();
+
   const diameter = useMemo(() => {
     if (diameterOverride) return diameterOverride;
     switch (size) {
@@ -71,6 +74,18 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
   const colorGroup = BingoShowAssets.balls[colorName];
 
   const ballTexture = useMemo(() => {
+    if (isBlue) {
+      const stateSuffix =
+        state === 'winner'
+          ? 'winner'
+          : state === 'active'
+          ? 'glow'
+          : state === 'drawn'
+          ? 'selected'
+          : 'default';
+      return `/themes/bingo-show-blue/balls/2x/ball-${colorName}-${stateSuffix}.png`;
+    }
+
     switch (state) {
       case 'winner':
         return colorGroup.winner;
@@ -82,7 +97,7 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
       default:
         return colorGroup.default;
     }
-  }, [colorGroup, state]);
+  }, [colorGroup, state, isBlue, colorName]);
 
   const textColor = getBallTextColor(colorName);
 
@@ -120,3 +135,4 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
 };
 
 export default BingoShowBall;
+

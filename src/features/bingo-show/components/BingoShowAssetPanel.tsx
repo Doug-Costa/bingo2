@@ -2,6 +2,7 @@ import React from 'react';
 import { BingoShowAssets } from '../assets';
 import { BingoShowGlowHalo } from './BingoShowGlowHalo';
 import { BingoShowRadius, BingoShowSpacing } from '../design-system';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 export type BingoShowAssetPanelVariant =
   | 'glass'
@@ -20,6 +21,25 @@ export type BingoShowAssetPanelVariant =
   | 'tableHeader'
   | 'tableRow'
   | 'topWinners';
+
+const BLUE_VARIANT_ASSET: Partial<Record<BingoShowAssetPanelVariant, string>> = {
+  glass: '/themes/bingo-show-blue/panels/panel-glass.png',
+  header: '/themes/bingo-show-blue/panels/panel-header.png',
+  footer: '/themes/bingo-show-blue/panels/panel-footer.png',
+  neon: '/themes/bingo-show-blue/panels/panel-neon.png',
+  dark: '/themes/bingo-show-blue/panels/panel-dark.png',
+  main: '/themes/bingo-show-blue/panels/panel-main.png',
+  modal: '/themes/bingo-show-blue/panels/panel-modal.png',
+  popup: '/themes/bingo-show-blue/panels/panel-popup.png',
+  sidebar: '/themes/bingo-show-blue/panels/panel-sidebar.png',
+  ranking: '/themes/bingo-show-blue/cards/card-ranking.png',
+  prize: '/themes/bingo-show-blue/cards/card-prize.png',
+  jackpot: '/themes/bingo-show-blue/cards/card-jackpot.png',
+  ticket: '/themes/bingo-show-blue/cards/card-ticket.png',
+  tableHeader: '/themes/bingo-show-blue/cards/card-table-header.png',
+  tableRow: '/themes/bingo-show-blue/cards/card-table-row.png',
+  topWinners: '/themes/bingo-show-blue/cards/card-ranking.png',
+};
 
 const VARIANT_ASSET: Record<BingoShowAssetPanelVariant, string> = {
   glass: BingoShowAssets.panels.glass,
@@ -61,9 +81,14 @@ export const BingoShowAssetPanel: React.FC<BingoShowAssetPanelProps> = ({
   contentStyle,
   children,
 }) => {
+  const { themeId, theme } = useAppTheme();
   const padVal = BingoShowSpacing[padding] ?? 12;
   const radVal = BingoShowRadius[radius] ?? 12;
-  const assetUrl = VARIANT_ASSET[variant];
+
+  const isBlueTheme = themeId === 'bingo-show-blue';
+  const assetUrl = (isBlueTheme && BLUE_VARIANT_ASSET[variant])
+    ? BLUE_VARIANT_ASSET[variant]!
+    : (themeId === 'bingo-show' ? VARIANT_ASSET[variant] : undefined);
 
   const content = (
     <div
@@ -73,11 +98,14 @@ export const BingoShowAssetPanel: React.FC<BingoShowAssetPanelProps> = ({
         height: '100%',
         boxSizing: 'border-box',
         borderRadius: radVal,
-        backgroundImage: `url(${assetUrl})`,
+        backgroundColor: assetUrl ? undefined : theme.panelBg,
+        backgroundImage: assetUrl ? `url(${assetUrl})` : undefined,
+        border: !assetUrl ? `2px solid ${theme.borderPrimary}` : undefined,
         backgroundSize: resizeMode === 'stretch' ? '100% 100%' : resizeMode === 'contain' ? 'contain' : 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         overflow: 'hidden',
+        boxShadow: !assetUrl ? `0 8px 32px rgba(0,0,0,0.4)` : undefined,
         ...style,
       }}
     >
@@ -97,7 +125,7 @@ export const BingoShowAssetPanel: React.FC<BingoShowAssetPanelProps> = ({
 
   if (glow) {
     return (
-      <BingoShowGlowHalo color={glow.color} bleed={glow.bleed ?? 14} intensity={glow.intensity ?? 0.4} pulse={glow.pulse ?? false}>
+      <BingoShowGlowHalo color={glow.color || theme.primaryGlow || theme.secondary} bleed={glow.bleed ?? 14} intensity={glow.intensity ?? 0.4} pulse={glow.pulse ?? false}>
         {content}
       </BingoShowGlowHalo>
     );

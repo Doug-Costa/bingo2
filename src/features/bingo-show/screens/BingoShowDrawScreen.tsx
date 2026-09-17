@@ -51,6 +51,8 @@ function toPrizeRowStatus(status: PrizeStatusType): PrizeRowStatus {
   return 'pending';
 }
 
+import { ThemeSelector } from '@/components/theme';
+
 export const BingoShowDrawScreen: React.FC = () => {
   const mock = useBingoShowRealtimeDraw();
   const [soundOn, setSoundOn] = useState(true);
@@ -82,6 +84,7 @@ export const BingoShowDrawScreen: React.FC = () => {
           gap: BingoShowSpacing.sm,
         }}
       >
+        <ThemeSelector variant="dropdown" align="left" />
         <BingoShowTimePill icon="calendar" text={mock.dateStr} glow={false} />
         <BingoShowTimePill icon="clock" text={mock.currentTimeStr} glow={false} />
 

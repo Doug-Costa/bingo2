@@ -2,6 +2,7 @@ import React from 'react';
 import { BingoShowIcon, BingoShowIconName } from './BingoShowIcon';
 import { BingoShowGlowHalo } from './BingoShowGlowHalo';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 export interface BingoShowTimePillProps {
   icon?: BingoShowIconName;
@@ -14,10 +15,13 @@ export interface BingoShowTimePillProps {
 export const BingoShowTimePill: React.FC<BingoShowTimePillProps> = ({
   icon = 'clock',
   text,
-  color = BingoShowColors.cyanNeon,
+  color,
   glow = true,
   style,
 }) => {
+  const { theme } = useAppTheme();
+  const effectiveColor = color || theme.secondary || BingoShowColors.cyanNeon;
+
   const content = (
     <div
       style={{
@@ -25,25 +29,26 @@ export const BingoShowTimePill: React.FC<BingoShowTimePillProps> = ({
         flexDirection: 'row',
         alignItems: 'center',
         gap: BingoShowSpacing.xs,
-        backgroundColor: 'rgba(6, 12, 40, 0.75)',
-        border: `3px solid ${color}`,
+        backgroundColor: theme.panelBg || 'rgba(6, 12, 40, 0.75)',
+        border: `2.5px solid ${effectiveColor}`,
         borderRadius: 40,
         paddingLeft: BingoShowSpacing.md,
         paddingRight: BingoShowSpacing.md,
         paddingTop: BingoShowSpacing.xs,
         paddingBottom: BingoShowSpacing.xs,
         boxSizing: 'border-box',
+        boxShadow: `0 0 12px ${effectiveColor}44`,
         ...style,
       }}
     >
-      <BingoShowIcon name={icon} size={32} color={color} transparentBg />
+      <BingoShowIcon name={icon} size={28} color={effectiveColor} transparentBg />
       <span
         suppressHydrationWarning
         style={{
           fontFamily: 'monospace, sans-serif',
-          fontSize: 28,
+          fontSize: 26,
           fontWeight: 700,
-          color: BingoShowColors.textPrimary,
+          color: theme.textPrimary || BingoShowColors.textPrimary,
           letterSpacing: 2,
         }}
       >
@@ -57,7 +62,7 @@ export const BingoShowTimePill: React.FC<BingoShowTimePillProps> = ({
   }
 
   return (
-    <BingoShowGlowHalo color={color} bleed={28} intensity={0.4} pulseDuration={3200}>
+    <BingoShowGlowHalo color={effectiveColor} bleed={28} intensity={0.4} pulseDuration={3200}>
       {content}
     </BingoShowGlowHalo>
   );
