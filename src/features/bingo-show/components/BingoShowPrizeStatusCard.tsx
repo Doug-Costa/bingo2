@@ -130,6 +130,17 @@ const PrizeRow: React.FC<{
   );
 };
 
+const META_ICONS_PNG: Record<string, string> = {
+  ticket: '/themes/bingo-show-blue/trevo.png',
+  star: '/themes/bingo-show-blue/coracao.png',
+  calendar: '/themes/bingo-show-blue/calendario.png',
+  clock: '/themes/bingo-show-blue/relogio.png',
+  sorteio: '/themes/bingo-show-blue/trevo.png',
+  doacao: '/themes/bingo-show-blue/coracao.png',
+  data: '/themes/bingo-show-blue/calendario.png',
+  hora: '/themes/bingo-show-blue/relogio.png',
+};
+
 const MetaCard: React.FC<{
   icon: BingoShowIconName;
   label: string;
@@ -137,45 +148,51 @@ const MetaCard: React.FC<{
   accent: MetaAccent;
 }> = ({ icon, label, value, accent }) => {
   const { isBlue, theme } = useAppTheme();
+  const pngIcon = isBlue ? META_ICONS_PNG[icon] : undefined;
 
   return (
     <div
       style={{
         flex: 1,
         backgroundImage: isBlue ? undefined : `url(${BingoShowAssets.cards.metadata})`,
-        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.85)' : undefined,
-        border: isBlue ? '1px solid rgba(25, 117, 210, 0.4)' : undefined,
-        borderRadius: isBlue ? 14 : undefined,
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.88)' : undefined,
+        border: isBlue ? '1.5px solid rgba(25, 117, 210, 0.5)' : undefined,
+        borderRadius: 14,
         backgroundSize: '100% 100%',
-        padding: '12px 20px',
+        padding: '8px 14px',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 16,
+        gap: 12,
         minWidth: 0,
+        boxShadow: isBlue ? '0 0 12px rgba(8, 127, 252, 0.2)' : undefined,
       }}
     >
       <div
         style={{
-          width: 64,
-          height: 64,
-          borderRadius: 16,
-          backgroundColor: accent.soft,
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          backgroundColor: isBlue ? 'rgba(8, 127, 252, 0.15)' : accent.soft,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
         }}
       >
-        <BingoShowIcon name={icon} size={36} color={isBlue ? theme.secondary : accent.color} transparentBg />
+        {pngIcon ? (
+          <img src={pngIcon} alt={label} style={{ width: 30, height: 30, objectFit: 'contain' }} />
+        ) : (
+          <BingoShowIcon name={icon} size={28} color={isBlue ? theme.secondary : accent.color} transparentBg />
+        )}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-        <span style={{ fontSize: 20, fontWeight: 900, color: isBlue ? theme.secondary : accent.color, letterSpacing: 1.6, textTransform: 'uppercase' }}>
+        <span style={{ fontSize: 13, fontWeight: 900, color: isBlue ? '#8FD9FF' : accent.color, letterSpacing: 1.2, textTransform: 'uppercase' }}>
           {label}
         </span>
-        <span style={{ fontSize: 26, fontWeight: 900, color: '#FFFFFF', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {value}
+        <span style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value || '---'}
         </span>
       </div>
     </div>
@@ -203,9 +220,9 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 
   const prizes = [
-    { label: '1 LINHA', value: line1Amount, status: line1Status, asset: BingoShowAssets.cards.prize },
-    { label: '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
-    { label: 'BINGO', value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? 'PRÊMIO 1' : '1 LINHA', value: line1Amount, status: line1Status, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? 'PRÊMIO 2' : '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? 'PRÊMIO 3' : 'BINGO', value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
   ];
 
   return (

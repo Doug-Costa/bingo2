@@ -65,8 +65,8 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
   const colorName = useMemo<BingoShowBallColorName>(() => {
     if (state === 'winner') return 'gold';
     if (number <= 18) return 'blue';
-    if (number <= 36) return 'green';
-    if (number <= 54) return 'red';
+    if (number <= 36) return 'red';
+    if (number <= 54) return 'green';
     if (number <= 72) return 'yellow';
     return 'purple';
   }, [number, state]);
@@ -75,14 +75,15 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
 
   const ballTexture = useMemo(() => {
     if (isBlue) {
+      if (state === 'default') {
+        return `/themes/bingo-show-blue/balls/2x/ball-silver-default.png`;
+      }
       const stateSuffix =
         state === 'winner'
           ? 'winner'
           : state === 'active'
           ? 'glow'
-          : state === 'drawn'
-          ? 'selected'
-          : 'default';
+          : 'selected';
       return `/themes/bingo-show-blue/balls/2x/ball-${colorName}-${stateSuffix}.png`;
     }
 
@@ -99,7 +100,12 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
     }
   }, [colorGroup, state, isBlue, colorName]);
 
-  const textColor = getBallTextColor(colorName);
+  const textColor = useMemo(() => {
+    if (state === 'default') {
+      return '#0A193C';
+    }
+    return getBallTextColor(colorName);
+  }, [state, colorName]);
 
   return (
     <div

@@ -49,27 +49,24 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         ...style,
       }}
     >
-      {/* HEADER */}
+      {/* HEADER: 🍀 ÚLTIMOS NÚMEROS SORTEADOS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, position: 'relative', marginTop: -2, marginBottom: 8 }}>
-        {isBlueTheme ? (
-          <span style={{ fontSize: 20, color: theme.primary }}>★</span>
-        ) : null}
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
         <span
           style={{
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: 900,
-            color: theme.primary || '#FFDE38',
-            textShadow: `0 0 16px ${theme.primaryGlow || 'rgba(255, 222, 56, 0.7)'}`,
-            letterSpacing: 4,
+            color: '#FFCF12',
+            textShadow: `0 0 14px rgba(255, 207, 18, 0.7)`,
+            letterSpacing: 3,
             textTransform: 'uppercase',
             textAlign: 'center',
+            fontFamily: 'Barlow Condensed, sans-serif',
           }}
         >
-          {isBlueTheme ? 'NÚMEROS SORTEADOS' : '• ÚLTIMOS NÚMEROS SORTEADOS •'}
+          ÚLTIMOS NÚMEROS SORTEADOS
         </span>
-        {isBlueTheme ? (
-          <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
-        ) : null}
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
       {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) */}
@@ -78,15 +75,14 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
           flex: 1,
           display: 'grid',
           gridTemplateColumns: 'repeat(18, 1fr)',
-          gridTemplateRows: 'repeat(5, 42px)',
+          gridTemplateRows: 'repeat(5, 38px)',
           rowGap: 6,
           columnGap: 4,
           alignItems: 'center',
           justifyItems: 'center',
           alignContent: 'center',
           justifyContent: 'center',
-          marginTop: -22,
-          padding: '8px 24px 8px 24px',
+          padding: '4px 16px 8px 16px',
         }}
       >
         {ALL_90_NUMBERS.map((num) => {
@@ -104,13 +100,13 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
               number={num}
               state={ballState}
               size="sm"
-              diameterOverride={38}
-              fontSizeOverride={16}
+              diameterOverride={34}
+              fontSizeOverride={15}
               style={{
-                opacity: isDrawn ? 1 : 0.22,
-                filter: isDrawn ? 'brightness(1.1) saturate(1.05)' : 'grayscale(0.55) brightness(0.45)',
-                transform: isLatest ? 'scale(1.2)' : 'scale(1)',
-                transition: 'transform 200ms ease-out, opacity 350ms ease-out, filter 350ms ease-out',
+                opacity: 1,
+                filter: isDrawn ? 'drop-shadow(0 0 6px rgba(23, 200, 255, 0.8))' : 'none',
+                transform: isLatest ? 'scale(1.25)' : 'scale(1)',
+                transition: 'transform 200ms ease-out, filter 350ms ease-out',
                 animation: animationName,
               }}
             />

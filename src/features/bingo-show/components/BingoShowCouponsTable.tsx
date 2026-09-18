@@ -35,20 +35,20 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            height: 64,
-            borderBottom: `2px solid ${theme.secondary || BingoShowColors.cyanNeon}66`,
-            marginBottom: 8,
+            height: 48,
+            borderBottom: `2px solid rgba(23, 200, 255, 0.4)`,
+            marginBottom: 6,
             paddingLeft: 8,
             paddingRight: 8,
           }}
         >
-          <span style={{ width: '28%', fontSize: 22, fontWeight: 900, color: theme.secondary || BingoShowColors.cyanNeon, letterSpacing: 2 }}>CUPOM</span>
-          <span style={{ width: '40%', fontSize: 22, fontWeight: 900, color: theme.secondary || BingoShowColors.cyanNeon, letterSpacing: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>DOADOR</span>
-          <span style={{ width: '32%', fontSize: 22, fontWeight: 900, color: theme.secondary || BingoShowColors.cyanNeon, letterSpacing: 2, textAlign: 'center' }}>FALTAM</span>
+          <span style={{ width: '26%', fontSize: 18, fontWeight: 900, color: '#E52B21', letterSpacing: 1.5 }}>CUPOM</span>
+          <span style={{ width: '42%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>DOADOR</span>
+          <span style={{ width: '32%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, textAlign: 'center' }}>FALTAM</span>
         </div>
 
         {/* ROWS */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: 3 }}>
           {rows.map((row, idx) => {
             const hasData = row.coupon !== '---';
             const missing = row.missing || [];
@@ -59,48 +59,45 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  height: 48,
-                  paddingLeft: 8,
-                  paddingRight: 8,
-                  backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.04)' : 'transparent',
-                  borderRadius: 12,
+                  height: 38,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 10,
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  boxSizing: 'border-box',
                 }}
               >
                 {/* CUPOM */}
-                <div style={{ width: '28%' }}>
+                <div style={{ width: '26%' }}>
                   {hasData ? (
                     <span
                       style={{
-                        backgroundColor: '#FFFFFF',
-                        color: '#000000',
-                        fontSize: 20,
+                        color: '#E52B21',
+                        fontSize: 16,
                         fontWeight: 900,
-                        borderRadius: 20,
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        paddingTop: 2,
-                        paddingBottom: 2,
-                        display: 'inline-block',
-                        boxShadow: `0 2px 8px rgba(0,0,0,0.4)`,
+                        letterSpacing: 0.5,
+                        fontFamily: 'monospace, sans-serif',
                       }}
                     >
                       {row.coupon}
                     </span>
                   ) : (
-                    <span style={{ color: theme.textMuted || BingoShowColors.textMuted, fontSize: 20 }}>---</span>
+                    <span style={{ color: '#94A3B8', fontSize: 16, fontWeight: 700 }}>---</span>
                   )}
                 </div>
 
                 {/* DOADOR */}
                 <span
                   style={{
-                    width: '40%',
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: hasData ? (theme.textPrimary || BingoShowColors.textPrimary) : (theme.textMuted || BingoShowColors.textMuted),
+                    width: '42%',
+                    fontSize: 15,
+                    fontWeight: 800,
+                    color: '#0F172A',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
                   }}
                 >
                   {row.donor}
@@ -115,17 +112,18 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
                         <div
                           key={slotIdx}
                           style={{
-                            width: 30,
-                            height: 30,
+                            width: 24,
+                            height: 24,
                             borderRadius: '50%',
-                            backgroundColor: theme.primary || BingoShowColors.primary,
-                            color: '#000000',
-                            fontSize: 16,
+                            backgroundColor: '#0F172A',
+                            border: '1.5px solid #FFCF12',
+                            color: '#FFCF12',
+                            fontSize: 12,
                             fontWeight: 900,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: `0 0 8px ${theme.primaryGlow || 'rgba(255,222,56,0.6)'}`,
+                            boxShadow: '0 0 6px rgba(255, 207, 18, 0.4)',
                           }}
                         >
                           {val}
@@ -136,11 +134,11 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
                       <div
                         key={slotIdx}
                         style={{
-                          width: 30,
-                          height: 30,
+                          width: 24,
+                          height: 24,
                           borderRadius: '50%',
-                          border: `2px solid ${theme.borderSecondary || BingoShowColors.borderSubtle}`,
-                          backgroundColor: 'rgba(255,255,255,0.05)',
+                          border: '1.5px solid #CBD5E1',
+                          backgroundColor: '#F8FAFC',
                         }}
                       />
                     );

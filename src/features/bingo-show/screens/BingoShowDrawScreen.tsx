@@ -71,46 +71,123 @@ export const BingoShowDrawScreen: React.FC = () => {
 
   const screenBody = (
     <div style={{ width: '100%', height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-      {/* META ROW */}
+      {/* TOP HEADER ROW */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-end',
-          paddingLeft: BingoShowSpacing.xs,
-          paddingRight: BingoShowSpacing.xs,
-          paddingBottom: BingoShowSpacing.xs,
-          gap: BingoShowSpacing.sm,
+          justifyContent: 'space-between',
+          paddingLeft: 8,
+          paddingRight: 8,
+          paddingBottom: 8,
+          height: 68,
+          boxSizing: 'border-box',
+          width: '100%',
         }}
       >
-        <ThemeSelector variant="dropdown" align="left" />
-        <BingoShowTimePill icon="calendar" text={mock.dateStr} glow={false} />
-        <BingoShowTimePill icon="clock" text={mock.currentTimeStr} glow={false} />
-
-        {/* Sound button — 30×30/ícone-16, igual ao original. */}
-        <div
-          onClick={() => setSoundOn((prev) => !prev)}
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 15,
-            backgroundColor: soundOn ? 'rgba(255, 222, 56, 0.16)' : 'rgba(255, 255, 255, 0.06)',
-            borderColor: soundOn ? 'rgba(255, 222, 56, 0.5)' : BingoShowColors.borderSubtle,
-            borderWidth: 1,
-            borderStyle: 'solid',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxSizing: 'border-box',
-          }}
-        >
-          <BingoShowIcon
-            name={soundOn ? 'sound' : 'speaker-off'}
-            size={16}
-            color={soundOn ? BingoShowColors.primary : BingoShowColors.textMuted}
+        {/* LEFT: 3D LOGO */}
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 220 }}>
+          <img
+            src="/themes/bingo-show-blue/logos/logo-main.png"
+            alt="BINGO SHOW"
+            style={{
+              height: 52,
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
+            }}
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = 'none';
+            }}
           />
+        </div>
+
+        {/* CENTER: BINGO AO VIVO */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <span style={{ color: '#FFCF12', fontSize: 22, textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }}>★</span>
+            <span
+              style={{
+                color: '#FFCF12',
+                fontSize: 32,
+                fontWeight: 900,
+                letterSpacing: 3,
+                textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)',
+                fontFamily: 'Barlow Condensed, sans-serif',
+                textTransform: 'uppercase',
+              }}
+            >
+              BINGO AO VIVO
+            </span>
+            <span style={{ color: '#FFCF12', fontSize: 22, textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }}>★</span>
+          </div>
+          <span
+            style={{
+              color: '#FFDE38',
+              fontSize: 13,
+              fontWeight: 900,
+              letterSpacing: 3,
+              textShadow: '0 0 8px rgba(255, 222, 56, 0.6)',
+              textTransform: 'uppercase',
+              marginTop: -4,
+            }}
+          >
+            ★ SUA SORTE, NOSSO BINGO! ★
+          </span>
+        </div>
+
+        {/* RIGHT: THEME SELECTOR + DATE/TIME PILL + SOUND */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, minWidth: 220, justifyContent: 'flex-end' }}>
+          <ThemeSelector variant="dropdown" align="left" />
+
+          {/* Integrated Date & Time pill [📅 28/07/2026 | 15:40:25] */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: 'rgba(3, 17, 48, 0.88)',
+              border: '1.5px solid rgba(25, 117, 210, 0.6)',
+              borderRadius: 20,
+              padding: '6px 14px',
+              boxShadow: '0 0 14px rgba(8, 127, 252, 0.3)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <img src="/themes/bingo-show-blue/calendario.png" alt="calendário" style={{ width: 18, height: 18, objectFit: 'contain' }} />
+            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.dateStr || '28/07/2026'}</span>
+            <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 700 }}>|</span>
+            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.currentTimeStr}</span>
+          </div>
+
+          {/* Sound button — Circular Blue Speaker */}
+          <div
+            onClick={() => setSoundOn((prev) => !prev)}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: soundOn ? '#087FFC' : 'rgba(3, 17, 48, 0.88)',
+              borderColor: soundOn ? '#17C8FF' : 'rgba(25, 117, 210, 0.5)',
+              borderWidth: 1.5,
+              borderStyle: 'solid',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxSizing: 'border-box',
+              boxShadow: soundOn ? '0 0 14px rgba(23, 200, 255, 0.6)' : 'none',
+              transition: 'all 200ms ease',
+            }}
+          >
+            <BingoShowIcon
+              name={soundOn ? 'sound' : 'speaker-off'}
+              size={18}
+              color="#FFFFFF"
+              transparentBg
+            />
+          </div>
         </div>
       </div>
 
@@ -144,6 +221,7 @@ export const BingoShowDrawScreen: React.FC = () => {
                   currentNumber={mock.currentBall}
                   nextBalls={last3Balls}
                   sequenceNumber={mock.drawnBalls.length}
+                  countdownSeconds={mock.nextNumberCountdownSeconds || 30}
                 />
               </div>
             </div>

@@ -351,19 +351,37 @@ function useBallExitEffect(
   return { flyingBalls, displayedNextBalls };
 }
 
+export interface DrawStageProps {
+  /** Rótulo do cabeçalho do palco. */
+  title?: string;
+  /** Número sendo exibido no centro do palco agora. */
+  currentNumber: number;
+  /** Números que ainda vão sair, exibidos na lateral (ordem de exibição). */
+  nextBalls?: number[];
+  /** Nº de sequência da bola atual dentro da rodada (derivado de `drawnBalls.length`). */
+  sequenceNumber?: number;
+  /** Segundos para o próximo número. */
+  countdownSeconds?: number;
+  style?: React.CSSProperties;
+}
+
 export const DrawStage: React.FC<DrawStageProps> = ({
   title = 'NÚMERO SORTEADO',
   currentNumber,
   nextBalls = [],
   sequenceNumber,
+  countdownSeconds = 30,
   style,
 }) => {
-  const { theme } = useAppTheme();
-  const primaryColor = theme.primary || BingoShowColors.primary;
-  const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
-  const glowColor = theme.primaryGlow || 'rgba(0, 229, 255, 0.4)';
+  const { theme, isBlue } = useAppTheme();
+  const primaryColor = theme.primary || '#FFCF12';
+  const secondaryColor = theme.secondary || '#17C8FF';
+  const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
 
   const { flyingBalls, displayedNextBalls } = useBallExitEffect(currentNumber, nextBalls);
+
+  // Formata o contador regressivo em 00:SS
+  const timerStr = `00:${String(countdownSeconds).padStart(2, '0')}`;
 
   return (
     <div
@@ -372,201 +390,287 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : theme.panelBg,
+        border: `2px solid ${isBlue ? '#087FFC' : theme.borderPrimary}`,
+        borderRadius: 24,
+        padding: '14px 20px',
         boxSizing: 'border-box',
+        boxShadow: `0 0 24px rgba(8, 127, 252, 0.35)`,
+        position: 'relative',
+        overflow: 'hidden',
         ...style,
       }}
     >
-      {/* HEADER — card com a cor primária do tema */}
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 22 }}>
-        <div
-          style={{
-            backgroundColor: 'rgba(2, 5, 20, 0.88)',
-            border: `1.5px solid ${primaryColor}66`,
-            paddingTop: 6,
-            paddingBottom: 6,
-            paddingLeft: 22,
-            paddingRight: 22,
-            borderRadius: 14,
-            boxSizing: 'border-box',
-            boxShadow: `0 0 16px ${primaryColor}44`,
-          }}
-        >
+      {/* 1. HEADER ROW: ★ NÚMERO SORTEADO ★ (center) + PRÓXIMOS NÚMEROS (right) */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          paddingLeft: 40,
+        }}
+      >
+        {/* CENTER TITLE */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <span style={{ color: '#FFCF12', fontSize: 18 }}>★</span>
           <span
             style={{
-              color: primaryColor,
+              color: '#FFCF12',
               fontWeight: 900,
-              fontSize: 18,
-              letterSpacing: 2.5,
-              textShadow: `0 0 10px ${glowColor}`,
+              fontSize: 22,
+              letterSpacing: 3,
+              textShadow: `0 0 14px ${glowColor}`,
+              fontFamily: 'Barlow Condensed, sans-serif',
+              textTransform: 'uppercase',
             }}
           >
             {title}
           </span>
+          <span style={{ color: '#FFCF12', fontSize: 18 }}>★</span>
+        </div>
+
+        {/* RIGHT SUB-TITLE */}
+        <div style={{ width: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span
+            style={{
+              color: '#FFFFFF',
+              fontSize: 12,
+              fontWeight: 900,
+              letterSpacing: 1.2,
+              textTransform: 'uppercase',
+              textAlign: 'center',
+              lineHeight: 1.1,
+              opacity: 0.9,
+            }}
+          >
+            PRÓXIMOS<br />NÚMEROS
+          </span>
         </div>
       </div>
 
-      {/* STAGE BODY — anel giratório + bola central + meia-lua */}
+      {/* 2. CENTER STAGE: RADIAL RAY RING + HERO NUMBER + VERTICAL 3-BALL STACK */}
       <div
         style={{
+          flex: 1,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
           position: 'relative',
-          marginTop: 95,
-          marginBottom: BingoShowSpacing.xs,
+          gap: 24,
         }}
       >
+        {/* MAIN BALL AREA (with radial light rays & dotted LED ring) */}
         <div
           style={{
-            width: STAGE_WRAP_SIZE,
-            height: STAGE_WRAP_SIZE,
+            position: 'relative',
+            width: 260,
+            height: 260,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            position: 'relative',
-            transform: `translateX(${STAGE_SHIFT_X}px)`,
           }}
         >
-          {/* Anel externo — único traço segmentado, giro lento contínuo. */}
+          {/* Radial Light Rays Background */}
           <div
             style={{
               position: 'absolute',
-              width: SPIN_RING_BOX,
-              height: SPIN_RING_BOX,
-              top: -(SPIN_RING_BOX - STAGE_WRAP_SIZE) / 2,
-              left: -(SPIN_RING_BOX - STAGE_WRAP_SIZE) / 2,
-              animation: 'bs-spin 9s linear infinite',
+              inset: -30,
+              background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
               pointerEvents: 'none',
+              borderRadius: '50%',
+            }}
+          />
+
+          {/* Dotted LED Glowing Ring */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '2.5px solid #17C8FF',
+              boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <svg width={SPIN_RING_BOX} height={SPIN_RING_BOX} viewBox={`0 0 ${SPIN_RING_BOX} ${SPIN_RING_BOX}`}>
+            {/* SVG LED Dots perimeter */}
+            <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
               <circle
-                cx={SPIN_CENTER}
-                cy={SPIN_CENTER}
-                r={130 * STAGE_SCALE}
-                stroke={secondaryColor}
-                strokeWidth={2 * STAGE_SCALE}
-                strokeDasharray="14 10"
+                cx="130"
+                cy="130"
+                r="118"
+                stroke="#FFFFFF"
+                strokeWidth="4"
+                strokeDasharray="4 14"
                 strokeLinecap="round"
                 fill="none"
-                opacity={0.45}
+                opacity={0.85}
               />
             </svg>
           </div>
 
-          {/* Anel interno + bola */}
+          {/* Main 3D Hero Number */}
           <div
+            key={currentNumber}
             style={{
-              width: RING_INNER_SIZE,
-              height: RING_INNER_SIZE,
-              borderRadius: '50%',
-              border: `1.5px solid ${secondaryColor}cc`,
-              boxShadow: `0 0 20px ${secondaryColor}33`,
+              position: 'relative',
+              zIndex: 10,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'transparent',
-              boxSizing: 'border-box',
-              position: 'relative',
+              animation: 'bs-hero-ball-enter 900ms ease-out both',
             }}
           >
-
-            {/* Flash de impacto — só acende quando a bola termina de assentar (delay
-                sincronizado com a duração da entrada abaixo: entrada 1800ms + ~folga). */}
-            <div
-              key={`impact-${currentNumber}`}
+            <span
               style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: BALL_DIAMETER,
-                height: BALL_DIAMETER,
-                marginLeft: -BALL_DIAMETER / 2,
-                marginTop: -BALL_DIAMETER / 2,
-                borderRadius: '50%',
-                backgroundColor: `${BingoShowColors.cyanNeon}55`,
-                animation: 'bs-ball-impact-flash 380ms ease-out 1560ms both',
-                pointerEvents: 'none',
-              }}
-            />
-            {/* `key` reinicia a animação de entrada a cada troca de número — porte do
-                `useEffect` que reseta scale/opacity a cada `currentNumber` no original.
-                Entrada: nasce gigante e deslocada, girando forte, e diminui/gira menos até
-                encaixar na posição/tamanho final, com um leve assentamento no fim. `linear`
-                (não `ease-out`) — a curva de desaceleração já vem da forma do keyframe; com
-                `ease-out` por cima, o trecho final (já quase parado) esticava no tempo e
-                dava sensação de pausa antes de assentar de vez. Duração 1800ms (era 2800ms,
-                depois 2300ms — acelerada de novo a pedido do usuário). `zIndex: 10` (era 2,
-                menor que o zIndex das bolas da meia-lua mais recentes — CRESCENT_ARC[0] tem
-                zIndex 3) — por isso a bola da meia-lua "vazava" por cima da bola central
-                durante a entrada, dando a impressão de que ela não era sólida.
-                Segunda animação encadeada (`bs-hero-ball-pulse`, delay = duração da
-                entrada): assim que a bola assenta, pulsa 3x (não infinito) e para, parada
-                até a próxima bola trocar via `key` — pedido explícito do usuário.
-                `forwards` (não `both`) no pulso: com `both`, o preenchimento "backwards"
-                durante os 1800ms de delay tomaria prioridade sobre a transform da entrada
-                (mesma propriedade, animação listada depois = maior prioridade quando "em
-                efeito" — e `both`/`backwards` conta como em efeito mesmo durante o delay),
-                travando a bola em scale(1) a entrada inteira. `forwards` só assume depois
-                que o delay termina, sem interferir antes. */}
-            <div
-              key={currentNumber}
-              style={{
-                position: 'relative',
-                zIndex: 10,
-                animation: 'bs-hero-ball-enter 1800ms linear both, bs-hero-ball-pulse 480ms ease-in-out 1800ms 3 forwards',
+                fontSize: 120,
+                fontWeight: 900,
+                color: '#FFFFFF',
+                textShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
+                fontFamily: 'Barlow Condensed, sans-serif',
+                lineHeight: 1,
+                userSelect: 'none',
               }}
             >
-              <HeroBall number={currentNumber} />
+              {currentNumber > 0 ? currentNumber : '--'}
+            </span>
+          </div>
+        </div>
+
+        {/* VERTICAL NEXT BALLS (3 recent / upcoming balls stack on right) */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+            width: 80,
+            zIndex: 15,
+          }}
+        >
+          {displayedNextBalls.slice(0, 3).map((num, idx) => (
+            <div
+              key={`${num}-${idx}`}
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                transition: 'all 300ms ease',
+              }}
+            >
+              <BingoShowBall
+                number={num}
+                state="drawn"
+                size="lg"
+                diameterOverride={58}
+                fontSizeOverride={24}
+              />
             </div>
-          </div>
-
-          {/* Meia-lua — 3 últimas bolas, fora do anel. `nextBalls[0]` = mais recente.
-              Usa `displayedNextBalls` (com delay), não o `nextBalls` cru — só reflete a
-              bola nova quando o efeito de saída já chegou. */}
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            {displayedNextBalls.slice(0, 3).map((num, idx) => {
-              const step = (CRESCENT_ARC[idx] ?? CRESCENT_ARC[CRESCENT_ARC.length - 1])!;
-              return (
-                <div
-                  key={`${num}-${idx}`}
-                  style={{
-                    position: 'absolute',
-                    top: step.top,
-                    left: step.left,
-                    opacity: step.opacity,
-                    zIndex: CRESCENT_ARC.length - idx,
-                  }}
-                >
-                  <CrescentBall
-                    number={num}
-                    state={idx === 2 ? 'default' : 'drawn'}
-                    size={step.size}
-                    fontSize={step.fontSize}
-                    glow={step.glow}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Bola voando do centro até a meia-lua — efeito de saída da bola sorteada. */}
-          {flyingBalls.map((fb) => (
-            <FlyingExitBall key={fb.id} number={fb.number} />
+          ))}
+          {/* Fallback empty slots if less than 3 */}
+          {Array.from({ length: Math.max(0, 3 - displayedNextBalls.length) }).map((_, i) => (
+            <div
+              key={`empty-${i}`}
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: '50%',
+                border: '2px dashed rgba(25, 117, 210, 0.4)',
+                backgroundColor: 'rgba(255,255,255,0.03)',
+              }}
+            />
           ))}
         </div>
+
+        {/* Flying ball exit effect */}
+        {flyingBalls.map((fb) => (
+          <FlyingExitBall key={fb.id} number={fb.number} />
+        ))}
       </div>
 
-      {/* Bloco SEQUÊNCIA — sem glow pulsante (removido a pedido do usuário), sempre
-          abaixo do palco/bola central, com um respiro claro entre os dois. */}
-      {sequenceNumber !== undefined ? (
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 30 }}>
-          <InfoPill label="SEQUÊNCIA" value={`${sequenceNumber}ª BOLA`} />
+      {/* 3. LOWER STAGE: HOURGLASS + COUNTDOWN (left) & 3D BINGO CAGE (right) */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          paddingLeft: 12,
+          paddingRight: 12,
+          paddingTop: 6,
+          borderTop: '1px solid rgba(25, 117, 210, 0.4)',
+        }}
+      >
+        {/* LEFT: 3D HOURGLASS + COUNTDOWN */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <img
+            src="/themes/bingo-show-blue/relogio_areia.png"
+            alt="Ampulheta"
+            style={{
+              height: 54,
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 8px rgba(255, 207, 18, 0.5))',
+            }}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span
+              style={{
+                color: '#FFFFFF',
+                fontSize: 12,
+                fontWeight: 900,
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+                opacity: 0.9,
+              }}
+            >
+              PRÓXIMO NÚMERO EM
+            </span>
+            <span
+              style={{
+                color: '#FFCF12',
+                fontSize: 32,
+                fontWeight: 900,
+                letterSpacing: 2,
+                fontFamily: 'Barlow Condensed, monospace, sans-serif',
+                textShadow: '0 0 14px rgba(255, 207, 18, 0.8)',
+                lineHeight: 1,
+                marginTop: 2,
+              }}
+            >
+              {timerStr}
+            </span>
+          </div>
         </div>
-      ) : null}
+
+        {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
+          <img
+            src="/themes/bingo-show-blue/bingo-cage.jpg"
+            alt="Globo de Bingo 3D"
+            style={{
+              height: 80,
+              borderRadius: 12,
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 10px rgba(8, 127, 252, 0.5))',
+            }}
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = 'none';
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
