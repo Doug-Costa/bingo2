@@ -19,7 +19,22 @@ export const viewport: Viewport = {
   themeColor: '#060A14',
 };
 
+import { Barlow_Condensed, Inter } from 'next/font/google';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800', '900'],
+  variable: '--font-barlow-condensed',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export default function RootLayout({
   children,
@@ -27,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${barlowCondensed.variable} ${inter.variable}`}>
       <body>
         <ThemeProvider>
           <PwaRegister />

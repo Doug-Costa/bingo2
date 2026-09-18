@@ -4,6 +4,8 @@
 
 :root,
 html[data-theme="blue"],
+html[data-theme="bingo-show-blue"],
+[data-theme="bingo-show-blue"],
 .theme-bingo-show-blue {
   /* Cores de Fundo e Superfície */
   --bg-page: #020617;

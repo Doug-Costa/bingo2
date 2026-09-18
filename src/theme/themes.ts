@@ -508,7 +508,7 @@ export const temaBingoShowBlueTokens: ThemeTokens = {
   gridEmpty: 'rgba(3, 17, 48, 0.6)',
 
   meta: {
-    id: 'theme-bingo-show-blue',
+    id: 'bingo-show-blue',
     name: 'bingo-show-blue',
     displayName: 'Bingo Show Blue',
     version: '1.0.0',

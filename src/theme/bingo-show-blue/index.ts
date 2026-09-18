@@ -7,6 +7,7 @@ export * from "./types";
 export * from "./assets";
 export * from "./colors";
 export * from "./typography";
+export * from "./components";
 
 export const temaBingoShowBlue: ThemeTokens = {
   id: "bingo-show-blue",

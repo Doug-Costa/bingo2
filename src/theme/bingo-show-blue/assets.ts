@@ -1,6 +1,6 @@
 import { ThemeAssets } from "./types";
 
-export function createBingoShowAssets(basePath = "/themes/bingo-show"): ThemeAssets {
+export function createBingoShowAssets(basePath = "/themes/bingo-show-blue"): ThemeAssets {
   return {
     basePath,
     backgrounds: {
