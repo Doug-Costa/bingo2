@@ -489,44 +489,19 @@
 .clockStageWrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 28px;
   width: 100%;
   margin: 6px 0 10px;
   position: relative;
-  padding: 0 12px;
-  box-sizing: border-box;
-}
-
-.clockSideSlot {
-  width: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.clockDigitsWrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
 }
 
 .decoHourglass {
-  width: 115px;
-  height: 115px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
   filter: drop-shadow(0 0 16px rgba(0, 213, 255, 0.6));
   animation: floatLeft 4s ease-in-out infinite alternate;
-}
-
-.decoClover {
-  width: 115px;
-  height: 115px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.6));
-  animation: floatRight 4s ease-in-out infinite alternate;
 }
 
 .clockDigits {

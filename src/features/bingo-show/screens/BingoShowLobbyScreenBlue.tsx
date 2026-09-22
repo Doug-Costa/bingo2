@@ -254,36 +254,17 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
           </div>
 
-          {/* Palco do Relógio com Slots Laterais 3D Simétricos e Relógio Perfeitamente Centralizado */}
+          {/* Palco do Relógio com Ampulheta 3D e Timer Perfeitamente Centralizado */}
           <div className={styles.clockStageWrapper}>
-            {/* Slot Esquerdo: Ampulheta 3D */}
-            <div className={styles.clockSideSlot}>
-              <Image
-                src="/themes/bingo-show/assets/icons/relogio_areia.png"
-                alt="Ampulheta 3D"
-                width={115}
-                height={115}
-                className={styles.decoHourglass}
-                priority
-              />
-            </div>
-
-            {/* Dígitos Gigantes do Relógio (Centro Rigoroso) */}
-            <div className={styles.clockDigitsWrapper}>
-              <div className={styles.clockDigits}>{formattedCountdown}</div>
-            </div>
-
-            {/* Slot Direito: Globo de Bingo 3D / Trevo (Simétrico ao Slot Esquerdo) */}
-            <div className={styles.clockSideSlot}>
-              <Image
-                src="/themes/bingo-show/assets/icons/globo-bingo.png"
-                alt="Globo de Bingo 3D"
-                width={115}
-                height={115}
-                className={styles.decoClover}
-                priority
-              />
-            </div>
+            <Image
+              src="/themes/bingo-show/assets/icons/relogio_areia.png"
+              alt="Ampulheta 3D"
+              width={110}
+              height={110}
+              className={styles.decoHourglass}
+              priority
+            />
+            <div className={styles.clockDigits}>{formattedCountdown}</div>
           </div>
         </div>
 
