@@ -26,18 +26,19 @@
    1. HEADER OFICIAL (Topo)
    ============================================================================= */
 .header {
+  /* Wrapper estrutural apenas (grid/flex do topo) - sem painel visual proprio.
+     Bordas/glow ficam individualmente nas pills, no acumulado especial e no logo. */
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 92px;
-  padding: 0 24px;
-  border-radius: 20px;
-  background: rgba(9, 32, 78, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 2px solid var(--primary-blue-hover, #17C8FF);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px var(--shadow-glow-blue, rgba(0, 213, 255, 0.45)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 16px rgba(8, 127, 252, 0.2);
+  padding: 0 4px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
   box-sizing: border-box;
   flex-shrink: 0;
 }
