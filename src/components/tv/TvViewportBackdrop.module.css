@@ -1,0 +1,36 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--backdrop-from, #020617) 0%, var(--backdrop-to, #01030d) 100%);
+}
+
+/* Halo suave no centro, ecoando o glow interno do palco para a margem nao
+   parecer um fundo diferente colado atras. */
+.glow {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(ellipse at center, var(--backdrop-glow, rgba(23, 200, 255, 0.5)) 0%, transparent 60%);
+  opacity: 0.12;
+}
+
+/* Pontinhos de "estrelas" bem esparsos e discretos - decoracao pura, nunca
+   deve ser confundido com conteudo/UI solta. */
+.specks {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1.4px);
+  background-size: 120px 120px;
+  background-position: 20px 30px;
+}
+
+/* Vinheta: escurece as bordas externas para dar profundidade e ajudar o
+   palco (mais claro) a se destacar no centro. */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+}

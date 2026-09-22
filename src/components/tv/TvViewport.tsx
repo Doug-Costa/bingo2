@@ -9,6 +9,7 @@ import {
   TvStageContext,
   type TvViewportContextValue,
 } from './TvStageContext';
+import { TvViewportBackdrop } from './TvViewportBackdrop';
 import styles from './TvViewport.module.css';
 
 export interface TvViewportProps {
@@ -28,8 +29,10 @@ export interface TvViewportProps {
  *   disponibilizar isso (junto com as dimensões reais) via contexto para
  *   `TvStage` e `ViewportDebugger`.
  *
- * Não desenha o palco em si — só mede e provê contexto. Quem centraliza e
- * escala o conteúdo 1920×1080 é o `TvStage`.
+ * Não desenha o palco em si (quem centraliza e escala o conteúdo 1920×1080 é
+ * o `TvStage`) — apenas mede, provê contexto, e renderiza o
+ * `TvViewportBackdrop` atrás do palco para preencher a margem quando a
+ * janela não é 16:9.
  */
 export function TvViewport({ children }: TvViewportProps) {
   const [ref, size] = useElementSize<HTMLDivElement>();
@@ -38,11 +41,10 @@ export function TvViewport({ children }: TvViewportProps) {
     const { width, height } = size;
     const w = width > 0 ? width : typeof window !== 'undefined' ? window.innerWidth : 1920;
     const h = height > 0 ? height : typeof window !== 'undefined' ? window.innerHeight : 1080;
-    // cover (nao contain): preenche 100% da janela mesmo fora de 16:9 — sem
-    // letterbox nem particulas de fundo vazando pra fora do palco visivel.
-    // O leve corte de borda em proporcoes muito diferentes de 16:9 e aceitavel
-    // porque telas de TV reais sao sempre 16:9.
-    const scale = Math.max(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT);
+    // contain (nao cover): o palco 1920x1080 fica sempre 100% visivel, sem
+    // cortar cabecalho/rodape em janelas fora de 16:9. A sobra de espaco nos
+    // eixos vira margem, preenchida pelo TvViewportBackdrop (nao barras pretas).
+    const scale = Math.min(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT);
 
     return {
       viewportWidth: w,
@@ -55,6 +57,7 @@ export function TvViewport({ children }: TvViewportProps) {
 
   return (
     <div ref={ref} className={styles.viewport}>
+      <TvViewportBackdrop />
       <TvStageContext.Provider value={contextValue}>{children}</TvStageContext.Provider>
     </div>
   );
