@@ -38,7 +38,11 @@ export function TvViewport({ children }: TvViewportProps) {
     const { width, height } = size;
     const w = width > 0 ? width : typeof window !== 'undefined' ? window.innerWidth : 1920;
     const h = height > 0 ? height : typeof window !== 'undefined' ? window.innerHeight : 1080;
-    const scale = Math.min(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT);
+    // cover (nao contain): preenche 100% da janela mesmo fora de 16:9 — sem
+    // letterbox nem particulas de fundo vazando pra fora do palco visivel.
+    // O leve corte de borda em proporcoes muito diferentes de 16:9 e aceitavel
+    // porque telas de TV reais sao sempre 16:9.
+    const scale = Math.max(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT);
 
     return {
       viewportWidth: w,
