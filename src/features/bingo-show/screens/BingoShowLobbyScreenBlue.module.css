@@ -18,13 +18,18 @@
   max-width: 1920px;
   max-height: 1080px;
   margin: 0 auto;
-  padding: 16px 24px 20px;
+  /* Calibracao geometrica: cabecalho(158) + gap(12) + corpo(flex, ~sobra) +
+     gap(12) + secao inferior(altura automatica pela proporcao real do
+     panel-footer.png em largura total) + padding(16+16) = 1080px logicos -
+     o corpo usa flex:1 para absorver a sobra, entao a soma nunca estoura
+     nem sobra, independente de ajustes finos nos outros dois. */
+  padding: 16px 24px 16px;
   box-sizing: border-box;
   overflow: hidden;
   user-select: none;
   position: relative;
   z-index: 10;
-  gap: 14px;
+  gap: 12px;
 }
 
 /* =============================================================================
@@ -37,7 +42,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 92px;
+  height: 158px;
   padding: 0 4px;
   border: none;
   border-radius: 0;
@@ -211,11 +216,33 @@
    ============================================================================= */
 .mainBody {
   display: grid;
-  grid-template-columns: 460px 1fr 480px;
-  gap: 20px;
+  /* Proporcao visual da referencia (~24% / 51% / 24%): fr em vez de px fixo
+     para a coluna central dominar de fato e as laterais ficarem parelhas. */
+  grid-template-columns: minmax(0, 24fr) minmax(0, 51fr) minmax(0, 24fr);
+  gap: 22px;
   flex: 1;
   min-height: 0;
   width: 100%;
+}
+
+/* =============================================================================
+   2.1 SEÇÃO INFERIOR (banner navy vazio previsto pelo projeto, mesmo asset
+   ja usado pelo tema Default para esta area: panel-footer.png)
+   ============================================================================= */
+.bottomSection {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Altura automatica pela proporcao intrinseca real do asset (2400x227) em
+   largura total do palco - largura corresponde a area util (sem "gutters"
+   pretos laterais que a combinacao altura-fixa + object-fit:contain
+   produziria) e sem cortar nada (ao contrario de object-fit:cover). */
+.bottomSectionImage {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* =============================================================================
@@ -457,26 +484,20 @@
 /* =============================================================================
    4. COLUNA CENTRAL (Relógio Neon + 3D Assets + Acumulado)
    ============================================================================= */
+/* Painel central unico: titulo/subtitulo (auto), palco do relogio (linha
+   flexivel, ocupa a sobra) e acumulado (auto) - tudo dentro do MESMO fundo/
+   borda/glow, em vez do acumulado ser uma caixa separada abaixo do painel. */
 .centerColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  justify-content: space-between;
-}
-
-.centerHeroBox {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
   border-radius: 20px;
   background: rgba(9, 32, 78, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 2px solid var(--primary-blue-hover, #17C8FF);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 34px var(--shadow-glow-blue, rgba(0, 213, 255, 0.5)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 20px rgba(8, 127, 252, 0.2);
-  padding: 24px 20px;
+  padding: 22px 26px 20px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -486,28 +507,66 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 14px;
 }
 
 .centerDrawNumberTitle {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 34px;
+  font-size: 58px;
+  line-height: 1;
   font-weight: 900;
-  letter-spacing: 2.5px;
-  color: var(--accent-gold, #FFCF12);
+  letter-spacing: 0.015em;
   margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   text-transform: uppercase;
-  text-shadow: 0 0 16px rgba(255, 207, 18, 0.7);
+  /* Mesmo principio de ouro metalico do contador (.clockDigits), com um
+     pouco mais de contraste no traco/contorno por ser um titulo maior. */
+  background: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  background-size: 100% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(60, 30, 0, 0.7);
+  filter:
+    drop-shadow(0 2px 0 #fff2a6)
+    drop-shadow(0 4px 0 #9b5d00)
+    drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 18px rgba(255, 207, 18, 0.35));
+  animation: goldReflectionShift 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .centerDrawNumberTitle {
+    animation: none;
+  }
 }
 
 .centerSubTitle {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 22px;
+  font-size: 34px;
   font-weight: 800;
-  letter-spacing: 3.5px;
-  color: var(--text-secondary, #AEBBD8);
+  letter-spacing: 0.035em;
+  color: #39eaff;
+  text-shadow: 0 0 12px rgba(57, 234, 255, 0.55);
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: 6px;
+  white-space: nowrap;
 }
 
 .clockStageWrapper {
@@ -515,14 +574,13 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin: 6px 0 10px;
   position: relative;
   padding: 0 4px;
   box-sizing: border-box;
 }
 
 .clockSideSlot {
-  width: 200px;
+  width: 252px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -550,16 +608,16 @@
 }
 
 .decoHourglass {
-  width: 150px;
-  height: 150px;
+  width: 210px;
+  height: 226px;
   object-fit: contain;
   filter: drop-shadow(0 0 18px rgba(0, 213, 255, 0.6));
   animation: floatLeft 4s ease-in-out infinite alternate;
 }
 
 .decoGlobeGif {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   object-fit: contain;
   filter: drop-shadow(0 0 22px rgba(0, 213, 255, 0.7));
   animation: floatRight 4s ease-in-out infinite alternate;
@@ -570,10 +628,10 @@
   z-index: 1;
   display: inline-block;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 132px;
+  font-size: 140px;
   font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: 4px;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
   /* Faixas de luz abruptas simulando reflexo de metal polido (evita look "plastico" de degrade liso) */
   background: linear-gradient(
     180deg,
@@ -608,62 +666,127 @@
   }
 }
 
-.centerJackpotPill {
+/* Acumulado interno do painel central: mesma familia visual do painel (azul
+   profundo + contorno azul luminoso), nao mais um cartao preto/dourado
+   destacado. Bau grande a esquerda, texto+valor ao centro, estrela grande a
+   direita - peso visual comparavel entre bau e estrela. */
+.centerAccumulatedBanner {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 84px;
-  padding: 0 24px;
+  gap: 18px;
+  min-height: 128px;
+  padding: 10px 26px;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255, 207, 18, 0.08) 0%, rgba(4, 15, 42, 0.8) 60%, rgba(255, 207, 18, 0.04) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 2px solid var(--accent-gold, #FFCF12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px var(--shadow-gold, rgba(255, 207, 18, 0.45)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 16px rgba(255, 207, 18, 0.18);
+  overflow: hidden;
   box-sizing: border-box;
+  border: 2px solid rgba(100, 166, 255, 0.9);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(79, 157, 255, 0.30), transparent 58%),
+    linear-gradient(180deg, rgba(29, 75, 157, 0.96) 0%, rgba(13, 43, 105, 0.98) 52%, rgba(7, 25, 70, 1) 100%);
+  box-shadow:
+    0 0 12px rgba(60, 149, 255, 0.52),
+    0 0 28px rgba(34, 94, 220, 0.30),
+    inset 0 2px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -16px 24px rgba(0, 0, 0, 0.24);
 }
 
-.centerChestSmall {
-  width: 72px;
-  height: 54px;
+.centerAccumulatedChest {
+  width: 140px;
+  height: 86px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.8));
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 14px rgba(255, 207, 18, 0.75)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
   animation: pulseChest 2.5s ease-in-out infinite alternate;
 }
 
-.centerJackpotLabelGroup {
+.centerAccumulatedTextGroup {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
 }
 
-.centerJackpotLabel {
+.centerAccumulatedLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
-  letter-spacing: 2px;
-  color: var(--primary-blue-hover, #17C8FF);
-  text-shadow: 0 0 10px rgba(23, 200, 255, 0.6);
+  letter-spacing: 3px;
+  color: #eaf6ff;
+  text-shadow: 0 0 10px rgba(57, 234, 255, 0.55);
   text-transform: uppercase;
 }
 
-.centerJackpotValue {
+.centerAccumulatedValue {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 38px;
   font-weight: 900;
-  letter-spacing: 1px;
-  color: #FFFFFF;
-  text-shadow: 0 0 16px rgba(255, 207, 18, 0.8);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  /* Mesmo padrao metalico do contador (faixas abruptas em vez de degrade
+     liso), estatico aqui - o valor nao precisa da animacao de reflexo. */
+  background: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(111, 62, 0, 0.55);
+  filter:
+    drop-shadow(0 1px 0 #fff2a6)
+    drop-shadow(0 2px 0 #9b5d00)
+    drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45));
+}
+
+.centerAccumulatedStarBadge {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerAccumulatedStarNumber {
+  position: relative;
+  z-index: 2;
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  color: #1A0D00;
+  margin-top: 4px;
 }
 
 /* =============================================================================
    5. COLUNA DIREITA (Cards de Premiação 1ª Linha, 2ª Linha, Bingo com 3D Coins)
    ============================================================================= */
 .rightColumn {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  justify-content: space-between;
+  min-height: 0;
 }
 
 /* Painel premium de game show: multiplas camadas (radial superior + radial

@@ -260,77 +260,83 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
   // =========================================================================
   // 3. RENDER COLUNA CENTRAL (Contador Regressivo & Acumulado)
   // =========================================================================
+  // Painel central unico: titulo/subtitulo, palco do relogio (ampulheta +
+  // contador + globo) e o acumulado ficam todos dentro do MESMO container
+  // visual (borda/glow/fundo do .centerColumn), em vez do acumulado ser uma
+  // caixa preta/dourada separada abaixo do painel.
   const renderCenterColumn = () => {
     return (
       <main className={styles.centerColumn}>
-        {/* Bloco Central do Relógio com Glassmorphism e Glow Neon */}
-        <div className={styles.centerHeroBox}>
-          {/* Títulos do Topo */}
-          <div className={styles.centerTitlesGroup}>
-            <h1 className={styles.centerDrawNumberTitle}>
-              {mock.drawNumber || 'SORTEIO EM BREVE'}
-            </h1>
-            <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
+        {/* Títulos do Topo */}
+        <div className={styles.centerTitlesGroup}>
+          <h1 className={styles.centerDrawNumberTitle}>
+            {mock.drawNumber || 'SORTEIO EM BREVE'}
+          </h1>
+          <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
+        </div>
+
+        {/* Palco do Relógio com Ampulheta 3D, Timer Central e Globo de Bingo GIF em Tamanho Destaque */}
+        <div className={styles.clockStageWrapper}>
+          {/* Slot Esquerdo: Ampulheta 3D */}
+          <div className={styles.clockSideSlot}>
+            <Image
+              src="/themes/bingo-show/assets/icons/relogio_areia.png"
+              alt="Ampulheta 3D"
+              width={210}
+              height={226}
+              className={styles.decoHourglass}
+              priority
+            />
           </div>
 
-          {/* Palco do Relógio com Ampulheta 3D, Timer Central e Globo de Bingo GIF em Tamanho Destaque */}
-          <div className={styles.clockStageWrapper}>
-            {/* Slot Esquerdo: Ampulheta 3D */}
-            <div className={styles.clockSideSlot}>
-              <Image
-                src="/themes/bingo-show/assets/icons/relogio_areia.png"
-                alt="Ampulheta 3D"
-                width={150}
-                height={150}
-                className={styles.decoHourglass}
-                priority
-              />
-            </div>
+          {/* Dígitos Gigantes do Relógio (Centro Rigoroso) */}
+          <div className={styles.clockDigitsWrapper}>
+            <div className={styles.clockDigits}>{formattedCountdown}</div>
+          </div>
 
-            {/* Dígitos Gigantes do Relógio (Centro Rigoroso) */}
-            <div className={styles.clockDigitsWrapper}>
-              <div className={styles.clockDigits}>{formattedCountdown}</div>
-            </div>
-
-            {/* Slot Direito: Globo de Bingo Animado GIF (Tamanho Grande de Destaque) */}
-            <div className={styles.clockSideSlot}>
-              <Image
-                src="/themes/bingo-show-blue/globo-bingo.gif"
-                alt="Globo de Bingo Animado 3D"
-                width={200}
-                height={200}
-                className={styles.decoGlobeGif}
-                unoptimized
-                priority
-              />
-            </div>
+          {/* Slot Direito: Globo de Bingo Animado GIF (Tamanho Grande de Destaque) */}
+          <div className={styles.clockSideSlot}>
+            <Image
+              src="/themes/bingo-show-blue/globo-bingo.gif"
+              alt="Globo de Bingo Animado 3D"
+              width={250}
+              height={250}
+              className={styles.decoGlobeGif}
+              unoptimized
+              priority
+            />
           </div>
         </div>
 
-        {/* Rodapé Central: Pill Horizontal de Acumulado com Baú 3D */}
-        <div className={styles.centerJackpotPill}>
+        {/* Acumulado — agora vive dentro do painel central (mesma borda/glow) */}
+        <div className={styles.centerAccumulatedBanner}>
           <Image
             src="/themes/bingo-show/assets/icons/bau-ouro.png"
             alt="Baú Acumulado 3D"
-            width={72}
-            height={54}
-            className={styles.centerChestSmall}
+            width={140}
+            height={86}
+            className={styles.centerAccumulatedChest}
           />
 
-          <div className={styles.centerJackpotLabelGroup}>
-            <span className={styles.centerJackpotLabel}>ACUMULADO</span>
-            <span className={styles.centerJackpotValue}>{mock.accumulatedPrize}</span>
+          <div className={styles.centerAccumulatedTextGroup}>
+            <span className={styles.centerAccumulatedLabel}>ACUMULADO</span>
+            <span
+              className={styles.centerAccumulatedValue}
+              style={{ fontSize: getPrizeAmountFontSize(mock.accumulatedPrize) }}
+            >
+              {mock.accumulatedPrize}
+            </span>
           </div>
 
-          <div className={styles.starBadge}>
+          <div className={styles.centerAccumulatedStarBadge}>
             <Image
               src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
               alt="Estrela Limite"
-              width={48}
-              height={48}
+              width={108}
+              height={108}
               className={styles.starBgImage}
             />
-            <span className={styles.starNumber}>{mock.triggerBallLimit || 45}</span>
+            <span className={styles.centerAccumulatedStarNumber}>{mock.triggerBallLimit || 45}</span>
           </div>
         </div>
       </main>
@@ -417,6 +423,16 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {renderLeftColumn()}
           {renderCenterColumn()}
           {renderRightColumn()}
+        </div>
+        <div className={styles.bottomSection}>
+          <Image
+            src="/themes/bingo-show-blue/panels/panel-footer.png"
+            alt=""
+            aria-hidden="true"
+            width={2400}
+            height={227}
+            className={styles.bottomSectionImage}
+          />
         </div>
       </div>
     </BingoShowAmbientBackground>
