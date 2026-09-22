@@ -493,12 +493,12 @@
   width: 100%;
   margin: 6px 0 10px;
   position: relative;
-  padding: 0 6px;
+  padding: 0 4px;
   box-sizing: border-box;
 }
 
 .clockSideSlot {
-  width: 155px;
+  width: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -514,18 +514,18 @@
 }
 
 .decoHourglass {
-  width: 130px;
-  height: 130px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(0, 213, 255, 0.6));
+  filter: drop-shadow(0 0 18px rgba(0, 213, 255, 0.6));
   animation: floatLeft 4s ease-in-out infinite alternate;
 }
 
 .decoGlobeGif {
-  width: 155px;
-  height: 155px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
-  filter: drop-shadow(0 0 18px rgba(0, 213, 255, 0.65));
+  filter: drop-shadow(0 0 22px rgba(0, 213, 255, 0.7));
   animation: floatRight 4s ease-in-out infinite alternate;
 }
 

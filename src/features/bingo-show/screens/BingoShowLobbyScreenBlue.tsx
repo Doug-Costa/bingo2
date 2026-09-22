@@ -254,15 +254,15 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
           </div>
 
-          {/* Palco do Relógio com Ampulheta 3D, Timer Central e Globo de Bingo GIF em Tamanho Maior */}
+          {/* Palco do Relógio com Ampulheta 3D, Timer Central e Globo de Bingo GIF em Tamanho Destaque */}
           <div className={styles.clockStageWrapper}>
             {/* Slot Esquerdo: Ampulheta 3D */}
             <div className={styles.clockSideSlot}>
               <Image
                 src="/themes/bingo-show/assets/icons/relogio_areia.png"
                 alt="Ampulheta 3D"
-                width={130}
-                height={130}
+                width={150}
+                height={150}
                 className={styles.decoHourglass}
                 priority
               />
@@ -273,13 +273,13 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               <div className={styles.clockDigits}>{formattedCountdown}</div>
             </div>
 
-            {/* Slot Direito: Globo de Bingo Animado GIF (Tamanho Maior) */}
+            {/* Slot Direito: Globo de Bingo Animado GIF (Tamanho Grande de Destaque) */}
             <div className={styles.clockSideSlot}>
               <Image
                 src="/themes/bingo-show-blue/globo-bingo.gif"
                 alt="Globo de Bingo Animado 3D"
-                width={155}
-                height={155}
+                width={200}
+                height={200}
                 className={styles.decoGlobeGif}
                 unoptimized
                 priority
