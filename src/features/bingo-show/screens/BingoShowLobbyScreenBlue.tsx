@@ -17,6 +17,21 @@ import styles from './BingoShowLobbyScreenBlue.module.css';
 const DRAW_PAGE_SIZE = 5;
 const DRAW_PAGE_INTERVAL_MS = 6000;
 
+/**
+ * Reduz o tamanho da fonte do valor do prêmio de forma controlada conforme o
+ * comprimento da string ja formatada (vinda do backend/SSE) - evita quebra de
+ * linha ou corte em valores grandes sem depender de `vw` (que ignoraria a
+ * escala do TvStage) nem de recursos CSS recentes de suporte incerto no
+ * WebView alvo (container query units).
+ */
+function getPrizeAmountFontSize(value: string): number {
+  const len = value.length;
+  if (len <= 10) return 52;
+  if (len <= 13) return 46;
+  if (len <= 16) return 40;
+  return 34;
+}
+
 export const BingoShowLobbyScreenBlue: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
 
@@ -328,70 +343,67 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
   const renderRightColumn = () => {
     return (
       <section className={styles.rightColumn}>
-        {/* CARD 1: 1ª LINHA (Glow Ciano/Azul) */}
+        {/* CARD 1: 1ª LINHA (Painel Azul-Ciano Elétrico) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine1}`}>
-          <div className={styles.prizeCardHeader}>
-            <div className={`${styles.prizeBadge} ${styles.prizeBadgeCyan}`}>
+          <div className={styles.prizeTop}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeLine1}`}>
               1ª LINHA
             </div>
+            <Image
+              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              alt=""
+              aria-hidden="true"
+              width={170}
+              height={152}
+              className={styles.prizeCoins}
+            />
           </div>
-          <div className={styles.prizeCardDividerCyan} />
-          <div className={styles.prizeCardContent}>
-            <span className={`${styles.prizeCardValue} ${styles.prizeValueGold}`}>
-              {mock.line1Prize}
-            </span>
+          <div className={styles.prizeDivider} aria-hidden="true" />
+          <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.line1Prize) }}>
+            {mock.line1Prize}
           </div>
-          <Image
-            src="/themes/bingo-show/assets/icons/moedas-pilha.png"
-            alt="Pilha de Moedas de Ouro 3D"
-            width={116}
-            height={100}
-            className={styles.coinStackDeco}
-          />
         </div>
 
-        {/* CARD 2: 2ª LINHA (Glow Dourado) */}
+        {/* CARD 2: 2ª LINHA (Painel Dourado/Âmbar) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine2}`}>
-          <div className={styles.prizeCardHeader}>
-            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGold}`}>
+          <div className={styles.prizeTop}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeLine2}`}>
               2ª LINHA
             </div>
+            <Image
+              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              alt=""
+              aria-hidden="true"
+              width={170}
+              height={152}
+              className={styles.prizeCoins}
+            />
           </div>
-          <div className={styles.prizeCardDividerGold} />
-          <div className={styles.prizeCardContent}>
-            <span className={`${styles.prizeCardValue} ${styles.prizeValueCyan}`}>
-              {mock.line2Prize}
-            </span>
+          <div className={styles.prizeDivider} aria-hidden="true" />
+          <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.line2Prize) }}>
+            {mock.line2Prize}
           </div>
-          <Image
-            src="/themes/bingo-show/assets/icons/moedas-pilha.png"
-            alt="Pilha de Moedas de Ouro 3D"
-            width={116}
-            height={100}
-            className={styles.coinStackDeco}
-          />
         </div>
 
-        {/* CARD 3: BINGO (Glow Verde Esmeralda) */}
+        {/* CARD 3: BINGO (Painel Verde-Esmeralda com Acabamento Dourado) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardBingo}`}>
-          <div className={styles.prizeCardHeader}>
-            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGreen}`}>
+          <div className={styles.prizeTop}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeBingo}`}>
               BINGO
             </div>
+            <Image
+              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              alt=""
+              aria-hidden="true"
+              width={170}
+              height={152}
+              className={styles.prizeCoins}
+            />
           </div>
-          <div className={styles.prizeCardDividerGreen} />
-          <div className={styles.prizeCardContent}>
-            <span className={`${styles.prizeCardValue} ${styles.prizeValueGreen}`}>
-              {mock.bingoPrize}
-            </span>
+          <div className={styles.prizeDivider} aria-hidden="true" />
+          <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.bingoPrize) }}>
+            {mock.bingoPrize}
           </div>
-          <Image
-            src="/themes/bingo-show/assets/icons/moedas-pilha.png"
-            alt="Pilha de Moedas de Ouro 3D"
-            width={116}
-            height={100}
-            className={styles.coinStackDeco}
-          />
         </div>
       </section>
     );

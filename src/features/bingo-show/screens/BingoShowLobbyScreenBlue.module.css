@@ -666,131 +666,255 @@
   justify-content: space-between;
 }
 
+/* Painel premium de game show: multiplas camadas (radial superior + radial
+   lateral + gradiente vertical solido), borda dupla (contorno colorido +
+   highlight interno via ::before) e reflexo animado via ::after. As
+   variantes (*Line1/*Line2/*Bingo) definem as custom properties --card-*
+   consumidas pelo divisor e pelo glow, alem do "background"/"box-shadow"
+   proprios (as receitas de gradiente nao sao uma simples troca de matiz). */
 .prizeCard {
+  position: relative;
+  isolation: isolate;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   border-radius: 20px;
   border-width: 2px;
   border-style: solid;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: 18px 24px 16px;
+  padding: 16px 22px 14px;
   box-sizing: border-box;
-  position: relative;
   overflow: hidden;
-  transition: transform 250ms ease, box-shadow 250ms ease;
+  opacity: 1;
+  animation: prizeCardEnter 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rightColumn .prizeCard:nth-child(1) {
+  animation-delay: 0ms;
+}
+.rightColumn .prizeCard:nth-child(2) {
+  animation-delay: 90ms;
+}
+.rightColumn .prizeCard:nth-child(3) {
+  animation-delay: 180ms;
+}
+
+/* Highlight/acabamento interno estatico (com leve "respiracao" de opacidade). */
+.prizeCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.08) 7%, transparent 16%);
+  animation: prizeGlowBreathe 5s ease-in-out infinite;
+}
+.rightColumn .prizeCard:nth-child(1)::before {
+  animation-duration: 4.6s;
+}
+.rightColumn .prizeCard:nth-child(2)::before {
+  animation-duration: 5.2s;
+}
+.rightColumn .prizeCard:nth-child(3)::before {
+  animation-duration: 5.8s;
+}
+
+/* Reflexo especular diagonal, bem sutil, passando de tempos em tempos. */
+.prizeCard::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.04) 47%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.05) 53%,
+    transparent 58%
+  );
+  transform: translateX(-70%);
+  animation: prizeCardSheen 8s ease-in-out infinite;
+}
+.rightColumn .prizeCard:nth-child(2)::after {
+  animation-delay: 1.4s;
+}
+.rightColumn .prizeCard:nth-child(3)::after {
+  animation-delay: 2.8s;
 }
 
 .prizeCardLine1 {
-  border-color: var(--primary-blue-hover, #17C8FF);
-  background: linear-gradient(135deg, rgba(23, 200, 255, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(8, 127, 252, 0.04) 100%);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 213, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(0, 213, 255, 0.15);
+  --card-accent: #39cfff;
+  --card-accent-bright: #8defff;
+  --card-glow: rgba(42, 173, 255, 0.65);
+  border-color: var(--card-accent);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(148, 239, 255, 0.72) 0%, rgba(53, 189, 239, 0.42) 24%, transparent 56%),
+    radial-gradient(circle at 96% 12%, rgba(84, 221, 255, 0.28), transparent 35%),
+    linear-gradient(180deg, #168cc4 0%, #0869ad 23%, #084480 53%, #15185d 100%);
+  box-shadow:
+    0 0 8px var(--card-glow),
+    0 0 22px rgba(57, 207, 255, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.42),
+    inset 0 2px 1px rgba(255, 255, 255, 0.42),
+    inset 0 0 20px rgba(255, 255, 255, 0.08),
+    inset 0 -28px 38px rgba(0, 0, 0, 0.28);
 }
 
 .prizeCardLine2 {
-  border-color: var(--accent-gold, #FFCF12);
-  background: linear-gradient(135deg, rgba(255, 207, 18, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(255, 207, 18, 0.04) 100%);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 207, 18, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(255, 207, 18, 0.15);
+  --card-accent: #ffc632;
+  --card-accent-bright: #ffe985;
+  --card-glow: rgba(255, 185, 36, 0.62);
+  border-color: var(--card-accent);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(255, 239, 145, 0.78) 0%, rgba(255, 190, 49, 0.42) 25%, transparent 57%),
+    radial-gradient(circle at 96% 14%, rgba(255, 218, 82, 0.32), transparent 34%),
+    linear-gradient(180deg, #e6a52d 0%, #c7791d 26%, #9b5018 58%, #602710 100%);
+  box-shadow:
+    0 0 8px var(--card-glow),
+    0 0 22px rgba(255, 198, 50, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.42),
+    inset 0 2px 1px rgba(255, 255, 255, 0.42),
+    inset 0 0 20px rgba(255, 255, 255, 0.08),
+    inset 0 -28px 38px rgba(0, 0, 0, 0.28);
 }
 
 .prizeCardBingo {
-  border-color: var(--accent-green, #34D399);
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(16, 185, 129, 0.04) 100%);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(52, 211, 153, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(52, 211, 153, 0.15);
+  --card-accent: #31efad;
+  --card-accent-bright: #95ffd8;
+  --card-glow: rgba(34, 238, 166, 0.58);
+  --card-border-gold: #f4c85a;
+  border-color: var(--card-accent);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(151, 255, 216, 0.74) 0%, rgba(42, 226, 160, 0.38) 25%, transparent 58%),
+    radial-gradient(circle at 96% 14%, rgba(48, 255, 190, 0.28), transparent 35%),
+    linear-gradient(180deg, #18b783 0%, #078b68 25%, #066457 57%, #07343d 100%);
+  box-shadow:
+    0 0 8px var(--card-glow),
+    0 0 22px rgba(49, 239, 173, 0.35),
+    0 0 0 1px rgba(244, 200, 90, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.42),
+    inset 0 2px 1px rgba(255, 255, 255, 0.42),
+    inset 0 0 20px rgba(255, 255, 255, 0.08),
+    inset 0 -28px 38px rgba(0, 0, 0, 0.28);
 }
 
-.prizeCardHeader {
+.prizeTop {
+  position: relative;
+  z-index: 3;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  z-index: 2;
+  align-items: flex-start;
+  min-height: 60px;
 }
 
 .prizeBadge {
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 14px;
+  min-width: 158px;
+  padding: 10px 24px;
   border-radius: 9999px;
+  border: 3px solid #e7b73f;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.prizeBadgeGold {
-  background: linear-gradient(135deg, #FFB300 0%, #D48806 100%);
-  box-shadow: 0 2px 8px rgba(255, 179, 0, 0.4);
+.prizeBadgeLine1 {
+  background: linear-gradient(180deg, rgba(255, 234, 139, 0.34) 0%, rgba(187, 124, 20, 0.86) 38%, rgba(104, 57, 8, 0.96) 100%);
+  box-shadow: 0 0 10px rgba(255, 205, 74, 0.55), 0 7px 12px rgba(0, 0, 0, 0.42), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -3px 5px rgba(72, 35, 0, 0.5);
 }
 
-.prizeBadgeCyan {
-  background: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
-  box-shadow: 0 2px 8px rgba(0, 180, 216, 0.4);
+.prizeBadgeLine2 {
+  border-color: #f0c23f;
+  background: linear-gradient(180deg, rgba(255, 224, 130, 0.4) 0%, rgba(214, 120, 20, 0.88) 38%, rgba(120, 50, 10, 0.97) 100%);
+  box-shadow: 0 0 10px rgba(255, 198, 60, 0.55), 0 7px 12px rgba(0, 0, 0, 0.42), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -3px 5px rgba(72, 35, 0, 0.5);
 }
 
-.prizeBadgeGreen {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+.prizeBadgeBingo {
+  border-color: var(--card-border-gold, #f4c85a);
+  background: linear-gradient(180deg, rgba(178, 255, 214, 0.3) 0%, rgba(15, 120, 80, 0.86) 38%, rgba(6, 54, 45, 0.97) 100%);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5), 0 7px 12px rgba(0, 0, 0, 0.42), inset 0 2px 2px rgba(255, 255, 255, 0.4), inset 0 -3px 5px rgba(4, 40, 30, 0.55);
 }
 
-.prizeCardDividerGold {
-  width: 100%;
-  height: 1.5px;
-  margin: 8px 0 6px 0;
-  background: linear-gradient(90deg, rgba(255, 207, 18, 0.6) 0%, rgba(255, 207, 18, 0.1) 60%, transparent 100%);
-}
-
-.prizeCardDividerCyan {
-  width: 100%;
-  height: 1.5px;
-  margin: 8px 0 6px 0;
-  background: linear-gradient(90deg, rgba(23, 200, 255, 0.6) 0%, rgba(23, 200, 255, 0.1) 60%, transparent 100%);
-}
-
-.prizeCardDividerGreen {
-  width: 100%;
-  height: 1.5px;
-  margin: 8px 0 6px 0;
-  background: linear-gradient(90deg, rgba(52, 211, 153, 0.6) 0%, rgba(52, 211, 153, 0.1) 60%, transparent 100%);
-}
-
-.prizeCardContent {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  z-index: 2;
-  margin-top: 2px;
-}
-
-.prizeCardValue {
-  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 46px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  color: #FFFFFF;
-}
-
-.prizeValueGold,
-.prizeValueCyan,
-.prizeValueGreen {
-  text-shadow: 0 0 16px rgba(120, 210, 255, 0.85), 0 2px 6px rgba(0, 0, 0, 0.8);
-}
-
-.coinStackDeco {
+.prizeCoins {
   position: absolute;
-  right: 20px;
-  bottom: 14px;
-  width: 116px;
-  height: 100px;
+  top: 14px;
+  right: 10px;
+  width: clamp(128px, 34%, 168px);
+  height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.5));
-  z-index: 1;
+  z-index: 4;
   pointer-events: none;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 9px rgba(255, 205, 69, 0.55));
+  transform-origin: 70% 80%;
+  animation: prizeCoinFloat 5s ease-in-out infinite;
+}
+.rightColumn .prizeCard:nth-child(1) .prizeCoins {
+  animation-duration: 5s;
+}
+.rightColumn .prizeCard:nth-child(2) .prizeCoins {
+  animation-duration: 5.6s;
+}
+.rightColumn .prizeCard:nth-child(3) .prizeCoins {
+  animation-duration: 6.2s;
+}
+
+.prizeDivider {
+  position: relative;
+  z-index: 3;
+  height: 3px;
+  margin: 10px 6px 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--card-accent) 12%,
+    var(--card-accent-bright) 50%,
+    var(--card-accent) 88%,
+    transparent 100%
+  );
+  box-shadow: 0 0 5px var(--card-accent), 0 0 12px var(--card-glow);
+}
+
+.prizeAmount {
+  position: relative;
+  z-index: 3;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  text-align: center;
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  /* px fixo (nao vw): o card vive dentro do palco logico 1920x1080 do
+     TvStage, que e escalado inteiro via transform - vw usaria o viewport
+     fisico real e desalinharia o tamanho relativo ao resto da UI. */
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: #38f3ff;
+  text-shadow:
+    0 3px 0 rgba(0, 28, 45, 0.9),
+    0 5px 8px rgba(0, 0, 0, 0.62),
+    0 0 10px rgba(39, 231, 255, 0.52);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prizeCard,
+  .prizeCard::before,
+  .prizeCard::after,
+  .prizeCoins {
+    animation: none;
+  }
 }
 
 /* =============================================================================
@@ -822,6 +946,56 @@
       drop-shadow(0 1px 0 #fff8cf)
       drop-shadow(0 3px 0 #a86600)
       drop-shadow(0 8px 13px rgba(217, 165, 20, 0.42));
+  }
+}
+
+@keyframes prizeCardEnter {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes prizeGlowBreathe {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes prizeCardSheen {
+  0%,
+  65% {
+    transform: translateX(-70%);
+    opacity: 0;
+  }
+  72% {
+    opacity: 0.75;
+  }
+  88% {
+    transform: translateX(70%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(70%);
+    opacity: 0;
+  }
+}
+
+@keyframes prizeCoinFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(0.6deg);
   }
 }
 
