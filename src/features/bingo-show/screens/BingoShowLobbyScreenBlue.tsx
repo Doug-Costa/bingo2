@@ -84,27 +84,31 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
 
             {/* Pill 2: Data com Ícone 3D */}
             <div className={styles.pill}>
-              <Image
-                src="/themes/bingo-show/assets/icons/calendario.png"
-                alt="Calendário 3D"
-                width={20}
-                height={20}
-                className={styles.pillIcon}
-              />
-              <span className={styles.pillLabel}>DATA:</span>
+              <span className={styles.pillLabelRow}>
+                <Image
+                  src="/themes/bingo-show/assets/icons/calendario.png"
+                  alt="Calendário 3D"
+                  width={16}
+                  height={16}
+                  className={styles.pillIcon}
+                />
+                <span className={styles.pillLabel}>DATA</span>
+              </span>
               <span className={styles.pillValue}>{mock.currentDate}</span>
             </div>
 
             {/* Pill 3: Hora com Ícone 3D */}
             <div className={styles.pill}>
-              <Image
-                src="/themes/bingo-show/assets/icons/relogio.png"
-                alt="Relógio 3D"
-                width={20}
-                height={20}
-                className={styles.pillIcon}
-              />
-              <span className={styles.pillLabel}>HORA:</span>
+              <span className={styles.pillLabelRow}>
+                <Image
+                  src="/themes/bingo-show/assets/icons/relogio.png"
+                  alt="Relógio 3D"
+                  width={16}
+                  height={16}
+                  className={styles.pillIcon}
+                />
+                <span className={styles.pillLabel}>HORA</span>
+              </span>
               <span className={styles.pillValue}>{mock.currentTime}</span>
             </div>
           </div>
@@ -122,11 +126,11 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             />
 
             <div className={styles.jackpotTextCol}>
-              <span className={styles.jackpotHeaderLabel}>ACUMULADO ESPECIAL</span>
+              <span className={styles.jackpotHeaderLabel}>ACUMULADO ESPECIAL:</span>
               <span className={styles.jackpotHeaderValue}>{mock.accumulatedPrize}</span>
             </div>
 
-            <div className={styles.starBadge}>
+            <div className={`${styles.starBadge} ${styles.starBadgeFloating}`}>
               <Image
                 src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
                 alt="Estrela Limite de Bola"
@@ -324,14 +328,14 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
   const renderRightColumn = () => {
     return (
       <section className={styles.rightColumn}>
-        {/* CARD 1: 1ª LINHA (Glow Dourado) */}
+        {/* CARD 1: 1ª LINHA (Glow Ciano/Azul) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine1}`}>
           <div className={styles.prizeCardHeader}>
-            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGold}`}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeCyan}`}>
               1ª LINHA
             </div>
           </div>
-          <div className={styles.prizeCardDividerGold} />
+          <div className={styles.prizeCardDividerCyan} />
           <div className={styles.prizeCardContent}>
             <span className={`${styles.prizeCardValue} ${styles.prizeValueGold}`}>
               {mock.line1Prize}
@@ -346,14 +350,14 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           />
         </div>
 
-        {/* CARD 2: 2ª LINHA (Glow Ciano/Azul) */}
+        {/* CARD 2: 2ª LINHA (Glow Dourado) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine2}`}>
           <div className={styles.prizeCardHeader}>
-            <div className={`${styles.prizeBadge} ${styles.prizeBadgeCyan}`}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGold}`}>
               2ª LINHA
             </div>
           </div>
-          <div className={styles.prizeCardDividerCyan} />
+          <div className={styles.prizeCardDividerGold} />
           <div className={styles.prizeCardContent}>
             <span className={`${styles.prizeCardValue} ${styles.prizeValueCyan}`}>
               {mock.line2Prize}
