@@ -147,6 +147,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
   // =========================================================================
   const renderLeftColumn = () => {
     const currentPage = pages[pageIndex] ?? [];
+    const hasDraws = currentPage.length > 0;
 
     return (
       <aside className={styles.leftColumn}>
@@ -155,54 +156,75 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <div className={styles.columnDivider} />
         </div>
 
-        <div className={styles.drawsList}>
-          {currentPage.map((item, idx) => {
-            const isHot = Boolean((item as any).hotdraw || idx === 0);
-            return (
-              <div
-                key={item.id || idx}
-                className={`${styles.drawCard} ${item.isNext ? styles.drawCardActive : ''}`}
-              >
-                <div className={styles.drawCardTop}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span
-                      className={`${styles.drawCardNumber} ${
-                        item.isNext ? styles.drawCardNumberActive : ''
-                      }`}
-                    >
-                      {item.number}
-                    </span>
-                    {isHot && <span className={styles.hotTag}>[🔥 HOT]</span>}
+        {hasDraws ? (
+          <div className={styles.drawsList}>
+            {currentPage.map((item, idx) => {
+              const isHot = Boolean((item as any).hotdraw || idx === 0);
+              return (
+                <div
+                  key={item.id || idx}
+                  className={`${styles.drawCard} ${item.isNext ? styles.drawCardActive : ''}`}
+                >
+                  <div className={styles.drawCardTop}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span
+                        className={`${styles.drawCardNumber} ${
+                          item.isNext ? styles.drawCardNumberActive : ''
+                        }`}
+                      >
+                        {item.number}
+                      </span>
+                      {isHot && <span className={styles.hotTag}>[🔥 HOT]</span>}
+                    </div>
+                    <span className={styles.drawCardTime}>{item.time}</span>
                   </div>
-                  <span className={styles.drawCardTime}>{item.time}</span>
-                </div>
 
-                <div className={styles.drawCardPrizesRow}>
-                  <div className={styles.drawCardPrizeCol}>
-                    <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGold}`}>
-                      1ª LINHA
-                    </span>
-                    <span className={styles.drawCardPrizeValue}>{item.line1Prize}</span>
-                  </div>
-                  <div className={styles.drawCardPrizeCol}>
-                    <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelCyan}`}>
-                      2ª LINHA
-                    </span>
-                    <span className={styles.drawCardPrizeValue}>{item.line2Prize}</span>
-                  </div>
-                  <div className={styles.drawCardPrizeCol}>
-                    <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGreen}`}>
-                      BINGO
-                    </span>
-                    <span className={styles.drawCardPrizeValue}>{item.bingoPrize}</span>
+                  <div className={styles.drawCardPrizesRow}>
+                    <div className={styles.drawCardPrizeCol}>
+                      <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGold}`}>
+                        1ª LINHA
+                      </span>
+                      <span className={styles.drawCardPrizeValue}>{item.line1Prize}</span>
+                    </div>
+                    <div className={styles.drawCardPrizeCol}>
+                      <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelCyan}`}>
+                        2ª LINHA
+                      </span>
+                      <span className={styles.drawCardPrizeValue}>{item.line2Prize}</span>
+                    </div>
+                    <div className={styles.drawCardPrizeCol}>
+                      <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGreen}`}>
+                        BINGO
+                      </span>
+                      <span className={styles.drawCardPrizeValue}>{item.bingoPrize}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.emptyDrawsContainer}>
+            <div className={styles.emptyDrawsIconWrapper}>
+              <Image
+                src="/themes/bingo-show/assets/icons/relogio.png"
+                alt="Aguardando sorteios"
+                width={36}
+                height={36}
+                className={styles.emptyDrawsIcon}
+              />
+            </div>
+            <p className={styles.emptyDrawsTitle}>NENHUM SORTEIO NA FILA</p>
+            <span className={styles.emptyDrawsSub}>Aguardando abertura de novas rodadas</span>
 
-        {pages.length > 1 && (
+            <div className={styles.drawsSkeletonList}>
+              <div className={styles.drawCardSkeleton} />
+              <div className={styles.drawCardSkeleton} />
+            </div>
+          </div>
+        )}
+
+        {hasDraws && pages.length > 1 && (
           <div className={styles.carouselDots}>
             {pages.map((_, idx) => (
               <div
@@ -232,30 +254,36 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
           </div>
 
-          {/* Palco do Relógio com Assets 3D Laterais Flutuantes */}
+          {/* Palco do Relógio com Slots Laterais 3D Simétricos e Relógio Perfeitamente Centralizado */}
           <div className={styles.clockStageWrapper}>
-            {/* Ampulheta 3D à Esquerda */}
-            <Image
-              src="/themes/bingo-show/assets/icons/relogio_areia.png"
-              alt="Ampulheta 3D"
-              width={120}
-              height={120}
-              className={styles.decoHourglass}
-              priority
-            />
+            {/* Slot Esquerdo: Ampulheta 3D */}
+            <div className={styles.clockSideSlot}>
+              <Image
+                src="/themes/bingo-show/assets/icons/relogio_areia.png"
+                alt="Ampulheta 3D"
+                width={115}
+                height={115}
+                className={styles.decoHourglass}
+                priority
+              />
+            </div>
 
-            {/* Dígitos Gigantes do Relógio */}
-            <div className={styles.clockDigits}>{formattedCountdown}</div>
+            {/* Dígitos Gigantes do Relógio (Centro Rigoroso) */}
+            <div className={styles.clockDigitsWrapper}>
+              <div className={styles.clockDigits}>{formattedCountdown}</div>
+            </div>
 
-            {/* Globo de Bingo 3D / Trevo à Direita */}
-            <Image
-              src="/themes/bingo-show/assets/icons/globo-bingo.png"
-              alt="Globo de Bingo 3D"
-              width={120}
-              height={120}
-              className={styles.decoClover}
-              priority
-            />
+            {/* Slot Direito: Globo de Bingo 3D / Trevo (Simétrico ao Slot Esquerdo) */}
+            <div className={styles.clockSideSlot}>
+              <Image
+                src="/themes/bingo-show/assets/icons/globo-bingo.png"
+                alt="Globo de Bingo 3D"
+                width={115}
+                height={115}
+                className={styles.decoClover}
+                priority
+              />
+            </div>
           </div>
         </div>
 
@@ -297,11 +325,13 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
       <section className={styles.rightColumn}>
         {/* CARD 1: 1ª LINHA (Glow Dourado) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine1}`}>
-          <div className={`${styles.prizeBadge} ${styles.prizeBadgeGold}`}>1ª LINHA</div>
-          <div className={styles.prizeCardContent}>
-            <span className={styles.prizeCardLabel} style={{ color: 'var(--accent-gold, #FFCF12)' }}>
+          <div className={styles.prizeCardHeader}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGold}`}>
               1ª LINHA
-            </span>
+            </div>
+          </div>
+          <div className={styles.prizeCardDividerGold} />
+          <div className={styles.prizeCardContent}>
             <span className={`${styles.prizeCardValue} ${styles.prizeValueGold}`}>
               {mock.line1Prize}
             </span>
@@ -309,22 +339,21 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <Image
             src="/themes/bingo-show/assets/icons/moedas-pilha.png"
             alt="Pilha de Moedas de Ouro 3D"
-            width={120}
-            height={106}
+            width={116}
+            height={100}
             className={styles.coinStackDeco}
           />
         </div>
 
         {/* CARD 2: 2ª LINHA (Glow Ciano/Azul) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardLine2}`}>
-          <div className={`${styles.prizeBadge} ${styles.prizeBadgeCyan}`}>2ª LINHA</div>
-          <div className={styles.prizeCardContent}>
-            <span
-              className={styles.prizeCardLabel}
-              style={{ color: 'var(--primary-blue-hover, #17C8FF)' }}
-            >
+          <div className={styles.prizeCardHeader}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeCyan}`}>
               2ª LINHA
-            </span>
+            </div>
+          </div>
+          <div className={styles.prizeCardDividerCyan} />
+          <div className={styles.prizeCardContent}>
             <span className={`${styles.prizeCardValue} ${styles.prizeValueCyan}`}>
               {mock.line2Prize}
             </span>
@@ -332,19 +361,21 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <Image
             src="/themes/bingo-show/assets/icons/moedas-pilha.png"
             alt="Pilha de Moedas de Ouro 3D"
-            width={120}
-            height={106}
+            width={116}
+            height={100}
             className={styles.coinStackDeco}
           />
         </div>
 
         {/* CARD 3: BINGO (Glow Verde Esmeralda) */}
         <div className={`${styles.prizeCard} ${styles.prizeCardBingo}`}>
-          <div className={`${styles.prizeBadge} ${styles.prizeBadgeGreen}`}>BINGO</div>
-          <div className={styles.prizeCardContent}>
-            <span className={styles.prizeCardLabel} style={{ color: 'var(--accent-green, #34D399)' }}>
+          <div className={styles.prizeCardHeader}>
+            <div className={`${styles.prizeBadge} ${styles.prizeBadgeGreen}`}>
               BINGO
-            </span>
+            </div>
+          </div>
+          <div className={styles.prizeCardDividerGreen} />
+          <div className={styles.prizeCardContent}>
             <span className={`${styles.prizeCardValue} ${styles.prizeValueGreen}`}>
               {mock.bingoPrize}
             </span>
@@ -352,8 +383,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <Image
             src="/themes/bingo-show/assets/icons/moedas-pilha.png"
             alt="Pilha de Moedas de Ouro 3D"
-            width={120}
-            height={106}
+            width={116}
+            height={100}
             className={styles.coinStackDeco}
           />
         </div>

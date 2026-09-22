@@ -1,8 +1,8 @@
 /**
  * BingoShowLobbyScreenBlue.module.css — Estilos Exclusivos do Tema Azul Live (Cassino TV 3D Neon).
  *
- * Glassmorphism com backdrop-filter, bordas neon azul safira e douradas,
- * tipografia Barlow Condensed nos contadores e números, e efeitos tridimensionais.
+ * Glassmorphism com backdrop-filter, bordas neon azul safira e douradas uniformes (2px / 20px),
+ * tipografia Barlow Condensed nos contadores e números, e efeitos tridimensionais refinados.
  */
 
 .container {
@@ -33,11 +33,11 @@
   height: 84px;
   padding: 0 24px;
   border-radius: 20px;
-  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-surface, rgba(4, 15, 42, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 2px solid var(--primary-blue, #087FFC);
-  box-shadow: 0 0 24px var(--shadow-glow-blue, rgba(0, 213, 255, 0.4)), inset 0 0 16px rgba(8, 127, 252, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 24px var(--shadow-glow-blue, rgba(0, 213, 255, 0.35)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 16px rgba(8, 127, 252, 0.2);
   box-sizing: border-box;
   flex-shrink: 0;
 }
@@ -195,17 +195,17 @@
 }
 
 /* =============================================================================
-   3. COLUNA ESQUERDA (Próximos Sorteios com Carrossel)
+   3. COLUNA ESQUERDA (Próximos Sorteios com Carrossel e Empty State)
    ============================================================================= */
 .leftColumn {
   display: flex;
   flex-direction: column;
-  border-radius: 24px;
-  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  background: var(--bg-surface, rgba(4, 15, 42, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 2px solid var(--primary-blue, #087FFC);
-  box-shadow: 0 0 20px var(--shadow-glow-blue, rgba(0, 213, 255, 0.35)), inset 0 0 14px rgba(8, 127, 252, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--shadow-glow-blue, rgba(0, 213, 255, 0.3)), inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 14px rgba(8, 127, 252, 0.15);
   padding: 16px 18px 14px;
   box-sizing: border-box;
   overflow: hidden;
@@ -362,6 +362,74 @@
   box-shadow: 0 0 8px rgba(23, 200, 255, 0.8);
 }
 
+/* Empty State / Skeleton Loading para Próximos Sorteios */
+.emptyDrawsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 16px;
+  gap: 10px;
+  text-align: center;
+}
+
+.emptyDrawsIconWrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(8, 127, 252, 0.15);
+  border: 1.5px solid rgba(8, 127, 252, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(0, 213, 255, 0.2);
+}
+
+.emptyDrawsIcon {
+  object-fit: contain;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 6px rgba(0, 213, 255, 0.5));
+}
+
+.emptyDrawsTitle {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary, #AEBBD8);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.emptyDrawsSub {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(174, 187, 216, 0.6);
+  max-width: 240px;
+  line-height: 1.2;
+}
+
+.drawsSkeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.drawCardSkeleton {
+  width: 100%;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(6, 20, 58, 0.4) 0%, rgba(8, 127, 252, 0.12) 50%, rgba(6, 20, 58, 0.4) 100%);
+  background-size: 200% 100%;
+  border: 1px solid rgba(8, 127, 252, 0.2);
+  animation: shimmerSkeleton 2s infinite ease-in-out;
+}
+
 /* =============================================================================
    4. COLUNA CENTRAL (Relógio Neon + 3D Assets + Acumulado)
    ============================================================================= */
@@ -378,12 +446,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 28px;
-  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 2.5px solid var(--primary-blue, #087FFC);
-  box-shadow: 0 0 28px var(--shadow-glow-blue, rgba(0, 213, 255, 0.45)), inset 0 0 20px rgba(8, 127, 252, 0.25);
+  border-radius: 20px;
+  background: var(--bg-surface, rgba(4, 15, 42, 0.78));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid var(--primary-blue, #087FFC);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 28px var(--shadow-glow-blue, rgba(0, 213, 255, 0.4)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 20px rgba(8, 127, 252, 0.2);
   padding: 24px 20px;
   box-sizing: border-box;
   position: relative;
@@ -394,7 +462,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .centerDrawNumberTitle {
@@ -421,24 +489,41 @@
 .clockStageWrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
+  justify-content: space-between;
   width: 100%;
-  margin: 10px 0;
+  margin: 6px 0 10px;
   position: relative;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.clockSideSlot {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clockDigitsWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .decoHourglass {
-  width: 120px;
-  height: 120px;
+  width: 115px;
+  height: 115px;
   object-fit: contain;
   filter: drop-shadow(0 0 16px rgba(0, 213, 255, 0.6));
   animation: floatLeft 4s ease-in-out infinite alternate;
 }
 
 .decoClover {
-  width: 120px;
-  height: 120px;
+  width: 115px;
+  height: 115px;
   object-fit: contain;
   filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.6));
   animation: floatRight 4s ease-in-out infinite alternate;
@@ -446,12 +531,17 @@
 
 .clockDigits {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 130px;
+  font-size: 132px;
   font-weight: 900;
-  line-height: 1;
-  letter-spacing: 6px;
+  line-height: 0.95;
+  letter-spacing: 4px;
   color: #FFFFFF;
-  text-shadow: 0 0 24px var(--primary-blue-hover, #17C8FF), 0 0 48px rgba(8, 127, 252, 0.8), 0 4px 12px rgba(0, 0, 0, 0.9);
+  text-shadow:
+    0 0 6px #FFFFFF,
+    0 0 12px rgba(255, 255, 255, 0.95),
+    0 0 22px rgba(23, 200, 255, 0.9),
+    0 0 40px rgba(8, 127, 252, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.9);
 }
 
 .centerJackpotPill {
@@ -460,12 +550,12 @@
   justify-content: space-between;
   height: 84px;
   padding: 0 24px;
-  border-radius: 22px;
-  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 207, 18, 0.08) 0%, rgba(4, 15, 42, 0.8) 60%, rgba(255, 207, 18, 0.04) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 2px solid var(--accent-gold, #FFCF12);
-  box-shadow: 0 0 25px var(--shadow-gold, rgba(255, 207, 18, 0.5)), inset 0 0 16px rgba(255, 207, 18, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px var(--shadow-gold, rgba(255, 207, 18, 0.45)), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 16px rgba(255, 207, 18, 0.18);
   box-sizing: border-box;
 }
 
@@ -515,13 +605,14 @@
 .prizeCard {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 22px;
-  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 16px 20px;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 20px;
+  border-width: 2px;
+  border-style: solid;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 18px 24px 16px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -529,28 +620,38 @@
 }
 
 .prizeCardLine1 {
-  border: 2px solid var(--accent-gold, #FFCF12);
-  box-shadow: 0 0 20px rgba(255, 207, 18, 0.35), inset 0 0 12px rgba(255, 207, 18, 0.15);
+  border-color: var(--accent-gold, #FFCF12);
+  background: linear-gradient(135deg, rgba(255, 207, 18, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(255, 207, 18, 0.04) 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 207, 18, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(255, 207, 18, 0.15);
 }
 
 .prizeCardLine2 {
-  border: 2px solid var(--primary-blue-hover, #17C8FF);
-  box-shadow: 0 0 20px rgba(0, 213, 255, 0.35), inset 0 0 12px rgba(0, 213, 255, 0.15);
+  border-color: var(--primary-blue-hover, #17C8FF);
+  background: linear-gradient(135deg, rgba(23, 200, 255, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(8, 127, 252, 0.04) 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 213, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(0, 213, 255, 0.15);
 }
 
 .prizeCardBingo {
-  border: 2px solid var(--accent-green, #34D399);
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.35), inset 0 0 12px rgba(52, 211, 153, 0.15);
+  border-color: var(--accent-green, #34D399);
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.09) 0%, rgba(4, 15, 42, 0.82) 60%, rgba(16, 185, 129, 0.04) 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 20px rgba(52, 211, 153, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 12px rgba(52, 211, 153, 0.15);
+}
+
+.prizeCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 2;
 }
 
 .prizeBadge {
-  position: absolute;
-  top: 12px;
-  left: 18px;
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
   border-radius: 9999px;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: 1.2px;
   text-transform: uppercase;
@@ -572,48 +673,62 @@
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
 }
 
+.prizeCardDividerGold {
+  width: 100%;
+  height: 1.5px;
+  margin: 8px 0 6px 0;
+  background: linear-gradient(90deg, rgba(255, 207, 18, 0.6) 0%, rgba(255, 207, 18, 0.1) 60%, transparent 100%);
+}
+
+.prizeCardDividerCyan {
+  width: 100%;
+  height: 1.5px;
+  margin: 8px 0 6px 0;
+  background: linear-gradient(90deg, rgba(23, 200, 255, 0.6) 0%, rgba(23, 200, 255, 0.1) 60%, transparent 100%);
+}
+
+.prizeCardDividerGreen {
+  width: 100%;
+  height: 1.5px;
+  margin: 8px 0 6px 0;
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.6) 0%, rgba(52, 211, 153, 0.1) 60%, transparent 100%);
+}
+
 .prizeCardContent {
   display: flex;
   flex-direction: column;
-  margin-top: 24px;
+  align-items: flex-start;
+  justify-content: center;
   z-index: 2;
-}
-
-.prizeCardLabel {
-  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
+  margin-top: 2px;
 }
 
 .prizeCardValue {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 42px;
+  font-size: 46px;
   font-weight: 900;
   letter-spacing: 0.5px;
   color: #FFFFFF;
-  margin-top: 2px;
 }
 
 .prizeValueGold {
-  text-shadow: 0 0 14px rgba(255, 207, 18, 0.7);
+  text-shadow: 0 0 16px rgba(255, 207, 18, 0.8), 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .prizeValueCyan {
-  text-shadow: 0 0 14px rgba(23, 200, 255, 0.7);
+  text-shadow: 0 0 16px rgba(23, 200, 255, 0.8), 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .prizeValueGreen {
-  text-shadow: 0 0 14px rgba(52, 211, 153, 0.7);
+  text-shadow: 0 0 16px rgba(52, 211, 153, 0.8), 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .coinStackDeco {
   position: absolute;
-  right: 14px;
-  bottom: 10px;
-  width: 120px;
-  height: 106px;
+  right: 20px;
+  bottom: 14px;
+  width: 116px;
+  height: 100px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.5));
   z-index: 1;
@@ -658,3 +773,13 @@
     transform: scale(1.06);
   }
 }
+
+@keyframes shimmerSkeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
