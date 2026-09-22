@@ -750,16 +750,25 @@
   --card-glow: rgba(42, 173, 255, 0.65);
   border-color: var(--card-accent);
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(148, 239, 255, 0.72) 0%, rgba(53, 189, 239, 0.42) 24%, transparent 56%),
+    radial-gradient(ellipse 140% 130% at 50% -20%, rgba(148, 239, 255, 0.38) 0%, rgba(53, 189, 239, 0.22) 35%, transparent 70%),
     radial-gradient(circle at 96% 12%, rgba(84, 221, 255, 0.28), transparent 35%),
     linear-gradient(180deg, #168cc4 0%, #0869ad 23%, #084480 53%, #15185d 100%);
   box-shadow:
     0 0 8px var(--card-glow),
     0 0 22px rgba(57, 207, 255, 0.35),
     0 12px 28px rgba(0, 0, 0, 0.42),
-    inset 0 2px 1px rgba(255, 255, 255, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
     inset 0 0 20px rgba(255, 255, 255, 0.08),
     inset 0 -28px 38px rgba(0, 0, 0, 0.28);
+}
+
+/* Sobrescreve apenas o brilho superior estatico deste card (herda a
+   animacao "respiracao" definida em .prizeCard::before) para dissolver
+   gradualmente ate ~40% da altura, em vez de cortar de forma abrupta
+   em 16% -- essa transicao brusca era o que lia como uma "tampa" azul
+   clara/ciano chapada sobre o radial de topo. */
+.prizeCardLine1::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 18%, transparent 40%);
 }
 
 .prizeCardLine2 {
