@@ -1,8 +1,5 @@
 import React, { useMemo } from 'react';
 import { TicketCardItem } from '../mocks/drawMock';
-import { BingoShowIcon } from './BingoShowIcon';
-import { BingoShowAssets } from '../assets';
-import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 
 export interface BingoShowTicketsGridProps {
@@ -32,7 +29,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
   drawnBalls = [],
   style,
 }) => {
-  const { themeId, theme, isBlue } = useAppTheme();
+  const { theme, isBlue } = useAppTheme();
   const drawnSet = useMemo(() => new Set(drawnBalls), [drawnBalls]);
 
   // As 4 primeiras cartelas (ou ranqueadas por proximidade)
@@ -154,22 +151,6 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
             </div>
           </div>
         ))}
-      </div>
-
-      {/* BANNER AQUI É SORTE! TODO DIA! */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
-        <img
-          src="/themes/bingo-show-blue/banner-luck.png"
-          alt="Aqui é Sorte! Todo dia!"
-          style={{
-            maxHeight: 48,
-            objectFit: 'contain',
-            filter: 'drop-shadow(0 0 10px rgba(255, 207, 18, 0.5))',
-          }}
-          onError={(e) => {
-            (e.currentTarget as HTMLElement).style.display = 'none';
-          }}
-        />
       </div>
     </div>
   );
