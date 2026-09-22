@@ -562,22 +562,44 @@
 .clockDigits {
   position: relative;
   z-index: 1;
+  display: inline-block;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
   font-size: 132px;
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: 4px;
-  background: linear-gradient(180deg, #FCFCCF 0%, #FFF347 20%, #E7BA25 40%, #D58402 60%, #9F5703 80%, #4C2301 100%);
+  /* Faixas de luz abruptas simulando reflexo de metal polido (evita look "plastico" de degrade liso) */
+  background: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  background-size: 100% 220%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(76, 35, 1, 0.6);
-  text-shadow:
-    0 0 6px rgba(213, 132, 2, 0.5),
-    0 2px 2px rgba(76, 35, 1, 0.65),
-    0 4px 8px rgba(0, 0, 0, 0.9);
-  animation: goldTextShine 2.6s ease-in-out infinite alternate;
+  -webkit-text-stroke: 1px rgba(111, 62, 0, 0.65);
+  filter:
+    drop-shadow(0 1px 0 #fff2a6)
+    drop-shadow(0 3px 0 #9b5d00)
+    drop-shadow(0 7px 8px rgba(76, 41, 0, 0.38));
+  animation: goldReflectionShift 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clockDigits {
+    animation: none;
+  }
 }
 
 .centerJackpotPill {
@@ -779,12 +801,21 @@
   }
 }
 
-@keyframes goldTextShine {
-  0% {
-    filter: brightness(0.96) saturate(1.1);
-  }
+@keyframes goldReflectionShift {
+  0%,
   100% {
-    filter: brightness(1.08) saturate(1.25);
+    background-position: 50% 0%;
+    filter:
+      drop-shadow(0 1px 0 #fff2a6)
+      drop-shadow(0 3px 0 #9b5d00)
+      drop-shadow(0 7px 8px rgba(76, 41, 0, 0.34));
+  }
+  50% {
+    background-position: 50% 100%;
+    filter:
+      drop-shadow(0 1px 0 #fff8cf)
+      drop-shadow(0 3px 0 #a86600)
+      drop-shadow(0 8px 13px rgba(217, 165, 20, 0.42));
   }
 }
 
