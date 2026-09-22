@@ -524,11 +524,23 @@
 }
 
 .clockDigitsWrapper {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.clockDigitsWrapper::before {
+  content: '';
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(ellipse at center, rgba(255, 196, 54, 0.55) 0%, rgba(255, 160, 12, 0.28) 40%, transparent 72%);
+  filter: blur(22px);
+  z-index: 0;
+  pointer-events: none;
+  animation: goldUnderglowPulse 2.6s ease-in-out infinite alternate;
 }
 
 .decoHourglass {
@@ -548,17 +560,23 @@
 }
 
 .clockDigits {
+  position: relative;
+  z-index: 1;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
   font-size: 132px;
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: 4px;
-  color: #FFE9A8;
+  background: linear-gradient(180deg, #FFF8DE 0%, #FFE082 22%, #FFC635 48%, #F5A623 68%, #C97A12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   text-shadow:
-    0 0 1px rgba(255, 255, 255, 0.9),
-    0 0 6px rgba(255, 207, 18, 0.75),
-    0 0 14px rgba(255, 179, 0, 0.4),
-    0 3px 8px rgba(0, 0, 0, 0.85);
+    0 0 2px rgba(255, 250, 220, 0.55),
+    0 0 8px rgba(255, 190, 40, 0.55),
+    0 3px 6px rgba(0, 0, 0, 0.85);
+  animation: goldTextShine 2.6s ease-in-out infinite alternate;
 }
 
 .centerJackpotPill {
@@ -749,6 +767,26 @@
 /* =============================================================================
    6. ANIMAÇÕES
    ============================================================================= */
+@keyframes goldUnderglowPulse {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes goldTextShine {
+  0% {
+    filter: brightness(1) saturate(1);
+  }
+  100% {
+    filter: brightness(1.18) saturate(1.15);
+  }
+}
+
 @keyframes floatLeft {
   0% {
     transform: translateY(0px) rotate(0deg);
