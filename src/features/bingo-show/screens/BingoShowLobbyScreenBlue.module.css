@@ -1,0 +1,660 @@
+/**
+ * BingoShowLobbyScreenBlue.module.css — Estilos Exclusivos do Tema Azul Live (Cassino TV 3D Neon).
+ *
+ * Glassmorphism com backdrop-filter, bordas neon azul safira e douradas,
+ * tipografia Barlow Condensed nos contadores e números, e efeitos tridimensionais.
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1920px;
+  max-height: 1080px;
+  margin: 0 auto;
+  padding: 16px 24px 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+  z-index: 10;
+  gap: 14px;
+}
+
+/* =============================================================================
+   1. HEADER OFICIAL (Topo)
+   ============================================================================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 84px;
+  padding: 0 24px;
+  border-radius: 20px;
+  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2px solid var(--primary-blue, #087FFC);
+  box-shadow: 0 0 24px var(--shadow-glow-blue, rgba(0, 213, 255, 0.4)), inset 0 0 16px rgba(8, 127, 252, 0.25);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(0, 213, 255, 0.6));
+}
+
+.logoImage {
+  object-fit: contain;
+  height: 60px;
+  width: auto;
+}
+
+.headerPillsGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(6, 20, 58, 0.85);
+  border: 1.5px solid rgba(8, 127, 252, 0.6);
+  box-shadow: inset 0 0 10px rgba(0, 213, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.pillIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(255, 207, 18, 0.5));
+}
+
+.pillLabel {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-secondary, #AEBBD8);
+  text-transform: uppercase;
+}
+
+.pillValue {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #FFFFFF;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.specialJackpotBox {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 18px 6px 14px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
+  border: 2px solid var(--accent-gold, #FFCF12);
+  box-shadow: 0 0 20px rgba(255, 207, 18, 0.4), inset 0 0 12px rgba(255, 207, 18, 0.2);
+}
+
+.chestImage {
+  width: 60px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.7));
+  animation: floatSubtle 3s ease-in-out infinite alternate;
+}
+
+.jackpotTextCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.jackpotHeaderLabel {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  color: var(--accent-gold, #FFCF12);
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(255, 207, 18, 0.6);
+}
+
+.jackpotHeaderValue {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  text-shadow: 0 0 12px rgba(255, 207, 18, 0.8);
+}
+
+.starBadge {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.starBgImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 207, 18, 0.8));
+}
+
+.starNumber {
+  position: relative;
+  z-index: 2;
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1A0D00;
+  margin-top: 2px;
+}
+
+/* =============================================================================
+   2. MAIN BODY (Grid em 3 Colunas)
+   ============================================================================= */
+.mainBody {
+  display: grid;
+  grid-template-columns: 460px 1fr 480px;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* =============================================================================
+   3. COLUNA ESQUERDA (Próximos Sorteios com Carrossel)
+   ============================================================================= */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--primary-blue, #087FFC);
+  box-shadow: 0 0 20px var(--shadow-glow-blue, rgba(0, 213, 255, 0.35)), inset 0 0 14px rgba(8, 127, 252, 0.15);
+  padding: 16px 18px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+.columnHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.columnTitle {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+  text-shadow: 0 0 10px rgba(0, 213, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.columnDivider {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-blue, #087FFC) 50%, transparent 100%);
+}
+
+.drawsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  justify-content: space-around;
+}
+
+.drawCard {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(6, 20, 58, 0.7);
+  border: 1.5px solid rgba(8, 127, 252, 0.3);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.drawCardActive {
+  background: linear-gradient(90deg, rgba(8, 127, 252, 0.35) 0%, rgba(3, 17, 48, 0.8) 100%);
+  border: 2px solid var(--primary-blue-hover, #17C8FF);
+  box-shadow: 0 0 16px rgba(0, 213, 255, 0.5), inset 0 0 8px rgba(0, 213, 255, 0.2);
+}
+
+.drawCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.drawCardNumber {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #FFFFFF;
+}
+
+.drawCardNumberActive {
+  color: var(--primary-blue-hover, #17C8FF);
+  text-shadow: 0 0 8px rgba(23, 200, 255, 0.8);
+}
+
+.hotTag {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #FF5722;
+  margin-left: 6px;
+  letter-spacing: 1px;
+}
+
+.drawCardTime {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary, #AEBBD8);
+}
+
+.drawCardPrizesRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.drawCardPrizeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.drawCardPrizeLabel {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.drawCardPrizeLabelGold {
+  color: var(--accent-gold, #FFCF12);
+}
+
+.drawCardPrizeLabelCyan {
+  color: var(--primary-blue-hover, #17C8FF);
+}
+
+.drawCardPrizeLabelGreen {
+  color: var(--accent-green, #34D399);
+}
+
+.drawCardPrizeValue {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin-top: 1px;
+}
+
+.carouselDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 300ms ease;
+}
+
+.dotActive {
+  width: 24px;
+  background: var(--primary-blue-hover, #17C8FF);
+  box-shadow: 0 0 8px rgba(23, 200, 255, 0.8);
+}
+
+/* =============================================================================
+   4. COLUNA CENTRAL (Relógio Neon + 3D Assets + Acumulado)
+   ============================================================================= */
+.centerColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.centerHeroBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28px;
+  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2.5px solid var(--primary-blue, #087FFC);
+  box-shadow: 0 0 28px var(--shadow-glow-blue, rgba(0, 213, 255, 0.45)), inset 0 0 20px rgba(8, 127, 252, 0.25);
+  padding: 24px 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.centerTitlesGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.centerDrawNumberTitle {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: var(--accent-gold, #FFCF12);
+  margin: 0;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(255, 207, 18, 0.7);
+}
+
+.centerSubTitle {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 3.5px;
+  color: var(--text-secondary, #AEBBD8);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.clockStageWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  margin: 10px 0;
+  position: relative;
+}
+
+.decoHourglass {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(0, 213, 255, 0.6));
+  animation: floatLeft 4s ease-in-out infinite alternate;
+}
+
+.decoClover {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.6));
+  animation: floatRight 4s ease-in-out infinite alternate;
+}
+
+.clockDigits {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 130px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 6px;
+  color: #FFFFFF;
+  text-shadow: 0 0 24px var(--primary-blue-hover, #17C8FF), 0 0 48px rgba(8, 127, 252, 0.8), 0 4px 12px rgba(0, 0, 0, 0.9);
+}
+
+.centerJackpotPill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84px;
+  padding: 0 24px;
+  border-radius: 22px;
+  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--accent-gold, #FFCF12);
+  box-shadow: 0 0 25px var(--shadow-gold, rgba(255, 207, 18, 0.5)), inset 0 0 16px rgba(255, 207, 18, 0.2);
+  box-sizing: border-box;
+}
+
+.centerChestSmall {
+  width: 72px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.8));
+  animation: pulseChest 2.5s ease-in-out infinite alternate;
+}
+
+.centerJackpotLabelGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.centerJackpotLabel {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--primary-blue-hover, #17C8FF);
+  text-shadow: 0 0 10px rgba(23, 200, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.centerJackpotValue {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #FFFFFF;
+  text-shadow: 0 0 16px rgba(255, 207, 18, 0.8);
+}
+
+/* =============================================================================
+   5. COLUNA DIREITA (Cards de Premiação 1ª Linha, 2ª Linha, Bingo com 3D Coins)
+   ============================================================================= */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.prizeCard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 22px;
+  background: var(--bg-surface, rgba(3, 17, 48, 0.92));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 16px 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+.prizeCardLine1 {
+  border: 2px solid var(--accent-gold, #FFCF12);
+  box-shadow: 0 0 20px rgba(255, 207, 18, 0.35), inset 0 0 12px rgba(255, 207, 18, 0.15);
+}
+
+.prizeCardLine2 {
+  border: 2px solid var(--primary-blue-hover, #17C8FF);
+  box-shadow: 0 0 20px rgba(0, 213, 255, 0.35), inset 0 0 12px rgba(0, 213, 255, 0.15);
+}
+
+.prizeCardBingo {
+  border: 2px solid var(--accent-green, #34D399);
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.35), inset 0 0 12px rgba(52, 211, 153, 0.15);
+}
+
+.prizeBadge {
+  position: absolute;
+  top: 12px;
+  left: 18px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+.prizeBadgeGold {
+  background: linear-gradient(135deg, #FFB300 0%, #D48806 100%);
+  box-shadow: 0 2px 8px rgba(255, 179, 0, 0.4);
+}
+
+.prizeBadgeCyan {
+  background: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+  box-shadow: 0 2px 8px rgba(0, 180, 216, 0.4);
+}
+
+.prizeBadgeGreen {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.prizeCardContent {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  z-index: 2;
+}
+
+.prizeCardLabel {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.prizeCardValue {
+  font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  margin-top: 2px;
+}
+
+.prizeValueGold {
+  text-shadow: 0 0 14px rgba(255, 207, 18, 0.7);
+}
+
+.prizeValueCyan {
+  text-shadow: 0 0 14px rgba(23, 200, 255, 0.7);
+}
+
+.prizeValueGreen {
+  text-shadow: 0 0 14px rgba(52, 211, 153, 0.7);
+}
+
+.coinStackDeco {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  width: 120px;
+  height: 106px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.5));
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   6. ANIMAÇÕES
+   ============================================================================= */
+@keyframes floatLeft {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-8px) rotate(-3deg);
+  }
+}
+
+@keyframes floatRight {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+@keyframes floatSubtle {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  100% {
+    transform: translateY(-4px) scale(1.04);
+  }
+}
+
+@keyframes pulseChest {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.06);
+  }
+}
