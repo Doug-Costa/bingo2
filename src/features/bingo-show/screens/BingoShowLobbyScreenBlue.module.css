@@ -503,10 +503,59 @@
   overflow: hidden;
 }
 
+/* Camada 2 (overlay de raios): asset transparente com raios radiais azuis,
+   centro luminoso em ~50%/54% do palco - combinado via screen para somar
+   luz ao gradiente do painel sem cobrir/escurecer o conteudo. Fica atras de
+   tudo (z-index:0); os filhos de conteudo abaixo precisam de position
+   relative para participarem do mesmo nivel de empilhamento e ficarem na
+   frente (ver .centerTitlesGroup/.clockStageWrapper/.centerAccumulatedBanner). */
+.centerColumn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/themes/bingo-show-blue/backgrounds/blue-radial-rays.png') center 54% / cover no-repeat;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
 .centerTitlesGroup {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Camada 3 (particulas): componentes reais e animados, nao gravados no
+   overlay de raios. Posicionadas nas margens laterais do painel, longe do
+   titulo/contador/acumulado. */
+.centerParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.centerParticleDot {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(180, 210, 255, 0.55) 55%, transparent 78%);
+  animation: centerParticleFloat var(--p-duration, 10s) ease-in-out infinite;
+  animation-delay: var(--p-delay, 0s);
+}
+
+.centerParticleDotGold {
+  background: radial-gradient(circle, rgba(255, 236, 180, 0.95) 0%, rgba(255, 205, 90, 0.5) 55%, transparent 78%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .centerParticleDot {
+    animation: none;
+    opacity: 0.4;
+  }
 }
 
 .centerDrawNumberTitle {
@@ -608,7 +657,10 @@
 }
 
 .decoHourglass {
-  width: 210px;
+  /* Novo asset dourado/azul (relogio-areia-dourado.png) tem proporcao
+     intrinseca diferente da ampulheta anterior (210x299, bbox opaco
+     177x245) - largura recalculada a partir da altura para nao esticar. */
+  width: 159px;
   height: 226px;
   object-fit: contain;
   filter: drop-shadow(0 0 18px rgba(0, 213, 255, 0.6));
@@ -1164,6 +1216,18 @@
   }
   100% {
     transform: scale(1.06);
+  }
+}
+
+@keyframes centerParticleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 0.62;
   }
 }
 

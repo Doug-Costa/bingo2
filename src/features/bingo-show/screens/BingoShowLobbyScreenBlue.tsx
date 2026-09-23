@@ -32,6 +32,22 @@ function getPrizeAmountFontSize(value: string): number {
   return 34;
 }
 
+/**
+ * Camada 3 do painel central (partículas): componentes decorativos reais,
+ * não gravados na textura de fundo (overlay de raios) - posicionados nas
+ * margens laterais do painel, fora do título, contador e acumulado.
+ */
+const CENTER_PARTICLES: Array<{ left: string; top: string; size: number; duration: number; delay: number; gold?: boolean }> = [
+  { left: '9%', top: '24%', size: 4, duration: 9, delay: 0 },
+  { left: '91%', top: '21%', size: 3, duration: 11, delay: 1.2 },
+  { left: '7%', top: '50%', size: 3, duration: 13, delay: 2.4, gold: true },
+  { left: '93%', top: '48%', size: 4, duration: 10, delay: 0.6 },
+  { left: '11%', top: '74%', size: 3, duration: 15, delay: 3 },
+  { left: '89%', top: '76%', size: 3, duration: 12, delay: 1.8 },
+  { left: '16%', top: '36%', size: 2.5, duration: 14, delay: 0.9, gold: true },
+  { left: '84%', top: '62%', size: 2.5, duration: 9.5, delay: 2.1 },
+];
+
 export const BingoShowLobbyScreenBlue: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
 
@@ -267,6 +283,27 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
   const renderCenterColumn = () => {
     return (
       <main className={styles.centerColumn}>
+        {/* Camada 3: particulas decorativas (atras do conteudo, na frente do
+            overlay de raios do ::before) */}
+        <div className={styles.centerParticles} aria-hidden="true">
+          {CENTER_PARTICLES.map((p, i) => (
+            <span
+              key={i}
+              className={`${styles.centerParticleDot} ${p.gold ? styles.centerParticleDotGold : ''}`}
+              style={
+                {
+                  left: p.left,
+                  top: p.top,
+                  width: p.size,
+                  height: p.size,
+                  '--p-duration': `${p.duration}s`,
+                  '--p-delay': `${p.delay}s`,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
+
         {/* Títulos do Topo */}
         <div className={styles.centerTitlesGroup}>
           <h1 className={styles.centerDrawNumberTitle}>
@@ -280,9 +317,9 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {/* Slot Esquerdo: Ampulheta 3D */}
           <div className={styles.clockSideSlot}>
             <Image
-              src="/themes/bingo-show/assets/icons/relogio_areia.png"
+              src="/themes/bingo-show-blue/relogio-areia-dourado.png"
               alt="Ampulheta 3D"
-              width={210}
+              width={159}
               height={226}
               className={styles.decoHourglass}
               priority
