@@ -133,7 +133,10 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 30px 10px 16px;
+  /* padding-right reserva espaco para a estrela absoluta (~58px + 14px de
+     margem da borda direita), para que ela nunca invada o seletor de tema
+     nem fique flutuando para fora do banner. */
+  padding: 10px 82px 10px 16px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
   border: 2px solid var(--accent-gold, #FFCF12);
@@ -186,9 +189,12 @@
 
 .starBadgeFloating {
   position: absolute;
-  top: -16px;
-  right: -16px;
-  margin-left: 0;
+  top: 50%;
+  right: 14px;
+  width: 58px;
+  height: 58px;
+  margin: 0;
+  transform: translateY(-50%);
   z-index: 3;
 }
 
