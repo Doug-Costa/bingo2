@@ -37,13 +37,18 @@
    ============================================================================= */
 .header {
   /* Wrapper estrutural apenas (grid/flex do topo) - sem painel visual proprio.
-     Bordas/glow ficam individualmente nas pills, no acumulado especial e no logo. */
+     Bordas/glow ficam individualmente nas pills, no acumulado especial e no logo.
+     align-items:flex-start (era center) + padding-top pequeno: a causa raiz
+     do respiro de ~60px no topo era o conteudo (logo/pills/banner), bem
+     menor que a altura fixa do header (158px, inalterada), sendo
+     centralizado dentro dela. Nao ha nenhum transform/scale duplicado aqui -
+     so o TvStage escala o palco inteiro uma unica vez. */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
   height: 158px;
-  padding: 0 4px;
+  padding: 8px 4px;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -55,7 +60,7 @@
 
 .headerLeft {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
 }
 
@@ -68,7 +73,7 @@
 
 .logoImage {
   object-fit: contain;
-  height: 78px;
+  height: 128px;
   width: auto;
 }
 
@@ -83,13 +88,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 6px;
   min-width: 148px;
-  padding: 8px 20px;
-  border-radius: 16px;
+  min-height: 108px;
+  padding: 14px 22px;
+  border-radius: 18px;
   background: rgba(6, 20, 58, 0.85);
   border: 2px solid rgba(23, 200, 255, 0.75);
   box-shadow: inset 0 0 10px rgba(0, 213, 255, 0.15), 0 0 14px rgba(0, 213, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
 }
 
 .pillLabelRow {
@@ -99,15 +106,15 @@
 }
 
 .pillIcon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   filter: drop-shadow(0 0 4px rgba(255, 207, 18, 0.5));
 }
 
 .pillLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 1px;
   color: var(--primary-blue-hover, #17C8FF);
@@ -116,7 +123,7 @@
 
 .pillValue {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 21px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: 0.8px;
   color: #FFFFFF;
@@ -125,7 +132,7 @@
 
 .headerRight {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .specialJackpotBox {
@@ -135,17 +142,19 @@
   gap: 14px;
   /* padding-right reserva espaco para a estrela absoluta (~58px + 14px de
      margem da borda direita), para que ela nunca invada o seletor de tema
-     nem fique flutuando para fora do banner. */
-  padding: 10px 82px 10px 16px;
+     nem fique flutuando para fora do banner. Apenas o padding vertical
+     cresceu (10->20) para preencher a altura do header. */
+  padding: 20px 82px 20px 16px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
   border: 2px solid var(--accent-gold, #FFCF12);
   box-shadow: 0 0 20px rgba(255, 207, 18, 0.4), inset 0 0 12px rgba(255, 207, 18, 0.2);
+  box-sizing: border-box;
 }
 
 .chestImage {
-  width: 60px;
-  height: 48px;
+  width: 84px;
+  height: 67px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.7));
   animation: floatSubtle 3s ease-in-out infinite alternate;
@@ -160,7 +169,7 @@
 
 .jackpotHeaderLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   letter-spacing: 1.4px;
   color: var(--accent-gold, #FFCF12);
@@ -170,7 +179,7 @@
 
 .jackpotHeaderValue {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 900;
   letter-spacing: 0.5px;
   color: #FFFFFF;
