@@ -461,16 +461,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {renderCenterColumn()}
           {renderRightColumn()}
         </div>
-        <div className={styles.bottomSection}>
-          <Image
-            src="/themes/bingo-show-blue/panels/panel-footer.png"
-            alt=""
-            aria-hidden="true"
-            width={2400}
-            height={227}
-            className={styles.bottomSectionImage}
-          />
-        </div>
+        <div className={styles.bottomSection} />
       </div>
     </BingoShowAmbientBackground>
   );

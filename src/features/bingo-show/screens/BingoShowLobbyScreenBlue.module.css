@@ -235,20 +235,39 @@
    2.1 SEÇÃO INFERIOR (banner navy vazio previsto pelo projeto, mesmo asset
    ja usado pelo tema Default para esta area: panel-footer.png)
    ============================================================================= */
+/* Coloracao apenas: altura travada em 163.8px (valor medido do layout
+   anterior, quando a altura vinha da proporcao intrinseca do asset
+   panel-footer.png que ocupava este espaco) para nao alterar a geometria
+   do palco. border-radius mantido em 0 (valor computado atual - o
+   arredondamento visivel antes vinha do proprio PNG, nao de CSS). Sem
+   asset/conteudo nesta etapa: painel escuro pronto para receber os
+   proximos elementos. */
 .bottomSection {
   flex-shrink: 0;
   width: 100%;
+  height: 163.8px;
   box-sizing: border-box;
-}
 
-/* Altura automatica pela proporcao intrinseca real do asset (2400x227) em
-   largura total do palco - largura corresponde a area util (sem "gutters"
-   pretos laterais que a combinacao altura-fixa + object-fit:contain
-   produziria) e sem cortar nada (ao contrario de object-fit:cover). */
-.bottomSectionImage {
-  display: block;
-  width: 100%;
-  height: auto;
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(48, 92, 174, 0.22) 0%,
+      rgba(17, 42, 91, 0.14) 42%,
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      #122449 0%,
+      #0b1938 38%,
+      #07132d 100%
+    );
+
+  border: 2px solid rgba(67, 130, 211, 0.62);
+
+  box-shadow:
+    inset 0 1px 0 rgba(161, 211, 255, 0.18),
+    inset 0 10px 30px rgba(44, 91, 177, 0.1),
+    0 0 14px rgba(27, 101, 196, 0.12);
 }
 
 /* =============================================================================
