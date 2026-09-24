@@ -32,10 +32,13 @@ export function TvStage({ children, className }: TvStageProps) {
     '--tv-scale': scale > 0 ? scale : 1,
   } as CSSProperties;
 
-  const classNames = [styles.stage, className].filter(Boolean).join(' ');
+  // scale === 0 → TvViewport ainda não mediu: oculta o palco em vez de exibi-lo
+  // em 1920×1080 reais por um frame. Servidor e 1º render do cliente saem
+  // idênticos (scale 0), então a hidratação não diverge.
+  const classNames = [styles.stage, scale > 0 ? null : styles.hidden, className].filter(Boolean).join(' ');
 
   return (
-    <div className={classNames} style={style} suppressHydrationWarning>
+    <div className={classNames} style={style}>
       {children}
     </div>
   );

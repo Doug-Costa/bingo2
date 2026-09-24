@@ -38,13 +38,17 @@ export function TvViewport({ children }: TvViewportProps) {
   const [ref, size] = useElementSize<HTMLDivElement>();
 
   const contextValue = useMemo<TvViewportContextValue>(() => {
-    const { width, height } = size;
-    const w = width > 0 ? width : typeof window !== 'undefined' ? window.innerWidth : 1920;
-    const h = height > 0 ? height : typeof window !== 'undefined' ? window.innerHeight : 1080;
+    const { width: w, height: h } = size;
+    // Antes da 1a medicao, scale = 0 ("ainda nao medido") tanto no servidor
+    // quanto no 1o render do cliente — o TvStage fica oculto ate medir. Nao usar
+    // window.innerWidth como fallback: o servidor nao tem window (calculava 1),
+    // o HTML hidratava com --tv-scale:1 e, como a medicao real repetia o valor
+    // do fallback, o React nunca corrigia o DOM — palco preso em 1920x1080 sem
+    // escala, cortando header e rodape em qualquer janela menor.
     // contain (nao cover): o palco 1920x1080 fica sempre 100% visivel, sem
     // cortar cabecalho/rodape em janelas fora de 16:9. A sobra de espaco nos
     // eixos vira margem, preenchida pelo TvViewportBackdrop (nao barras pretas).
-    const scale = Math.min(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT);
+    const scale = w > 0 && h > 0 ? Math.min(w / TV_STAGE_WIDTH, h / TV_STAGE_HEIGHT) : 0;
 
     return {
       viewportWidth: w,
