@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { BingoShowBall } from './BingoShowBall';
 import { BingoShowAssets } from '../assets';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import goldStyles from './goldMetalText.module.css';
 
 export interface BingoShowDrawnBallsProps {
   drawnBalls: number[];
@@ -51,22 +52,24 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
     >
       {/* HEADER: 🍀 ÚLTIMOS NÚMEROS SORTEADOS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, position: 'relative', marginTop: -2, marginBottom: 8 }}>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        {/* Blue: título em ouro metálico compacto + glow verde discreto nos trevos
+            (goldMetalText.module.css); demais temas inalterados. */}
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
         <span
+          className={isBlueTheme ? goldStyles.goldMetalTextCompact : undefined}
           style={{
             fontSize: 20,
             fontWeight: 900,
-            color: '#FFCF12',
-            textShadow: `0 0 14px rgba(255, 207, 18, 0.7)`,
             letterSpacing: 3,
             textTransform: 'uppercase',
             textAlign: 'center',
             fontFamily: 'Barlow Condensed, sans-serif',
+            ...(isBlueTheme ? {} : { color: '#FFCF12', textShadow: `0 0 14px rgba(255, 207, 18, 0.7)` }),
           }}
         >
           ÚLTIMOS NÚMEROS SORTEADOS
         </span>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
       {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) - diametro/fonte maiores no Blue

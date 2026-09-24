@@ -194,6 +194,7 @@ const CrescentBall: React.FC<{
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import blueStyles from './DrawStageBlue.module.css';
+import goldStyles from './goldMetalText.module.css';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
  * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
@@ -474,21 +475,23 @@ export const DrawStage: React.FC<DrawStageProps> = ({
       >
         {/* CENTER TITLE */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <span style={{ color: '#FFCF12', fontSize: 18 }}>★</span>
+          {/* Blue: ouro metálico compacto (goldMetalText.module.css); demais temas
+              mantêm o amarelo chapado. Tamanho/fonte/espaçamento iguais. */}
+          <span className={isBlue ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue ? {} : { color: '#FFCF12' }) }}>★</span>
           <span
+            className={isBlue ? goldStyles.goldMetalTextCompact : undefined}
             style={{
-              color: '#FFCF12',
               fontWeight: 900,
               fontSize: 22,
               letterSpacing: 3,
-              textShadow: `0 0 14px ${glowColor}`,
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
+              ...(isBlue ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
             }}
           >
             {title}
           </span>
-          <span style={{ color: '#FFCF12', fontSize: 18 }}>★</span>
+          <span className={isBlue ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue ? {} : { color: '#FFCF12' }) }}>★</span>
         </div>
 
         {/* RIGHT SUB-TITLE */}
