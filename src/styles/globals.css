@@ -335,6 +335,28 @@ button {
   }
 }
 
+/* Mesma receita de "faixas abruptas" de ouro metálico aprovada no
+   .clockDigits do lobby Blue (BingoShowLobbyScreenBlue.module.css) — global
+   porque DrawStage.tsx (tela de sorteio) usa inline style, sem CSS Module
+   próprio, então não dá pra declarar o keyframe localmente escopado. */
+@keyframes bs-gold-reflection-shift {
+  0%,
+  100% {
+    background-position: 50% 0%;
+    filter:
+      drop-shadow(0 1px 0 #fff2a6)
+      drop-shadow(0 3px 0 #9b5d00)
+      drop-shadow(0 7px 8px rgba(76, 41, 0, 0.34));
+  }
+  50% {
+    background-position: 50% 100%;
+    filter:
+      drop-shadow(0 1px 0 #fff8cf)
+      drop-shadow(0 3px 0 #a86600)
+      drop-shadow(0 8px 13px rgba(217, 165, 20, 0.42));
+  }
+}
+
 /* Usado por BingoShowGlowHalo (`pulse`) — porte do `Animated.loop` de
    opacidade (0.75 → 1 → 0.75), `animation-duration` setado inline por
    instância (`pulseDuration * 2`, prop dinâmica). */

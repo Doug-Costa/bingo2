@@ -192,6 +192,41 @@ const CrescentBall: React.FC<{
 };
 
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+
+/** Pontos de luz do aro do número sorteado (tema Blue) — calculados por
+ * trigonometria em vez de SVG `strokeDasharray`, conforme pedido explícito
+ * ("preferencialmente em CSS"). Pulsam bem devagar e De forma escalonada
+ * (`animation-delay` por ponto) em vez de girar — "sem rotação rápida ou
+ * efeito de cassino excessivo". */
+const LED_DOT_COUNT = 22;
+
+function buildLedDots(radius: number, reducedMotion: boolean) {
+  return Array.from({ length: LED_DOT_COUNT }).map((_, i) => {
+    const angle = (i / LED_DOT_COUNT) * Math.PI * 2;
+    const x = radius + radius * Math.cos(angle);
+    const y = radius + radius * Math.sin(angle);
+    return { x, y, delay: (i % 7) * 0.3 };
+  }).map(({ x, y, delay }, i) => (
+    <div
+      key={i}
+      style={{
+        position: 'absolute',
+        left: x - 2.5,
+        top: y - 2.5,
+        width: 5,
+        height: 5,
+        borderRadius: '50%',
+        backgroundColor: '#FFFFFF',
+        boxShadow: '0 0 6px 1.5px rgba(23, 200, 255, 0.9)',
+        animation: reducedMotion ? undefined : `bs-conn-dot-pulse 3.6s ease-in-out infinite`,
+        animationDelay: reducedMotion ? undefined : `${delay}s`,
+        opacity: reducedMotion ? 0.85 : undefined,
+        pointerEvents: 'none',
+      }}
+    />
+  ));
+}
 
 /** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
 const ExitBall: React.FC<{ number: number }> = ({ number }) => {
@@ -377,8 +412,24 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const primaryColor = theme.primary || '#FFCF12';
   const secondaryColor = theme.secondary || '#17C8FF';
   const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
+  const reducedMotion = usePrefersReducedMotion();
 
   const { flyingBalls, displayedNextBalls } = useBallExitEffect(currentNumber, nextBalls);
+
+  // Mesma receita de ouro metalico do contador do lobby (goldReflectionShift),
+  // so aplicada no tema Blue - demais temas mantem a cor solida atual.
+  const goldNumberStyle: React.CSSProperties = isBlue
+    ? {
+        backgroundImage:
+          'linear-gradient(180deg, #6f3e00 0%, #b97808 8%, #fff4b8 18%, #ffd76a 25%, #d9a514 42%, #fff0a0 51%, #b97808 59%, #f5c542 73%, #fff4b8 82%, #a86200 92%, #5c3100 100%)',
+        backgroundSize: '100% 220%',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        color: 'transparent',
+        animation: reducedMotion ? undefined : 'bs-gold-reflection-shift 4s ease-in-out infinite',
+      }
+    : {};
 
   // Formata o contador regressivo em 00:SS
   const timerStr = `00:${String(countdownSeconds).padStart(2, '0')}`;
@@ -468,52 +519,132 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         <div
           style={{
             position: 'relative',
-            width: 260,
-            height: 260,
+            width: isBlue ? 300 : 260,
+            height: isBlue ? 300 : 260,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {/* Radial Light Rays Background */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: -30,
-              background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
-              pointerEvents: 'none',
-              borderRadius: '50%',
-            }}
-          />
-
-          {/* Dotted LED Glowing Ring */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              border: '2.5px solid #17C8FF',
-              boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {/* SVG LED Dots perimeter */}
-            <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-              <circle
-                cx="130"
-                cy="130"
-                r="118"
-                stroke="#FFFFFF"
-                strokeWidth="4"
-                strokeDasharray="4 14"
-                strokeLinecap="round"
-                fill="none"
-                opacity={0.85}
+          {isBlue ? (
+            <>
+              {/* Glow radial externo (mais suave/largo que antes, acompanha o aro maior) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: -36,
+                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.26) 0%, rgba(8, 127, 252, 0.11) 45%, rgba(3, 17, 48, 0) 72%)',
+                  pointerEvents: 'none',
+                  borderRadius: '50%',
+                }}
               />
-            </svg>
-          </div>
+
+              {/* Anel 1 (externo, fino, discreto) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: -14,
+                  borderRadius: '50%',
+                  border: '1.5px solid rgba(23, 200, 255, 0.32)',
+                  pointerEvents: 'none',
+                }}
+              />
+
+              {/* Raios discretos partindo do centro - conic-gradient recortado em
+                  circulo (sem blur/mask, evita o artefato de "anel" ja visto no
+                  overlay do lobby quando blur+mask se combinam). */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background:
+                      'repeating-conic-gradient(from 0deg, rgba(23, 200, 255, 0.16) 0deg 5deg, transparent 5deg 30deg)',
+                    mixBlendMode: 'screen',
+                  }}
+                />
+              </div>
+
+              {/* Anel 2 - aro principal ciano luminoso (era o unico anel antes) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  border: '2.5px solid #17C8FF',
+                  boxShadow: '0 0 26px rgba(23, 200, 255, 0.6), inset 0 0 18px rgba(23, 200, 255, 0.35)',
+                  pointerEvents: 'none',
+                }}
+              />
+
+              {/* Pontos de luz do aro - CSS, nao SVG (pedido explicito), pulsam
+                  devagar e escalonados. */}
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                {buildLedDots(150, reducedMotion)}
+              </div>
+
+              {/* Anel 3 - interno, sutil, separa o aro do numero */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 22,
+                  borderRadius: '50%',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                  pointerEvents: 'none',
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {/* Radial Light Rays Background */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: -30,
+                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
+                  pointerEvents: 'none',
+                  borderRadius: '50%',
+                }}
+              />
+
+              {/* Dotted LED Glowing Ring */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  border: '2.5px solid #17C8FF',
+                  boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* SVG LED Dots perimeter */}
+                <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                  <circle
+                    cx="130"
+                    cy="130"
+                    r="118"
+                    stroke="#FFFFFF"
+                    strokeWidth="4"
+                    strokeDasharray="4 14"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity={0.85}
+                  />
+                </svg>
+              </div>
+            </>
+          )}
 
           {/* Main 3D Hero Number */}
           <div
@@ -616,10 +747,13 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         {/* LEFT: 3D HOURGLASS + COUNTDOWN */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14 }}>
           <img
-            src="/themes/bingo-show-blue/relogio_areia.png"
+            /* Blue: ampulheta transparente nova (mesmo asset aprovado no lobby).
+               Demais temas: mantido exatamente como antes (asset antigo, sem
+               transparencia real) - fora do escopo desta tarefa (so Blue). */
+            src={isBlue ? '/themes/bingo-show-blue/relogio-areia-dourado.png' : '/themes/bingo-show-blue/relogio_areia.png'}
             alt="Ampulheta"
             style={{
-              height: 54,
+              height: isBlue ? 64 : 54,
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 8px rgba(255, 207, 18, 0.5))',
             }}
@@ -639,14 +773,15 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             </span>
             <span
               style={{
-                color: '#FFCF12',
+                color: isBlue ? undefined : '#FFCF12',
                 fontSize: 32,
                 fontWeight: 900,
                 letterSpacing: 2,
                 fontFamily: 'Barlow Condensed, monospace, sans-serif',
-                textShadow: '0 0 14px rgba(255, 207, 18, 0.8)',
+                textShadow: isBlue ? undefined : '0 0 14px rgba(255, 207, 18, 0.8)',
                 lineHeight: 1,
                 marginTop: 2,
+                ...goldNumberStyle,
               }}
             >
               {timerStr}
@@ -657,11 +792,16 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
           <img
-            src="/themes/bingo-show-blue/bingo-cage.jpg"
+            /* Blue: GIF do globo com transparencia real (mesmo asset do lobby) -
+               nao existe PNG estatico do globo no projeto (globo-bingo.png e' na
+               verdade um banner "AQUI E SORTE!" mal nomeado; bingo-cage.jpg e'
+               JPG opaco). Decisao confirmada com o usuario. Demais temas:
+               inalterado (continuam com o bingo-cage.jpg de sempre). */
+            src={isBlue ? '/themes/bingo-show-blue/globo-bingo.gif' : '/themes/bingo-show-blue/bingo-cage.jpg'}
             alt="Globo de Bingo 3D"
             style={{
-              height: 80,
-              borderRadius: 12,
+              height: isBlue ? 92 : 80,
+              borderRadius: isBlue ? 0 : 12,
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 10px rgba(8, 127, 252, 0.5))',
             }}
