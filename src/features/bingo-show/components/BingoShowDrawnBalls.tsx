@@ -1,9 +1,10 @@
 // src/features/bingo-show/components/BingoShowDrawnBalls.tsx
 import React, { useMemo } from 'react';
-import { BingoShowBall } from './BingoShowBall';
+import { BingoShowBall, getBallColorName } from './BingoShowBall';
 import { BingoShowAssets } from '../assets';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
+import blueGrid from './BingoShowDrawnBallsBlue.module.css';
 
 export interface BingoShowDrawnBallsProps {
   drawnBalls: number[];
@@ -72,53 +73,76 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
-      {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) - diametro/fonte maiores no Blue
-          (34->39px / 15->20px, topo do intervalo 34-40px/17-21px pedido),
-          usando melhor a largura disponivel em vez de bolas pequenas boiando
-          em celulas grandes. */}
-      <div
-        style={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(18, 1fr)',
-          gridTemplateRows: isBlueTheme ? 'repeat(5, 42px)' : 'repeat(5, 38px)',
-          rowGap: isBlueTheme ? 8 : 6,
-          columnGap: 4,
-          alignItems: 'center',
-          justifyItems: 'center',
-          alignContent: 'center',
-          justifyContent: 'center',
-          padding: '4px 16px 8px 16px',
-        }}
-      >
-        {ALL_90_NUMBERS.map((num) => {
-          const isDrawn = drawnSet.has(num);
-          const isLatest = num === latestBall;
-          const ballState = isDrawn ? 'drawn' : 'default';
+      {isBlueTheme ? (
+        /* Blue: 90 bolas de 44px de verdade no layout (sem zoom), 18 colunas
+           espalhadas por toda a largura útil e 5 linhas na altura disponível —
+           mesmo painel, mesma ordem 1..90, mesma regra de cor por faixa.
+           Estilos em BingoShowDrawnBallsBlue.module.css. */
+        <div className={blueGrid.historyGrid}>
+          {ALL_90_NUMBERS.map((num) => {
+            const isDrawn = drawnSet.has(num);
+            const stateClass = isDrawn
+              ? `${blueGrid.historyBallDrawn} ${blueGrid[`drawn_${getBallColorName(num, 'drawn')}`]}`
+              : blueGrid.historyBallPending;
+            const latestClass = num === latestBall ? blueGrid.historyBallLatest : '';
+            return (
+              <div key={num} className={`${blueGrid.historyBall} ${stateClass} ${latestClass}`}>
+                {num}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+        {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) - diametro/fonte maiores no Blue
+            (34->39px / 15->20px, topo do intervalo 34-40px/17-21px pedido),
+            usando melhor a largura disponivel em vez de bolas pequenas boiando
+            em celulas grandes. */}
+        <div
+          style={{
+            flex: 1,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(18, 1fr)',
+            gridTemplateRows: isBlueTheme ? 'repeat(5, 42px)' : 'repeat(5, 38px)',
+            rowGap: isBlueTheme ? 8 : 6,
+            columnGap: 4,
+            alignItems: 'center',
+            justifyItems: 'center',
+            alignContent: 'center',
+            justifyContent: 'center',
+            padding: '4px 16px 8px 16px',
+          }}
+        >
+          {ALL_90_NUMBERS.map((num) => {
+            const isDrawn = drawnSet.has(num);
+            const isLatest = num === latestBall;
+            const ballState = isDrawn ? 'drawn' : 'default';
 
-          const animationName = isLatest
-            ? 'bs-grid-cell-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both, bs-ball-light-up 650ms ease-out both'
-            : undefined;
+            const animationName = isLatest
+              ? 'bs-grid-cell-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both, bs-ball-light-up 650ms ease-out both'
+              : undefined;
 
-          return (
-            <BingoShowBall
-              key={num}
-              number={num}
-              state={ballState}
-              size="sm"
-              diameterOverride={isBlueTheme ? 39 : 34}
-              fontSizeOverride={isBlueTheme ? 20 : 15}
-              style={{
-                opacity: 1,
-                filter: isDrawn ? 'drop-shadow(0 0 6px rgba(23, 200, 255, 0.8))' : 'none',
-                transform: isLatest ? 'scale(1.25)' : 'scale(1)',
-                transition: 'transform 200ms ease-out, filter 350ms ease-out',
-                animation: animationName,
-              }}
-            />
-          );
-        })}
-      </div>
+            return (
+              <BingoShowBall
+                key={num}
+                number={num}
+                state={ballState}
+                size="sm"
+                diameterOverride={isBlueTheme ? 39 : 34}
+                fontSizeOverride={isBlueTheme ? 20 : 15}
+                style={{
+                  opacity: 1,
+                  filter: isDrawn ? 'drop-shadow(0 0 6px rgba(23, 200, 255, 0.8))' : 'none',
+                  transform: isLatest ? 'scale(1.25)' : 'scale(1)',
+                  transition: 'transform 200ms ease-out, filter 350ms ease-out',
+                  animation: animationName,
+                }}
+              />
+            );
+          })}
+        </div>
+        </>
+      )}
     </div>
   );
 };

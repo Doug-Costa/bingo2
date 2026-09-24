@@ -1,0 +1,153 @@
+/* BingoShowDrawnBallsBlue.module.css — grade "ÚLTIMOS NÚMEROS SORTEADOS",
+ * SOMENTE tema Blue (demais temas seguem com a grade inline de
+ * BingoShowDrawnBalls.tsx).
+ *
+ * Mesmo painel de sempre (1289×393 no palco 1920×1080; área da grade
+ * 1233×323): nada aqui muda o tamanho externo. As 90 bolas ficam maiores no
+ * próprio layout (44px, não zoom/scale): 18 colunas espalhadas por toda a
+ * largura útil e 5 linhas distribuídas na altura disponível.
+ */
+
+.historyGrid {
+  --history-ball-size: 44px;
+
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(18, var(--history-ball-size));
+  grid-template-rows: repeat(5, var(--history-ball-size));
+  justify-content: space-between;
+  align-content: space-evenly;
+  column-gap: 0;
+  row-gap: 12px;
+  padding: 12px 30px 20px;
+}
+
+.historyBall {
+  position: relative;
+  width: var(--history-ball-size);
+  height: var(--history-ball-size);
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  /* Mesmo recuo óptico das bolas laterais: o letter-spacing negativo também
+   * sobra depois do último dígito. */
+  padding-right: 0.04em;
+
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  user-select: none;
+}
+
+/* Ainda não sorteada — esfera prateada, número escuro legível. */
+.historyBallPending {
+  color: #0a1733;
+  background: radial-gradient(
+    circle at 32% 24%,
+    #f2f6ff 0%,
+    #c8d1df 13%,
+    #8c98aa 38%,
+    #596579 68%,
+    #313b4e 100%
+  );
+  border: 1px solid rgba(195, 218, 245, 0.42);
+  box-shadow:
+    inset 3px 4px 6px rgba(255, 255, 255, 0.35),
+    inset -4px -5px 7px rgba(6, 15, 35, 0.42),
+    0 2px 5px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Sorteada — mesma esfera colorida das bolas "Próximos números" (paleta
+ * --hi/--mid/--low/--deep vinda de DrawStageBlue.module.css, cor pela regra
+ * por faixa de `getBallColorName`). Borda/halo por `--glow` específico de
+ * cada cor, em vez de `color-mix()` (ausente em WebViews Android antigas). */
+.historyBallDrawn {
+  color: var(--ink, #ffffff);
+  background: radial-gradient(
+    circle at 32% 26%,
+    var(--hi) 0%,
+    var(--mid) 30%,
+    var(--low) 64%,
+    var(--deep) 100%
+  );
+  border: 2px solid var(--glow);
+  box-shadow:
+    inset 4px 5px 8px rgba(255, 255, 255, 0.3),
+    inset -5px -6px 9px rgba(0, 0, 20, 0.45),
+    0 0 5px var(--glow),
+    0 0 12px var(--glow-soft);
+  text-shadow: var(--ink-shadow, 0 2px 2px rgba(0, 0, 0, 0.72));
+}
+
+.drawn_blue {
+  composes: color_blue from './DrawStageBlue.module.css';
+  --glow: #4aa8ff;
+  --glow-soft: rgba(74, 168, 255, 0.72);
+}
+
+.drawn_red {
+  composes: color_red from './DrawStageBlue.module.css';
+  --glow: #ff4d42;
+  --glow-soft: rgba(255, 77, 66, 0.72);
+}
+
+.drawn_green {
+  composes: color_green from './DrawStageBlue.module.css';
+  --glow: #3fe066;
+  --glow-soft: rgba(63, 224, 102, 0.72);
+}
+
+.drawn_yellow {
+  composes: color_yellow from './DrawStageBlue.module.css';
+  --glow: #ffd23a;
+  --glow-soft: rgba(255, 210, 58, 0.72);
+}
+
+.drawn_purple {
+  composes: color_purple from './DrawStageBlue.module.css';
+  --glow: #c16bff;
+  --glow-soft: rgba(193, 107, 255, 0.72);
+}
+
+.drawn_gold {
+  composes: color_gold from './DrawStageBlue.module.css';
+  --glow: #ffc21a;
+  --glow-soft: rgba(255, 194, 26, 0.72);
+}
+
+/* Número recém-sorteado — pulso curto, uma vez. A classe só é aplicada à
+ * bola que acabou de chegar; como cada bola tem `key` fixo (o próprio número),
+ * a animação dispara quando a classe entra nela e não se repete em
+ * re-renders. Depois do pulso a bola volta ao tamanho normal. */
+.historyBallLatest {
+  z-index: 1;
+  animation: historyBallArrival 900ms ease-out;
+}
+
+@keyframes historyBallArrival {
+  0% {
+    transform: scale(0.55);
+    filter: brightness(2);
+  }
+  55% {
+    transform: scale(1.22);
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .historyBallLatest {
+    animation: none;
+  }
+}
