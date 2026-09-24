@@ -234,12 +234,13 @@ const ExitBall: React.FC<{ number: number }> = ({ number }) => {
         boxShadow: `0 0 26px 6px ${cyanColor}88`,
       }}
     >
+      {/* Textura no tamanho da própria bola (antes usava BALL_DIAMETER/fonte 104
+          dentro de 80px — só um pedaço ampliado da textura aparecia). */}
       <BingoShowBall
         number={number}
         state="drawn"
-        size="current"
-        fontSizeOverride={104}
-        diameterOverride={BALL_DIAMETER}
+        diameterOverride={EXIT_BALL_SIZE}
+        fontSizeOverride={EXIT_BALL_FONT}
         style={{ position: 'absolute', inset: 0 }}
       />
       <div
@@ -297,6 +298,18 @@ const InfoPill: React.FC<{ label: string; value: string }> = ({ label, value }) 
 };
 
 
+/** Geometria do voo (temas não-Blue) — derivada do layout da linha central:
+ * área da bola (260px) + gap da linha (24px) + coluna dos próximos (80px),
+ * centralizados; slots de 58px com gap de 12px. A bola voadora nasce no centro
+ * da bola principal e termina exatamente sobre o slot 0, já no tamanho dele. */
+const EXIT_BALL_SIZE = 80;
+const EXIT_BALL_FONT = 33; // × EXIT_TO_SCALE ≈ 24px, a fonte do slot
+const EXIT_ROW_WIDTH = 260 + 24 + 80;
+const EXIT_FROM_X = 260 / 2 - EXIT_ROW_WIDTH / 2;
+const EXIT_TO_X = EXIT_ROW_WIDTH / 2 - 80 / 2;
+const EXIT_TO_Y = -(58 + 12);
+const EXIT_TO_SCALE = 58 / EXIT_BALL_SIZE;
+
 const FlyingExitBall: React.FC<{ number: number }> = ({ number }) => {
   return (
     <div
@@ -304,10 +317,15 @@ const FlyingExitBall: React.FC<{ number: number }> = ({ number }) => {
         position: 'absolute',
         top: '50%',
         left: '50%',
-        width: 80,
-        height: 80,
-        transform: 'translate(-50%, -50%)',
-        animation: 'bs-ball-exit-flight 700ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
+        width: EXIT_BALL_SIZE,
+        height: EXIT_BALL_SIZE,
+        marginLeft: -EXIT_BALL_SIZE / 2,
+        marginTop: -EXIT_BALL_SIZE / 2,
+        ['--exit-from-x' as string]: `${EXIT_FROM_X}px`,
+        ['--exit-to-x' as string]: `${EXIT_TO_X}px`,
+        ['--exit-to-y' as string]: `${EXIT_TO_Y}px`,
+        ['--exit-to-scale' as string]: EXIT_TO_SCALE,
+        animation: `bs-ball-exit-flight ${EXIT_DURATION_MS}ms cubic-bezier(0.45, 0.05, 0.3, 1) both`,
         zIndex: 20,
         pointerEvents: 'none',
       }}

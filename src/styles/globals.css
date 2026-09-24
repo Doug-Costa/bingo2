@@ -357,6 +357,27 @@ button {
   }
 }
 
+/* Voo da bola que sai do centro para o 1º slot dos próximos números (DrawStage,
+   temas não-Blue — o Blue tem o próprio em DrawStageBlue.module.css). Posições
+   e escala vêm por CSS custom properties setadas inline no FlyingExitBall. */
+@keyframes bs-ball-exit-flight {
+  0% {
+    opacity: 0;
+    transform: translate(var(--exit-from-x), 0) scale(1.7);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(calc(var(--exit-from-x) + (var(--exit-to-x) - var(--exit-from-x)) * 0.12), calc(var(--exit-to-y) * 0.5)) scale(1.5);
+  }
+  60% {
+    transform: translate(calc(var(--exit-from-x) + (var(--exit-to-x) - var(--exit-from-x)) * 0.7), calc(var(--exit-to-y) * 1.35)) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--exit-to-x), var(--exit-to-y)) scale(var(--exit-to-scale));
+  }
+}
+
 /* Usado por BingoShowGlowHalo (`pulse`) — porte do `Animated.loop` de
    opacidade (0.75 → 1 → 0.75), `animation-duration` setado inline por
    instância (`pulseDuration * 2`, prop dinâmica). */
