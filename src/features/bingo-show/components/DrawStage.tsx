@@ -18,7 +18,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { BingoShowBall, type BingoShowBallState } from './BingoShowBall';
+import { BingoShowBall, getBallColorName, type BingoShowBallState } from './BingoShowBall';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 
 // ─── GEOMETRIA DO PALCO — base idêntica ao original RN (Sprint C2.5, "presença do
@@ -193,40 +193,30 @@ const CrescentBall: React.FC<{
 
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import blueStyles from './DrawStageBlue.module.css';
 
-/** Pontos de luz do aro do número sorteado (tema Blue) — calculados por
- * trigonometria em vez de SVG `strokeDasharray`, conforme pedido explícito
- * ("preferencialmente em CSS"). Pulsam bem devagar e De forma escalonada
- * (`animation-delay` por ponto) em vez de girar — "sem rotação rápida ou
- * efeito de cassino excessivo". */
-const LED_DOT_COUNT = 22;
+/** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
+ * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
+ * elementos a cada render/tick. */
+const BLUE_OUTER_DOT_COUNT = 24;
+const BLUE_OUTER_DOTS = Array.from({ length: BLUE_OUTER_DOT_COUNT }, (_, i) => (
+  <span
+    key={i}
+    className={blueStyles.outerDot}
+    style={{ transform: `rotate(${(i * 360) / BLUE_OUTER_DOT_COUNT}deg) translateY(calc(var(--outer) / -2 + 1px))` }}
+  />
+));
 
-function buildLedDots(radius: number, reducedMotion: boolean) {
-  return Array.from({ length: LED_DOT_COUNT }).map((_, i) => {
-    const angle = (i / LED_DOT_COUNT) * Math.PI * 2;
-    const x = radius + radius * Math.cos(angle);
-    const y = radius + radius * Math.sin(angle);
-    return { x, y, delay: (i % 7) * 0.3 };
-  }).map(({ x, y, delay }, i) => (
-    <div
-      key={i}
-      style={{
-        position: 'absolute',
-        left: x - 2.5,
-        top: y - 2.5,
-        width: 5,
-        height: 5,
-        borderRadius: '50%',
-        backgroundColor: '#FFFFFF',
-        boxShadow: '0 0 6px 1.5px rgba(23, 200, 255, 0.9)',
-        animation: reducedMotion ? undefined : `bs-conn-dot-pulse 3.6s ease-in-out infinite`,
-        animationDelay: reducedMotion ? undefined : `${delay}s`,
-        opacity: reducedMotion ? 0.85 : undefined,
-        pointerEvents: 'none',
-      }}
-    />
-  ));
-}
+/** Bola lateral "próximos números" do tema Blue — esfera CSS com a mesma
+ * linguagem material da bola central; cor pela regra existente por faixa. */
+const BlueNextBall: React.FC<{ number?: number }> = ({ number }) =>
+  number === undefined ? (
+    <div className={`${blueStyles.nextBall} ${blueStyles.nextBallEmpty}`} />
+  ) : (
+    <div className={`${blueStyles.nextBall} ${blueStyles[`color_${getBallColorName(number, 'drawn')}`]}`}>
+      <span className={blueStyles.nextBallNumber}>{number}</span>
+    </div>
+  );
 
 /** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
 const ExitBall: React.FC<{ number: number }> = ({ number }) => {
@@ -515,210 +505,111 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           gap: 24,
         }}
       >
-        {/* MAIN BALL AREA (with radial light rays & dotted LED ring) */}
-        <div
-          style={{
-            position: 'relative',
-            width: isBlue ? 300 : 260,
-            height: isBlue ? 300 : 260,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {isBlue ? (
-            <>
-              {/* Glow radial externo (fundo apenas - nao encosta na bola) */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: -36,
-                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 72%)',
-                  pointerEvents: 'none',
-                  borderRadius: '50%',
-                }}
-              />
-
-              {/* GRUPO 1 (aro externo): anel fino + raios + aro principal + pontos
-                  de luz, todos girando JUNTOS - o grupo inteiro tem sua propria
-                  animacao de rotacao continua, independente da entrada da bola. */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  animation: reducedMotion
-                    ? undefined
-                    : 'bs-blue-ring-rotate 9s linear infinite, bs-blue-ring-pulse 2.8s ease-in-out infinite',
-                  pointerEvents: 'none',
-                }}
-              >
-                <div style={{ position: 'absolute', inset: -14, borderRadius: '50%', border: '1.5px solid rgba(23, 200, 255, 0.32)' }} />
-
-                {/* Raios/segmentos luminosos - conic-gradient recortado em circulo
-                    (sem blur/mask, evita o artefato de "anel" ja visto no overlay
-                    do lobby quando blur+mask se combinam em caixas diferentes). */}
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden' }}>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'repeating-conic-gradient(from 0deg, rgba(23, 200, 255, 0.55) 0deg 8deg, transparent 8deg 30deg)',
-                      mixBlendMode: 'screen',
-                    }}
-                  />
+        {isBlue ? (
+          <>
+            {/* Palco Blue em camadas (atmosfera → anel externo → anel interno →
+                reflexos → bola → número). Estilos em DrawStageBlue.module.css.
+                `key={currentNumber}` remonta SÓ a bola quando o número real muda,
+                reiniciando a entrada; os anéis ficam fora da key e nunca reiniciam. */}
+            <div className={blueStyles.blueDrawStage}>
+              <div className={blueStyles.stageAtmosphere} />
+              <div className={blueStyles.outerRing}>{BLUE_OUTER_DOTS}</div>
+              <div className={blueStyles.innerRing} />
+              <div className={blueStyles.stageRays} />
+              <div key={currentNumber} className={blueStyles.mainBingoBall}>
+                <span className={blueStyles.ballSpecular} />
+                <span className={blueStyles.ballReflection} />
+                <span className={blueStyles.ballNumber}>{currentNumber > 0 ? currentNumber : '--'}</span>
+              </div>
+              {/* Bola anterior saindo do centro para o 1º slot — mesma esfera das
+                  bolas laterais, para pousar idêntica ao que o slot vai exibir. */}
+              {flyingBalls.map((fb) => (
+                <div key={fb.id} className={blueStyles.exitFlight}>
+                  <BlueNextBall number={fb.number} />
                 </div>
+              ))}
+            </div>
 
+            {/* Próximos números — mesmos valores/ordem de `displayedNextBalls`;
+                posições sem número viram placeholder do mesmo tamanho. */}
+            <div className={blueStyles.nextColumn}>
+              {[0, 1, 2].map((i) => (
+                <BlueNextBall key={i} number={displayedNextBalls[i]} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* MAIN BALL AREA (with radial light rays & dotted LED ring) */}
+            <div
+              style={{
+                position: 'relative',
+                width: isBlue ? 300 : 260,
+                height: isBlue ? 300 : 260,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <>
+                {/* Radial Light Rays Background */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: -30,
+                    background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
+                    pointerEvents: 'none',
+                    borderRadius: '50%',
+                  }}
+                />
+
+                {/* Dotted LED Glowing Ring */}
                 <div
                   style={{
                     position: 'absolute',
                     inset: 0,
                     borderRadius: '50%',
                     border: '2.5px solid #17C8FF',
-                    boxShadow: '0 0 26px rgba(23, 200, 255, 0.6), inset 0 0 18px rgba(23, 200, 255, 0.35)',
-                  }}
-                />
-
-                {buildLedDots(150, reducedMotion)}
-              </div>
-
-              {/* GRUPO 2 (aro interno): mais fino, tracejado (segmentado por
-                  natureza do border-style, sem precisar de trig extra), gira em
-                  sentido OPOSTO e em velocidade diferente do grupo externo. */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 22,
-                  borderRadius: '50%',
-                  border: '1.5px dashed rgba(255, 255, 255, 0.4)',
-                  animation: reducedMotion ? undefined : 'bs-blue-ring-rotate-reverse 14s linear infinite',
-                  pointerEvents: 'none',
-                }}
-              />
-            </>
-          ) : (
-            <>
-              {/* Radial Light Rays Background */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: -30,
-                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
-                  pointerEvents: 'none',
-                  borderRadius: '50%',
-                }}
-              />
-
-              {/* Dotted LED Glowing Ring */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  border: '2.5px solid #17C8FF',
-                  boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {/* SVG LED Dots perimeter */}
-                <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                  <circle
-                    cx="130"
-                    cy="130"
-                    r="118"
-                    stroke="#FFFFFF"
-                    strokeWidth="4"
-                    strokeDasharray="4 14"
-                    strokeLinecap="round"
-                    fill="none"
-                    opacity={0.85}
-                  />
-                </svg>
-              </div>
-            </>
-          )}
-
-          {isBlue ? (
-            /* Bola de bingo 3D real (esfera com volume/reflexo/halo), nao mais
-               o numero solto dentro do aro. `key={currentNumber}` reinicia a
-               animacao de entrada a cada numero novo - `bs-ball-draw-in` nao e
-               `infinite`, entao ela gira/aproxima/desacelera e PARA. */
-            <div
-              key={currentNumber}
-              style={{
-                position: 'relative',
-                zIndex: 10,
-                width: 190,
-                height: 190,
-                borderRadius: '50%',
-                animation: reducedMotion ? undefined : 'bs-ball-draw-in 950ms cubic-bezier(0.22, 1, 0.36, 1) both',
-                boxShadow:
-                  '0 0 8px #d7f8ff, 0 0 24px #20c8ff, 0 0 58px rgba(0, 126, 255, 0.65), 0 10px 22px rgba(0, 0, 0, 0.55)',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  background:
-                    'radial-gradient(circle at 32% 25%, #ffffff 0%, #bceeff 8%, #47bcea 22%, #12629b 48%, #08284f 72%, #020d24 100%)',
-                  boxShadow: 'inset 18px 20px 30px rgba(255, 255, 255, 0.24), inset -26px -30px 45px rgba(0, 5, 24, 0.72)',
-                }}
-              >
-                {/* ballHighlight: brilho especular concentrado, canto superior-esquerdo */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '10%',
-                    left: '16%',
-                    width: '34%',
-                    height: '26%',
-                    borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 72%)',
-                    pointerEvents: 'none',
-                  }}
-                />
-                {/* ballReflection: reflexo curvo diagonal na superficie */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '-15%',
-                    left: '-20%',
-                    width: '90%',
-                    height: '60%',
-                    transform: 'rotate(-18deg)',
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.30), rgba(255,255,255,0) 75%)',
-                    pointerEvents: 'none',
-                  }}
-                />
-                {/* sombra interna inferior - ancoragem/profundidade */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '38%',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.35), rgba(0,0,0,0))',
-                    pointerEvents: 'none',
-                  }}
-                />
-                <span
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
+                    boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 100,
+                  }}
+                >
+                  {/* SVG LED Dots perimeter */}
+                  <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                    <circle
+                      cx="130"
+                      cy="130"
+                      r="118"
+                      stroke="#FFFFFF"
+                      strokeWidth="4"
+                      strokeDasharray="4 14"
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity={0.85}
+                    />
+                  </svg>
+                </div>
+              </>
+
+              <div
+                key={currentNumber}
+                style={{
+                  position: 'relative',
+                  zIndex: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'bs-hero-ball-enter 900ms ease-out both',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 120,
                     fontWeight: 900,
                     color: '#FFFFFF',
-                    textShadow: '0 6px 18px rgba(0, 0, 0, 0.75), 0 0 16px rgba(255, 255, 255, 0.35)',
+                    textShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
                     fontFamily: 'Barlow Condensed, sans-serif',
                     lineHeight: 1,
                     userSelect: 'none',
@@ -728,94 +619,68 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 </span>
               </div>
             </div>
-          ) : (
+
+            {/* VERTICAL NEXT BALLS (3 recent / upcoming balls stack on right) -
+                maiores no Blue (58->70px / 24->31px, dentro do intervalo
+                64-76px/28-34px pedido), com borda dourada luminosa. */}
             <div
-              key={currentNumber}
               style={{
-                position: 'relative',
-                zIndex: 10,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                animation: 'bs-hero-ball-enter 900ms ease-out both',
+                gap: isBlue ? 16 : 12,
+                width: isBlue ? 92 : 80,
+                zIndex: 15,
               }}
             >
-              <span
-                style={{
-                  fontSize: 120,
-                  fontWeight: 900,
-                  color: '#FFFFFF',
-                  textShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
-                  fontFamily: 'Barlow Condensed, sans-serif',
-                  lineHeight: 1,
-                  userSelect: 'none',
-                }}
-              >
-                {currentNumber > 0 ? currentNumber : '--'}
-              </span>
+              {displayedNextBalls.slice(0, 3).map((num, idx) => (
+                <div
+                  key={`${num}-${idx}`}
+                  style={{
+                    width: isBlue ? 70 : 58,
+                    height: isBlue ? 70 : 58,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: isBlue ? '2px solid rgba(255, 207, 18, 0.7)' : undefined,
+                    boxShadow: isBlue
+                      ? '0 0 14px rgba(255, 207, 18, 0.45), 0 4px 12px rgba(0, 0, 0, 0.5)'
+                      : '0 4px 12px rgba(0, 0, 0, 0.5)',
+                    boxSizing: 'border-box',
+                    transition: 'all 300ms ease',
+                  }}
+                >
+                  <BingoShowBall
+                    number={num}
+                    state="drawn"
+                    size="lg"
+                    diameterOverride={isBlue ? 70 : 58}
+                    fontSizeOverride={isBlue ? 31 : 24}
+                  />
+                </div>
+              ))}
+              {/* Fallback empty slots if less than 3 */}
+              {Array.from({ length: Math.max(0, 3 - displayedNextBalls.length) }).map((_, i) => (
+                <div
+                  key={`empty-${i}`}
+                  style={{
+                    width: isBlue ? 70 : 58,
+                    height: isBlue ? 70 : 58,
+                    borderRadius: '50%',
+                    border: '2px dashed rgba(25, 117, 210, 0.4)',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              ))}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
-        {/* VERTICAL NEXT BALLS (3 recent / upcoming balls stack on right) -
-            maiores no Blue (58->70px / 24->31px, dentro do intervalo
-            64-76px/28-34px pedido), com borda dourada luminosa. */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: isBlue ? 16 : 12,
-            width: isBlue ? 92 : 80,
-            zIndex: 15,
-          }}
-        >
-          {displayedNextBalls.slice(0, 3).map((num, idx) => (
-            <div
-              key={`${num}-${idx}`}
-              style={{
-                width: isBlue ? 70 : 58,
-                height: isBlue ? 70 : 58,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: isBlue ? '2px solid rgba(255, 207, 18, 0.7)' : undefined,
-                boxShadow: isBlue
-                  ? '0 0 14px rgba(255, 207, 18, 0.45), 0 4px 12px rgba(0, 0, 0, 0.5)'
-                  : '0 4px 12px rgba(0, 0, 0, 0.5)',
-                boxSizing: 'border-box',
-                transition: 'all 300ms ease',
-              }}
-            >
-              <BingoShowBall
-                number={num}
-                state="drawn"
-                size="lg"
-                diameterOverride={isBlue ? 70 : 58}
-                fontSizeOverride={isBlue ? 31 : 24}
-              />
-            </div>
-          ))}
-          {/* Fallback empty slots if less than 3 */}
-          {Array.from({ length: Math.max(0, 3 - displayedNextBalls.length) }).map((_, i) => (
-            <div
-              key={`empty-${i}`}
-              style={{
-                width: isBlue ? 70 : 58,
-                height: isBlue ? 70 : 58,
-                borderRadius: '50%',
-                border: '2px dashed rgba(25, 117, 210, 0.4)',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                boxSizing: 'border-box',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Flying ball exit effect */}
-        {flyingBalls.map((fb) => (
+        {/* Flying ball exit effect (tema Blue renderiza a sua dentro do palco) */}
+        {!isBlue && flyingBalls.map((fb) => (
           <FlyingExitBall key={fb.id} number={fb.number} />
         ))}
       </div>

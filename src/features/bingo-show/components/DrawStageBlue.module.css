@@ -1,0 +1,505 @@
+/* DrawStageBlue.module.css — palco central do sorteio, SOMENTE tema Blue.
+ *
+ * Usado pelos ramos `isBlue` de DrawStage.tsx (mesmo componente funcional, sem
+ * fork). Referência visual aprovada: bola azul 3D + dois anéis luminosos +
+ * três bolas laterais douradas.
+ *
+ * Geometria: o palco real (área entre o cabeçalho e o rodapé do card, no layout
+ * 1920×1080) mede ~750×401px, então o conjunto foi dimensionado para caber em
+ * 372px de altura mantendo as proporções da referência (anel interno ≈ 1,25×
+ * a bola, anel externo ≈ 1,48× a bola) sem cortar o glow.
+ *
+ * Camadas (de trás para a frente): atmosfera → anel externo → anel interno →
+ * reflexos radiais → bola → número. Os anéis são sempre maiores que a bola e
+ * ficam abaixo dela no z-index, então nunca atravessam a esfera.
+ */
+
+.blueDrawStage {
+  --outer: 372px;
+  --inner: 316px;
+  --ball: 252px;
+
+  position: relative;
+  flex: none;
+  width: var(--outer);
+  height: var(--outer);
+  display: grid;
+  place-items: center;
+}
+
+.blueDrawStage > * {
+  grid-area: 1 / 1;
+}
+
+/* 1. Atmosfera — luz azul difusa atrás de tudo, estática. */
+.stageAtmosphere {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(23, 170, 255, 0.3) 0%,
+    rgba(8, 110, 230, 0.16) 42%,
+    rgba(3, 17, 48, 0) 70%
+  );
+  pointer-events: none;
+}
+
+/* 2. Anel externo — linha ciano contínua + pontos de luz maiores. Os pontos são
+ * filhos do anel, então giram junto com ele. */
+.outerRing {
+  z-index: 2;
+  position: relative;
+  width: var(--outer);
+  height: var(--outer);
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 2px solid rgba(96, 226, 255, 0.95);
+  box-shadow:
+    0 0 6px rgba(120, 232, 255, 0.75),
+    0 0 16px rgba(23, 180, 255, 0.45),
+    inset 0 0 12px rgba(23, 180, 255, 0.35);
+  will-change: transform, opacity;
+  animation:
+    blueOuterRotation 12s linear infinite,
+    blueRingBreathing 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.outerDot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 0 4px 1px rgba(210, 248, 255, 0.95),
+    0 0 10px 3px rgba(23, 200, 255, 0.7);
+}
+
+/* 3. Anel interno — linha de pequenos pontos, mais discreto, gira ao contrário. */
+.innerRing {
+  z-index: 3;
+  width: var(--inner);
+  height: var(--inner);
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 2px dotted rgba(150, 236, 255, 0.85);
+  filter: drop-shadow(0 0 3px rgba(23, 200, 255, 0.8));
+  will-change: transform;
+  animation: blueInnerRotation 17s linear infinite reverse;
+  pointer-events: none;
+}
+
+/* 4. Reflexos radiais — só iluminação difusa dos pontos: fatias finas, muito
+ * transparentes e desfocadas, com fade radial. Duas camadas com período e raio
+ * diferentes dão comprimentos levemente distintos. Giram com o anel externo. */
+.stageRays {
+  z-index: 3;
+  position: relative;
+  width: calc(var(--inner) - 8px);
+  height: calc(var(--inner) - 8px);
+  border-radius: 50%;
+  opacity: 0.5;
+  will-change: transform;
+  animation: blueOuterRotation 12s linear infinite;
+  pointer-events: none;
+}
+
+.stageRays::before,
+.stageRays::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(9px);
+  -webkit-mask-image: radial-gradient(circle, transparent 38%, #000 58%, transparent 72%);
+  mask-image: radial-gradient(circle, transparent 38%, #000 58%, transparent 72%);
+}
+
+.stageRays::before {
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 4deg,
+    rgba(57, 216, 255, 0.22) 0deg 1.5deg,
+    transparent 3deg 27deg
+  );
+}
+
+.stageRays::after {
+  inset: 14px;
+  background: repeating-conic-gradient(
+    from 17deg,
+    rgba(120, 230, 255, 0.16) 0deg 1deg,
+    transparent 2.5deg 41deg
+  );
+}
+
+/* 5. Bola principal 3D — `key={currentNumber}` no TSX remonta este elemento a
+ * cada número novo, reiniciando a entrada; nenhuma animação é `infinite`, então
+ * a bola para depois de estabilizar. */
+.mainBingoBall {
+  z-index: 4;
+  position: relative;
+  width: var(--ball);
+  height: var(--ball);
+  border-radius: 50%;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  background: radial-gradient(
+    circle at 31% 23%,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(212, 248, 255, 0.92) 6%,
+    rgba(77, 201, 246, 0.94) 18%,
+    #087ac1 37%,
+    #07447f 56%,
+    #031d43 76%,
+    #01091e 100%
+  );
+
+  border: 2px solid rgba(112, 231, 255, 0.94);
+
+  box-shadow:
+    inset 18px 20px 28px rgba(255, 255, 255, 0.18),
+    inset -26px -30px 40px rgba(0, 4, 22, 0.72),
+    0 0 6px rgba(221, 250, 255, 0.92),
+    0 0 20px rgba(22, 204, 255, 0.78),
+    0 0 44px rgba(0, 111, 255, 0.45);
+
+  animation:
+    blueBallDrawIn 900ms cubic-bezier(0.16, 0.84, 0.26, 1.12) both,
+    blueBallArrivalGlow 1.25s ease-out both;
+}
+
+/* Brilho largo e suave que acompanha a curvatura (canto superior esquerdo). */
+.mainBingoBall::before {
+  content: '';
+  position: absolute;
+  top: 7%;
+  left: 12%;
+  width: 56%;
+  height: 28%;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(210, 247, 255, 0.22) 48%,
+    transparent 74%
+  );
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* Ponto especular concentrado. */
+.ballSpecular {
+  position: absolute;
+  top: 14%;
+  left: 21%;
+  width: 20%;
+  height: 12%;
+  border-radius: 50%;
+  transform: rotate(-30deg);
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.5) 45%,
+    transparent 75%
+  );
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* Luz refletida na borda inferior (ciano) — dá a leitura de esfera iluminada
+ * pelos anéis por trás. */
+.ballReflection {
+  position: absolute;
+  bottom: 4%;
+  left: 20%;
+  width: 60%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(70, 200, 255, 0.4) 0%,
+    rgba(70, 200, 255, 0.12) 45%,
+    transparent 72%
+  );
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* 6. Número — branco, "impresso" na superfície: só sombra escura, sem glow.
+ * `letter-spacing` negativo também é aplicado após o último dígito, deslocando
+ * a tinta 0,03em para a direita; o `padding-right` de 0,06em compensa e mantém
+ * 1 e 2 dígitos opticamente centralizados. */
+.ballNumber {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-right: 0.06em;
+  padding-top: 0.04em;
+
+  color: #ffffff;
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  font-size: 110px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-variant-numeric: lining-nums;
+
+  text-shadow:
+    0 3px 2px rgba(0, 8, 30, 0.35),
+    0 8px 16px rgba(0, 4, 20, 0.55);
+  user-select: none;
+}
+
+/* ─── Próximos números ──────────────────────────────────────────────────── */
+
+.nextColumn {
+  flex: none;
+  z-index: 15;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Duas bordas douradas: `border` + anel externo por `box-shadow` com spread
+ * (em vez de `outline`, que em WebViews antigas de TV Box não segue o
+ * border-radius e desenha um quadrado). */
+.nextBall {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+
+  background: radial-gradient(
+    circle at 32% 26%,
+    var(--hi) 0%,
+    var(--mid) 30%,
+    var(--low) 64%,
+    var(--deep) 100%
+  );
+
+  border: 2px solid #ffd43b;
+
+  box-shadow:
+    inset 8px 9px 13px rgba(255, 255, 255, 0.28),
+    inset -10px -12px 18px rgba(0, 0, 20, 0.48),
+    0 0 0 3px #071433,
+    0 0 0 5px rgba(255, 176, 0, 0.9),
+    0 0 12px 5px rgba(255, 209, 45, 0.55),
+    0 0 24px 6px rgba(255, 165, 0, 0.3);
+}
+
+.nextBall::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 14%;
+  width: 52%;
+  height: 26%;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 75%
+  );
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.nextBallNumber {
+  position: relative;
+  padding-right: 0.04em;
+  color: var(--ink, #ffffff);
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-shadow: var(--ink-shadow, 0 2px 3px rgba(0, 0, 0, 0.55));
+  user-select: none;
+}
+
+/* Paleta por cor — a cor de cada número vem da regra existente
+ * (`getBallColorName` em BingoShowBall.tsx), nunca aleatória. */
+.color_blue {
+  --hi: #9fe0ff;
+  --mid: #2f7cf0;
+  --low: #0c2fa8;
+  --deep: #040e45;
+}
+
+.color_red {
+  --hi: #ffb3a6;
+  --mid: #ec2a20;
+  --low: #a00c0c;
+  --deep: #3d0203;
+}
+
+.color_green {
+  --hi: #b9ffc2;
+  --mid: #25c244;
+  --low: #0b7222;
+  --deep: #032b0c;
+}
+
+.color_yellow {
+  --hi: #fffbd1;
+  --mid: #ffd21f;
+  --low: #e39a00;
+  --deep: #7a4200;
+  --ink: #0a1230;
+  --ink-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.color_purple {
+  --hi: #ebc2ff;
+  --mid: #a146e6;
+  --low: #5a168f;
+  --deep: #22053d;
+}
+
+.color_gold {
+  --hi: #fff6c4;
+  --mid: #ffc21a;
+  --low: #c07a00;
+  --deep: #5c3100;
+  --ink: #0a1230;
+  --ink-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+/* Posição vazia — mesmo tamanho, sem número, opacidade reduzida. */
+.nextBallEmpty {
+  --hi: #5a7fb8;
+  --mid: #1c3a78;
+  --low: #0b1d48;
+  --deep: #040b24;
+  opacity: 0.35;
+}
+
+/* ─── Bola que sai do centro e pousa no 1º slot dos próximos números ──────
+ * Nasce centralizada no palco (mesmo centro da bola principal) e termina
+ * exatamente sobre o slot 0: deslocamento horizontal = raio do palco + gap da
+ * linha (24px, inline em DrawStage.tsx) + meia coluna (100px / 2); vertical =
+ * uma bola + um gap acima do centro da coluna. Duração = EXIT_DURATION_MS
+ * (780ms), quando a coluna passa a mostrar o número no slot 0 e esta bola some. */
+.exitFlight {
+  z-index: 20;
+  --exit-dx: calc(var(--outer) / 2 + 24px + 50px);
+  --exit-dy: calc(-76px - 20px);
+  animation: blueBallExitFlight 780ms cubic-bezier(0.45, 0.05, 0.3, 1) both;
+  pointer-events: none;
+}
+
+@keyframes blueBallExitFlight {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(2.4);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(calc(var(--exit-dx) * 0.12), calc(var(--exit-dy) * 0.5)) scale(2);
+  }
+  60% {
+    transform: translate(calc(var(--exit-dx) * 0.7), calc(var(--exit-dy) * 1.35)) scale(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--exit-dx), var(--exit-dy)) scale(1);
+  }
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────── */
+
+@keyframes blueOuterRotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blueInnerRotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blueRingBreathing {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes blueBallDrawIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-64px) rotate(-380deg) scale(0.58);
+    filter: blur(5px) brightness(1.5);
+  }
+  66% {
+    opacity: 1;
+    transform: translateY(7px) rotate(14deg) scale(1.07);
+    filter: blur(0) brightness(1.2);
+  }
+  84% {
+    transform: translateY(-3px) rotate(-5deg) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* 0%/100% idênticos ao box-shadow estático de `.mainBingoBall`, então o fim do
+ * pulso encaixa sem salto. */
+@keyframes blueBallArrivalGlow {
+  0%,
+  100% {
+    box-shadow:
+      inset 18px 20px 28px rgba(255, 255, 255, 0.18),
+      inset -26px -30px 40px rgba(0, 4, 22, 0.72),
+      0 0 6px rgba(221, 250, 255, 0.92),
+      0 0 20px rgba(22, 204, 255, 0.78),
+      0 0 44px rgba(0, 111, 255, 0.45);
+  }
+  55% {
+    box-shadow:
+      inset 18px 20px 28px rgba(255, 255, 255, 0.26),
+      inset -26px -30px 40px rgba(0, 4, 22, 0.65),
+      0 0 8px rgba(221, 250, 255, 1),
+      0 0 30px rgba(143, 239, 255, 0.95),
+      0 0 64px rgba(0, 146, 255, 0.7);
+  }
+}
+
+/* Só movimento decorativo — contador, SSE e trocas de número seguem normais. */
+@media (prefers-reduced-motion: reduce) {
+  .outerRing,
+  .innerRing,
+  .stageRays,
+  .mainBingoBall,
+  .exitFlight {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+  }
+}

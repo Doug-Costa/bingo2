@@ -357,53 +357,6 @@ button {
   }
 }
 
-/* Entrada da bola de bingo 3D (palco central do sorteio, tema Blue) -
-   dispara de novo a cada `currentNumber` novo via `key`, nunca `infinite` -
-   a bola gira/aproxima/desacelera e PARA, nao fica girando depois. */
-@keyframes bs-ball-draw-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-70px) rotate(-420deg) scale(0.55);
-    filter: blur(5px) brightness(1.5);
-  }
-  65% {
-    opacity: 1;
-    transform: translateY(8px) rotate(18deg) scale(1.08);
-    filter: blur(0) brightness(1.25);
-  }
-  82% {
-    transform: translateY(-3px) rotate(-6deg) scale(0.98);
-  }
-  100% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    filter: brightness(1);
-  }
-}
-
-/* Aros giratorios ao redor da bola central - continuos, sentidos opostos,
-   independentes da animacao de entrada da bola (nunca reiniciam com ela). */
-@keyframes bs-blue-ring-rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes bs-blue-ring-rotate-reverse {
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-@keyframes bs-blue-ring-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 /* Usado por BingoShowGlowHalo (`pulse`) — porte do `Animated.loop` de
    opacidade (0.75 → 1 → 0.75), `animation-duration` setado inline por
    instância (`pulseDuration * 2`, prop dinâmica). */

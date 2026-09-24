@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { resolveTheme, getThemeKey, AVAILABLE_THEMES, type ThemeTokens, type ThemeOption } from '@/theme/themes';
 import { getTheme, saveCredentials, getCredentials } from '@/storage/credentials';
 
@@ -22,22 +22,35 @@ const ThemeContext = createContext<ThemeContextValue>({
   isBlue: false,
 });
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeId, setThemeIdState] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'bingo-show';
-    try {
-      const stored = localStorage.getItem(STORAGE_THEME_KEY);
-      if (stored) return getThemeKey(stored);
+function readStoredThemeId(): string | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_THEME_KEY);
+    if (stored) return getThemeKey(stored);
 
-      const credTheme = getTheme();
-      if (credTheme?.name || credTheme?.type) {
-        return getThemeKey(credTheme.name || credTheme.type);
-      }
-    } catch {
-      // fallback
+    const credTheme = getTheme();
+    if (credTheme?.name || credTheme?.type) {
+      return getThemeKey(credTheme.name || credTheme.type);
     }
-    return 'bingo-show';
-  });
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
+// useLayoutEffect só existe no cliente; no servidor cai para useEffect (sem warning).
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // O 1º render SEMPRE usa o tema padrão, igual ao HTML do servidor (que não
+  // enxerga o localStorage) — ler o tema salvo aqui causava hydration mismatch
+  // em toda a árvore. O tema salvo entra logo após a hidratação, num layout
+  // effect (antes do primeiro paint, então a TV não chega a exibir o padrão).
+  const [themeId, setThemeIdState] = useState<string>('bingo-show');
+
+  useIsomorphicLayoutEffect(() => {
+    const stored = readStoredThemeId();
+    if (stored) setThemeIdState(stored);
+  }, []);
 
   const setThemeId = useCallback((newId: string) => {
     const validKey = getThemeKey(newId);

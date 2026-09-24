@@ -13,6 +13,15 @@ export function getBallTextColor(colorName: BingoShowBallColorName): string {
   return '#FFFFFF';
 }
 
+export function getBallColorName(number: number, state: BingoShowBallState = 'default'): BingoShowBallColorName {
+  if (state === 'winner') return 'gold';
+  if (number <= 18) return 'blue';
+  if (number <= 36) return 'red';
+  if (number <= 54) return 'green';
+  if (number <= 72) return 'yellow';
+  return 'purple';
+}
+
 export interface BingoShowBallProps {
   number: number;
   state?: BingoShowBallState;
@@ -62,14 +71,7 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
     }
   }, [size, fontSizeOverride]);
 
-  const colorName = useMemo<BingoShowBallColorName>(() => {
-    if (state === 'winner') return 'gold';
-    if (number <= 18) return 'blue';
-    if (number <= 36) return 'red';
-    if (number <= 54) return 'green';
-    if (number <= 72) return 'yellow';
-    return 'purple';
-  }, [number, state]);
+  const colorName = useMemo(() => getBallColorName(number, state), [number, state]);
 
   const colorGroup = BingoShowAssets.balls[colorName];
 
