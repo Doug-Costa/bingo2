@@ -1,0 +1,309 @@
+/* BingoShowCouponsTableBlue.module.css — tabela lateral CUPOM / DOADOR /
+ * FALTAM da tela de sorteio, SOMENTE tema Blue (demais temas seguem com a
+ * tabela inline de BingoShowCouponsTable.tsx).
+ *
+ * Mesmo espaço de sempre: no palco 1920×1080 a área das linhas mede 598×916.
+ * Os 10 registros viram cards de 66px com gap de 12px, alinhados a partir do
+ * cabeçalho (768px); a sobra fica no fim da coluna.
+ *
+ * Grid interno fixo (112px | 1fr | 210px), igual no cabeçalho e em todos os
+ * cards: as colunas não se deslocam conforme a quantidade de bolas.
+ */
+
+.table {
+  --cols: 112px minmax(0, 1fr) 210px;
+  --col-gap: 12px;
+  --pad-x: 16px;
+
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+}
+
+/* ─── Cabeçalho ─────────────────────────────────────────────────────────── */
+
+.header {
+  position: relative;
+  flex: none;
+  height: 48px;
+  margin-bottom: 6px;
+  padding: 0 var(--pad-x);
+  display: grid;
+  grid-template-columns: var(--cols);
+  column-gap: var(--col-gap);
+  align-items: center;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00c8ff, #2c77ff, transparent);
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.45);
+}
+
+.headCoupon {
+  color: #ff4a47;
+  text-shadow: 0 0 8px rgba(255, 74, 71, 0.35);
+}
+
+.headDonor,
+.headMissing {
+  color: #8fd9ff;
+  text-shadow: 0 0 8px rgba(0, 200, 255, 0.3);
+}
+
+.headMissing {
+  text-align: right;
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────── */
+
+.list {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.card {
+  position: relative;
+  flex: none;
+  height: 66px;
+  padding: 0 var(--pad-x);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--cols);
+  column-gap: var(--col-gap);
+  align-items: center;
+
+  background: linear-gradient(
+    100deg,
+    rgba(8, 25, 61, 0.96) 0%,
+    rgba(15, 43, 87, 0.96) 52%,
+    rgba(5, 20, 54, 0.98) 100%
+  );
+  border: 1px solid rgba(65, 174, 255, 0.34);
+  border-radius: 13px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -12px 24px rgba(0, 0, 0, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+/* Separadores verticais sutis entre as colunas (como na referência). */
+.donor,
+.missing {
+  position: relative;
+}
+
+.donor::before,
+.missing::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--col-gap) / -2 - 0.5px);
+  top: 50%;
+  width: 1px;
+  height: 34px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, transparent, rgba(65, 174, 255, 0.45), transparent);
+}
+
+/* 2 faltando — borda azul-dourada moderada. */
+.cardNear {
+  border-color: rgba(214, 190, 92, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -12px 24px rgba(0, 0, 0, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.22),
+    0 0 8px rgba(120, 170, 255, 0.22);
+}
+
+/* 1 faltando — "critical": borda dourada visível + brilho discreto. */
+.cardCritical {
+  /* Mesma espessura de borda dos outros cards (1px) — o reforço vem da sombra
+   * sem spread interno, para o conteúdo não deslocar nem meio pixel. */
+  border-color: rgba(255, 201, 40, 0.95);
+  box-shadow:
+    0 0 0 1px rgba(255, 201, 40, 0.55),
+    inset 0 1px 0 rgba(255, 244, 190, 0.14),
+    inset 0 0 18px rgba(255, 190, 30, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.22),
+    0 0 12px rgba(255, 190, 30, 0.42);
+}
+
+/* Linha sem registro (preenche até 10) — mesmo card, apagado. */
+.cardEmpty {
+  opacity: 0.45;
+}
+
+/* Marca "QUASE!" — presa à borda superior direita do card (posição absoluta),
+ * então não empurra nem desloca as colunas. */
+.almostBadge {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  padding: 2px 8px 1px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffe46b 0%, #f7c928 55%, #d99a06 100%);
+  border: 1px solid #fff2a3;
+  box-shadow: 0 0 8px rgba(255, 190, 30, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #2a1600;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 1px;
+}
+
+/* ─── Colunas ───────────────────────────────────────────────────────────── */
+
+.coupon {
+  color: #ff4a47;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 6px rgba(255, 74, 71, 0.3);
+  white-space: nowrap;
+}
+
+.donor {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f5f8ff;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 2px rgba(0, 10, 40, 0.75);
+}
+
+.placeholderText {
+  color: rgba(143, 217, 255, 0.45);
+  text-shadow: none;
+}
+
+.missing {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── Bolas "FALTAM" ────────────────────────────────────────────────────── */
+
+.ball {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ballActive {
+  color: #fff4b8;
+  background: radial-gradient(
+    circle at 34% 28%,
+    rgba(255, 255, 255, 0.52) 0%,
+    rgba(255, 255, 255, 0.08) 13%,
+    #172447 25%,
+    #050b1e 68%,
+    #00030d 100%
+  );
+  border: 2px solid #f7c928;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 168, 0.38),
+    0 0 6px rgba(255, 201, 30, 0.82),
+    0 0 13px rgba(255, 170, 0, 0.25);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ballEmpty {
+  background: radial-gradient(
+    circle at 34% 28%,
+    rgba(120, 170, 230, 0.22) 0%,
+    rgba(10, 30, 70, 0.55) 45%,
+    rgba(3, 12, 34, 0.7) 100%
+  );
+  border: 1.5px solid rgba(110, 140, 185, 0.55);
+  opacity: 0.7;
+}
+
+/* ─── Atualização por SSE ───────────────────────────────────────────────── */
+
+/* Flash de borda ciano/dourada (~600ms) — só no card cujos números mudaram.
+ * Camada própria remontada a cada mudança (key no TSX), nunca contínua. */
+.flash {
+  position: absolute;
+  inset: -1px;
+  border-radius: 13px;
+  pointer-events: none;
+  animation: couponFlash 600ms ease-out both;
+}
+
+@keyframes couponFlash {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 2px rgba(0, 220, 255, 0.95),
+      0 0 16px rgba(0, 200, 255, 0.7);
+  }
+  45% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 2px rgba(255, 210, 60, 0.95),
+      0 0 14px rgba(255, 190, 30, 0.6);
+  }
+  100% {
+    opacity: 0;
+    box-shadow:
+      0 0 0 2px rgba(255, 210, 60, 0),
+      0 0 14px rgba(255, 190, 30, 0);
+  }
+}
+
+/* Bola que entrou nesta atualização — scale 0.78 → 1, sem deslocamento. */
+.ballEnter {
+  animation: couponBallEnter 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes couponBallEnter {
+  from {
+    transform: scale(0.78);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash,
+  .ballEnter {
+    animation: none;
+  }
+
+  .flash {
+    display: none;
+  }
+}

@@ -3,6 +3,7 @@ import { CouponItem } from '../mocks/drawMock';
 import { BingoShowColors } from '../design-system';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import blueTable from './BingoShowCouponsTableBlue.module.css';
 
 export interface BingoShowCouponsTableProps {
   coupons: CouponItem[];
@@ -12,11 +13,87 @@ export interface BingoShowCouponsTableProps {
 const MISSING_SLOTS = 5;
 const VISIBLE_ROWS = 10;
 
+/** Card de um registro (tema Blue). Só apresentação: mesmos campos, mesma ordem.
+ * A proximidade vem do tamanho de `missing` — a lista de números que ainda faltam
+ * enviada pelo backend (`missingNumbers`) — só quando o registro tem dados e a
+ * lista não está vazia; sem isso, nenhuma marca é exibida. */
+const BlueCouponRow: React.FC<{ row: CouponItem }> = ({ row }) => {
+  const hasData = row.coupon !== '---';
+  const missing = row.missing || [];
+  const missingCount = hasData ? missing.length : 0;
+  const signature = missing.join(',');
+
+  // Flash + entrada das bolas novas SÓ quando os números deste registro mudam
+  // por SSE (não na 1ª renderização, não em re-renders do relógio).
+  const [update, setUpdate] = React.useState<{ n: number; fresh: Set<number> }>({ n: 0, fresh: new Set() });
+  const prevRef = React.useRef<number[] | null>(null);
+  React.useEffect(() => {
+    const prev = prevRef.current;
+    prevRef.current = missing;
+    if (prev === null || !hasData || prev.join(',') === signature) return;
+    setUpdate((u) => ({ n: u.n + 1, fresh: new Set(missing.filter((v) => !prev.includes(v))) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature, hasData]);
+
+  const tier =
+    missingCount === 1 ? blueTable.cardCritical : missingCount === 2 ? blueTable.cardNear : '';
+
+  return (
+    <div className={`${blueTable.card} ${tier} ${hasData ? '' : blueTable.cardEmpty}`}>
+      {update.n > 0 && <span key={update.n} className={blueTable.flash} />}
+      {missingCount === 1 && <span className={blueTable.almostBadge}>QUASE!</span>}
+
+      <span className={`${blueTable.coupon} ${hasData ? '' : blueTable.placeholderText}`}>{row.coupon}</span>
+      <span className={`${blueTable.donor} ${hasData ? '' : blueTable.placeholderText}`}>{row.donor}</span>
+
+      <div className={blueTable.missing}>
+        {Array.from({ length: MISSING_SLOTS }).map((_, slotIdx) => {
+          const val = missing[slotIdx];
+          return val !== undefined ? (
+            <div
+              key={`n${val}`}
+              className={`${blueTable.ball} ${blueTable.ballActive} ${update.fresh.has(val) ? blueTable.ballEnter : ''}`}
+            >
+              {val}
+            </div>
+          ) : (
+            <div key={`e${slotIdx}`} className={`${blueTable.ball} ${blueTable.ballEmpty}`} />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const BlueCouponsTable: React.FC<{ rows: CouponItem[] }> = ({ rows }) => {
+  // Key estável por registro (cupom + ocorrência, pois o mesmo cupom pode vir
+  // em mais de uma linha), para o card manter o estado de "antes" quando o
+  // backend reordena a lista numa atualização. Não altera a ordem exibida.
+  const seen = new Map<string, number>();
+  return (
+    <div className={blueTable.table}>
+      <div className={blueTable.header}>
+        <span className={blueTable.headCoupon}>CUPOM</span>
+        <span className={blueTable.headDonor}>DOADOR</span>
+        <span className={blueTable.headMissing}>FALTAM</span>
+      </div>
+      <div className={blueTable.list}>
+        {rows.map((row, idx) => {
+          if (row.coupon === '---') return <BlueCouponRow key={`empty-${idx}`} row={row} />;
+          const n = seen.get(row.coupon) ?? 0;
+          seen.set(row.coupon, n + 1);
+          return <BlueCouponRow key={`${row.coupon}#${n}`} row={row} />;
+        })}
+      </div>
+    </div>
+  );
+};
+
 export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   coupons,
   style,
 }) => {
-  const { theme } = useAppTheme();
+  const { theme, isBlue } = useAppTheme();
 
   const rows = React.useMemo(() => {
     const list = [...coupons];
@@ -25,6 +102,14 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
     }
     return list.slice(0, VISIBLE_ROWS);
   }, [coupons]);
+
+  if (isBlue) {
+    return (
+      <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
+        <BlueCouponsTable rows={rows} />
+      </BingoShowTopWinnersFrame>
+    );
+  }
 
   return (
     <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
