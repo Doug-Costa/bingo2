@@ -69,14 +69,17 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
-      {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) */}
+      {/* 90 3D BALLS GRID (5 ROWS x 18 COLS) - diametro/fonte maiores no Blue
+          (34->39px / 15->20px, topo do intervalo 34-40px/17-21px pedido),
+          usando melhor a largura disponivel em vez de bolas pequenas boiando
+          em celulas grandes. */}
       <div
         style={{
           flex: 1,
           display: 'grid',
           gridTemplateColumns: 'repeat(18, 1fr)',
-          gridTemplateRows: 'repeat(5, 38px)',
-          rowGap: 6,
+          gridTemplateRows: isBlueTheme ? 'repeat(5, 42px)' : 'repeat(5, 38px)',
+          rowGap: isBlueTheme ? 8 : 6,
           columnGap: 4,
           alignItems: 'center',
           justifyItems: 'center',
@@ -100,8 +103,8 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
               number={num}
               state={ballState}
               size="sm"
-              diameterOverride={34}
-              fontSizeOverride={15}
+              diameterOverride={isBlueTheme ? 39 : 34}
+              fontSizeOverride={isBlueTheme ? 20 : 15}
               style={{
                 opacity: 1,
                 filter: isDrawn ? 'drop-shadow(0 0 6px rgba(23, 200, 255, 0.8))' : 'none',

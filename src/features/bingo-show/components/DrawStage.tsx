@@ -528,76 +528,71 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         >
           {isBlue ? (
             <>
-              {/* Glow radial externo (mais suave/largo que antes, acompanha o aro maior) */}
+              {/* Glow radial externo (fundo apenas - nao encosta na bola) */}
               <div
                 style={{
                   position: 'absolute',
                   inset: -36,
-                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.26) 0%, rgba(8, 127, 252, 0.11) 45%, rgba(3, 17, 48, 0) 72%)',
+                  background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 72%)',
                   pointerEvents: 'none',
                   borderRadius: '50%',
                 }}
               />
 
-              {/* Anel 1 (externo, fino, discreto) */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: -14,
-                  borderRadius: '50%',
-                  border: '1.5px solid rgba(23, 200, 255, 0.32)',
-                  pointerEvents: 'none',
-                }}
-              />
-
-              {/* Raios discretos partindo do centro - conic-gradient recortado em
-                  circulo (sem blur/mask, evita o artefato de "anel" ja visto no
-                  overlay do lobby quando blur+mask se combinam). */}
+              {/* GRUPO 1 (aro externo): anel fino + raios + aro principal + pontos
+                  de luz, todos girando JUNTOS - o grupo inteiro tem sua propria
+                  animacao de rotacao continua, independente da entrada da bola. */}
               <div
                 style={{
                   position: 'absolute',
                   inset: 0,
                   borderRadius: '50%',
-                  overflow: 'hidden',
+                  animation: reducedMotion
+                    ? undefined
+                    : 'bs-blue-ring-rotate 9s linear infinite, bs-blue-ring-pulse 2.8s ease-in-out infinite',
                   pointerEvents: 'none',
                 }}
               >
+                <div style={{ position: 'absolute', inset: -14, borderRadius: '50%', border: '1.5px solid rgba(23, 200, 255, 0.32)' }} />
+
+                {/* Raios/segmentos luminosos - conic-gradient recortado em circulo
+                    (sem blur/mask, evita o artefato de "anel" ja visto no overlay
+                    do lobby quando blur+mask se combinam em caixas diferentes). */}
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background:
+                        'repeating-conic-gradient(from 0deg, rgba(23, 200, 255, 0.55) 0deg 8deg, transparent 8deg 30deg)',
+                      mixBlendMode: 'screen',
+                    }}
+                  />
+                </div>
+
                 <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background:
-                      'repeating-conic-gradient(from 0deg, rgba(23, 200, 255, 0.16) 0deg 5deg, transparent 5deg 30deg)',
-                    mixBlendMode: 'screen',
+                    borderRadius: '50%',
+                    border: '2.5px solid #17C8FF',
+                    boxShadow: '0 0 26px rgba(23, 200, 255, 0.6), inset 0 0 18px rgba(23, 200, 255, 0.35)',
                   }}
                 />
-              </div>
 
-              {/* Anel 2 - aro principal ciano luminoso (era o unico anel antes) */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  border: '2.5px solid #17C8FF',
-                  boxShadow: '0 0 26px rgba(23, 200, 255, 0.6), inset 0 0 18px rgba(23, 200, 255, 0.35)',
-                  pointerEvents: 'none',
-                }}
-              />
-
-              {/* Pontos de luz do aro - CSS, nao SVG (pedido explicito), pulsam
-                  devagar e escalonados. */}
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
                 {buildLedDots(150, reducedMotion)}
               </div>
 
-              {/* Anel 3 - interno, sutil, separa o aro do numero */}
+              {/* GRUPO 2 (aro interno): mais fino, tracejado (segmentado por
+                  natureza do border-style, sem precisar de trig extra), gira em
+                  sentido OPOSTO e em velocidade diferente do grupo externo. */}
               <div
                 style={{
                   position: 'absolute',
                   inset: 22,
                   borderRadius: '50%',
-                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                  border: '1.5px dashed rgba(255, 255, 255, 0.4)',
+                  animation: reducedMotion ? undefined : 'bs-blue-ring-rotate-reverse 14s linear infinite',
                   pointerEvents: 'none',
                 }}
               />
@@ -646,43 +641,133 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             </>
           )}
 
-          {/* Main 3D Hero Number */}
-          <div
-            key={currentNumber}
-            style={{
-              position: 'relative',
-              zIndex: 10,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              animation: 'bs-hero-ball-enter 900ms ease-out both',
-            }}
-          >
-            <span
+          {isBlue ? (
+            /* Bola de bingo 3D real (esfera com volume/reflexo/halo), nao mais
+               o numero solto dentro do aro. `key={currentNumber}` reinicia a
+               animacao de entrada a cada numero novo - `bs-ball-draw-in` nao e
+               `infinite`, entao ela gira/aproxima/desacelera e PARA. */
+            <div
+              key={currentNumber}
               style={{
-                fontSize: 120,
-                fontWeight: 900,
-                color: '#FFFFFF',
-                textShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
-                fontFamily: 'Barlow Condensed, sans-serif',
-                lineHeight: 1,
-                userSelect: 'none',
+                position: 'relative',
+                zIndex: 10,
+                width: 190,
+                height: 190,
+                borderRadius: '50%',
+                animation: reducedMotion ? undefined : 'bs-ball-draw-in 950ms cubic-bezier(0.22, 1, 0.36, 1) both',
+                boxShadow:
+                  '0 0 8px #d7f8ff, 0 0 24px #20c8ff, 0 0 58px rgba(0, 126, 255, 0.65), 0 10px 22px rgba(0, 0, 0, 0.55)',
               }}
             >
-              {currentNumber > 0 ? currentNumber : '--'}
-            </span>
-          </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background:
+                    'radial-gradient(circle at 32% 25%, #ffffff 0%, #bceeff 8%, #47bcea 22%, #12629b 48%, #08284f 72%, #020d24 100%)',
+                  boxShadow: 'inset 18px 20px 30px rgba(255, 255, 255, 0.24), inset -26px -30px 45px rgba(0, 5, 24, 0.72)',
+                }}
+              >
+                {/* ballHighlight: brilho especular concentrado, canto superior-esquerdo */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '16%',
+                    width: '34%',
+                    height: '26%',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 72%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* ballReflection: reflexo curvo diagonal na superficie */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '-15%',
+                    left: '-20%',
+                    width: '90%',
+                    height: '60%',
+                    transform: 'rotate(-18deg)',
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.30), rgba(255,255,255,0) 75%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* sombra interna inferior - ancoragem/profundidade */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '38%',
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.35), rgba(0,0,0,0))',
+                    pointerEvents: 'none',
+                  }}
+                />
+                <span
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 100,
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    textShadow: '0 6px 18px rgba(0, 0, 0, 0.75), 0 0 16px rgba(255, 255, 255, 0.35)',
+                    fontFamily: 'Barlow Condensed, sans-serif',
+                    lineHeight: 1,
+                    userSelect: 'none',
+                  }}
+                >
+                  {currentNumber > 0 ? currentNumber : '--'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div
+              key={currentNumber}
+              style={{
+                position: 'relative',
+                zIndex: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                animation: 'bs-hero-ball-enter 900ms ease-out both',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 120,
+                  fontWeight: 900,
+                  color: '#FFFFFF',
+                  textShadow: '0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
+                  fontFamily: 'Barlow Condensed, sans-serif',
+                  lineHeight: 1,
+                  userSelect: 'none',
+                }}
+              >
+                {currentNumber > 0 ? currentNumber : '--'}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* VERTICAL NEXT BALLS (3 recent / upcoming balls stack on right) */}
+        {/* VERTICAL NEXT BALLS (3 recent / upcoming balls stack on right) -
+            maiores no Blue (58->70px / 24->31px, dentro do intervalo
+            64-76px/28-34px pedido), com borda dourada luminosa. */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 12,
-            width: 80,
+            gap: isBlue ? 16 : 12,
+            width: isBlue ? 92 : 80,
             zIndex: 15,
           }}
         >
@@ -690,13 +775,17 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             <div
               key={`${num}-${idx}`}
               style={{
-                width: 58,
-                height: 58,
+                width: isBlue ? 70 : 58,
+                height: isBlue ? 70 : 58,
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                border: isBlue ? '2px solid rgba(255, 207, 18, 0.7)' : undefined,
+                boxShadow: isBlue
+                  ? '0 0 14px rgba(255, 207, 18, 0.45), 0 4px 12px rgba(0, 0, 0, 0.5)'
+                  : '0 4px 12px rgba(0, 0, 0, 0.5)',
+                boxSizing: 'border-box',
                 transition: 'all 300ms ease',
               }}
             >
@@ -704,8 +793,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 number={num}
                 state="drawn"
                 size="lg"
-                diameterOverride={58}
-                fontSizeOverride={24}
+                diameterOverride={isBlue ? 70 : 58}
+                fontSizeOverride={isBlue ? 31 : 24}
               />
             </div>
           ))}
@@ -714,11 +803,12 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             <div
               key={`empty-${i}`}
               style={{
-                width: 58,
-                height: 58,
+                width: isBlue ? 70 : 58,
+                height: isBlue ? 70 : 58,
                 borderRadius: '50%',
                 border: '2px dashed rgba(25, 117, 210, 0.4)',
                 backgroundColor: 'rgba(255,255,255,0.03)',
+                boxSizing: 'border-box',
               }}
             />
           ))}
@@ -741,7 +831,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           paddingLeft: 12,
           paddingRight: 12,
           paddingTop: 6,
-          borderTop: '1px solid rgba(25, 117, 210, 0.4)',
+          borderTop: isBlue ? '1px solid rgba(23, 200, 255, 0.5)' : '1px solid rgba(25, 117, 210, 0.4)',
+          boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
         {/* LEFT: 3D HOURGLASS + COUNTDOWN */}
@@ -800,7 +891,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             src={isBlue ? '/themes/bingo-show-blue/globo-bingo.gif' : '/themes/bingo-show-blue/bingo-cage.jpg'}
             alt="Globo de Bingo 3D"
             style={{
-              height: isBlue ? 92 : 80,
+              height: isBlue ? 118 : 80,
+              width: 'auto',
               borderRadius: isBlue ? 0 : 12,
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 10px rgba(8, 127, 252, 0.5))',

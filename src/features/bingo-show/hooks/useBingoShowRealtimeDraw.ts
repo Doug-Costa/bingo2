@@ -110,6 +110,31 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
 
   const activeDraw = thisDraw || nextDraws[0] || null;
 
+  // Intervalo real configurado pelo backend entre uma bola e a proxima
+  // (campo `nextBallTimer`, ja existia em `DrawSSE`/`ThisDrawInfo`/`Draw` mas
+  // nunca era lido nem copiado - por isso o contador ficava congelado em um
+  // literal fixo abaixo, nunca sobrescrito por nada). So cai no mesmo valor
+  // de antes (3) quando o backend genuinamente nao informar nada.
+  const ballIntervalSeconds =
+    typeof activeDraw?.nextBallTimer === 'number' && activeDraw.nextBallTimer > 0
+      ? activeDraw.nextBallTimer
+      : 3;
+
+  const [remainingSeconds, setRemainingSeconds] = useState(ballIntervalSeconds);
+
+  // Reinicia a contagem sempre que uma bola nova REALMENTE sai (currentBall
+  // muda) ou o intervalo configurado muda - nunca a cada render. O tick usa
+  // atualizacao funcional (`prev => ...`) para nao capturar valor antigo em
+  // closure, e o cleanup sempre limpa o interval anterior antes de criar um
+  // novo (evita acumular varios intervals rodando juntos).
+  useEffect(() => {
+    setRemainingSeconds(ballIntervalSeconds);
+    const id = setInterval(() => {
+      setRemainingSeconds((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [currentBall, ballIntervalSeconds]);
+
   const currentNum = currentBall ?? 0;
   const currentLetter = getBallLetter(currentNum);
 
@@ -184,7 +209,7 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
     bingoStatus: bingoStatusUI === 'active' ? 'EM DISPUTA' : bingoStatusUI === 'completed' ? 'PREMIADO' : 'ACUMULADO',
     triggerBallLimit: triggerBallLimit ?? 0,
     jackpotActive,
-    nextNumberCountdownSeconds: 3,
+    nextNumberCountdownSeconds: remainingSeconds,
     dateStr: formatDrawDate(activeDraw?.scheduledAt),
     timeStr: formatDrawTime(activeDraw?.scheduledAt),
     currentTimeStr: `${hh}:${mi}:${ss}`,

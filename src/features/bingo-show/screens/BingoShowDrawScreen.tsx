@@ -221,7 +221,7 @@ export const BingoShowDrawScreen: React.FC = () => {
                   currentNumber={mock.currentBall}
                   nextBalls={last3Balls}
                   sequenceNumber={mock.drawnBalls.length}
-                  countdownSeconds={mock.nextNumberCountdownSeconds || 30}
+                  countdownSeconds={mock.nextNumberCountdownSeconds}
                 />
               </div>
             </div>

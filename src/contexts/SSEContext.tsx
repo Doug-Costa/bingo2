@@ -481,6 +481,7 @@ export function parseDrawItem(item: any): DrawSSE | null {
     hotdraw: item.hotdraw !== undefined ? Boolean(item.hotdraw) : undefined,
     triggerBallLimit: item.triggerBallLimit !== undefined ? Number(item.triggerBallLimit) : undefined,
     jackpotAmount: item.jackpotAmount !== undefined ? Number(item.jackpotAmount) : undefined,
+    nextBallTimer: item.nextBallTimer !== undefined ? Number(item.nextBallTimer) : undefined,
   };
 }
 
@@ -553,6 +554,12 @@ export interface ThisDrawInfo {
   prizeLine1?: number;
   prizeLine2?: number;
   prizeLine3?: number;
+  /** Segundos configurados pelo backend entre uma bola e a proxima (mesmo
+   * campo ja declarado em `DrawSSE.nextBallTimer` e `services/api.ts`
+   * `Draw.nextBallTimer` - existia em dois tipos mas nunca era lido/copiado
+   * pra ca, causa raiz do contador "PROXIMO NUMERO EM" ficar congelado em
+   * um valor fixo hardcoded no hook de leitura). */
+  nextBallTimer?: number;
 }
 
 // 'boot' = 1º render (SSR-safe, estado neutro) | 'recovered' = cache já aplicado, aguardando
@@ -941,6 +948,7 @@ export function GameSocketProvider({
                 prizeLine1: td.prizeLine1 !== undefined ? Number(td.prizeLine1) : undefined,
                 prizeLine2: td.prizeLine2 !== undefined ? Number(td.prizeLine2) : undefined,
                 prizeLine3: td.prizeLine3 !== undefined ? Number(td.prizeLine3) : undefined,
+                nextBallTimer: td.nextBallTimer !== undefined ? Number(td.nextBallTimer) : undefined,
               });
             }
             if (Array.isArray(s?.nextDraws)) {
@@ -1040,6 +1048,7 @@ export function GameSocketProvider({
               prizeLine1: drawInfo?.prizeLine1 !== undefined ? Number(drawInfo.prizeLine1) : dData?.prizeLine1 !== undefined ? Number(dData.prizeLine1) : prev?.prizeLine1,
               prizeLine2: drawInfo?.prizeLine2 !== undefined ? Number(drawInfo.prizeLine2) : dData?.prizeLine2 !== undefined ? Number(dData.prizeLine2) : prev?.prizeLine2,
               prizeLine3: drawInfo?.prizeLine3 !== undefined ? Number(drawInfo.prizeLine3) : dData?.prizeLine3 !== undefined ? Number(dData.prizeLine3) : prev?.prizeLine3,
+              nextBallTimer: drawInfo?.nextBallTimer !== undefined ? Number(drawInfo.nextBallTimer) : dData?.nextBallTimer !== undefined ? Number(dData.nextBallTimer) : prev?.nextBallTimer,
             }));
             // Inicia cache limpo para a nova rodada
             clearCache(roomId);
@@ -1060,6 +1069,7 @@ export function GameSocketProvider({
                 prizeLine1: drawInfo?.prizeLine1 ?? dData?.prizeLine1,
                 prizeLine2: drawInfo?.prizeLine2 ?? dData?.prizeLine2,
                 prizeLine3: drawInfo?.prizeLine3 ?? dData?.prizeLine3,
+                nextBallTimer: drawInfo?.nextBallTimer ?? dData?.nextBallTimer,
               },
             });
             break;
