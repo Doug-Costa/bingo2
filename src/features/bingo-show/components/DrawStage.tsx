@@ -388,7 +388,14 @@ function useBallExitEffect(
       setDisplayedNextBalls(nextBallsRef.current);
     }, EXIT_DURATION_MS);
 
-    return () => clearTimeout(timer);
+    // Número novo chegou antes do pouso (rajada/reconexão): cancelar só o timer
+    // deixava esta bola voadora na lista para sempre, parada sobre o slot 0
+    // (ex.: "88, 88, 77"). Remove junto; o voo do número seguinte é quem
+    // atualiza a coluna ao pousar.
+    return () => {
+      clearTimeout(timer);
+      setFlyingBalls((balls) => balls.filter((b) => b.id !== id));
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNumber]);
 
