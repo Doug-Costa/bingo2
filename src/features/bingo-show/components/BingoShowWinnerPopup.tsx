@@ -14,7 +14,8 @@
  *
  * 3. Paginação e Temporizador Dinâmico:
  *    - Mínimo de 7,5s por página por categoria.
- *    - Duração total = Math.max(20000, maxPages * 7500).
+ *    - Duração: popup individual de 10s (timing.ts); no draw_finish o popup do bingo
+ *      termina o tempo dele e o resumo ocupa o resto da janela de 30s do LoopScreen.
  *    - Paginação assíncrona por categoria garantindo exibição de 100% dos vencedores.
  *
  * 4. Integridade Financeira e de Dados:
@@ -37,6 +38,7 @@ import { BingoShowColors } from '../design-system';
 import { formatBrl } from '../utils/format';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
+import { FINISH_SCREEN_HOLD_MS, WINNER_POPUP_MS } from '../timing';
 import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
 export interface TopPlayerItem {
@@ -989,14 +991,13 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const line2Winners = useMemo(() => dedupedWinners.filter((w) => normalizeWinnerType(w.type) === 'line2'), [dedupedWinners]);
   const bingoWinners = useMemo(() => dedupedWinners.filter((w) => normalizeWinnerType(w.type) === 'bingo'), [dedupedWinners]);
 
-  // Cálculo da Maior Quantidade de Páginas e Duração Adaptativa Global da Tela Final
-  const pagesLine1 = Math.ceil(line1Winners.length / 2) || 1;
-  const pagesLine2 = Math.ceil(line2Winners.length / 2) || 1;
-  const pagesBingo = Math.ceil(bingoWinners.length / 2) || 1;
-  const maxPages = Math.max(pagesLine1, pagesLine2, pagesBingo);
-
-  // Tempo mínimo de 7,5s por página por categoria (mínimo de 20s no modal)
-  const totalDurationMs = useMemo(() => Math.max(20000, maxPages * 7500), [maxPages]);
+  // Tempo do resumo: o que sobra da janela do LoopScreen depois do popup do bingo
+  // terminar (definido no draw_finish). As páginas se dividem nesse tempo real.
+  const [summaryMs, setSummaryMs] = useState(FINISH_SCREEN_HOLD_MS);
+  const totalDurationMs = summaryMs;
+  const shownAtRef = useRef(0);
+  const visibleRef = useRef(false);
+  visibleRef.current = visible;
 
   const hasFinishedForCurrentDrawRef = useRef(false);
   const finalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1021,6 +1022,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     const nextWinner = queueRef.current.shift()!;
     setActiveSingleWinner(nextWinner);
     setVisible(true);
+    shownAtRef.current = Date.now();
 
     hideTimerRef.current = setTimeout(() => {
       setVisible(false);
@@ -1028,7 +1030,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         processingRef.current = false;
         processQueue();
       }, 500);
-    }, 6500);
+    }, WINNER_POPUP_MS);
   }, []);
 
   // Fila de exibição individual durante a rodada — enquanto `isLive` é false (F5 ainda
@@ -1091,17 +1093,31 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       if (finalTimerRef.current) clearTimeout(finalTimerRef.current);
       processingRef.current = false;
       queueRef.current = [];
-      setVisible(false);
-      setActiveSingleWinner(null);
 
-      const fixedDuration = totalDurationMs;
-      setShowFullRoundWinners(true);
-      finalTimerRef.current = setTimeout(() => {
-        setShowFullRoundWinners(false);
-        if (onClose) onClose();
-      }, fixedDuration);
+      // Popup no ar (normalmente o do BINGO): deixa terminar o tempo dele antes do
+      // resumo, em vez de cortá-lo. O resumo fica o restante da janela do LoopScreen.
+      const remaining = visibleRef.current
+        ? Math.max(0, Math.min(WINNER_POPUP_MS, WINNER_POPUP_MS - (Date.now() - shownAtRef.current)))
+        : 0;
+      const summaryDuration = FINISH_SCREEN_HOLD_MS - remaining;
+      setSummaryMs(summaryDuration);
+
+      const openSummary = () => {
+        setVisible(false);
+        setActiveSingleWinner(null);
+        setShowFullRoundWinners(true);
+        finalTimerRef.current = setTimeout(() => {
+          setShowFullRoundWinners(false);
+          if (onClose) onClose();
+        }, summaryDuration);
+      };
+      if (remaining > 0) {
+        hideTimerRef.current = setTimeout(openSummary, remaining);
+      } else {
+        openSummary();
+      }
     }
-  }, [isDrawFinished, totalDurationMs, onClose]);
+  }, [isDrawFinished, onClose]);
 
   useEffect(() => {
     return () => {
