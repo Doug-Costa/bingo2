@@ -931,7 +931,14 @@ export function GameSocketProvider({
                   snapshotWinners.push(parsed);
                 }
               });
-              setWinners(snapshotWinners);
+              // O snapshot real manda `winners`/`lineWinners` VAZIOS no meio da rodada
+              // (confirmado gravando rodadas reais), mesmo depois de prêmios saírem.
+              // Lista vazia não pode apagar os ganhadores que já temos desta mesma
+              // rodada (vindos do cache ou dos `line_winner`) — se fosse outra rodada,
+              // eles já foram limpos acima ("novo sorteio detectado").
+              if (snapshotWinners.length > 0) {
+                setWinners(snapshotWinners);
+              }
               auditWinnerEvents('snapshot', currentDrawId, snapshotWinners);
             }
 

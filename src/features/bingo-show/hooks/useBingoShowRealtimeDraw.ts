@@ -99,6 +99,7 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
     myTickets,
     lastDrawEvent,
     recoveryPhase,
+    topStage,
   } = useGameSocket();
 
   const [now, setNow] = useState(() => new Date());
@@ -169,8 +170,16 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
 
   const tickets = useMemo(() => flattenMyTickets(myTickets), [myTickets]);
 
-  const hasLine1Win = winners.some((w) => w.type === 'line1');
-  const hasLine2Win = winners.some((w) => w.type === 'line2');
+  // Estágio do prêmio vindo do SSE (`snapshot.topWinnersStage` e `top_winners.stage`,
+  // atualizado a cada bola). É a fonte que sobrevive a um reload: o snapshot real
+  // manda `winners`/`lineWinners` vazios no meio da rodada, mas o estágio correto
+  // ("line2" depois do 1º prêmio, "bingo" depois do 2º). Só promove o status —
+  // 'finished'/'line1' não marcam nada (é o valor inicial/do cache).
+  const stageReachedLine2 = topStage === 'line2' || topStage === 'bingo';
+  const stageReachedBingo = topStage === 'bingo';
+
+  const hasLine1Win = winners.some((w) => w.type === 'line1') || stageReachedLine2;
+  const hasLine2Win = winners.some((w) => w.type === 'line2') || stageReachedBingo;
   const hasBingoWin = winners.some((w) => w.type === 'jackpot' || w.type === 'bingo');
 
   const line1StatusUI: PrizeRowStatus = hasLine1Win ? 'completed' : 'active';
