@@ -170,9 +170,11 @@
     0 0 20px rgba(22, 204, 255, 0.78),
     0 0 44px rgba(0, 111, 255, 0.45);
 
+  /* A trajetória/rotação vive em .ballFlight/.ballSpin; aqui só o pulso depois do
+   * encaixe e o glow do impacto (ver "Chegada dramática" abaixo). */
   animation:
-    blueBallDrawIn 900ms cubic-bezier(0.16, 0.84, 0.26, 1.12) both,
-    blueBallArrivalGlow 1.25s ease-out both;
+    blueBallArrivalGlow 760ms ease-out 980ms both,
+    finalBallPulse 380ms ease-out 1180ms both;
 }
 
 /* Brilho largo e suave que acompanha a curvatura (canto superior esquerdo). */
@@ -257,6 +259,198 @@
     0 3px 2px rgba(0, 8, 30, 0.35),
     0 8px 16px rgba(0, 4, 20, 0.55);
   user-select: none;
+  animation: stabilizeBallNumber 1320ms cubic-bezier(0.16, 0.82, 0.22, 1) both;
+}
+
+/* ─── Chegada dramática da nova bola ─────────────────────────────────────
+ * Montada uma vez por bola real (key = nº de bolas sorteadas + número). Camadas:
+ *   .ballFlight     trajetória em arco vinda da diagonal superior direita,
+ *                   escala, profundidade (blur ≤ 5px, só neste elemento) e rastro;
+ *   .ballSpin       rotação rápida que desacelera até 0;
+ *   .mainBingoBall  a bola aprovada, inalterada (+ pulso final e glow no impacto);
+ *   .ballNumber     fora da rotação: fica reto antes do encaixe (78%).
+ * 1320ms no total; encaixe em ~76% (≈1000ms) → aro de impacto, flash, pulso e
+ * reação dos anéis. O quadro final é idêntico ao estado estável anterior. */
+.ballFlight {
+  z-index: 4;
+  position: relative;
+  width: var(--ball);
+  height: var(--ball);
+  transform-origin: 50% 50%;
+  animation: ballFlightPath 1320ms cubic-bezier(0.16, 0.82, 0.22, 1) both;
+}
+
+/* Rastro ciano atrás da bola (lado de onde ela vem: cima/direita). Só na parte
+ * rápida do trajeto; some antes do encaixe. */
+.ballFlight::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  width: 190px;
+  height: 46px;
+  border-radius: 999px;
+  transform-origin: left center;
+  transform: translateY(-50%) rotate(-33deg);
+  background: linear-gradient(90deg, rgba(102, 225, 255, 0.55), rgba(0, 145, 255, 0.1), transparent);
+  filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  animation: ballTrail 1320ms linear both;
+}
+
+/* position + z-index: 0 prendem o z-index da bola (4) nesta camada, com ou sem
+ * animação — sem isso, no movimento reduzido (sem transform) a bola subia por
+ * cima do número. */
+.ballSpin {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  animation: ballSpinRotate 1320ms cubic-bezier(0.16, 0.82, 0.22, 1) both;
+}
+
+/* Faixa de luz que percorre a superfície durante o voo (reforça o giro) e some
+ * antes do fim — o acabamento final da bola não muda. */
+.ballGlint {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 24%, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.14) 12%, transparent 30%),
+    linear-gradient(105deg, transparent 34%, rgba(137, 224, 255, 0.24) 46%, transparent 60%);
+  opacity: 0;
+  animation: ballSurfaceSpin 900ms linear both;
+}
+
+/* Impacto no encaixe: flash atrás da bola + aro que se expande. */
+.ballImpactFlash {
+  z-index: 3;
+  width: calc(var(--ball) * 1.1);
+  height: calc(var(--ball) * 1.1);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(220, 250, 255, 0.85) 0%, rgba(86, 210, 255, 0.45) 40%, transparent 70%);
+  opacity: 0;
+  animation: impactFlash 460ms ease-out 1000ms both;
+}
+
+.ballImpactRing {
+  z-index: 5;
+  width: var(--ball);
+  height: var(--ball);
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 3px solid rgba(154, 237, 255, 0.92);
+  box-shadow:
+    0 0 12px rgba(86, 210, 255, 0.9),
+    0 0 30px rgba(0, 144, 255, 0.58);
+  pointer-events: none;
+  opacity: 0;
+  animation: impactRing 440ms ease-out 1000ms both;
+}
+
+/* Wrapper dos anéis (sem key — a rotação contínua nunca reinicia); a reação ao
+ * impacto é disparada uma vez por bola via Web Animations API no TSX. */
+.ringsGroup {
+  z-index: 2;
+  position: relative;
+  width: var(--outer);
+  height: var(--outer);
+  display: grid;
+  place-items: center;
+}
+
+.ringsGroup > * {
+  grid-area: 1 / 1;
+}
+
+@keyframes ballFlightPath {
+  0% {
+    opacity: 0;
+    transform: translate3d(370px, -240px, 0) scale(0.12);
+    filter: blur(5px) brightness(1.35);
+  }
+  12% {
+    opacity: 1;
+    transform: translate3d(315px, -205px, 0) scale(0.2);
+    filter: blur(3px) brightness(1.3);
+  }
+  34% {
+    transform: translate3d(190px, -125px, 0) scale(0.46);
+    filter: blur(1.8px) brightness(1.22);
+  }
+  58% {
+    transform: translate3d(72px, -42px, 0) scale(0.8);
+    filter: blur(0.6px) brightness(1.14);
+  }
+  76% {
+    transform: translate3d(-10px, 7px, 0) scale(1.055);
+    filter: blur(0) brightness(1.12);
+  }
+  86% {
+    transform: translate3d(4px, -2px, 0) scale(0.975);
+    filter: brightness(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes ballSpinRotate {
+  0% { transform: rotate(720deg); }
+  12% { transform: rotate(610deg); }
+  34% { transform: rotate(420deg); }
+  58% { transform: rotate(205deg); }
+  76% { transform: rotate(28deg); }
+  86% { transform: rotate(-7deg); }
+  100% { transform: none; }
+}
+
+@keyframes stabilizeBallNumber {
+  0% { opacity: 0; transform: rotate(360deg) scale(0.72); }
+  28% { opacity: 0.35; }
+  58% { opacity: 0.8; transform: rotate(120deg) scale(0.9); }
+  78% { opacity: 1; transform: rotate(8deg) scale(1); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes ballTrail {
+  0%, 10% { opacity: 0; }
+  25%, 50% { opacity: 0.9; }
+  70%, 100% { opacity: 0; }
+}
+
+@keyframes ballSurfaceSpin {
+  0% { opacity: 0.9; transform: rotate(-40deg) translateX(-12%); }
+  75% { opacity: 0.7; }
+  100% { opacity: 0; transform: rotate(680deg) translateX(12%); }
+}
+
+@keyframes impactFlash {
+  0% { opacity: 0; transform: scale(0.8); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.15); }
+}
+
+@keyframes impactRing {
+  0% { opacity: 0; transform: scale(0.72); }
+  25% { opacity: 0.95; }
+  100% { opacity: 0; transform: scale(1.36); }
+}
+
+@keyframes finalBallPulse {
+  0% { transform: scale(1); }
+  42% { transform: scale(1.045); }
+  100% { transform: scale(1); }
+}
+
+@keyframes reducedBallArrival {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ─── Próximos números ──────────────────────────────────────────────────── */
@@ -449,27 +643,6 @@
   }
 }
 
-@keyframes blueBallDrawIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-64px) rotate(-380deg) scale(0.58);
-    filter: blur(5px) brightness(1.5);
-  }
-  66% {
-    opacity: 1;
-    transform: translateY(7px) rotate(14deg) scale(1.07);
-    filter: blur(0) brightness(1.2);
-  }
-  84% {
-    transform: translateY(-3px) rotate(-5deg) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-
 /* 0%/100% idênticos ao box-shadow estático de `.mainBingoBall`, então o fim do
  * pulso encaixa sem salto. */
 @keyframes blueBallArrivalGlow {
@@ -501,5 +674,25 @@
   .exitFlight {
     animation-duration: 1ms;
     animation-iteration-count: 1;
+  }
+
+  .ballFlight {
+    animation: reducedBallArrival 180ms ease-out both;
+  }
+
+  .ballSpin,
+  .ballNumber {
+    animation: none;
+  }
+
+  .mainBingoBall {
+    animation-delay: 0ms;
+  }
+
+  .ballFlight::before,
+  .ballGlint,
+  .ballImpactFlash,
+  .ballImpactRing {
+    display: none;
   }
 }

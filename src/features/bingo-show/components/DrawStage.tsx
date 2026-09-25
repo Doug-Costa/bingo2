@@ -432,6 +432,29 @@ export const DrawStage: React.FC<DrawStageProps> = ({
 
   const { flyingBalls, displayedNextBalls } = useBallExitEffect(currentNumber, nextBalls);
 
+  // Chave da chegada da bola central (Blue): nº de bolas já sorteadas + número. Muda
+  // só com uma bola REAL nova (e zera a cada sorteio); relógio, contador, próximos
+  // números e re-renders comuns não a alteram — a chegada nunca repete à toa.
+  const ballKey = `${sequenceNumber ?? 0}-${currentNumber}`;
+  const ringsRef = useRef<HTMLDivElement>(null);
+
+  // Reação dos anéis ao impacto: um pulso curto no wrapper, disparado uma vez por
+  // bola. Web Animations API em vez de remontar os anéis — a rotação contínua deles
+  // nunca reinicia, e não há render do React por quadro.
+  useEffect(() => {
+    const el = ringsRef.current;
+    if (!isBlue || reducedMotion || !el || typeof el.animate !== 'function') return;
+    const anim = el.animate(
+      [
+        { transform: 'scale(1)', filter: 'brightness(1)' },
+        { transform: 'scale(1.025)', filter: 'brightness(1.55)', offset: 0.4 },
+        { transform: 'scale(1)', filter: 'brightness(1)' },
+      ],
+      { duration: 440, delay: 1000, easing: 'ease-out' },
+    );
+    return () => anim.cancel();
+  }, [ballKey, isBlue, reducedMotion]);
+
   // Mesma receita de ouro metalico do contador do lobby (goldReflectionShift),
   // so aplicada no tema Blue - demais temas mantem a cor solida atual.
   const goldNumberStyle: React.CSSProperties = isBlue
@@ -537,18 +560,32 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           <>
             {/* Palco Blue em camadas (atmosfera → anel externo → anel interno →
                 reflexos → bola → número). Estilos em DrawStageBlue.module.css.
-                `key={currentNumber}` remonta SÓ a bola quando o número real muda,
+                `key={ballKey}` remonta SÓ a bola quando chega uma bola real nova,
                 reiniciando a entrada; os anéis ficam fora da key e nunca reiniciam. */}
             <div className={blueStyles.blueDrawStage}>
               <div className={blueStyles.stageAtmosphere} />
-              <div className={blueStyles.outerRing}>{BLUE_OUTER_DOTS}</div>
-              <div className={blueStyles.innerRing} />
-              <div className={blueStyles.stageRays} />
-              <div key={currentNumber} className={blueStyles.mainBingoBall}>
-                <span className={blueStyles.ballSpecular} />
-                <span className={blueStyles.ballReflection} />
-                <span className={blueStyles.ballNumber}>{currentNumber > 0 ? currentNumber : '--'}</span>
+              <div ref={ringsRef} className={blueStyles.ringsGroup}>
+                <div className={blueStyles.outerRing}>{BLUE_OUTER_DOTS}</div>
+                <div className={blueStyles.innerRing} />
+                <div className={blueStyles.stageRays} />
               </div>
+              {/* Chegada dramática: remonta só com `ballKey` (bola real nova).
+                  ballFlight = trajetória/escala/rastro · ballSpin = rotação ·
+                  mainBingoBall = a bola aprovada · número fora da rotação. */}
+              <React.Fragment key={ballKey}>
+                <span className={blueStyles.ballImpactFlash} />
+                <div className={blueStyles.ballFlight}>
+                  <div className={blueStyles.ballSpin}>
+                    <div className={blueStyles.mainBingoBall}>
+                      <span className={blueStyles.ballSpecular} />
+                      <span className={blueStyles.ballReflection} />
+                      <span className={blueStyles.ballGlint} />
+                    </div>
+                  </div>
+                  <span className={blueStyles.ballNumber}>{currentNumber > 0 ? currentNumber : '--'}</span>
+                </div>
+                <span className={blueStyles.ballImpactRing} />
+              </React.Fragment>
               {/* Bola anterior saindo do centro para o 1º slot — mesma esfera das
                   bolas laterais, para pousar idêntica ao que o slot vai exibir. */}
               {flyingBalls.map((fb) => (
