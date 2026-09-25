@@ -4,6 +4,9 @@ import { BingoShowIcon, type BingoShowIconName } from './BingoShowIcon';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
+import blueStyles from './BingoShowPrizeStatusBlue.module.css';
+import { useFitText } from '../hooks/useFitText';
+import { moneyLengthTier, type MoneyLengthTier } from '../utils/moneyLength';
 
 export type PrizeRowStatus = 'pending' | 'active' | 'completed';
 
@@ -50,6 +53,33 @@ function useChangeTick(value: string): number {
   return tick;
 }
 
+/** Tamanhos (px, palco 1920×1080) por faixa de comprimento do valor formatado. */
+const MONEY_SIZES: Record<'active' | 'idle' | 'jackpot', Record<MoneyLengthTier, number>> = {
+  active: { normal: 44, long: 36, xlong: 30 },
+  jackpot: { normal: 42, long: 34, xlong: 28 },
+  idle: { normal: 30, long: 26, xlong: 22 },
+};
+
+/** Valor monetário do tema Blue: linha única, algarismos tabulares, fonte pela
+ * faixa de comprimento e reduzida (até 70%) só se ainda não couber na área
+ * reservada — nunca quebra, corta ou rola. Aceita qualquer string já formatada
+ * (hoje "R$ 150,00"; no futuro algo como "₲ 12.500.000"). */
+const BlueMoney: React.FC<{ value: string; role: 'active' | 'idle' | 'jackpot'; className?: string }> = ({
+  value,
+  role,
+  className,
+}) => {
+  const max = MONEY_SIZES[role][moneyLengthTier(value)];
+  const fit = useFitText(value, max, Math.round(max * 0.7), 'ellipsis', true);
+  return (
+    <span className={blueStyles.valueFit} data-fit-box style={{ height: Math.round(max * 1.12) }}>
+      <span ref={fit.ref} className={`${blueStyles.money} ${className ?? ''}`} style={{ fontSize: fit.size }}>
+        {value}
+      </span>
+    </span>
+  );
+};
+
 const PrizeRow: React.FC<{
   label: string;
   value: string;
@@ -75,9 +105,9 @@ const PrizeRow: React.FC<{
 
   const cardBgStyle = isBlue
     ? {
-        backgroundColor: isActive ? 'rgba(8, 127, 252, 0.22)' : 'rgba(3, 17, 48, 0.75)',
-        border: `1.5px solid ${isActive ? theme.borderPrimary : 'rgba(25, 117, 210, 0.3)'}`,
-        boxShadow: isActive ? '0 0 20px rgba(8, 127, 252, 0.4)' : 'none',
+        backgroundColor: isActive ? 'rgba(12, 140, 255, 0.28)' : 'rgba(3, 17, 48, 0.75)',
+        border: `1.5px solid ${isActive ? '#2fd8ff' : 'rgba(25, 117, 210, 0.3)'}`,
+        boxShadow: isActive ? '0 0 20px rgba(8, 127, 252, 0.45)' : 'none',
       }
     : {
         backgroundImage: `url(${bgAsset})`,
@@ -86,6 +116,7 @@ const PrizeRow: React.FC<{
 
   const cardContent = (
     <div
+      className={isBlue ? blueStyles.card : undefined}
       style={{
         width: '100%',
         height: '100%',
@@ -101,6 +132,14 @@ const PrizeRow: React.FC<{
         ...cardBgStyle,
       }}
     >
+      {isBlue && isActive && (
+        <>
+          <span className={blueStyles.neonGlow} />
+          <span className={blueStyles.neonRing}>
+            <span className={blueStyles.neonSweep} />
+          </span>
+        </>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span style={{ fontSize: 24, fontWeight: 900, color: '#FFFFFF', letterSpacing: 1.5 }}>{label}</span>
         <span
@@ -116,6 +155,21 @@ const PrizeRow: React.FC<{
         </span>
       </div>
 
+      {isBlue ? (
+        <div
+          className={blueStyles.valueCapsule}
+          style={{
+            border: `1.5px solid ${activeColor}`,
+            boxShadow: isActive ? `0 0 14px ${activeColor}55` : undefined,
+          }}
+        >
+          {/* Reflexo: montado só quando o prêmio ENTRA em disputa → toca uma vez. */}
+          {isActive && <span className={goldStyles.goldShine} />}
+          {/* Flash dourado único a cada mudança real do valor. */}
+          {valueTick > 0 && <span key={valueTick} className={goldStyles.goldFlash} />}
+          <BlueMoney value={value} role={isActive ? 'active' : 'idle'} className={blueValueClass} />
+        </div>
+      ) : (
       <div
         style={{
           backgroundImage: isBlue ? undefined : `url(${BingoShowAssets.cards.prizeValue})`,
@@ -150,6 +204,7 @@ const PrizeRow: React.FC<{
           {value}
         </span>
       </div>
+      )}
     </div>
   );
 
@@ -277,6 +332,11 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
         flexDirection: 'column',
         gap: BingoShowSpacing.xs,
         boxSizing: 'border-box',
+        // Blue: largura estável da coluna. Antes ela era decidida pelo texto do
+        // acumulado (596px com "R$ 600,00", 641px com "R$ 12.500,00"), deslocando o
+        // palco central conforme o valor. Agora o valor encolhe dentro da área e a
+        // coluna fica fixa no tamanho atual de produção.
+        ...(isBlue ? { minWidth: 600 } : {}),
         ...style,
       }}
     >
@@ -296,8 +356,9 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingLeft: 12,
-          paddingRight: 12,
+          // Blue: laterais menores para a área central (valor) ganhar espaço.
+          paddingLeft: isBlue ? 8 : 12,
+          paddingRight: isBlue ? 8 : 12,
           boxSizing: 'border-box',
           overflow: 'visible',
           opacity: jackpotActive ? 1 : 0.45,
@@ -305,30 +366,48 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
           transition: 'opacity 300ms ease, filter 300ms ease',
         }}
       >
-        {/* 3D CHEST ARTWORK */}
-        <img src={BingoShowAssets.jackpot.artwork} alt="Baú 3D" style={{ height: 160, objectFit: 'contain', flexShrink: 0, marginLeft: -8 }} />
+        {/* 3D CHEST ARTWORK — Blue: pulso ocasional + reflexo recortado pelo PNG. */}
+        {isBlue ? (
+          <div className={blueStyles.chest}>
+            <img src={BingoShowAssets.jackpot.artwork} alt="Baú 3D" style={{ height: 144, objectFit: 'contain', display: 'block' }} />
+            <span
+              className={blueStyles.assetShine}
+              style={{ WebkitMaskImage: `url(${BingoShowAssets.jackpot.artwork})`, maskImage: `url(${BingoShowAssets.jackpot.artwork})` }}
+            />
+          </div>
+        ) : (
+          <img src={BingoShowAssets.jackpot.artwork} alt="Baú 3D" style={{ height: 160, objectFit: 'contain', flexShrink: 0, marginLeft: -8 }} />
+        )}
 
         {/* ACCUMULATED AMOUNT */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 0, paddingLeft: 4, paddingRight: 4 }}>
           <span style={{ fontSize: 20, fontWeight: 900, color: secondaryColor, letterSpacing: 2, textTransform: 'uppercase' }}>
             ACUMULADO
           </span>
-          <span
-            className={isBlue ? goldStyles.goldValueActive : undefined}
-            style={{
-              fontSize: 32,
-              fontWeight: 900,
-              marginTop: 2,
-              whiteSpace: 'nowrap',
-              ...(isBlue ? {} : { color: primaryColor, textShadow: `0 0 16px ${primaryColor}` }),
-            }}
-          >
-            {accumulatedAmount}
-          </span>
+          {isBlue ? (
+            <BlueMoney value={accumulatedAmount} role="jackpot" className={goldStyles.goldValueActive} />
+          ) : (
+            <span style={{ fontSize: 32, fontWeight: 900, marginTop: 2, whiteSpace: 'nowrap', color: primaryColor, textShadow: `0 0 16px ${primaryColor}` }}>
+              {accumulatedAmount}
+            </span>
+          )}
         </div>
 
         {/* 3D STAR WITH TRIGGER BALL */}
-        {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 ? (
+        {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && isBlue ? (
+          /* Blue: só a arte da estrela pulsa/gira (com reflexo); o número fica estável. */
+          <div className={blueStyles.starWrap} style={{ width: 128, height: 128 }}>
+            <span className={blueStyles.starArt} style={{ backgroundImage: `url(${BingoShowAssets.jackpot.star})` }}>
+              <span
+                className={blueStyles.assetShine}
+                style={{ WebkitMaskImage: `url(${BingoShowAssets.jackpot.star})`, maskImage: `url(${BingoShowAssets.jackpot.star})` }}
+              />
+            </span>
+            <span className={blueStyles.starNumber} style={{ color: '#FFF6D6', fontSize: 40, fontWeight: 900, textShadow: '0 2px 6px rgba(0,10,45,0.95)' }}>
+              {triggerBallLimit}
+            </span>
+          </div>
+        ) : typeof triggerBallLimit === 'number' && triggerBallLimit > 0 ? (
           <div
             style={{
               width: 140,

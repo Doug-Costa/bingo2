@@ -1,0 +1,223 @@
+/* BingoShowPrizeStatusBlue.module.css — painel de prêmios da tela de sorteio,
+ * SOMENTE tema Blue: valores maiores e preparados para moedas com mais
+ * algarismos, pulso neon no prêmio EM DISPUTA e pulso do baú/estrela do acumulado.
+ *
+ * Só apresentação: nenhuma regra muda a altura dos cards nem a posição dos
+ * blocos. Animações usam transform/opacity (mais um box-shadow estático cuja
+ * opacidade varia), sem blur contínuo.
+ */
+
+/* ─── Valores monetários ─────────────────────────────────────────────────
+ * A cápsula reserva a largura (não depende do texto atual): base 300px, mínimo
+ * 170px, máximo 62% da linha, podendo encolher. O tamanho da fonte vem da faixa
+ * de comprimento da string (normal/longo/extralongo) e, se ainda assim não couber,
+ * é reduzido até caber (useFitText) — nunca quebra, corta ou rola. */
+.valueCapsule {
+  position: relative;
+  overflow: hidden;
+  flex: 0 1 300px;
+  min-width: 170px;
+  max-width: 62%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* O texto fica fora do fluxo (absoluto, centralizado): a área nunca cresce com o
+ * valor, então um número longo não alarga a coluna — ele encolhe até caber na
+ * largura já reservada. A altura da área vem do tamanho máximo da faixa. */
+.valueFit {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.money {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Prêmio EM DISPUTA: pulso neon na moldura ───────────────────────────
+ * Ciclo de 5,2s: parado a maior parte do tempo; por ~1s a borda ganha
+ * intensidade, um brilho percorre o contorno (anel mascarado + faixa cônica
+ * girando por transform) e um pulso curto de luz acontece. */
+.card {
+  position: relative;
+}
+
+.neonRing {
+  position: absolute;
+  inset: -2px;
+  border-radius: 17px;
+  padding: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: neonRingOn 5200ms ease-in-out 1200ms infinite;
+}
+
+.neonSweep {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150%;
+  aspect-ratio: 1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 290deg,
+    rgba(47, 216, 255, 0.9) 330deg,
+    #eafcff 350deg,
+    transparent 360deg
+  );
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: neonSweep 5200ms linear 1200ms infinite;
+}
+
+.neonGlow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 1px rgba(120, 235, 255, 0.85),
+    0 0 18px rgba(47, 216, 255, 0.55),
+    inset 0 0 14px rgba(47, 216, 255, 0.2);
+  opacity: 0;
+  animation: neonGlowPulse 5200ms ease-in-out 1200ms infinite;
+}
+
+@keyframes neonRingOn {
+  0%, 74% { opacity: 0; }
+  78%, 92% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+
+@keyframes neonSweep {
+  0%, 76% { transform: translate(-50%, -50%) rotate(0deg); }
+  96%, 100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes neonGlowPulse {
+  0%, 76% { opacity: 0; }
+  84% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
+
+/* ─── Acumulado: baú e estrela ───────────────────────────────────────────
+ * Mesmo ciclo de 6,8s; a estrela responde ~1s depois do baú. Parados a maior
+ * parte do tempo. Reflexos recortados pelo próprio PNG (mask-image). */
+.chest {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: -8px;
+  transform-origin: 50% 80%;
+  animation: chestPulse 6800ms ease-in-out 1500ms infinite;
+}
+
+.starWrap {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Só a arte da estrela pulsa/gira; o número fica estável por cima. */
+.starArt {
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: starPulse 6800ms ease-in-out 2500ms infinite;
+}
+
+.starNumber {
+  position: relative;
+  z-index: 1;
+}
+
+.assetShine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 238, 160, 0.7) 50%, transparent 62%) no-repeat;
+  background-size: 260% 100%;
+  background-position: 160% 0;
+  opacity: 0;
+}
+
+.chest .assetShine {
+  animation: assetShine 6800ms ease-in-out 1500ms infinite;
+}
+
+.starArt .assetShine {
+  animation: assetShine 6800ms ease-in-out 2500ms infinite;
+}
+
+/* Sobe 3px, cresce 3,5%, inclina 1°; no pico, uma vibração curtíssima
+ * (moedas se acomodando); volta suave. */
+@keyframes chestPulse {
+  0%, 6% { transform: none; }
+  12% { transform: translateY(-3px) scale(1.035) rotate(-1deg); }
+  13% { transform: translateY(-3px) scale(1.035) rotate(-0.4deg) translateX(0.6px); }
+  14% { transform: translateY(-3px) scale(1.035) rotate(-1.2deg) translateX(-0.6px); }
+  15% { transform: translateY(-3px) scale(1.035) rotate(-0.6deg) translateX(0.4px); }
+  16% { transform: translateY(-3px) scale(1.035) rotate(-1deg); }
+  26%, 100% { transform: none; }
+}
+
+@keyframes starPulse {
+  0%, 6% { transform: none; }
+  14% { transform: scale(1.045) rotate(1.5deg); }
+  26%, 100% { transform: none; }
+}
+
+@keyframes assetShine {
+  0%, 10% { opacity: 0; background-position: 160% 0; }
+  12% { opacity: 1; }
+  22% { opacity: 1; background-position: -60% 0; }
+  24%, 100% { opacity: 0; background-position: -60% 0; }
+}
+
+/* ─── Movimento reduzido: tudo parado; em disputa fica com borda mais viva ── */
+@media (prefers-reduced-motion: reduce) {
+  .neonRing,
+  .assetShine {
+    display: none;
+  }
+
+  .neonGlow {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .chest,
+  .starArt {
+    animation: none;
+  }
+}
