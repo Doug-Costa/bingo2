@@ -9,6 +9,10 @@ const FALLBACK_PROMO = 'COMPRE SUAS CARTELAS COM OS AGENTES AUTORIZADOS • BOA 
 
 export interface BingoShowRealtimeLobby extends BingoShowLobbyMock {
   connected: boolean;
+  /** `true` só quando o backend enviou um trigger ball limit válido (> 0).
+   * `triggerBallLimit` continua caindo em 45 para quem já depende disso; o lobby
+   * Blue usa esta flag para não exibir um número que não veio do backend. */
+  hasTriggerBallLimit: boolean;
 }
 
 export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
@@ -64,6 +68,7 @@ export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
       countdownSeconds,
       accumulatedPrize: formatBrl(jackpotAmount),
       triggerBallLimit: triggerBallLimit ?? 45,
+      hasTriggerBallLimit: typeof triggerBallLimit === 'number' && triggerBallLimit > 0,
       line1Prize: formatBrl(current?.prizeLine1),
       line2Prize: formatBrl(current?.prizeLine2),
       bingoPrize: formatBrl(current?.prizeLine3),
