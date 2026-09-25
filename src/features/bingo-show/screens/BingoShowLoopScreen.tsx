@@ -12,6 +12,7 @@ import React, { useEffect, useState } from 'react';
 import { useGameSocket } from '@/contexts/SSEContext';
 import { BingoShowLobbyScreen } from './BingoShowLobbyScreen';
 import { BingoShowDrawScreen } from './BingoShowDrawScreen';
+import { FINISH_SCREEN_HOLD_MS } from '../timing';
 
 export const BingoShowLoopScreen: React.FC = () => {
   const { drawActive, lastDrawEvent } = useGameSocket();
@@ -22,7 +23,7 @@ export const BingoShowLoopScreen: React.FC = () => {
       setHoldingFinishScreen(true);
       const timer = setTimeout(() => {
         setHoldingFinishScreen(false);
-      }, 20000); // 20 SEGUNDOS de retenção do Popup dos Ganhadores da Rodada no final do sorteio
+      }, FINISH_SCREEN_HOLD_MS); // 20 SEGUNDOS de retenção do Popup dos Ganhadores da Rodada no final do sorteio
 
       return () => clearTimeout(timer);
     }

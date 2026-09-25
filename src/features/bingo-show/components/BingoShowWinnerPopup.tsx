@@ -37,6 +37,7 @@ import { BingoShowColors } from '../design-system';
 import { formatBrl } from '../utils/format';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
+import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
 export interface TopPlayerItem {
   playerName?: string;
@@ -1125,6 +1126,37 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
 
   // 1. EXIBIÇÃO NO FINISH DRAW (LAYOUT ASSIMÉTRICO ADAPTATIVO 42% / 58%)
   if (showFullRoundWinners) {
+    // Tema Blue: mesmos ganhadores deduplicados, mesmo split (2+ ganhadores), mesmos
+    // valores individuais do backend e mesmo tempo total — só a apresentação muda.
+    // A key é a rodada + os ganhadores: só um novo resultado reinicia a sequência.
+    if (isBlue) {
+      const toView = (list: WinnerEvent[], defaultPrizeStr: string) =>
+        list.map((w, idx) => ({
+          id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
+          name: getWinnerDisplayName(w),
+          coupon: formatCouponDisplay(w),
+          prize: getWinnerPrizeDisplay(w, list.length > 1, defaultPrizeStr),
+          jackpot: w.jackpotWon === true,
+        }));
+      const categories: RoundCategoryView[] = [
+        { key: 'line1', winners: toView(line1Winners, line1Prize) },
+        { key: 'line2', winners: toView(line2Winners, line2Prize) },
+        { key: 'bingo', winners: toView(bingoWinners, bingoPrize) },
+      ];
+      return (
+        <BingoShowRoundWinnersBlue
+          key={`${drawNumber}-${dedupedWinners.map(winnerKey).join('|')}`}
+          drawNumber={drawNumber}
+          dateStr={dateStr}
+          timeStr={timeStr}
+          categories={categories}
+          jackpotAmount={jackpotAmountGlobal}
+          totalDurationMs={totalDurationMs}
+          onClose={handleClose}
+        />
+      );
+    }
+
     return (
       <div
         style={{

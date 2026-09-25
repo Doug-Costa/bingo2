@@ -16,8 +16,9 @@
  */
 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React from 'react';
 import { BingoShowAssets } from '../assets';
+import { useFitText } from '../hooks/useFitText';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowWinnerPresentationBlue.module.css';
 
@@ -76,33 +77,6 @@ const DUST = [
 // Tempos da cartela (ms desde a montagem) — ver linha do tempo no CSS.
 const CELL_IN_START = 1180;
 const WIN_START = 1500;
-
-/** Encolhe a fonte só se o texto não couber na largura da área marcada com
- * `data-fit-box` mais próxima, e só no tamanho mínimo libera quebra de linha —
- * nunca corta o texto. Mede uma vez por texto (não a cada render). */
-function useFitText(text: string, max: number, min: number) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [fit, setFit] = useState({ size: max, wrap: false });
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    const box = el?.closest<HTMLElement>('[data-fit-box]');
-    if (!el || !box) return;
-    const available = box.clientWidth;
-    el.style.fontSize = `${max}px`;
-    el.style.whiteSpace = 'nowrap';
-    const natural = el.scrollWidth;
-    let size = max;
-    if (natural > available && natural > 0) {
-      size = Math.max(min, Math.floor((max * available) / natural));
-    }
-    el.style.fontSize = '';
-    el.style.whiteSpace = '';
-    setFit({ size, wrap: size === min && (natural * min) / max > available });
-  }, [text, max, min]);
-
-  return { ref, ...fit };
-}
 
 export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentationBlueProps> = ({
   kind,
