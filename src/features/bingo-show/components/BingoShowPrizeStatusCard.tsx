@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BingoShowAssets } from '../assets';
 import { BingoShowIcon, type BingoShowIconName } from './BingoShowIcon';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import goldStyles from './goldMetalText.module.css';
 
 export type PrizeRowStatus = 'pending' | 'active' | 'completed';
 
@@ -35,6 +36,20 @@ const META_ACCENTS: Record<'sorteio' | 'doacao' | 'data' | 'hora', MetaAccent> =
   hora: { color: '#F0CE7A', soft: 'rgba(240, 206, 122, 0.16)' },
 };
 
+/** Conta mudanças reais de um valor (não conta a 1ª renderização) — usado como key
+ * do flash dourado, para ele tocar uma vez por atualização e nunca em re-renders. */
+function useChangeTick(value: string): number {
+  const prev = useRef(value);
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    if (prev.current !== value) {
+      prev.current = value;
+      setTick((t) => t + 1);
+    }
+  }, [value]);
+  return tick;
+}
+
 const PrizeRow: React.FC<{
   label: string;
   value: string;
@@ -50,6 +65,13 @@ const PrizeRow: React.FC<{
   const activeColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
   const successColor = theme.success || '#00FF88';
+  const valueTick = useChangeTick(value);
+  // Blue: ouro metálico por estado (em disputa / aguardando / concluído).
+  const blueValueClass = isActive
+    ? goldStyles.goldValueActive
+    : isCompleted
+    ? goldStyles.goldValueDone
+    : goldStyles.goldValueWaiting;
 
   const cardBgStyle = isBlue
     ? {
@@ -106,15 +128,23 @@ const PrizeRow: React.FC<{
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: isBlue && isActive ? `0 0 14px ${activeColor}55` : undefined,
+          position: isBlue ? 'relative' : undefined,
+          overflow: isBlue ? 'hidden' : undefined,
         }}
       >
+        {/* Reflexo: montado só quando o prêmio ENTRA em disputa → toca uma vez. */}
+        {isBlue && isActive && <span className={goldStyles.goldShine} />}
+        {/* Flash dourado único a cada mudança real do valor. */}
+        {isBlue && valueTick > 0 && <span key={valueTick} className={goldStyles.goldFlash} />}
         <span
+          className={isBlue ? blueValueClass : undefined}
           style={{
             fontSize: 26,
             fontWeight: 900,
-            color: isActive ? activeColor : '#FFFFFF',
-            textShadow: isActive ? `0 0 16px ${activeColor}` : 'none',
             whiteSpace: 'nowrap',
+            ...(isBlue
+              ? { position: 'relative' }
+              : { color: isActive ? activeColor : '#FFFFFF', textShadow: isActive ? `0 0 16px ${activeColor}` : 'none' }),
           }}
         >
           {value}
@@ -146,7 +176,9 @@ const MetaCard: React.FC<{
   label: string;
   value: string;
   accent: MetaAccent;
-}> = ({ icon, label, value, accent }) => {
+  /** Valor em reais — no Blue recebe o ouro metálico (compacto, texto pequeno). */
+  monetary?: boolean;
+}> = ({ icon, label, value, accent, monetary = false }) => {
   const { isBlue, theme } = useAppTheme();
   const pngIcon = isBlue ? META_ICONS_PNG[icon] : undefined;
 
@@ -191,7 +223,18 @@ const MetaCard: React.FC<{
         <span style={{ fontSize: 13, fontWeight: 900, color: isBlue ? '#8FD9FF' : accent.color, letterSpacing: 1.2, textTransform: 'uppercase' }}>
           {label}
         </span>
-        <span style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span
+          className={isBlue && monetary && value ? goldStyles.goldMetalTextCompact : undefined}
+          style={{
+            fontSize: 18,
+            fontWeight: 900,
+            marginTop: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            ...(isBlue && monetary && value ? {} : { color: '#FFFFFF' }),
+          }}
+        >
           {value || '---'}
         </span>
       </div>
@@ -270,7 +313,16 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
           <span style={{ fontSize: 20, fontWeight: 900, color: secondaryColor, letterSpacing: 2, textTransform: 'uppercase' }}>
             ACUMULADO
           </span>
-          <span style={{ fontSize: 32, fontWeight: 900, color: primaryColor, textShadow: `0 0 16px ${primaryColor}`, marginTop: 2, whiteSpace: 'nowrap' }}>
+          <span
+            className={isBlue ? goldStyles.goldValueActive : undefined}
+            style={{
+              fontSize: 32,
+              fontWeight: 900,
+              marginTop: 2,
+              whiteSpace: 'nowrap',
+              ...(isBlue ? {} : { color: primaryColor, textShadow: `0 0 16px ${primaryColor}` }),
+            }}
+          >
             {accumulatedAmount}
           </span>
         </div>
@@ -309,7 +361,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
           <MetaCard icon="ticket" label="SORTEIO" value={drawNumber} accent={META_ACCENTS.sorteio} />
-          <MetaCard icon="star" label="DOAÇÃO" value={donationAmount} accent={META_ACCENTS.doacao} />
+          <MetaCard icon="star" label="DOAÇÃO" value={donationAmount} accent={META_ACCENTS.doacao} monetary />
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
           <MetaCard icon="calendar" label="DATA" value={dateStr} accent={META_ACCENTS.data} />

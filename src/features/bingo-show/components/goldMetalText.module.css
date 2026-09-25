@@ -18,14 +18,16 @@
  */
 
 .goldMetalText,
-.goldMetalTextCompact {
+.goldMetalTextCompact,
+.goldValueActive {
   /* Fallback sem background-clip: text — ouro sólido legível. */
   color: #f7c83e;
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .goldMetalText,
-  .goldMetalTextCompact {
+  .goldMetalTextCompact,
+  .goldValueActive {
     background: linear-gradient(
       180deg,
       #6f3e00 0%,
@@ -87,4 +89,109 @@
   text-shadow:
     0 1px 0 rgba(128, 76, 0, 0.85),
     0 0 7px rgba(255, 190, 34, 0.32);
+}
+
+/* ─── Valores monetários (painel de prêmios) ─────────────────────────────
+ * Ativo = o mesmo gradiente aprovado acima, com contorno e relevo de valor.
+ * Espera/concluído = ouro envelhecido, sem glow forte, para o prêmio ativo
+ * continuar se destacando. Só cor/sombra: nenhuma regra muda tamanho ou layout. */
+
+/* Acumulado e prêmio em disputa. */
+.goldValueActive {
+  -webkit-text-stroke: 1px rgba(100, 47, 0, 0.72);
+  filter:
+    drop-shadow(0 2px 0 #713600)
+    drop-shadow(0 4px 1px rgba(25, 9, 0, 0.66))
+    drop-shadow(0 0 7px rgba(255, 199, 34, 0.88))
+    drop-shadow(0 0 16px rgba(255, 145, 0, 0.3));
+}
+
+/* Prêmio aguardando — ouro envelhecido/desaturado. */
+.goldValueWaiting,
+.goldValueDone {
+  color: #b79548;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .goldValueWaiting,
+  .goldValueDone {
+    background: linear-gradient(180deg, #d8c58e 0%, #b79548 24%, #81632b 48%, #c0a365 68%, #725521 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.goldValueWaiting {
+  -webkit-text-stroke: 1px rgba(64, 43, 12, 0.55);
+  filter:
+    drop-shadow(0 2px 0 rgba(38, 24, 4, 0.68))
+    drop-shadow(0 0 4px rgba(204, 164, 63, 0.2));
+}
+
+/* Prêmio concluído — mesmo ouro envelhecido, um pouco mais escuro. Sem opacidade
+ * extra: a linha do prêmio já fica a 55% fora de disputa, e somar as duas
+ * apagava o valor demais para leitura na TV. */
+.goldValueDone {
+  -webkit-text-stroke: 1px rgba(64, 43, 12, 0.55);
+  filter:
+    brightness(0.88)
+    drop-shadow(0 2px 0 rgba(38, 24, 4, 0.68));
+}
+
+/* Reflexo horizontal — uma vez, quando o prêmio entra em disputa (o elemento é
+ * montado só nessa transição). Fica preso à caixa do valor (overflow: hidden no
+ * pai), não atravessa outros elementos. */
+.goldShine {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 26%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 246, 200, 0.7), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: monetaryGoldShine 900ms ease-out 1 both;
+}
+
+@keyframes monetaryGoldShine {
+  from {
+    transform: translateX(-160%) skewX(-18deg);
+  }
+
+  to {
+    transform: translateX(460%) skewX(-18deg);
+  }
+}
+
+/* Flash dourado único quando o valor muda (prêmio atualizado/vencido). */
+.goldFlash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: monetaryGoldFlash 700ms ease-out 1 both;
+}
+
+@keyframes monetaryGoldFlash {
+  0% {
+    opacity: 0;
+    box-shadow: inset 0 0 0 1px transparent;
+  }
+  35% {
+    opacity: 1;
+    box-shadow: inset 0 0 0 2px rgba(255, 215, 70, 0.9), 0 0 18px rgba(255, 190, 30, 0.7);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: inset 0 0 0 2px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goldShine,
+  .goldFlash {
+    display: none;
+  }
 }
