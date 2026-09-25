@@ -204,6 +204,43 @@
   24%, 100% { opacity: 0; background-position: -60% 0; }
 }
 
+/* ─── Ícones dos cards SORTEIO / DOAÇÃO / DATA / HORA ────────────────────
+ * A cápsula continua 44×44. Os PNGs têm margens transparentes muito diferentes
+ * (o coração ocupa ~38% da imagem, o trevo ~90%), então cada um tem o tamanho da
+ * IMAGEM calibrado para o desenho visível ficar ~34px — 35–40% maior que antes e
+ * com o mesmo peso entre os quatro. Imagens maiores que a cápsula só ultrapassam
+ * com a margem transparente (nada é cortado; object-fit: contain). Sombra curta +
+ * glow leve na cor de cada asset, estáticos. */
+.metaIcon {
+  flex: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.metaIcon_ticket {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 2px rgba(0, 8, 30, 0.6)) drop-shadow(0 0 5px rgba(80, 220, 110, 0.35));
+}
+
+.metaIcon_star {
+  width: 84px;
+  height: 84px;
+  filter: drop-shadow(0 2px 2px rgba(0, 8, 30, 0.6)) drop-shadow(0 0 5px rgba(255, 70, 80, 0.4));
+}
+
+.metaIcon_calendar {
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 2px 2px rgba(0, 8, 30, 0.6)) drop-shadow(0 0 5px rgba(140, 210, 255, 0.35));
+}
+
+.metaIcon_clock {
+  width: 68px;
+  height: 68px;
+  filter: drop-shadow(0 2px 2px rgba(0, 8, 30, 0.6)) drop-shadow(0 0 5px rgba(255, 210, 120, 0.35));
+}
+
 /* ─── Movimento reduzido: tudo parado; em disputa fica com borda mais viva ── */
 @media (prefers-reduced-motion: reduce) {
   .neonRing,

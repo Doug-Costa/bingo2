@@ -269,7 +269,7 @@ const MetaCard: React.FC<{
         }}
       >
         {pngIcon ? (
-          <img src={pngIcon} alt={label} style={{ width: 30, height: 30, objectFit: 'contain' }} />
+          <img src={pngIcon} alt={label} className={`${blueStyles.metaIcon} ${blueStyles[`metaIcon_${icon}`] ?? ''}`} />
         ) : (
           <BingoShowIcon name={icon} size={28} color={isBlue ? theme.secondary : accent.color} transparentBg />
         )}
