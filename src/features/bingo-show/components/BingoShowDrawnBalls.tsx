@@ -41,12 +41,24 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         backgroundImage: panelBg,
         backgroundSize: '100% 100%',
         backgroundColor: theme.panelBg,
-        border: !isBlueTheme && themeId !== 'bingo-show' ? `2px solid ${theme.borderPrimary}` : undefined,
+        // Blue: moldura ciano de 2px (mesma espessura das molduras do tema) com brilho
+        // INTERNO junto à borda. O glow é interno de propósito: os contêineres do
+        // BingoShowTvLayout (overflow: hidden, compartilhados por todas as telas)
+        // terminam exatamente na borda de baixo e na da esquerda deste painel, então um
+        // glow externo seria cortado nesses dois lados. O padding desconta os 2px da
+        // borda, para a grade de bolas ficar exatamente onde estava.
+        border: isBlueTheme
+          ? '2px solid rgba(23, 200, 255, 0.85)'
+          : themeId !== 'bingo-show'
+          ? `2px solid ${theme.borderPrimary}`
+          : undefined,
         borderRadius: 24,
-        padding: '16px 28px 20px 28px',
+        padding: isBlueTheme ? '14px 26px 18px 26px' : '16px 28px 20px 28px',
         boxSizing: 'border-box',
         overflow: 'hidden',
-        boxShadow: `0 8px 32px rgba(0,0,0,0.5)`,
+        boxShadow: isBlueTheme
+          ? '0 8px 32px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(170, 238, 255, 0.14), inset 0 0 18px rgba(23, 200, 255, 0.22)'
+          : `0 8px 32px rgba(0,0,0,0.5)`,
         position: 'relative',
         ...style,
       }}
