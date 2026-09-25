@@ -43,12 +43,18 @@
      menor que a altura fixa do header (158px, inalterada), sendo
      centralizado dentro dela. Nao ha nenhum transform/scale duplicado aqui -
      so o TvStage escala o palco inteiro uma unica vez. */
+  /* Aproveitamento vertical: mesmos 158px, agora com 7px de respiro em cima e
+     embaixo (área útil 144px) e itens centralizados — logo 144px, cards e banner
+     142px (terminam a 8px da borda de baixo). padding-right reserva a área do
+     seletor de tema (fixo no canto superior direito, ~210px): com o banner
+     ocupando quase toda a altura, qualquer sobreposição vertical é inevitável,
+     então o banner termina antes dele em vez de ficar por baixo. */
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 158px;
-  padding: 8px 4px;
+  padding: 7px 222px 7px 16px;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -60,8 +66,9 @@
 
 .headerLeft {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
+  height: 100%;
 }
 
 .logoWrapper {
@@ -73,14 +80,15 @@
 
 .logoImage {
   object-fit: contain;
-  height: 128px;
+  height: 144px;
+  max-height: 144px;
   width: auto;
 }
 
 .headerPillsGroup {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .pill {
@@ -90,8 +98,9 @@
   justify-content: center;
   gap: 6px;
   min-width: 148px;
-  min-height: 108px;
-  padding: 14px 22px;
+  height: 142px;
+  min-height: 142px;
+  padding: 14px 18px;
   border-radius: 18px;
   background: rgba(6, 20, 58, 0.85);
   border: 2px solid rgba(23, 200, 255, 0.75);
@@ -106,15 +115,15 @@
 }
 
 .pillIcon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
   filter: drop-shadow(0 0 4px rgba(255, 207, 18, 0.5));
 }
 
 .pillLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 1px;
   color: var(--primary-blue-hover, #17C8FF);
@@ -130,9 +139,27 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
+/* Larguras por card (tamanho do valor cabe com folga na TV). */
+.pillDraw {
+  width: 180px;
+}
+
+.pillDraw .pillValue {
+  font-size: 28px;
+}
+
+.pillDate {
+  width: 220px;
+}
+
+.pillTime {
+  width: 180px;
+}
+
 .headerRight {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  height: 100%;
 }
 
 .specialJackpotBox {
@@ -144,7 +171,9 @@
      margem da borda direita), para que ela nunca invada o seletor de tema
      nem fique flutuando para fora do banner. Apenas o padding vertical
      cresceu (10->20) para preencher a altura do header. */
-  padding: 20px 82px 20px 16px;
+  height: 142px;
+  min-width: 390px;
+  padding: 0 108px 0 18px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
   border: 2px solid var(--accent-gold, #FFCF12);
@@ -153,8 +182,8 @@
 }
 
 .chestImage {
-  width: 84px;
-  height: 67px;
+  width: 112px;
+  height: 90px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.7));
   animation: floatSubtle 3s ease-in-out infinite alternate;
@@ -169,7 +198,7 @@
 
 .jackpotHeaderLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 900;
   letter-spacing: 1.4px;
   color: var(--accent-gold, #FFCF12);
@@ -179,7 +208,7 @@
 
 .jackpotHeaderValue {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 34px;
+  font-size: 44px;
   font-weight: 900;
   letter-spacing: 0.5px;
   color: #FFFFFF;
@@ -199,9 +228,9 @@
 .starBadgeFloating {
   position: absolute;
   top: 50%;
-  right: 14px;
-  width: 58px;
-  height: 58px;
+  right: 16px;
+  width: 80px;
+  height: 80px;
   margin: 0;
   transform: translateY(-50%);
   z-index: 3;
@@ -220,7 +249,7 @@
   position: relative;
   z-index: 2;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 900;
   color: #1A0D00;
   margin-top: 2px;

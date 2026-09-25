@@ -108,13 +108,13 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
 
           <div className={styles.headerPillsGroup}>
             {/* Pill 1: Próximo Sorteio */}
-            <div className={styles.pill}>
+            <div className={`${styles.pill} ${styles.pillDraw}`}>
               <span className={styles.pillLabel}>PRÓXIMO SORTEIO:</span>
               <span className={styles.pillValue}>{drawNumberDisplay}</span>
             </div>
 
             {/* Pill 2: Data com Ícone 3D */}
-            <div className={styles.pill}>
+            <div className={`${styles.pill} ${styles.pillDate}`}>
               <span className={styles.pillLabelRow}>
                 <Image
                   src="/themes/bingo-show/assets/icons/calendario.png"
@@ -129,7 +129,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             </div>
 
             {/* Pill 3: Hora com Ícone 3D */}
-            <div className={styles.pill}>
+            <div className={`${styles.pill} ${styles.pillTime}`}>
               <span className={styles.pillLabelRow}>
                 <Image
                   src="/themes/bingo-show/assets/icons/relogio.png"
