@@ -1,0 +1,826 @@
+/* BingoShowWinnerPresentationBlue.module.css — popup individual de ganhador,
+ * SOMENTE tema Blue ("cerimônia de premiação"). Puramente visual: todos os
+ * textos, valores e a linha vencedora chegam prontos do BingoShowWinnerPopup.
+ *
+ * Palco 1920×1080 (o popup é `position: fixed` dentro do TvStage, que já escala).
+ * Moldura 1680×850; dentro: ganhador (1fr) | cartela (640px, ~12% maior que a
+ * anterior, que tinha ~576px).
+ *
+ * Linha do tempo (todas as animações rodam UMA vez na montagem; a key do
+ * componente é a vitória, então re-renders comuns não reiniciam nada):
+ *   0–400ms      fundo + moldura (fade/scale) + luz percorrendo a borda
+ *   300–900ms    selo desce com bounce + reflexo
+ *   650–1300ms   título, nome, cupom
+ *   1000–1700ms  label + valor (0.76 → 1.06 → 1) + reflexo no texto
+ *   1200–1900ms  estrela e baú entram pelos lados, moedas assentam
+ *   700–2600ms   cartela entra pela direita → BINGO acende → células → linha
+ *                vencedora acende em sequência → feixe dourado → flash
+ *   1700–3200ms  confete nas extremidades + partículas subindo + último flash
+ *   depois       estável: só respiração lenta do valor, partículas discretas
+ *                e reflexo ambiente lento.
+ */
+
+/* ─── Variações por tipo de prêmio (classes/tokens, não cópias) ────────── */
+
+.root {
+  --accent: #ffd23f;
+  --accent-deep: #b9780a;
+  --accent-glow: rgba(255, 200, 20, 0.34);
+  --frame-inner: rgba(0, 198, 255, 0.72);
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  background:
+    radial-gradient(circle at 36% 46%, rgba(13, 93, 190, 0.34) 0%, rgba(4, 31, 83, 0.18) 35%, transparent 62%),
+    radial-gradient(circle at 76% 48%, rgba(0, 198, 255, 0.15), transparent 48%),
+    linear-gradient(145deg, #020817 0%, #031433 45%, #020a20 100%);
+  animation: fadeIn 400ms ease-out both;
+}
+
+/* 2 linhas — ouro com tom âmbar. */
+.kind_line2 {
+  --accent: #ffb53a;
+  --accent-deep: #a85a00;
+  --accent-glow: rgba(255, 160, 30, 0.36);
+}
+
+/* Bingo — verde-esmeralda do tema com dourado. */
+.kind_bingo {
+  --accent: #ffd23f;
+  --accent-deep: #0f8f4e;
+  --accent-glow: rgba(40, 220, 130, 0.32);
+  --frame-inner: rgba(46, 230, 140, 0.7);
+}
+
+/* Acumulado (bingo com jackpotWon) — ouro mais intenso. */
+.kind_jackpot {
+  --accent: #ffe066;
+  --accent-deep: #c98200;
+  --accent-glow: rgba(255, 210, 40, 0.5);
+}
+
+/* ─── Fundo: vinheta, raios suaves, pontos de luz ──────────────────────── */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 3, 12, 0.75) 100%);
+}
+
+/* Reflexos largos e quase transparentes atrás do ganhador (não são pás):
+ * poucas fatias largas, muito desfocadas, girando bem devagar. */
+.rays {
+  position: absolute;
+  left: 470px;
+  top: 540px;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(80, 170, 255, 0.07) 0deg 9deg,
+    transparent 16deg 40deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 62%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 62%);
+  filter: blur(14px);
+  opacity: 0;
+  will-change: transform;
+  animation:
+    fadeIn 900ms ease-out 150ms forwards,
+    slowSpin 90s linear infinite;
+}
+
+.dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 14%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 22% 86%, rgba(160, 220, 255, 0.7), transparent),
+    radial-gradient(2px 2px at 91% 12%, rgba(255, 220, 120, 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 96% 70%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 4% 58%, rgba(255, 220, 120, 0.6), transparent),
+    radial-gradient(2px 2px at 60% 5%, rgba(160, 220, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 48% 96%, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 76% 94%, rgba(255, 220, 120, 0.55), transparent);
+}
+
+/* ─── Moldura principal ────────────────────────────────────────────────── */
+
+.frame {
+  position: absolute;
+  left: 120px;
+  top: 172px;
+  width: 1680px;
+  height: 850px;
+  box-sizing: border-box;
+  border: 2px solid rgba(255, 205, 45, 0.92);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 18%),
+    linear-gradient(160deg, rgba(10, 44, 110, 0.92) 0%, rgba(5, 24, 70, 0.94) 55%, rgba(3, 14, 44, 0.96) 100%);
+  box-shadow:
+    inset 0 0 0 2px var(--frame-inner),
+    inset 0 0 28px rgba(19, 102, 220, 0.22),
+    0 0 12px var(--accent-glow),
+    0 0 30px rgba(0, 161, 255, 0.2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 640px;
+  column-gap: 56px;
+  align-items: center;
+  padding: 70px 56px 44px;
+  animation: frameIn 420ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* Cantos mais brilhantes. */
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 28px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 230, 140, 0.55), transparent 70px),
+    radial-gradient(circle at 100% 0, rgba(255, 230, 140, 0.55), transparent 70px),
+    radial-gradient(circle at 0 100%, rgba(120, 220, 255, 0.4), transparent 70px),
+    radial-gradient(circle at 100% 100%, rgba(120, 220, 255, 0.4), transparent 70px);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 4px;
+}
+
+/* Luz percorrendo a borda na entrada (topo e base), uma vez. */
+.edgeLight {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.edgeLight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 26%;
+  left: 0;
+  background: linear-gradient(90deg, transparent, #fff6c8, #ffd23f, transparent);
+  box-shadow: 0 0 12px #ffd23f;
+  transform: translateX(-120%);
+  animation: sweepAcross 900ms ease-in-out 180ms both;
+}
+
+.edgeTop {
+  top: -2px;
+}
+
+.edgeBottom {
+  bottom: -2px;
+}
+
+.edgeBottom::after {
+  animation-delay: 380ms;
+  animation-direction: reverse;
+}
+
+/* Flash final da moldura (fase de celebração). */
+.frameFlash {
+  position: absolute;
+  inset: -2px;
+  border-radius: 28px;
+  pointer-events: none;
+  opacity: 0;
+  animation: flashRing 700ms ease-out 2700ms both;
+}
+
+/* ─── Selo superior ────────────────────────────────────────────────────── */
+
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 124px;
+  z-index: 3;
+  padding: 22px 64px 20px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
+    linear-gradient(180deg, #0e2d6b 0%, #071a45 60%, #040f2e 100%);
+  border: 3px solid var(--accent);
+  box-shadow:
+    0 0 0 3px #061636,
+    0 0 0 6px var(--accent-deep),
+    0 0 16px var(--accent-glow),
+    0 0 34px var(--accent-glow),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+  transform: translateX(-50%);
+  animation: sealIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 300ms both;
+}
+
+.sealText {
+  position: relative;
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+/* Reflexo que atravessa o selo uma vez. */
+.seal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-160%) skewX(-12deg);
+  animation: sealShine 800ms ease-out 900ms both;
+}
+
+/* ─── Ganhador ─────────────────────────────────────────────────────────── */
+
+.winner {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+}
+
+.winnerTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+  animation: riseIn 500ms ease-out 650ms both;
+}
+
+.titleStar {
+  font-size: 30px;
+}
+
+.name {
+  max-width: 100%;
+  font-size: 92px;
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: #ffffff;
+  animation: nameIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) 760ms both;
+}
+
+.nameWrap {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .name {
+    background: linear-gradient(180deg, #ffffff 0%, #f4f9ff 48%, #a7d7ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+/* Relevo/glow por drop-shadow (text-shadow pintaria por cima do texto
+ * recortado — mesmo motivo do ouro metálico). */
+.nameShadow {
+  max-width: 100%;
+  filter:
+    drop-shadow(0 3px 0 rgba(0, 25, 70, 0.75))
+    drop-shadow(0 0 12px rgba(87, 190, 255, 0.55))
+    drop-shadow(0 0 26px rgba(0, 108, 255, 0.24));
+}
+
+.coupon {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 34px 9px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #0b2560 0%, #06163f 100%);
+  border: 2px solid var(--accent);
+  box-shadow:
+    0 0 0 2px #061636,
+    0 0 0 4px var(--accent-deep),
+    0 0 12px var(--accent-glow);
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  animation: riseIn 450ms ease-out 900ms both;
+}
+
+.prizeLabel {
+  margin-top: 10px;
+  color: #9fd8ff;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(0, 170, 255, 0.45), 0 2px 2px rgba(0, 10, 40, 0.8);
+  animation: riseIn 400ms ease-out 1000ms both;
+}
+
+/* Linha do valor: estrela | valor | baú. O valor encolhe só se não couber. */
+.prizeRow {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 200px;
+  align-items: center;
+  column-gap: 12px;
+}
+
+/* Glow/pedestal azul sob o valor (como na referência). */
+.prizeRow::before {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -18px;
+  height: 36px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(0, 170, 255, 0.45) 0%, rgba(0, 110, 255, 0.12) 50%, transparent 72%);
+  animation: fadeIn 600ms ease-out 1300ms both;
+}
+
+.star {
+  width: 120px;
+  height: 118px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(80, 170, 255, 0.55));
+  animation: fromLeft 650ms cubic-bezier(0.2, 0.9, 0.3, 1.15) 1200ms both;
+}
+
+.chestBox {
+  position: relative;
+  width: 200px;
+  height: 128px;
+  animation: fromRight 650ms cubic-bezier(0.2, 0.9, 0.3, 1.15) 1250ms both;
+}
+
+.chest {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 190, 30, 0.3));
+}
+
+.coins {
+  position: absolute;
+  right: -18px;
+  bottom: -14px;
+  width: 64px;
+  height: 57px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+  animation: coinsSettle 520ms cubic-bezier(0.3, 1.4, 0.5, 1) 1650ms both;
+}
+
+.prizeValueBox {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  animation: prizeBreath 3.6s ease-in-out 3200ms infinite;
+}
+
+/* Valor: mesmas faixas do ouro metálico aprovado (goldMetalText.module.css),
+ * com uma 2ª camada — a faixa de reflexo — que passa UMA vez pelo texto.
+ * O reflexo é parte do background recortado, então só aparece nas letras. */
+.prizeValue {
+  font-size: 118px;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: #f7c83e;
+  animation: prizePop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1050ms both;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .prizeValue {
+    background:
+      linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.95) 50%, transparent 60%) no-repeat,
+      linear-gradient(180deg, #6f3e00 0%, #b97808 8%, #fff4b8 18%, #ffd76a 25%, #d9a514 42%, #fff0a0 51%, #b97808 59%, #f5c542 73%, #fff4b8 82%, #a86200 92%, #5c3100 100%);
+    background-size: 250% 100%, 100% 100%;
+    background-position: 160% 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(114, 56, 0, 0.82);
+    animation:
+      prizePop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1050ms both,
+      prizeShine 1100ms ease-out 1500ms both;
+  }
+}
+
+.prizeGlow {
+  filter:
+    drop-shadow(0 2px 0 #7a3d00)
+    drop-shadow(0 5px 1px rgba(36, 14, 0, 0.72))
+    drop-shadow(0 0 8px rgba(255, 197, 34, 0.9))
+    drop-shadow(0 0 22px rgba(255, 146, 0, 0.4));
+}
+
+.jackpotTag {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 8px;
+  padding: 8px 24px;
+  border-radius: 14px;
+  border: 2px solid #ffe066;
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.2), rgba(255, 170, 0, 0.08));
+  box-shadow: 0 0 16px rgba(255, 210, 40, 0.45);
+  animation: riseIn 450ms ease-out 1700ms both;
+}
+
+.jackpotLabel {
+  color: #ffe066;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.jackpotValue {
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 900;
+  text-shadow: 0 0 12px rgba(255, 210, 40, 0.8);
+}
+
+/* ─── Cartela ──────────────────────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  height: 100%;
+  max-height: 700px;
+  box-sizing: border-box;
+  padding: 22px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 22px;
+  border: 2px solid rgba(255, 205, 45, 0.9);
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.07) 0%, transparent 30%),
+    linear-gradient(180deg, #0a2a66 0%, #061a48 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 198, 255, 0.6),
+    inset 0 0 24px rgba(19, 102, 220, 0.25),
+    0 0 18px rgba(0, 150, 255, 0.28);
+  animation: cardIn 750ms cubic-bezier(0.2, 0.8, 0.3, 1) 700ms both;
+}
+
+.cardTitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.bingoHead {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.headCell {
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(180deg, rgba(40, 190, 255, 0.5) 0%, rgba(12, 90, 190, 0.55) 100%);
+  border: 1.5px solid rgba(120, 225, 255, 0.85);
+  text-shadow: 0 2px 3px rgba(0, 30, 90, 0.8);
+  animation: headLight 500ms ease-out 1100ms both;
+}
+
+.grid {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #1a3f86 0%, #0d2a64 52%, #081c49 100%);
+  border: 1.5px solid rgba(110, 175, 255, 0.55);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -10px 16px rgba(0, 6, 30, 0.35);
+  text-shadow: 0 2px 3px rgba(0, 10, 40, 0.8);
+  animation: cellIn 260ms ease-out var(--in-delay, 1200ms) both;
+}
+
+/* Camada dourada da célula vencedora — acende em sequência (--win-delay). */
+.cellGold {
+  position: absolute;
+  inset: 0;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #fff1a0 0%, #ffd43f 20%, #f0a315 58%, #a95903 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.58),
+    inset 0 -8px 15px rgba(111, 51, 0, 0.28);
+  opacity: 0;
+  animation: goldOn 360ms ease-out var(--win-delay) both;
+}
+
+.cellNum {
+  position: relative;
+}
+
+.cellWin {
+  animation:
+    cellIn 260ms ease-out var(--in-delay, 1200ms) both,
+    winBorder 360ms ease-out var(--win-delay) both;
+}
+
+.cellWin .cellNum {
+  animation: winInk 360ms ease-out var(--win-delay) both;
+}
+
+/* Feixe dourado que percorre a linha vencedora depois que ela acende. */
+.beam {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+.beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22%;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 210, 0.85), transparent);
+  transform: translateX(-120%);
+  animation: sweepAcross 650ms ease-in-out var(--beam-delay) both;
+}
+
+.cardFlash {
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  pointer-events: none;
+  opacity: 0;
+  animation: flashRing 650ms ease-out var(--flash-delay) both;
+}
+
+/* ─── Celebração ───────────────────────────────────────────────────────── */
+
+.confetti {
+  position: absolute;
+  top: -40px;
+  width: 12px;
+  height: 22px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: confettiFall var(--dur) cubic-bezier(0.3, 0.6, 0.6, 1) var(--delay) both;
+}
+
+.dust {
+  position: absolute;
+  bottom: -10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #ffd76a;
+  box-shadow: 0 0 8px 2px rgba(255, 200, 40, 0.65);
+  opacity: 0;
+  animation: dustRise var(--dur) linear var(--delay) infinite;
+}
+
+/* ─── Keyframes ────────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slowSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes frameIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sweepAcross {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(520%); }
+}
+
+@keyframes flashRing {
+  0% { opacity: 0; box-shadow: 0 0 0 2px rgba(0, 220, 255, 0), 0 0 0 rgba(255, 200, 40, 0); }
+  30% { opacity: 1; box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.95), 0 0 28px rgba(255, 200, 40, 0.75); }
+  100% { opacity: 0; box-shadow: 0 0 0 3px rgba(255, 210, 60, 0), 0 0 28px rgba(255, 200, 40, 0); }
+}
+
+@keyframes sealIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-34px) scale(0.72); }
+  62% { opacity: 1; transform: translateX(-50%) translateY(4px) scale(1.06); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes sealShine {
+  from { transform: translateX(-160%) skewX(-12deg); }
+  to { transform: translateX(320%) skewX(-12deg); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes nameIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes prizePop {
+  0% { opacity: 0; transform: scale(0.76); }
+  60% { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes prizeShine {
+  from { background-position: 160% 0, 0 0; }
+  to { background-position: -60% 0, 0 0; }
+}
+
+@keyframes prizeBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+
+@keyframes fromLeft {
+  from { opacity: 0; transform: translateX(-60px) rotate(-14deg) scale(0.8); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fromRight {
+  from { opacity: 0; transform: translateX(60px) scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes coinsSettle {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateX(70px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes headLight {
+  0% { filter: brightness(0.45); box-shadow: none; }
+  60% { filter: brightness(1.35); box-shadow: 0 0 16px rgba(0, 200, 255, 0.7); }
+  100% { filter: brightness(1); box-shadow: 0 0 8px rgba(0, 200, 255, 0.35); }
+}
+
+@keyframes cellIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes goldOn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes winBorder {
+  0% { border-color: rgba(110, 175, 255, 0.55); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16), inset 0 -10px 16px rgba(0, 6, 30, 0.35); }
+  55% { transform: scale(1.06); }
+  100% {
+    transform: none;
+    border-color: #fff2a6;
+    box-shadow: 0 0 8px rgba(255, 215, 50, 0.82), 0 0 18px rgba(255, 161, 0, 0.3);
+  }
+}
+
+@keyframes winInk {
+  from { color: #ffffff; text-shadow: 0 2px 3px rgba(0, 10, 40, 0.8); }
+  to { color: #0b1d4a; text-shadow: 0 1px 0 rgba(255, 245, 200, 0.7); }
+}
+
+@keyframes confettiFall {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  8% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--fall)) translateX(var(--drift)) rotate(var(--rot)); }
+}
+
+@keyframes dustRise {
+  0% { opacity: 0; transform: translateY(0); }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.35; }
+  100% { opacity: 0; transform: translateY(-620px); }
+}
+
+/* ─── Redução de movimento: só fades curtos, conteúdo final idêntico ───── */
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .frame,
+  .seal,
+  .winnerTitle,
+  .name,
+  .coupon,
+  .prizeLabel,
+  .prizeValue,
+  .star,
+  .chestBox,
+  .coins,
+  .card,
+  .headCell,
+  .cell,
+  .cellWin,
+  .jackpotTag,
+  .prizeRow::before {
+    animation: fadeIn 250ms ease-out both !important;
+  }
+
+  .seal {
+    transform: translateX(-50%);
+  }
+
+  .cellGold,
+  .cellWin .cellNum {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+
+  .prizeValueBox,
+  .rays {
+    animation: none !important;
+  }
+
+  .rays {
+    opacity: 1;
+  }
+
+  .edgeLight,
+  .seal::after,
+  .beam,
+  .frameFlash,
+  .cardFlash,
+  .confetti,
+  .dust {
+    display: none;
+  }
+}

@@ -35,6 +35,8 @@ import { BingoShowIcon } from './BingoShowIcon';
 import { BingoShowGlowHalo } from './BingoShowGlowHalo';
 import { BingoShowColors } from '../design-system';
 import { formatBrl } from '../utils/format';
+import { useAppTheme } from '@/contexts/ThemeContext';
+import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
 
 export interface TopPlayerItem {
   playerName?: string;
@@ -161,28 +163,16 @@ function dedupeWinners(list: WinnerEvent[]): WinnerEvent[] {
   return result;
 }
 
-// Grade da Cartela Pintada Real: 5 COLUNAS X 3 LINHAS — PINTURA ESTRITA VIA drawnNumbersAtWin E REGRAS DA FAIXA
-const PaintedCartelaGrid: React.FC<{
-  themeColor: string;
-  customNumbers: number[][];
-  drawnNumbers?: number[];
-  drawnNumbersAtWin?: number[];
-  type?: string;
-  winningLines?: number[][];
-  compact?: boolean;
-}> = ({
-  themeColor,
-  customNumbers,
-  drawnNumbers = [],
-  drawnNumbersAtWin,
-  type,
-  winningLines,
-  compact = false,
-}) => {
-  if (!customNumbers || customNumbers.length === 0) {
-    return null;
-  }
-
+// Linhas da cartela a destacar, pela regra estrita do tipo do prêmio (line1: a linha
+// vencedora real; line2: as duas; bingo/jackpot: todas). Extraída sem mudança de
+// comportamento do PaintedCartelaGrid, para a apresentação Blue usar a MESMA regra.
+export function computeRowsToPaint(
+  customNumbers: number[][],
+  drawnNumbers: number[] = [],
+  drawnNumbersAtWin?: number[],
+  type?: string,
+  winningLines?: number[][],
+): Set<number> {
   // Utiliza a fotografia das bolas sorteadas no momento exato da vitória, se disponível
   const effectiveDrawn = Array.isArray(drawnNumbersAtWin) && drawnNumbersAtWin.length > 0
     ? drawnNumbersAtWin
@@ -266,6 +256,33 @@ const PaintedCartelaGrid: React.FC<{
     // bingo ou jackpot: pinta todas as linhas
     customNumbers.forEach((_, rIdx) => allowedRowsToPaint.add(rIdx));
   }
+
+  return allowedRowsToPaint;
+}
+
+// Grade da Cartela Pintada Real: 5 COLUNAS X 3 LINHAS — PINTURA ESTRITA VIA drawnNumbersAtWin E REGRAS DA FAIXA
+const PaintedCartelaGrid: React.FC<{
+  themeColor: string;
+  customNumbers: number[][];
+  drawnNumbers?: number[];
+  drawnNumbersAtWin?: number[];
+  type?: string;
+  winningLines?: number[][];
+  compact?: boolean;
+}> = ({
+  themeColor,
+  customNumbers,
+  drawnNumbers = [],
+  drawnNumbersAtWin,
+  type,
+  winningLines,
+  compact = false,
+}) => {
+  if (!customNumbers || customNumbers.length === 0) {
+    return null;
+  }
+
+  const allowedRowsToPaint = computeRowsToPaint(customNumbers, drawnNumbers, drawnNumbersAtWin, type, winningLines);
 
   return (
     <div
@@ -361,6 +378,17 @@ const PaintedCartelaGrid: React.FC<{
   );
 };
 
+// Valor Monetário Exclusivo do Backend (sem usar o prêmio total da faixa em SPLIT se prizeAmount não existir)
+function getWinnerPrizeDisplay(winner: WinnerEvent, isSplit: boolean, defaultPrizeStr: string): string {
+  const hasValidPrize =
+    winner.prizeAmount !== undefined && typeof winner.prizeAmount === 'number' && winner.prizeAmount > 0;
+  return hasValidPrize ? formatBrl(winner.prizeAmount!) : isSplit ? 'VALOR NÃO INFORMADO' : defaultPrizeStr;
+}
+
+function getWinnerDisplayName(winner: WinnerEvent): string {
+  return winner.playerName && winner.playerName.trim() !== '' ? winner.playerName : 'NOME NÃO INFORMADO';
+}
+
 // Componente do Card do Ganhador Adaptativo (Hero, Médio ou Compacto para Grid)
 // Hierarquia de fontes do card do ganhador — 3 variantes conforme onde o card aparece
 // (acabamento visual final): o popup individual de tela cheia pede as fontes maiores; o
@@ -433,17 +461,9 @@ const WinnerCard: React.FC<{
   const isCompactFrame = frameFit === 'compact';
   const isJackpot = winner.jackpotWon === true;
 
-  // Valor Monetário Exclusivo do Backend (sem usar o prêmio total da faixa em SPLIT se prizeAmount não existir)
-  const hasValidPrize =
-    winner.prizeAmount !== undefined && typeof winner.prizeAmount === 'number' && winner.prizeAmount > 0;
+  const prizeDisplayValue = getWinnerPrizeDisplay(winner, isSplit, defaultPrizeStr);
 
-  const prizeDisplayValue = hasValidPrize
-    ? formatBrl(winner.prizeAmount!)
-    : isSplit
-    ? 'VALOR NÃO INFORMADO'
-    : defaultPrizeStr;
-
-  const displayName = winner.playerName && winner.playerName.trim() !== '' ? winner.playerName : 'NOME NÃO INFORMADO';
+  const displayName = getWinnerDisplayName(winner);
 
   return (
     <BingoShowTopWinnersFrame
@@ -949,6 +969,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   onClose,
   isLive = true,
 }) => {
+  const { isBlue } = useAppTheme();
   const [activeSingleWinner, setActiveSingleWinner] = useState<WinnerEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [showFullRoundWinners, setShowFullRoundWinners] = useState(false);
@@ -1284,6 +1305,38 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const normType = normalizeWinnerType(singleWinner.type) || 'bingo';
   const themeColor = normType === 'line1' ? BingoShowColors.primary : normType === 'line2' ? BingoShowColors.cyanNeon : BingoShowColors.greenSuccess;
   const currentPrizeText = normType === 'line1' ? line1Prize : normType === 'line2' ? line2Prize : bingoPrize;
+
+  // Tema Blue: mesma vitória, mesmos dados e mesma regra de linha vencedora — só a
+  // apresentação muda. A key é a própria vitória (sorteio + ganhador), então só um
+  // NOVO ganhador reinicia a sequência de animação; re-renders do relógio/SSE não.
+  if (isBlue) {
+    const hasCard = Array.isArray(singleWinner.numbers) && singleWinner.numbers.length > 0;
+    const paintedRows = hasCard
+      ? Array.from(
+          computeRowsToPaint(
+            singleWinner.numbers!,
+            drawnNumbers,
+            singleWinner.drawnNumbersAtWin,
+            singleWinner.type,
+            singleWinner.winningLines,
+          ),
+        ).sort((a, b) => a - b)
+      : [];
+    return (
+      <BingoShowWinnerPresentationBlue
+        key={`${drawNumber}-${winnerKey(singleWinner)}`}
+        kind={normType === 'bingo' && singleWinner.jackpotWon === true ? 'jackpot' : normType}
+        sealText={getPrizeDisplay(normType).full}
+        displayName={getWinnerDisplayName(singleWinner)}
+        couponText={formatCouponDisplay(singleWinner)}
+        prizeLabel="PRÊMIO DO GANHADOR"
+        prizeValue={getWinnerPrizeDisplay(singleWinner, false, currentPrizeText)}
+        jackpotAmount={jackpotAmountGlobal}
+        cardNumbers={hasCard ? singleWinner.numbers : undefined}
+        paintedRows={paintedRows}
+      />
+    );
+  }
 
   return (
     <div
