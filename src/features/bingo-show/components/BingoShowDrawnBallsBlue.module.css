@@ -4,12 +4,16 @@
  *
  * Mesmo painel de sempre (1289×393 no palco 1920×1080; área da grade
  * 1233×323): nada aqui muda o tamanho externo. As 90 bolas ficam maiores no
- * próprio layout (44px, não zoom/scale): 18 colunas espalhadas por toda a
- * largura útil e 5 linhas distribuídas na altura disponível.
+ * próprio layout (52px, não zoom/scale): 18 colunas espalhadas por toda a
+ * largura útil e 5 linhas distribuídas na altura disponível, sem gap fixo.
+ *
+ * 52px é o maior tamanho com respiro real: com 12/22px de respiro vertical
+ * sobram 289px para 5 linhas — a 60px (300px) as bolas encostam (0px entre
+ * linhas). A 52px ficam ~9px entre colunas e ~5px entre linhas.
  */
 
 .historyGrid {
-  --history-ball-size: 44px;
+  --history-ball-size: 52px;
 
   flex: 1;
   min-height: 0;
@@ -21,14 +25,16 @@
   justify-content: space-between;
   align-content: space-evenly;
   column-gap: 0;
-  row-gap: 12px;
-  padding: 12px 30px 20px;
+  row-gap: 0;
+  padding: 12px 70px 22px;
 }
 
 .historyBall {
   position: relative;
   width: var(--history-ball-size);
   height: var(--history-ball-size);
+  min-width: var(--history-ball-size);
+  min-height: var(--history-ball-size);
   border-radius: 50%;
   box-sizing: border-box;
   display: grid;
@@ -38,7 +44,7 @@
   padding-right: 0.04em;
 
   font-family: var(--font-inter), 'Arial Black', sans-serif;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -81,45 +87,45 @@
   box-shadow:
     inset 4px 5px 8px rgba(255, 255, 255, 0.3),
     inset -5px -6px 9px rgba(0, 0, 20, 0.45),
-    0 0 5px var(--glow),
-    0 0 12px var(--glow-soft);
+    0 0 7px var(--glow),
+    0 0 14px var(--glow-soft);
   text-shadow: var(--ink-shadow, 0 2px 2px rgba(0, 0, 0, 0.72));
 }
 
 .drawn_blue {
   composes: color_blue from './DrawStageBlue.module.css';
   --glow: #4aa8ff;
-  --glow-soft: rgba(74, 168, 255, 0.72);
+  --glow-soft: rgba(74, 168, 255, 0.55);
 }
 
 .drawn_red {
   composes: color_red from './DrawStageBlue.module.css';
   --glow: #ff4d42;
-  --glow-soft: rgba(255, 77, 66, 0.72);
+  --glow-soft: rgba(255, 77, 66, 0.55);
 }
 
 .drawn_green {
   composes: color_green from './DrawStageBlue.module.css';
   --glow: #3fe066;
-  --glow-soft: rgba(63, 224, 102, 0.72);
+  --glow-soft: rgba(63, 224, 102, 0.55);
 }
 
 .drawn_yellow {
   composes: color_yellow from './DrawStageBlue.module.css';
   --glow: #ffd23a;
-  --glow-soft: rgba(255, 210, 58, 0.72);
+  --glow-soft: rgba(255, 210, 58, 0.55);
 }
 
 .drawn_purple {
   composes: color_purple from './DrawStageBlue.module.css';
   --glow: #c16bff;
-  --glow-soft: rgba(193, 107, 255, 0.72);
+  --glow-soft: rgba(193, 107, 255, 0.55);
 }
 
 .drawn_gold {
   composes: color_gold from './DrawStageBlue.module.css';
   --glow: #ffc21a;
-  --glow-soft: rgba(255, 194, 26, 0.72);
+  --glow-soft: rgba(255, 194, 26, 0.55);
 }
 
 /* Número recém-sorteado — pulso curto, uma vez. A classe só é aplicada à
