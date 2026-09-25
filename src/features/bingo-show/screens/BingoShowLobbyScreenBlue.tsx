@@ -13,6 +13,7 @@ import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackgr
 import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import styles from './BingoShowLobbyScreenBlue.module.css';
+import { BingoShowBlueBenefitsStrip } from '../components/BingoShowBlueBenefitsStrip';
 
 const DRAW_PAGE_SIZE = 5;
 const DRAW_PAGE_INTERVAL_MS = 6000;
@@ -169,7 +170,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                 height={50}
                 className={styles.starBgImage}
               />
-              <span className={styles.starNumber}>{mock.triggerBallLimit || 45}</span>
+              {/* Só o trigger ball limit real do backend — sem número inventado. */}
+              {mock.hasTriggerBallLimit && <span className={styles.starNumber}>{mock.triggerBallLimit}</span>}
             </div>
           </div>
         </div>
@@ -373,7 +375,9 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               height={108}
               className={styles.starBgImage}
             />
-            <span className={styles.centerAccumulatedStarNumber}>{mock.triggerBallLimit || 45}</span>
+            {mock.hasTriggerBallLimit && (
+              <span className={styles.centerAccumulatedStarNumber}>{mock.triggerBallLimit}</span>
+            )}
           </div>
         </div>
       </main>
@@ -461,7 +465,10 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {renderCenterColumn()}
           {renderRightColumn()}
         </div>
-        <div className={styles.bottomSection} />
+        {/* Faixa de benefícios dentro do painel inferior (mesmo tamanho de antes). */}
+        <div className={styles.bottomSection}>
+          <BingoShowBlueBenefitsStrip />
+        </div>
       </div>
     </BingoShowAmbientBackground>
   );
