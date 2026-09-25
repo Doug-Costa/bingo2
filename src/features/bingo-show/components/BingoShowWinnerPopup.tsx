@@ -207,8 +207,25 @@ export function computeRowsToPaint(
     const normalizeRow = (row: number[]) => row.filter(n => n > 0).slice().sort((a, b) => a - b).join(',');
     const tempRowsToPaint = new Set<number>();
 
+    // 0. Backend real (gravado na rodada #2976): `winningLines` do line2 traz SÓ a
+    //    linha que acabou de fechar. Então: essa linha (sempre) + a outra linha já
+    //    completa com as bolas da vitória. `drawnForWinnerVisual` inclui os números do
+    //    winningLines, então a linha vencedora conta mesmo se a lista de bolas estiver
+    //    um evento atrasada.
+    if (Array.isArray(winningLines) && winningLines.length === 1 && winningLines[0]) {
+      const winStr = normalizeRow(winningLines[0]);
+      const winIdx = customNumbers.findIndex((row) => normalizeRow(row) === winStr);
+      if (winIdx >= 0) {
+        tempRowsToPaint.add(winIdx);
+        const other = customNumbers.findIndex(
+          (row, rIdx) => rIdx !== winIdx && row.filter((n) => n > 0).every((n) => drawnForWinnerVisual.has(n)),
+        );
+        if (other >= 0) tempRowsToPaint.add(other);
+      }
+    }
+
     // 1. Tentar via winningLines primeiro
-    if (Array.isArray(winningLines) && winningLines.length >= 2) {
+    if (tempRowsToPaint.size < 2 && Array.isArray(winningLines) && winningLines.length >= 2) {
       const targetStrs = winningLines.slice(0, 2).map(normalizeRow);
       customNumbers.forEach((row, rIdx) => {
         const rowStr = normalizeRow(row);
@@ -219,13 +236,16 @@ export function computeRowsToPaint(
       console.log('[CARTELA-LINE2-AUDIT]', { source: 'WINNING_LINES', winningLines, tempRowsToPaint });
     }
 
-    // 2. Fallback 1: via drawnNumbersAtWin (estado isolado da vitória)
+    // 2. Fallback 1: via drawnNumbersAtWin (estado isolado da vitória) + números do
+    //    winningLines (a linha vencedora nunca fica de fora).
     if (tempRowsToPaint.size < 2 && Array.isArray(drawnNumbersAtWin) && drawnNumbersAtWin.length > 0) {
       console.log('[CARTELA-LINE2-AUDIT] winningLines incomplete or mismatch. Using DRAWN_AT_WIN.');
       tempRowsToPaint.clear();
+      const atWin = new Set<number>(drawnNumbersAtWin);
+      if (Array.isArray(winningLines)) winningLines.forEach((line) => line.forEach((n) => atWin.add(n)));
       let count = 0;
       customNumbers.forEach((row, rIdx) => {
-        const isComplete = row.filter(n => n > 0).every(n => drawnNumbersAtWin.includes(n));
+        const isComplete = row.filter(n => n > 0).every(n => atWin.has(n));
         if (isComplete && count < 2) {
           tempRowsToPaint.add(rIdx);
           count++;

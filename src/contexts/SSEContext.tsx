@@ -652,12 +652,15 @@ export function GameSocketProvider({
   const [drawClosingSeconds, setDrawClosingSeconds] = useState<number | null>(null);
   const [recoveryPhase, setRecoveryPhase] = useState<RecoveryPhase>('boot');
 
+  // O ref é atualizado NA HORA (não dentro do updater do setState, que o React só
+  // executa no próximo render). Os eventos seguintes do mesmo pacote SSE — p.ex. o
+  // `line_winner` que chega logo atrás do `new_ball` decisivo, ou duas bolas
+  // seguidas numa reconexão — precisam enxergar a bola que acabou de chegar. Antes
+  // eles liam a lista sem ela: a 2ª linha pintava só a linha antiga.
   const setDrawnNumbers = useCallback((val: number[] | ((_prev: number[]) => number[])) => {
-    setDrawnNumbersState(_prev => {
-      const next = typeof val === 'function' ? val(_prev) : val;
-      drawnNumbersRef.current = next;
-      return next;
-    });
+    const next = typeof val === 'function' ? val(drawnNumbersRef.current) : val;
+    drawnNumbersRef.current = next;
+    setDrawnNumbersState(next);
   }, []);
   const [thisDraw, setThisDraw] = useState<ThisDrawInfo | null>(null);
   const [myTickets, setMyTickets] = useState<MyTicket[]>([]);
