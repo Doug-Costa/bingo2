@@ -96,14 +96,15 @@
  * Espera/concluído = ouro envelhecido, sem glow forte, para o prêmio ativo
  * continuar se destacando. Só cor/sombra: nenhuma regra muda tamanho ou layout. */
 
-/* Acumulado e prêmio em disputa. */
+/* Acumulado e prêmio em disputa. Glow reduzido (antes 7px/0.88 + 16px/0.30) a
+ * pedido — o relevo continua, o halo fica discreto para o número ficar nítido. */
 .goldValueActive {
   -webkit-text-stroke: 1px rgba(100, 47, 0, 0.72);
   filter:
     drop-shadow(0 2px 0 #713600)
     drop-shadow(0 4px 1px rgba(25, 9, 0, 0.66))
-    drop-shadow(0 0 7px rgba(255, 199, 34, 0.88))
-    drop-shadow(0 0 16px rgba(255, 145, 0, 0.3));
+    drop-shadow(0 0 4px rgba(255, 199, 34, 0.45))
+    drop-shadow(0 0 10px rgba(255, 145, 0, 0.14));
 }
 
 /* Prêmio aguardando — ouro envelhecido/desaturado. */
