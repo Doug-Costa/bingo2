@@ -18,7 +18,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { BingoShowBall, getBallColorName, type BingoShowBallState } from './BingoShowBall';
+import { BingoShowBall, type BingoShowBallState } from './BingoShowBall';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 
 // ─── GEOMETRIA DO PALCO — base idêntica ao original RN (Sprint C2.5, "presença do
@@ -194,6 +194,7 @@ const CrescentBall: React.FC<{
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import blueStyles from './DrawStageBlue.module.css';
+import { BlueHandoffOverlay, BlueRecentColumn, useBlueBallHandoff } from './DrawStageBlueHandoff';
 import goldStyles from './goldMetalText.module.css';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
@@ -207,17 +208,6 @@ const BLUE_OUTER_DOTS = Array.from({ length: BLUE_OUTER_DOT_COUNT }, (_, i) => (
     style={{ transform: `rotate(${(i * 360) / BLUE_OUTER_DOT_COUNT}deg) translateY(calc(var(--outer) / -2 + 1px))` }}
   />
 ));
-
-/** Bola lateral "próximos números" do tema Blue — esfera CSS com a mesma
- * linguagem material da bola central; cor pela regra existente por faixa. */
-const BlueNextBall: React.FC<{ number?: number }> = ({ number }) =>
-  number === undefined ? (
-    <div className={`${blueStyles.nextBall} ${blueStyles.nextBallEmpty}`} />
-  ) : (
-    <div className={`${blueStyles.nextBall} ${blueStyles[`color_${getBallColorName(number, 'drawn')}`]}`}>
-      <span className={blueStyles.nextBallNumber}>{number}</span>
-    </div>
-  );
 
 /** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
 const ExitBall: React.FC<{ number: number }> = ({ number }) => {
@@ -438,6 +428,13 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const ballKey = `${sequenceNumber ?? 0}-${currentNumber}`;
   const ringsRef = useRef<HTMLDivElement>(null);
 
+  // Passagem centro → 1º slot lateral (Blue): posição do slot medida no DOM no
+  // início da saída; a coluna revela a bola só no pouso. Só apresentação — a lista
+  // lateral continua sendo `nextBalls` (SSE).
+  const stageRef = useRef<HTMLDivElement>(null);
+  const columnRef = useRef<HTMLDivElement>(null);
+  const handoff = useBlueBallHandoff(isBlue, currentNumber, reducedMotion, stageRef, columnRef);
+
   // Reação dos anéis ao impacto: um pulso curto no wrapper, disparado uma vez por
   // bola. Web Animations API em vez de remontar os anéis — a rotação contínua deles
   // nunca reinicia, e não há render do React por quadro.
@@ -492,7 +489,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         ...style,
       }}
     >
-      {/* 1. HEADER ROW: ★ NÚMERO SORTEADO ★ (center) + PRÓXIMOS NÚMEROS (right) */}
+      {/* 1. HEADER ROW: ★ NÚMERO SORTEADO ★ (center) + PRÓXIMOS/ÚLTIMOS NÚMEROS (right) */}
       <div
         style={{
           display: 'flex',
@@ -538,7 +535,17 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               opacity: 0.9,
             }}
           >
-            PRÓXIMOS<br />NÚMEROS
+            {/* Blue: a coluna mostra as bolas que JÁ passaram pelo centro (as 3
+                últimas sorteadas), não as próximas — rótulo corrigido só no Blue. */}
+            {isBlue ? (
+              <>
+                ÚLTIMOS<br />NÚMEROS
+              </>
+            ) : (
+              <>
+                PRÓXIMOS<br />NÚMEROS
+              </>
+            )}
           </span>
         </div>
       </div>
@@ -562,7 +569,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 reflexos → bola → número). Estilos em DrawStageBlue.module.css.
                 `key={ballKey}` remonta SÓ a bola quando chega uma bola real nova,
                 reiniciando a entrada; os anéis ficam fora da key e nunca reiniciam. */}
-            <div className={blueStyles.blueDrawStage}>
+            <div ref={stageRef} className={blueStyles.blueDrawStage}>
               <div className={blueStyles.stageAtmosphere} />
               <div ref={ringsRef} className={blueStyles.ringsGroup}>
                 <div className={blueStyles.outerRing}>{BLUE_OUTER_DOTS}</div>
@@ -586,22 +593,16 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 </div>
                 <span className={blueStyles.ballImpactRing} />
               </React.Fragment>
-              {/* Bola anterior saindo do centro para o 1º slot — mesma esfera das
-                  bolas laterais, para pousar idêntica ao que o slot vai exibir. */}
-              {flyingBalls.map((fb) => (
-                <div key={fb.id} className={blueStyles.exitFlight}>
-                  <BlueNextBall number={fb.number} />
-                </div>
-              ))}
+              {/* Bola anterior saindo pela DIREITA: encolhe e pousa no 1º slot
+                  lateral (posição medida), virando a bola lateral no caminho. */}
+              {handoff.overlay && (
+                <BlueHandoffOverlay key={handoff.overlay.id} overlay={handoff.overlay} onLanded={handoff.onLanded} />
+              )}
             </div>
 
-            {/* Próximos números — mesmos valores/ordem de `displayedNextBalls`;
-                posições sem número viram placeholder do mesmo tamanho. */}
-            <div className={blueStyles.nextColumn}>
-              {[0, 1, 2].map((i) => (
-                <BlueNextBall key={i} number={displayedNextBalls[i]} />
-              ))}
-            </div>
+            {/* Últimas bolas (valores/ordem de `nextBalls`, SSE): as antigas descem
+                uma posição; a nova só aparece no 1º slot quando a bola pousa. */}
+            <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} />
           </>
         ) : (
           <>

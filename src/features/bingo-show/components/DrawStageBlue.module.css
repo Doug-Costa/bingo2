@@ -264,7 +264,7 @@
 
 /* ─── Chegada dramática da nova bola ─────────────────────────────────────
  * Montada uma vez por bola real (key = nº de bolas sorteadas + número). Camadas:
- *   .ballFlight     trajetória em arco vinda da diagonal superior direita,
+ *   .ballFlight     trajetória em arco vinda da ESQUERDA (fora do palco),
  *                   escala, profundidade (blur ≤ 5px, só neste elemento) e rastro;
  *   .ballSpin       rotação rápida que desacelera até 0;
  *   .mainBingoBall  a bola aprovada, inalterada (+ pulso final e glow no impacto);
@@ -280,19 +280,19 @@
   animation: ballFlightPath 1320ms cubic-bezier(0.16, 0.82, 0.22, 1) both;
 }
 
-/* Rastro ciano atrás da bola (lado de onde ela vem: cima/direita). Só na parte
- * rápida do trajeto; some antes do encaixe. */
+/* Rastro ciano atrás da bola (lado de onde ela vem: esquerda, levemente acima).
+ * Só na parte rápida do trajeto; some antes do encaixe. */
 .ballFlight::before {
   content: '';
   position: absolute;
   top: 50%;
-  left: 55%;
+  right: 55%;
   width: 190px;
   height: 46px;
   border-radius: 999px;
-  transform-origin: left center;
-  transform: translateY(-50%) rotate(-33deg);
-  background: linear-gradient(90deg, rgba(102, 225, 255, 0.55), rgba(0, 145, 255, 0.1), transparent);
+  transform-origin: right center;
+  transform: translateY(-50%) rotate(13deg);
+  background: linear-gradient(270deg, rgba(102, 225, 255, 0.55), rgba(0, 145, 255, 0.1), transparent);
   filter: blur(8px);
   opacity: 0;
   pointer-events: none;
@@ -369,28 +369,28 @@
 @keyframes ballFlightPath {
   0% {
     opacity: 0;
-    transform: translate3d(370px, -240px, 0) scale(0.12);
-    filter: blur(5px) brightness(1.35);
+    transform: translate3d(-390px, -90px, 0) scale(0.14);
+    filter: blur(5px) brightness(1.32);
   }
   12% {
     opacity: 1;
-    transform: translate3d(315px, -205px, 0) scale(0.2);
-    filter: blur(3px) brightness(1.3);
+    transform: translate3d(-330px, -76px, 0) scale(0.22);
+    filter: blur(3px) brightness(1.28);
   }
   34% {
-    transform: translate3d(190px, -125px, 0) scale(0.46);
-    filter: blur(1.8px) brightness(1.22);
+    transform: translate3d(-210px, -54px, 0) scale(0.48);
+    filter: blur(1.8px) brightness(1.2);
   }
   58% {
-    transform: translate3d(72px, -42px, 0) scale(0.8);
+    transform: translate3d(-78px, -24px, 0) scale(0.82);
     filter: blur(0.6px) brightness(1.14);
   }
   76% {
-    transform: translate3d(-10px, 7px, 0) scale(1.055);
+    transform: translate3d(11px, 5px, 0) scale(1.055);
     filter: blur(0) brightness(1.12);
   }
-  86% {
-    transform: translate3d(4px, -2px, 0) scale(0.975);
+  87% {
+    transform: translate3d(-4px, -2px, 0) scale(0.978);
     filter: brightness(1.04);
   }
   100% {
@@ -400,21 +400,22 @@
   }
 }
 
+/* Vindo da esquerda, gira no sentido anti-horário (rolando para a direita). */
 @keyframes ballSpinRotate {
-  0% { transform: rotate(720deg); }
-  12% { transform: rotate(610deg); }
-  34% { transform: rotate(420deg); }
-  58% { transform: rotate(205deg); }
-  76% { transform: rotate(28deg); }
-  86% { transform: rotate(-7deg); }
+  0% { transform: rotate(-720deg); }
+  12% { transform: rotate(-610deg); }
+  34% { transform: rotate(-410deg); }
+  58% { transform: rotate(-190deg); }
+  76% { transform: rotate(-22deg); }
+  87% { transform: rotate(6deg); }
   100% { transform: none; }
 }
 
 @keyframes stabilizeBallNumber {
-  0% { opacity: 0; transform: rotate(360deg) scale(0.72); }
+  0% { opacity: 0; transform: rotate(-360deg) scale(0.72); }
   28% { opacity: 0.35; }
-  58% { opacity: 0.8; transform: rotate(120deg) scale(0.9); }
-  78% { opacity: 1; transform: rotate(8deg) scale(1); }
+  58% { opacity: 0.8; transform: rotate(-120deg) scale(0.9); }
+  78% { opacity: 1; transform: rotate(-8deg) scale(1); }
   100% { opacity: 1; transform: none; }
 }
 
@@ -455,16 +456,93 @@
 
 /* ─── Próximos números ──────────────────────────────────────────────────── */
 
+/* 3 slots de 76px com 20px de gap (mesma altura/posição de antes: 268px,
+ * centralizada na linha). Cada bola é posicionada por translateY e tem key = número,
+ * então, quando a lista muda, as antigas deslizam para baixo em vez de trocar. */
 .nextColumn {
   flex: none;
   z-index: 15;
+  position: relative;
   width: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+  height: calc(3 * 76px + 2 * 20px);
 }
+
+.slot {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  width: 76px;
+  height: 76px;
+  transition: transform 760ms cubic-bezier(0.32, 0.72, 0.24, 1);
+}
+
+/* A que sai da lista desce para fora e some junto. */
+.slotLeaving {
+  transition:
+    transform 760ms cubic-bezier(0.32, 0.72, 0.24, 1),
+    opacity 520ms ease-in;
+}
+
+/* Pulso curto só no novo 1º slot, no pouso. */
+.slotLanding {
+  animation: historySlotLanding 340ms ease-out both;
+}
+
+@keyframes historySlotLanding {
+  0% { transform: scale(0.92); filter: brightness(1); }
+  42% { transform: scale(1.12); filter: brightness(1.45); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* ─── Passagem centro → 1º slot (bola em trânsito) ───────────────────────
+ * Camada independente dentro do palco (acima da coluna). Movimento, escala e
+ * crossfade entre a cara da bola central e a da bola lateral são animados via
+ * Web Animations API com a posição MEDIDA do slot (DrawStageBlueHandoff.tsx). */
+.handoff {
+  z-index: 20;
+  position: relative;
+  width: var(--ball);
+  height: var(--ball);
+  pointer-events: none;
+}
+
+.handoffLayer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.handoffLayer > .mainBingoBall {
+  grid-area: 1 / 1;
+}
+
+/* A esfera tem z-index 4; o número precisa ficar explicitamente acima dela. */
+.handoffLayer > .ballNumber {
+  grid-area: 1 / 1;
+  z-index: 5;
+}
+
+/* A cópia da bola central no voo não repete as animações de chegada. */
+.handoffStatic {
+  animation: none !important;
+}
+
+/* Rastro curto apontando de volta para o centro (a bola vai para a direita). */
+.handoffTrail {
+  position: absolute;
+  top: 50%;
+  right: 60%;
+  width: 150px;
+  height: 36px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: linear-gradient(270deg, rgba(102, 225, 255, 0.4), rgba(0, 145, 255, 0.08), transparent);
+  filter: blur(7px);
+  opacity: 0;
+}
+
+/* ─── Próximos números (visual da bola lateral) ─────────────────────────── */
 
 /* Duas bordas douradas: `border` + anel externo por `box-shadow` com spread
  * (em vez de `outline`, que em WebViews antigas de TV Box não segue o
@@ -587,38 +665,6 @@
   opacity: 0.35;
 }
 
-/* ─── Bola que sai do centro e pousa no 1º slot dos próximos números ──────
- * Nasce centralizada no palco (mesmo centro da bola principal) e termina
- * exatamente sobre o slot 0: deslocamento horizontal = raio do palco + gap da
- * linha (24px, inline em DrawStage.tsx) + meia coluna (100px / 2); vertical =
- * uma bola + um gap acima do centro da coluna. Duração = EXIT_DURATION_MS
- * (780ms), quando a coluna passa a mostrar o número no slot 0 e esta bola some. */
-.exitFlight {
-  z-index: 20;
-  --exit-dx: calc(var(--outer) / 2 + 24px + 50px);
-  --exit-dy: calc(-76px - 20px);
-  animation: blueBallExitFlight 780ms cubic-bezier(0.45, 0.05, 0.3, 1) both;
-  pointer-events: none;
-}
-
-@keyframes blueBallExitFlight {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) scale(2.4);
-  }
-  18% {
-    opacity: 1;
-    transform: translate(calc(var(--exit-dx) * 0.12), calc(var(--exit-dy) * 0.5)) scale(2);
-  }
-  60% {
-    transform: translate(calc(var(--exit-dx) * 0.7), calc(var(--exit-dy) * 1.35)) scale(1.3);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(var(--exit-dx), var(--exit-dy)) scale(1);
-  }
-}
-
 /* ─── Keyframes ─────────────────────────────────────────────────────────── */
 
 @keyframes blueOuterRotation {
@@ -670,8 +716,7 @@
   .outerRing,
   .innerRing,
   .stageRays,
-  .mainBingoBall,
-  .exitFlight {
+  .mainBingoBall {
     animation-duration: 1ms;
     animation-iteration-count: 1;
   }
@@ -692,7 +737,17 @@
   .ballFlight::before,
   .ballGlint,
   .ballImpactFlash,
-  .ballImpactRing {
+  .ballImpactRing,
+  .handoffTrail {
     display: none;
+  }
+
+  .slot,
+  .slotLeaving {
+    transition-duration: 1ms;
+  }
+
+  .slotLanding {
+    animation: none;
   }
 }
