@@ -805,7 +805,8 @@
   justify-content: space-between;
   gap: 18px;
   min-height: 128px;
-  padding: 10px 26px;
+  /* padding vertical menor: baú/estrela maiores cabem sem crescer o banner. */
+  padding: 4px 26px;
   border-radius: 20px;
   overflow: hidden;
   box-sizing: border-box;
@@ -814,19 +815,21 @@
     radial-gradient(ellipse at 50% 0%, rgba(79, 157, 255, 0.30), transparent 58%),
     linear-gradient(180deg, rgba(29, 75, 157, 0.96) 0%, rgba(13, 43, 105, 0.98) 52%, rgba(7, 25, 70, 1) 100%);
   box-shadow:
-    0 0 12px rgba(60, 149, 255, 0.52),
-    0 0 28px rgba(34, 94, 220, 0.30),
+    0 0 8px rgba(60, 149, 255, 0.34),
+    0 0 18px rgba(34, 94, 220, 0.16),
     inset 0 2px 1px rgba(255, 255, 255, 0.35),
     inset 0 -16px 24px rgba(0, 0, 0, 0.24);
 }
 
 .centerAccumulatedChest {
-  width: 140px;
-  height: 86px;
+  width: 168px;
+  height: 103px;
   object-fit: contain;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 14px rgba(255, 207, 18, 0.75)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
-  animation: pulseChest 2.5s ease-in-out infinite alternate;
+  transform-origin: 50% 85%;
+  filter: drop-shadow(0 0 8px rgba(255, 207, 18, 0.45)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+  /* Parado; a cada 10s dá uma tremida curta (moedas se mexendo). */
+  animation: chestShake 10s ease-in-out 2s infinite;
 }
 
 .centerAccumulatedTextGroup {
@@ -888,8 +891,8 @@
 
 .centerAccumulatedStarBadge {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: 120px;
+  height: 120px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -900,7 +903,7 @@
   position: relative;
   z-index: 2;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 900;
   color: #FFF6D6;
   text-shadow: 0 2px 6px rgba(0, 10, 45, 0.95);
@@ -1269,12 +1272,26 @@
   }
 }
 
-@keyframes pulseChest {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.06);
+/* Estrela do acumulado com glow mais contido que a do header. */
+.centerAccumulatedStarImg {
+  filter: drop-shadow(0 0 4px rgba(255, 207, 18, 0.5));
+}
+
+/* Tremida de ~0,8s a cada 10s (8% do ciclo), parado no resto. */
+@keyframes chestShake {
+  0%, 90%, 100% { transform: none; }
+  91% { transform: translateX(-2px) rotate(-3deg); }
+  92% { transform: translateX(2px) rotate(3deg) scale(1.03); }
+  93% { transform: translateX(-2px) rotate(-2.5deg) scale(1.03); }
+  94% { transform: translateX(2px) rotate(2deg); }
+  95% { transform: translateX(-1px) rotate(-1.5deg); }
+  96% { transform: translateX(1px) rotate(1deg); }
+  97% { transform: rotate(-0.5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .centerAccumulatedChest {
+    animation: none;
   }
 }
 

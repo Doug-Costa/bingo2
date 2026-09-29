@@ -352,8 +352,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <Image
             src="/themes/bingo-show/assets/icons/bau-ouro.png"
             alt="Baú Acumulado 3D"
-            width={140}
-            height={86}
+            width={168}
+            height={103}
             className={styles.centerAccumulatedChest}
           />
 
@@ -361,7 +361,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <span className={styles.centerAccumulatedLabel}>ACUMULADO</span>
             <span
               className={styles.centerAccumulatedValue}
-              style={{ fontSize: getPrizeAmountFontSize(mock.accumulatedPrize) }}
+              // 20% maior que os cards de prêmio (mesmas faixas de comprimento).
+              style={{ fontSize: Math.round(getPrizeAmountFontSize(mock.accumulatedPrize) * 1.2) }}
             >
               {mock.accumulatedPrize}
             </span>
@@ -371,9 +372,9 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <Image
               src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
               alt="Estrela Limite"
-              width={108}
-              height={108}
-              className={styles.starBgImage}
+              width={120}
+              height={120}
+              className={`${styles.starBgImage} ${styles.centerAccumulatedStarImg}`}
             />
             {mock.hasTriggerBallLimit && (
               <span className={styles.centerAccumulatedStarNumber}>{mock.triggerBallLimit}</span>
