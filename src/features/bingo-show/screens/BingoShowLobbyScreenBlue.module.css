@@ -177,7 +177,8 @@
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
   border: 2px solid var(--accent-gold, #FFCF12);
-  box-shadow: 0 0 20px rgba(255, 207, 18, 0.4), inset 0 0 12px rgba(255, 207, 18, 0.2);
+  /* Glow contido (antes 20px/0.40 + inset 12px/0.20) — nitidez na TV. */
+  box-shadow: 0 0 10px rgba(255, 207, 18, 0.24), inset 0 0 8px rgba(255, 207, 18, 0.1);
   box-sizing: border-box;
 }
 
@@ -185,7 +186,7 @@
   width: 112px;
   height: 90px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.7));
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 5px rgba(255, 207, 18, 0.35));
   animation: floatSubtle 3s ease-in-out infinite alternate;
 }
 
@@ -203,7 +204,7 @@
   letter-spacing: 1.4px;
   color: var(--accent-gold, #FFCF12);
   text-transform: uppercase;
-  text-shadow: 0 0 6px rgba(255, 207, 18, 0.6);
+  text-shadow: 0 1px 1px rgba(40, 20, 0, 0.8), 0 0 4px rgba(255, 207, 18, 0.25);
 }
 
 .jackpotHeaderValue {
@@ -212,7 +213,7 @@
   font-weight: 900;
   letter-spacing: 0.5px;
   color: #FFFFFF;
-  text-shadow: 0 0 12px rgba(255, 207, 18, 0.8);
+  text-shadow: 0 2px 2px rgba(0, 8, 30, 0.75), 0 0 5px rgba(255, 207, 18, 0.3);
 }
 
 .starBadge {
@@ -242,7 +243,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(255, 207, 18, 0.8));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 3px rgba(255, 207, 18, 0.45));
 }
 
 .starNumber {
