@@ -14,6 +14,7 @@ import { BingoShowLobbyScreen } from './BingoShowLobbyScreen';
 import { BingoShowDrawScreen } from './BingoShowDrawScreen';
 import { FINISH_SCREEN_HOLD_MS } from '../timing';
 import { useFinishHoldExtraMs } from '../finishHold';
+import { BingoShowPromoModal } from '../components/BingoShowPromoModal';
 
 export const BingoShowLoopScreen: React.FC = () => {
   const { drawActive, lastDrawEvent } = useGameSocket();
@@ -46,8 +47,11 @@ export const BingoShowLoopScreen: React.FC = () => {
   const shouldShowDraw = drawActive || holdingFinishScreen;
 
   return (
-    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       {shouldShowDraw ? <BingoShowDrawScreen /> : <BingoShowLobbyScreen />}
+      {/* Promoções só sobre o lobby: quando um sorteio começa (shouldShowDraw), o
+          modal é desmontado junto com o lobby — o draw corta a promoção na hora. */}
+      {!shouldShowDraw && <BingoShowPromoModal />}
     </div>
   );
 };

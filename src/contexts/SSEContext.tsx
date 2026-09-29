@@ -526,9 +526,26 @@ export interface Promotion {
   id: string;
   urlimg?: string;
   title?: string;
-  linkurl?: string;
-  video?: string;
+  linkurl?: string | null;
+  /** O backend real manda boolean (\`false\`); string mantida por compatibilidade. */
+  video?: string | boolean;
   order?: number;
+  // Campos confirmados no payload real de `promotions_list` / snapshot:
+  typepromote?: string;
+  imagesjsonb?: unknown[];
+  texto1?: string | null;
+  texto2?: string | null;
+  /** Segundos em tela. */
+  timer?: number | null;
+  unique?: boolean;
+  horario?: string | null;
+  priority?: boolean;
+  backgroundcolor?: string | null;
+  text1color?: string | null;
+  text2color?: string | null;
+  fullscreenvideoimg?: boolean;
+  text1tamanho?: number | string | null;
+  text2tamanho?: number | string | null;
 }
 
 export interface MyTicket {
@@ -817,6 +834,9 @@ export function GameSocketProvider({
               if (Array.isArray(payload?.hotDraws)) {
                 setHotDraws(payload.hotDraws);
               }
+              if (Array.isArray(payload?.promotions)) {
+                setPromotions(payload.promotions);
+              }
               if (payload?.jackpotInfo) {
                 setJackpotInfo(payload.jackpotInfo);
               }
@@ -966,6 +986,12 @@ export function GameSocketProvider({
             }
             if (Array.isArray(s?.hotDraws)) {
               setHotDraws(s.hotDraws);
+            }
+            // Snapshot do lobby (sem rodada) traz \`state.promotions\` — antes ignorado:
+            // depois de um reload a lista ficava vazia até o próximo promotions_list
+            // (que só chega no fim de uma rodada).
+            if (Array.isArray(s?.promotions)) {
+              setPromotions(s.promotions);
             }
             if (s?.jackpotInfo) {
               setJackpotInfo(s.jackpotInfo);

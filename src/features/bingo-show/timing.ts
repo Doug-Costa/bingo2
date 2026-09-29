@@ -23,3 +23,9 @@ export const FINISH_SCREEN_HOLD_MS = WINNER_POPUP_MS + ROUND_SUMMARY_MIN_MS;
 
 /** Intervalo entre um popup de ganhador e o próximo da fila. */
 export const WINNER_POPUP_GAP_MS = 500;
+
+/** Promoções no lobby: tempo de lobby livre entre um ciclo de promoções e o próximo. */
+export const PROMO_LOBBY_GAP_MS = 30000;
+
+/** Tempo de cada promoção quando o backend não manda `timer` (segundos). */
+export const PROMO_DEFAULT_SECONDS = 10;

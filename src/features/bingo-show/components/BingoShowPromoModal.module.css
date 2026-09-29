@@ -1,0 +1,179 @@
+/* BingoShowPromoModal.module.css — modal de promoções sobre o lobby.
+ * Ocupa 80% do palco (1536×864 em 1920×1080), centralizado. O fundo (o lobby)
+ * só é escurecido e levemente esmaecido — nada no lobby muda de tamanho. */
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  background: rgba(1, 6, 22, 0.55);
+  backdrop-filter: blur(3px) saturate(0.8);
+  -webkit-backdrop-filter: blur(3px) saturate(0.8);
+  animation: backdropIn 450ms ease-out both;
+}
+
+/* Moldura azul + ouro do tema. Tamanho FIXO de 80% do palco (inset 10%) — a
+ * mídia se ajusta dentro dela (object-fit: contain), nunca o contrário. */
+.frame {
+  position: absolute;
+  inset: 10%;
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 28px;
+  border: 2px solid rgba(255, 205, 45, 0.92);
+  background: linear-gradient(160deg, rgba(10, 44, 110, 0.96) 0%, rgba(4, 18, 52, 0.98) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 198, 255, 0.7),
+    inset 0 0 26px rgba(19, 102, 220, 0.22),
+    0 0 14px rgba(255, 200, 20, 0.28),
+    0 0 40px rgba(0, 120, 255, 0.25),
+    0 24px 60px rgba(0, 0, 0, 0.55);
+  display: flex;
+  animation: frameIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* Área da promoção (imagem/vídeo + textos). */
+.content {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #020a20;
+  display: grid;
+  place-items: center;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: mediaIn 500ms ease-out both;
+}
+
+/* Player (YouTube/Vimeo) ou página externa. */
+.frameEmbed {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  animation: mediaIn 500ms ease-out both;
+}
+
+/* Textos sobre uma faixa escura na base, legíveis em qualquer imagem. */
+.texts {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 60px 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  background: linear-gradient(180deg, transparent 0%, rgba(1, 6, 22, 0.75) 45%, rgba(1, 6, 22, 0.92) 100%);
+}
+
+.text1 {
+  color: #ffffff;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.05;
+  text-shadow: 0 3px 0 rgba(0, 20, 60, 0.7), 0 0 18px rgba(0, 150, 255, 0.35);
+}
+
+.text2 {
+  color: #ffd76a;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 2px 0 rgba(60, 30, 0, 0.7);
+}
+
+/* Contador: segundos restantes da promoção (+ posição na sequência). */
+.counter {
+  position: absolute;
+  top: 26px;
+  right: 26px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(2, 10, 30, 0.82);
+  border: 2px solid rgba(255, 205, 45, 0.9);
+  box-shadow: 0 0 12px rgba(255, 190, 30, 0.35);
+  font-family: var(--font-inter), sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.counterIndex {
+  color: #9fd8ff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.counterValue {
+  min-width: 2.4em;
+  text-align: right;
+  color: #ffe98a;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* Barra de progresso na base da moldura (anima só transform). */
+.progressTrack {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 6px;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.progressBar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #00c8ff, #ffd23f);
+  animation-name: progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes frameIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes mediaIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .frame,
+  .media {
+    animation-duration: 1ms;
+  }
+}
