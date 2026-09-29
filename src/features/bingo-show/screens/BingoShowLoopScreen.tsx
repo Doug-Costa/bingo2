@@ -8,11 +8,12 @@
  */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGameSocket } from '@/contexts/SSEContext';
 import { BingoShowLobbyScreen } from './BingoShowLobbyScreen';
 import { BingoShowDrawScreen } from './BingoShowDrawScreen';
 import { FINISH_SCREEN_HOLD_MS } from '../timing';
+import { useFinishHoldExtraMs } from '../finishHold';
 
 export const BingoShowLoopScreen: React.FC = () => {
   const { drawActive, lastDrawEvent } = useGameSocket();
@@ -20,14 +21,26 @@ export const BingoShowLoopScreen: React.FC = () => {
   // (antes vinha de um useEffect, e por 1 frame a TV mostrava o lobby: a tela de
   // sorteio desmontava e remontava, perdendo o popup do bingo que estava no ar).
   const [holdExpired, setHoldExpired] = useState(false);
+  // Tempo extra pedido pelo popup quando há vários ganhadores do BINGO a anunciar
+  // (finishHold.ts). A janela conta a partir do draw_finish; se o extra chegar
+  // depois, o timer é refeito com o tempo que ainda falta.
+  const extraMs = useFinishHoldExtraMs();
+  const finishedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (lastDrawEvent !== 'draw_finished') return;
-    setHoldExpired(false);
-    // Popup do bingo (se no ar) + resumo "Ganhadores da Rodada" — ver timing.ts.
-    const timer = setTimeout(() => setHoldExpired(true), FINISH_SCREEN_HOLD_MS);
+    if (lastDrawEvent !== 'draw_finished') {
+      finishedAtRef.current = null;
+      return;
+    }
+    if (finishedAtRef.current === null) {
+      finishedAtRef.current = Date.now();
+      setHoldExpired(false);
+    }
+    // Popups pendentes (bingo) + resumo "Ganhadores da Rodada" — ver timing.ts.
+    const endsAt = finishedAtRef.current + FINISH_SCREEN_HOLD_MS + extraMs;
+    const timer = setTimeout(() => setHoldExpired(true), Math.max(0, endsAt - Date.now()));
     return () => clearTimeout(timer);
-  }, [lastDrawEvent]);
+  }, [lastDrawEvent, extraMs]);
 
   const holdingFinishScreen = lastDrawEvent === 'draw_finished' && !holdExpired;
   const shouldShowDraw = drawActive || holdingFinishScreen;

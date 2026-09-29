@@ -38,7 +38,8 @@ import { BingoShowColors } from '../design-system';
 import { formatBrl } from '../utils/format';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
-import { FINISH_SCREEN_HOLD_MS, WINNER_POPUP_MS } from '../timing';
+import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
+import { setFinishHoldExtraMs } from '../finishHold';
 import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
 export interface TopPlayerItem {
@@ -1018,6 +1019,11 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const shownAtRef = useRef(0);
   const visibleRef = useRef(false);
   visibleRef.current = visible;
+  // Fim da rodada: quando a fila de popups esvaziar, abre o resumo (ver draw_finish).
+  const finishingRef = useRef(false);
+  const openSummaryRef = useRef<(() => void) | null>(null);
+  const dedupedWinnersRef = useRef<WinnerEvent[]>([]);
+  dedupedWinnersRef.current = dedupedWinners;
 
   const hasFinishedForCurrentDrawRef = useRef(false);
   const finalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1031,6 +1037,9 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     queueRef.current = [];
     processingRef.current = false;
     hasFinishedForCurrentDrawRef.current = false;
+    finishingRef.current = false;
+    openSummaryRef.current = null;
+    setFinishHoldExtraMs(0);
     setActiveSingleWinner(null);
     setVisible(false);
     setShowFullRoundWinners(false);
@@ -1048,8 +1057,14 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       setVisible(false);
       nextTimerRef.current = setTimeout(() => {
         processingRef.current = false;
+        // Rodada encerrada e fila vazia: agora sim entra o resumo.
+        if (finishingRef.current && queueRef.current.length === 0) {
+          finishingRef.current = false;
+          openSummaryRef.current?.();
+          return;
+        }
         processQueue();
-      }, 500);
+      }, WINNER_POPUP_GAP_MS);
     }, WINNER_POPUP_MS);
   }, []);
 
@@ -1108,21 +1123,40 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   useEffect(() => {
     if (isDrawFinished && !hasFinishedForCurrentDrawRef.current) {
       hasFinishedForCurrentDrawRef.current = true;
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
       if (finalTimerRef.current) clearTimeout(finalTimerRef.current);
-      processingRef.current = false;
-      queueRef.current = [];
 
-      // Popup no ar (normalmente o do BINGO): deixa terminar o tempo dele antes do
-      // resumo, em vez de cortá-lo. O resumo fica o restante da janela do LoopScreen.
+      // Ganhadores do BINGO que ainda não tiveram popup (ex.: vieram só no
+      // draw_finish, ou vários no mesmo line_winner) entram no fim da fila. Os
+      // popups já na fila NÃO são descartados — antes, só o 1º ganhador do bingo
+      // aparecia e os demais iam direto para o resumo.
+      if (isLive) {
+        dedupedWinnersRef.current.forEach((w) => {
+          const key = winnerKey(w);
+          if (normalizeWinnerType(w.type) === 'bingo' && key && !seenRef.current.has(key)) {
+            seenRef.current.add(key);
+            queueRef.current.push(w);
+          }
+        });
+      }
+
+      // Tempo que os popups pendentes ainda precisam: o que resta do atual (se
+      // houver) + cada um da fila (10s + 0,5s de intervalo).
+      const busy = processingRef.current;
       const remaining = visibleRef.current
         ? Math.max(0, Math.min(WINNER_POPUP_MS, WINNER_POPUP_MS - (Date.now() - shownAtRef.current)))
         : 0;
-      const summaryDuration = FINISH_SCREEN_HOLD_MS - remaining;
+      const queued = queueRef.current.length;
+      const popupsMs =
+        remaining + (busy ? WINNER_POPUP_GAP_MS : 0) + queued * (WINNER_POPUP_MS + WINNER_POPUP_GAP_MS);
+
+      // A janela cresce na proporção dos popups, mantendo o resumo com no mínimo
+      // ROUND_SUMMARY_MIN_MS; o LoopScreen segura a tela esse tempo extra.
+      const windowMs = Math.max(FINISH_SCREEN_HOLD_MS, popupsMs + ROUND_SUMMARY_MIN_MS);
+      setFinishHoldExtraMs(windowMs - FINISH_SCREEN_HOLD_MS);
+      const summaryDuration = windowMs - popupsMs;
       setSummaryMs(summaryDuration);
 
-      const openSummary = () => {
+      openSummaryRef.current = () => {
         setVisible(false);
         setActiveSingleWinner(null);
         setShowFullRoundWinners(true);
@@ -1131,13 +1165,16 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
           if (onClose) onClose();
         }, summaryDuration);
       };
-      if (remaining > 0) {
-        hideTimerRef.current = setTimeout(openSummary, remaining);
+
+      if (!busy && queued === 0) {
+        openSummaryRef.current();
       } else {
-        openSummary();
+        // A fila segue sozinha (processQueue) e abre o resumo quando esvaziar.
+        finishingRef.current = true;
+        if (!busy) processQueue();
       }
     }
-  }, [isDrawFinished, onClose]);
+  }, [isDrawFinished, isLive, onClose, processQueue]);
 
   useEffect(() => {
     return () => {

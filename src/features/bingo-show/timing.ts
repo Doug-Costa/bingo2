@@ -20,3 +20,6 @@ export const ROUND_SUMMARY_MIN_MS = 20000;
  * ganhadores precisa caber no tempo real do resumo.
  */
 export const FINISH_SCREEN_HOLD_MS = WINNER_POPUP_MS + ROUND_SUMMARY_MIN_MS;
+
+/** Intervalo entre um popup de ganhador e o próximo da fila. */
+export const WINNER_POPUP_GAP_MS = 500;

@@ -23,7 +23,6 @@
 import React, { useEffect, useState } from 'react';
 import { BingoShowAssets } from '../assets';
 import { useFitText } from '../hooks/useFitText';
-import { FINISH_SCREEN_HOLD_MS } from '../timing';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowRoundWinnersBlue.module.css';
 
@@ -164,14 +163,14 @@ const Podium: React.FC<{
   const [page, setPage] = useState(0);
   const [turns, setTurns] = useState(0);
 
-  // Rotação só quando há mais de 4 ganhadores. Janela = tempo em que o resumo fica
-  // visível de fato (o LoopScreen volta ao lobby aos FINISH_SCREEN_HOLD_MS), com um
-  // mínimo de leitura por página. Com 4 por página, 20s mostram até 16 ganhadores
-  // por categoria a 5s cada.
+  // Rotação só quando há mais de 4 ganhadores. `totalDurationMs` já é o tempo REAL
+  // do resumo (o popup calcula no draw_finish, e a janela do LoopScreen cresce junto
+  // quando há popups de bingo pendentes), com um mínimo de leitura por página. Com 4
+  // por página, 20s mostram até 16 ganhadores por categoria a 5s cada.
   useEffect(() => {
     setPage(0);
     if (pages <= 1) return;
-    const visibleMs = Math.min(totalDurationMs, FINISH_SCREEN_HOLD_MS);
+    const visibleMs = totalDurationMs;
     const pageMs = Math.max(MIN_PAGE_MS, visibleMs / pages);
     const timer = setInterval(() => {
       setPage((p) => (p + 1) % pages);
