@@ -38,6 +38,7 @@ import { BingoShowColors } from '../design-system';
 import { formatBrl } from '../utils/format';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
+import { BingoShowWinnerGroupBlue, groupDurationMs, GROUP_PAGE_SIZE } from './BingoShowWinnerGroupBlue';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useCountUp } from '../hooks/useCountUp';
@@ -981,6 +982,101 @@ const CategoryWinnerBlock: React.FC<{
   );
 };
 
+/** Tema padrão: vários ganhadores do mesmo prêmio no mesmo popup — cards menores
+ * (com cartela) em grade; mais de GROUP_PAGE_SIZE vira páginas de WINNER_POPUP_MS. */
+const DefaultWinnerGroup: React.FC<{
+  group: WinnerEvent[];
+  normType: 'line1' | 'line2' | 'bingo';
+  themeColor: string;
+  currentPrizeText: string;
+  drawnNumbers: number[];
+  jackpotAmountGlobal?: string;
+}> = ({ group, normType, themeColor, currentPrizeText, drawnNumbers, jackpotAmountGlobal }) => {
+  const pages = Math.max(1, Math.ceil(group.length / GROUP_PAGE_SIZE));
+  const [page, setPage] = useState(0);
+  useEffect(() => {
+    if (pages <= 1) return;
+    const t = setInterval(() => setPage((p) => (p + 1) % pages), WINNER_POPUP_MS);
+    return () => clearInterval(t);
+  }, [pages]);
+  const list = group.slice(page * GROUP_PAGE_SIZE, (page + 1) * GROUP_PAGE_SIZE);
+  const cols = list.length <= 3 ? list.length : list.length === 4 ? 2 : 3;
+  const rows = Math.ceil(list.length / cols);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        backgroundColor: 'rgba(0, 4, 20, 0.85)',
+        backdropFilter: 'blur(10px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+        boxSizing: 'border-box',
+      }}
+    >
+      <img src={BingoShowAssets.particles.confetti} alt="Confetes" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, pointerEvents: 'none' }} />
+      <BingoShowGlowHalo color={themeColor} bleed={28} intensity={0.75} style={{ zIndex: 2, width: '94%', height: '90%' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(4, 8, 38, 0.95)',
+            border: `3px solid ${themeColor}`,
+            borderRadius: 28,
+            padding: 20,
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <BingoShowBadge label={getPrizeDisplay(normType).full} variant={normType === 'line1' ? 'gold' : 'cyan'} style={{ padding: '10px 32px', fontSize: 26 }} />
+            <span style={{ fontSize: 24, fontWeight: 900, color: themeColor, letterSpacing: 2 }}>
+              {group.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
+            </span>
+          </div>
+          <div
+            key={page}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'grid',
+              gap: 14,
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+            }}
+          >
+            {list.map((w, idx) => (
+              <div key={`${winnerKey(w)}-${idx}`} style={{ minWidth: 0, minHeight: 0 }}>
+                <WinnerCard
+                  winner={w}
+                  themeColor={themeColor}
+                  defaultPrizeStr={currentPrizeText}
+                  isSplit
+                  splitIndex={page * GROUP_PAGE_SIZE + idx}
+                  totalSplitCount={group.length}
+                  drawnNumbers={drawnNumbers}
+                  jackpotAmountGlobal={jackpotAmountGlobal}
+                  compact
+                  sizeVariant="finalSplit"
+                  cartelaLayout={rows === 1 ? 'stacked' : 'side'}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </BingoShowGlowHalo>
+    </div>
+  );
+};
+
 export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   winners,
   topPlayers: _topPlayers = [],
@@ -998,12 +1094,16 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   isLive = true,
 }) => {
   const { isBlue } = useAppTheme();
-  const [activeSingleWinner, setActiveSingleWinner] = useState<WinnerEvent | null>(null);
+  // Popup = GRUPO de ganhadores do mesmo prêmio (1 = popup individual; 2+ = todos
+  // juntos, cards menores com cartela). Ver enqueueWinners.
+  const [activeGroup, setActiveGroup] = useState<WinnerEvent[] | null>(null);
   const [visible, setVisible] = useState(false);
   const [showFullRoundWinners, setShowFullRoundWinners] = useState(false);
 
   const seenRef = useRef<Set<string>>(new Set());
-  const queueRef = useRef<WinnerEvent[]>([]);
+  const queueRef = useRef<WinnerEvent[][]>([]);
+  const activeGroupRef = useRef<WinnerEvent[] | null>(null);
+  const activeDurationRef = useRef(WINNER_POPUP_MS);
   const processingRef = useRef(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1044,7 +1144,8 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     finishingRef.current = false;
     openSummaryRef.current = null;
     setFinishHoldExtraMs(0);
-    setActiveSingleWinner(null);
+    activeGroupRef.current = null;
+    setActiveGroup(null);
     setVisible(false);
     setShowFullRoundWinners(false);
   }, [drawNumber]);
@@ -1052,10 +1153,14 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const processQueue = useCallback(() => {
     if (processingRef.current || queueRef.current.length === 0) return;
     processingRef.current = true;
-    const nextWinner = queueRef.current.shift()!;
-    setActiveSingleWinner(nextWinner);
+    const nextGroup = queueRef.current.shift()!;
+    activeGroupRef.current = nextGroup;
+    setActiveGroup(nextGroup);
     setVisible(true);
     shownAtRef.current = Date.now();
+    // Mais de GROUP_PAGE_SIZE ganhadores: uma página a cada WINNER_POPUP_MS.
+    const durationMs = groupDurationMs(nextGroup.length);
+    activeDurationRef.current = durationMs;
 
     hideTimerRef.current = setTimeout(() => {
       setVisible(false);
@@ -1069,7 +1174,38 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         }
         processQueue();
       }, WINNER_POPUP_GAP_MS);
-    }, WINNER_POPUP_MS);
+    }, durationMs);
+  }, []);
+
+  // Agrupa por prêmio: ganhadores da mesma faixa que chegam juntos (mesmo
+  // line_winner), ou enquanto outro grupo da mesma faixa ainda espera na fila,
+  // viram UM popup. Um ganhador que chega logo depois (até 1,5s) do popup da
+  // mesma faixa abrir entra nele.
+  const enqueueWinners = useCallback((events: WinnerEvent[]) => {
+    const typeOf = (w: WinnerEvent) => normalizeWinnerType(w.type) || 'bingo';
+    const byType = new Map<string, WinnerEvent[]>();
+    events.forEach((w) => byType.set(typeOf(w), [...(byType.get(typeOf(w)) ?? []), w]));
+    byType.forEach((list, t) => {
+      const queued = queueRef.current.find((g) => typeOf(g[0]!) === t);
+      if (queued) {
+        queued.push(...list);
+        return;
+      }
+      const active = activeGroupRef.current;
+      if (
+        active &&
+        visibleRef.current &&
+        typeOf(active[0]!) === t &&
+        Date.now() - shownAtRef.current <= 1500 &&
+        active.length + list.length <= GROUP_PAGE_SIZE
+      ) {
+        const merged = [...active, ...list];
+        activeGroupRef.current = merged;
+        setActiveGroup(merged);
+        return;
+      }
+      queueRef.current.push(list);
+    });
   }, []);
 
   // Fila de exibição individual durante a rodada — enquanto `isLive` é false (F5 ainda
@@ -1118,10 +1254,10 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         })),
       );
       console.log(`[WINNER-QUEUE] ----------------------------------------`);
-      queueRef.current.push(...newEvents);
+      enqueueWinners(newEvents);
       processQueue();
     }
-  }, [winners, isDrawFinished, isLive, processQueue, drawNumber]);
+  }, [winners, isDrawFinished, isLive, processQueue, enqueueWinners, drawNumber]);
 
   // Exibição da Tela Final de Encerramento (Gatilho determinístico protegido via finalTimerRef)
   useEffect(() => {
@@ -1134,24 +1270,27 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       // popups já na fila NÃO são descartados — antes, só o 1º ganhador do bingo
       // aparecia e os demais iam direto para o resumo.
       if (isLive) {
-        dedupedWinnersRef.current.forEach((w) => {
+        const pendingBingo = dedupedWinnersRef.current.filter((w) => {
           const key = winnerKey(w);
-          if (normalizeWinnerType(w.type) === 'bingo' && key && !seenRef.current.has(key)) {
-            seenRef.current.add(key);
-            queueRef.current.push(w);
-          }
+          if (normalizeWinnerType(w.type) !== 'bingo' || !key || seenRef.current.has(key)) return false;
+          seenRef.current.add(key);
+          return true;
         });
+        if (pendingBingo.length > 0) enqueueWinners(pendingBingo);
       }
 
       // Tempo que os popups pendentes ainda precisam: o que resta do atual (se
-      // houver) + cada um da fila (10s + 0,5s de intervalo).
+      // houver) + cada grupo da fila (10s por página + 0,5s de intervalo).
       const busy = processingRef.current;
+      const current = activeDurationRef.current;
       const remaining = visibleRef.current
-        ? Math.max(0, Math.min(WINNER_POPUP_MS, WINNER_POPUP_MS - (Date.now() - shownAtRef.current)))
+        ? Math.max(0, Math.min(current, current - (Date.now() - shownAtRef.current)))
         : 0;
       const queued = queueRef.current.length;
       const popupsMs =
-        remaining + (busy ? WINNER_POPUP_GAP_MS : 0) + queued * (WINNER_POPUP_MS + WINNER_POPUP_GAP_MS);
+        remaining +
+        (busy ? WINNER_POPUP_GAP_MS : 0) +
+        queueRef.current.reduce((acc, g) => acc + groupDurationMs(g.length) + WINNER_POPUP_GAP_MS, 0);
 
       // A janela cresce na proporção dos popups, mantendo o resumo com no mínimo
       // ROUND_SUMMARY_MIN_MS; o LoopScreen segura a tela esse tempo extra.
@@ -1162,7 +1301,8 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
 
       openSummaryRef.current = () => {
         setVisible(false);
-        setActiveSingleWinner(null);
+        activeGroupRef.current = null;
+        setActiveGroup(null);
         setShowFullRoundWinners(true);
         finalTimerRef.current = setTimeout(() => {
           setShowFullRoundWinners(false);
@@ -1178,7 +1318,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         if (!busy) processQueue();
       }
     }
-  }, [isDrawFinished, isLive, onClose, processQueue]);
+  }, [isDrawFinished, isLive, onClose, processQueue, enqueueWinners]);
 
   useEffect(() => {
     return () => {
@@ -1407,13 +1547,55 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     );
   }
 
-  // 2. EXIBIÇÃO POPUP INDIVIDUAL DURANTE O SORTEIO
-  const singleWinner = activeSingleWinner || (dedupedWinners.length > 0 ? dedupedWinners[dedupedWinners.length - 1]! : null);
-  if (!singleWinner) return null;
+  // 2. POPUP DURANTE O SORTEIO — um grupo (mesmo prêmio) por vez.
+  const group = activeGroup ?? (dedupedWinners.length > 0 ? [dedupedWinners[dedupedWinners.length - 1]!] : []);
+  if (group.length === 0) return null;
+  const singleWinner = group[0]!;
 
   const normType = normalizeWinnerType(singleWinner.type) || 'bingo';
   const themeColor = normType === 'line1' ? BingoShowColors.primary : normType === 'line2' ? BingoShowColors.cyanNeon : BingoShowColors.greenSuccess;
   const currentPrizeText = normType === 'line1' ? line1Prize : normType === 'line2' ? line2Prize : bingoPrize;
+
+  // Vários ganhadores do mesmo prêmio: todos juntos, cards menores, cada um com
+  // a sua cartela. Valor = parte de cada um (prizeAmount do backend). A key é o
+  // 1º ganhador do grupo: ganhador que entra depois não reinicia a animação.
+  if (group.length > 1) {
+    const groupKey = `${drawNumber}-${normType}-${winnerKey(singleWinner)}`;
+    if (isBlue) {
+      return (
+        <BingoShowWinnerGroupBlue
+          key={groupKey}
+          kind={normType === 'bingo' && group.some((w) => w.jackpotWon === true) ? 'jackpot' : normType}
+          sealText={getPrizeDisplay(normType).full}
+          winners={group.map((w, idx) => {
+            const hasCard = Array.isArray(w.numbers) && w.numbers.length > 0;
+            return {
+              id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
+              name: getWinnerDisplayName(w),
+              coupon: formatCouponDisplay(w),
+              prize: getWinnerPrizeDisplay(w, true, currentPrizeText),
+              jackpot: w.jackpotWon === true,
+              cardNumbers: hasCard ? w.numbers : undefined,
+              paintedRows: hasCard
+                ? Array.from(computeRowsToPaint(w.numbers!, drawnNumbers, w.drawnNumbersAtWin, w.type, w.winningLines)).sort((a, b) => a - b)
+                : [],
+            };
+          })}
+        />
+      );
+    }
+    return (
+      <DefaultWinnerGroup
+        key={groupKey}
+        group={group}
+        normType={normType}
+        themeColor={themeColor}
+        currentPrizeText={currentPrizeText}
+        drawnNumbers={drawnNumbers}
+        jackpotAmountGlobal={jackpotAmountGlobal}
+      />
+    );
+  }
 
   // Tema Blue: mesma vitória, mesmos dados e mesma regra de linha vencedora — só a
   // apresentação muda. A key é a própria vitória (sorteio + ganhador), então só um

@@ -24,8 +24,15 @@ export const FINISH_SCREEN_HOLD_MS = WINNER_POPUP_MS + ROUND_SUMMARY_MIN_MS;
 /** Intervalo entre um popup de ganhador e o próximo da fila. */
 export const WINNER_POPUP_GAP_MS = 500;
 
-/** Promoções no lobby: tempo de lobby livre entre um ciclo de promoções e o próximo. */
-export const PROMO_LOBBY_GAP_MS = 30000;
+/** Promoções no lobby: a primeira abre 10s depois de o lobby entrar na tela... */
+export const PROMO_FIRST_DELAY_MS = 10000;
+
+/** ...e entre uma promoção e a próxima o lobby fica livre por 10s. */
+export const PROMO_GAP_MS = 10000;
+
+/** Nos últimos 30s antes do próximo sorteio nenhuma promoção aparece (e a que
+ * estiver no ar tem o tempo cortado para fechar antes disso). */
+export const PROMO_BLACKOUT_BEFORE_DRAW_MS = 30000;
 
 /** Tempo de cada promoção quando o backend não manda `timer` (segundos). */
 export const PROMO_DEFAULT_SECONDS = 10;

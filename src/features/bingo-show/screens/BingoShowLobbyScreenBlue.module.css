@@ -45,16 +45,15 @@
      so o TvStage escala o palco inteiro uma unica vez. */
   /* Aproveitamento vertical: mesmos 158px, agora com 7px de respiro em cima e
      embaixo (área útil 144px) e itens centralizados — logo 144px, cards e banner
-     142px (terminam a 8px da borda de baixo). padding-right reserva a área do
-     seletor de tema (fixo no canto superior direito, ~210px): com o banner
-     ocupando quase toda a altura, qualquer sobreposição vertical é inevitável,
-     então o banner termina antes dele em vez de ficar por baixo. */
+     142px (terminam a 8px da borda de baixo). O acumulado encosta à direita,
+     alinhado à coluna de prêmios (o seletor de tema só aparece com o mouse —
+     app/tv/page.tsx). */
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 158px;
-  padding: 7px 222px 7px 16px;
+  padding: 7px 1px 7px 16px; /* borda direita do banner = borda da coluna de prêmios */
   border: none;
   border-radius: 0;
   background: transparent;
@@ -173,7 +172,7 @@
      cresceu (10->20) para preencher a altura do header. */
   height: 142px;
   min-width: 390px;
-  padding: 0 108px 0 18px;
+  padding: 0 136px 0 18px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(8, 127, 252, 0.25) 0%, rgba(255, 207, 18, 0.18) 100%), rgba(4, 12, 38, 0.9);
   border: 2px solid var(--accent-gold, #FFCF12);
@@ -183,10 +182,11 @@
 }
 
 .chestImage {
-  width: 112px;
-  height: 90px;
+  width: 146px;
+  height: 116px;
   object-fit: contain;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 5px rgba(255, 207, 18, 0.35));
+  /* Sem glow: só a sombra de apoio. */
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
   animation: floatSubtle 3s ease-in-out infinite alternate;
 }
 
@@ -230,8 +230,8 @@
   position: absolute;
   top: 50%;
   right: 16px;
-  width: 80px;
-  height: 80px;
+  width: 108px;
+  height: 108px;
   margin: 0;
   transform: translateY(-50%);
   z-index: 3;
@@ -246,11 +246,16 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 3px rgba(255, 207, 18, 0.45));
 }
 
+/* Estrela do header sem glow (só a sombra de apoio). */
+.starBadgeFloating .starBgImage {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+
 .starNumber {
   position: relative;
   z-index: 2;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 900;
   color: #FFF6D6;
   text-shadow: 0 2px 6px rgba(0, 10, 45, 0.95);
@@ -823,8 +828,8 @@
 }
 
 .centerAccumulatedChest {
-  width: 168px;
-  height: 103px;
+  width: 200px;
+  height: 124px;
   object-fit: contain;
   flex-shrink: 0;
   transform-origin: 50% 85%;
@@ -892,8 +897,9 @@
 
 .centerAccumulatedStarBadge {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
+  margin: -8px 0; /* cresce sem aumentar a altura do banner */
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -904,7 +910,7 @@
   position: relative;
   z-index: 2;
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 38px;
+  font-size: 44px;
   font-weight: 900;
   color: #FFF6D6;
   text-shadow: 0 2px 6px rgba(0, 10, 45, 0.95);

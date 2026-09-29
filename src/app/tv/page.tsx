@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TvViewport } from '@/components/tv/TvViewport';
 import { TvStage } from '@/components/tv/TvStage';
@@ -38,6 +38,32 @@ export default function TvPage() {
     }
   }, []);
 
+  // Seletor de tema: invisível na TV (não cobre o acumulado do header); aparece
+  // quando o mouse se mexe/toca/tecla e some 4s depois (fica enquanto o mouse
+  // está sobre ele).
+  const [selectorVisible, setSelectorVisible] = useState(false);
+  const hoverRef = useRef(false);
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const show = () => {
+      setSelectorVisible(true);
+      clearTimeout(t);
+      t = setTimeout(function hide() {
+        if (hoverRef.current) t = setTimeout(hide, 1000);
+        else setSelectorVisible(false);
+      }, 4000);
+    };
+    window.addEventListener('mousemove', show);
+    window.addEventListener('touchstart', show);
+    window.addEventListener('keydown', show);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('mousemove', show);
+      window.removeEventListener('touchstart', show);
+      window.removeEventListener('keydown', show);
+    };
+  }, []);
+
   return (
     <TvViewport>
       {/* Seletor Rápido de Temas no Canto Superior (Ícone + Dropdown) */}
@@ -47,10 +73,12 @@ export default function TvPage() {
           top: 12,
           right: 16,
           zIndex: 999999,
-          pointerEvents: 'auto',
-          opacity: 0.95,
-          transition: 'opacity 200ms ease',
+          pointerEvents: selectorVisible ? 'auto' : 'none',
+          opacity: selectorVisible ? 0.95 : 0,
+          transition: 'opacity 300ms ease',
         }}
+        onMouseEnter={() => (hoverRef.current = true)}
+        onMouseLeave={() => (hoverRef.current = false)}
       >
         <ThemeSelector variant="dropdown" align="right" />
       </div>

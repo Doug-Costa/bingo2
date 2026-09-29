@@ -152,8 +152,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <Image
               src="/themes/bingo-show/assets/icons/bau-ouro.png"
               alt="Baú de Ouro 3D"
-              width={64}
-              height={48}
+              width={146}
+              height={116}
               className={styles.chestImage}
             />
 
@@ -166,8 +166,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               <Image
                 src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
                 alt="Estrela Limite de Bola"
-                width={50}
-                height={50}
+                width={108}
+                height={108}
                 className={styles.starBgImage}
               />
               {/* Só o trigger ball limit real do backend — sem número inventado. */}
@@ -352,8 +352,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <Image
             src="/themes/bingo-show/assets/icons/bau-ouro.png"
             alt="Baú Acumulado 3D"
-            width={168}
-            height={103}
+            width={200}
+            height={124}
             className={styles.centerAccumulatedChest}
           />
 
@@ -372,8 +372,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <Image
               src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
               alt="Estrela Limite"
-              width={120}
-              height={120}
+              width={140}
+              height={140}
               className={`${styles.starBgImage} ${styles.centerAccumulatedStarImg}`}
             />
             {mock.hasTriggerBallLimit && (
