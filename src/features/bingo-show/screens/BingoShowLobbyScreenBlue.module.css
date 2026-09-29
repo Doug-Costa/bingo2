@@ -351,18 +351,23 @@
   background: linear-gradient(90deg, transparent 0%, var(--primary-blue, #087FFC) 50%, transparent 100%);
 }
 
+/* 5 linhas fixas (DRAW_PAGE_SIZE) dividindo toda a altura da lista: os cards
+   ficam maiores e sem os vãos de antes, e a última página (com menos cards)
+   mantém o mesmo tamanho de card. A coluna não muda de tamanho. */
 .drawsList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 10px;
   flex: 1;
-  justify-content: space-around;
+  min-height: 0;
 }
 
 .drawCard {
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
+  justify-content: center;
+  min-height: 0;
+  padding: 10px 16px;
   border-radius: 12px;
   background: rgba(6, 20, 58, 0.7);
   border: 1.5px solid rgba(8, 127, 252, 0.3);
@@ -381,14 +386,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .drawCardNumber {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: 0.8px;
+  line-height: 1.1;
   color: #FFFFFF;
 }
 
@@ -399,7 +405,7 @@
 
 .hotTag {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 900;
   color: #FF5722;
   margin-left: 6px;
@@ -408,17 +414,18 @@
 
 .drawCardTime {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--text-secondary, #AEBBD8);
+  line-height: 1.1;
+  color: #d4def2;
 }
 
 .drawCardPrizesRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .drawCardPrizeCol {
@@ -430,9 +437,10 @@
 
 .drawCardPrizeLabel {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.8px;
+  line-height: 1.15;
 }
 
 .drawCardPrizeLabelGold {
@@ -449,10 +457,13 @@
 
 .drawCardPrizeValue {
   font-family: var(--bs-font-heading), 'Barlow Condensed', sans-serif;
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 900;
+  line-height: 1.15;
   color: #FFFFFF;
   margin-top: 1px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .carouselDots {
