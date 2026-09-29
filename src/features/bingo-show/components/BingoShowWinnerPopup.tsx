@@ -40,6 +40,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
+import { useCountUp } from '../hooks/useCountUp';
 import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
 export interface TopPlayerItem {
@@ -486,6 +487,8 @@ const WinnerCard: React.FC<{
   const isJackpot = winner.jackpotWon === true;
 
   const prizeDisplayValue = getWinnerPrizeDisplay(winner, isSplit, defaultPrizeStr);
+  // Contagem de R$ 0,00 até o valor (0,3s após o card aparecer, dura 1,8s).
+  const prizeCounting = useCountUp(prizeDisplayValue, 300, 1800);
 
   const displayName = getWinnerDisplayName(winner);
 
@@ -603,11 +606,12 @@ const WinnerCard: React.FC<{
               color: '#FFDE38',
               textShadow: '0 0 18px #FF9100',
               whiteSpace: 'nowrap',
+              fontVariantNumeric: 'tabular-nums',
               letterSpacing: 1,
               lineHeight: 1.1,
             }}
           >
-            {prizeDisplayValue}
+            {prizeCounting}
           </span>
 
           {/* CELEBRAÇÃO DE JACKPOT GANHO (VALOR SEMENTICAMENTE SEPARADO) */}

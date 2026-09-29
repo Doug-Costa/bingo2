@@ -23,6 +23,7 @@
 import React, { useEffect, useState } from 'react';
 import { BingoShowAssets } from '../assets';
 import { useFitText } from '../hooks/useFitText';
+import { useCountUp } from '../hooks/useCountUp';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowRoundWinnersBlue.module.css';
 
@@ -102,7 +103,10 @@ const RoundCard: React.FC<{
 }> = ({ winner, indexLabel, isSplit, mode, jackpotAmount, delays }) => {
   const m = MODE[mode];
   const name = useFitText(winner.name, m.name[0], m.name[1], 'ellipsis');
+  // Tamanho sobre o valor FINAL (cópia invisível); a contagem de R$ 0,00 até o
+  // valor começa quando o valor aparece no card e dura 1,6s.
   const value = useFitText(winner.prize, m.value[0], m.value[1], 'ellipsis');
+  const prizeCounting = useCountUp(winner.prize, delays.value, 1600);
 
   return (
     <div
@@ -136,9 +140,17 @@ const RoundCard: React.FC<{
       )}
       <span className={styles.prizeLabel}>{isSplit ? 'PRÊMIO INDIVIDUAL' : 'PRÊMIO DO GANHADOR'}</span>
       <div className={styles.fitBox} data-fit-box>
+        <span
+          ref={value.ref}
+          aria-hidden="true"
+          className={styles.value}
+          style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', fontSize: value.size }}
+        >
+          {winner.prize}
+        </span>
         <div className={styles.valueGlow}>
-          <span ref={value.ref} className={styles.value} style={{ fontSize: value.size }}>
-            {winner.prize}
+          <span className={styles.value} style={{ fontSize: value.size }} aria-label={winner.prize}>
+            {prizeCounting}
           </span>
         </div>
       </div>

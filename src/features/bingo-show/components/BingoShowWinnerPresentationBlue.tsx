@@ -19,6 +19,7 @@
 import React from 'react';
 import { BingoShowAssets } from '../assets';
 import { useFitText } from '../hooks/useFitText';
+import { useCountUp } from '../hooks/useCountUp';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowWinnerPresentationBlue.module.css';
 
@@ -90,7 +91,12 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
   paintedRows = [],
 }) => {
   const name = useFitText(displayName, 92, 52);
+  // Tamanho calculado sobre o valor FINAL (numa cópia invisível), então a fonte
+  // não muda enquanto o número sobe.
   const prize = useFitText(prizeValue, 118, 64);
+  // Contagem de R$ 0,00 até o valor: começa quando o valor entra (1,05s) e dura
+  // 1,9s — termina por volta de 3s, bem dentro dos 10s do popup.
+  const prizeCounting = useCountUp(prizeValue, 1050, 1900);
 
   const hasCard = Array.isArray(cardNumbers) && cardNumbers.length > 0;
   const winRows = new Set(paintedRows);
@@ -174,9 +180,18 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
           <div className={styles.prizeRow}>
             <img className={styles.star} src={BingoShowAssets.jackpot.star} alt="" draggable={false} />
             <div className={styles.prizeValueBox} data-fit-box>
+              {/* Cópia invisível com o valor final: só para medir o tamanho da fonte. */}
+              <span
+                ref={prize.ref}
+                aria-hidden="true"
+                className={styles.prizeValue}
+                style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', fontSize: prize.size }}
+              >
+                {prizeValue}
+              </span>
               <div className={styles.prizeGlow} style={{ maxWidth: '100%' }}>
-                <span ref={prize.ref} className={styles.prizeValue} style={{ fontSize: prize.size, display: 'block' }}>
-                  {prizeValue}
+                <span className={styles.prizeValue} style={{ fontSize: prize.size, display: 'block' }} aria-label={prizeValue}>
+                  {prizeCounting}
                 </span>
               </div>
             </div>
