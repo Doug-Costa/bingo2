@@ -405,7 +405,6 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               className={styles.prizeCoins}
             />
           </div>
-          <div className={styles.prizeDivider} aria-hidden="true" />
           <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.line1Prize) }}>
             {mock.line1Prize}
           </div>
@@ -426,7 +425,6 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               className={styles.prizeCoins}
             />
           </div>
-          <div className={styles.prizeDivider} aria-hidden="true" />
           <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.line2Prize) }}>
             {mock.line2Prize}
           </div>
@@ -447,7 +445,6 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               className={styles.prizeCoins}
             />
           </div>
-          <div className={styles.prizeDivider} aria-hidden="true" />
           <div className={styles.prizeAmount} style={{ fontSize: getPrizeAmountFontSize(mock.bingoPrize) }}>
             {mock.bingoPrize}
           </div>

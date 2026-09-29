@@ -1116,23 +1116,6 @@
   animation-duration: 6.2s;
 }
 
-.prizeDivider {
-  position: relative;
-  z-index: 3;
-  height: 3px;
-  margin: 10px 6px 6px;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--card-accent) 12%,
-    var(--card-accent-bright) 50%,
-    var(--card-accent) 88%,
-    transparent 100%
-  );
-  box-shadow: 0 0 5px var(--card-accent), 0 0 12px var(--card-glow);
-}
-
 .prizeAmount {
   position: relative;
   z-index: 3;
