@@ -56,6 +56,9 @@ const CRESCENT_ARC = [
 // garantida. Ver `FlyingExitBall` abaixo.
 const EXIT_DURATION_MS = 780;
 
+/** Total de bolas do bingo (grade 1–90). */
+const TOTAL_BALLS = 90;
+
 export interface DrawStageProps {
   /** Rótulo do cabeçalho do palco. */
   title?: string;
@@ -470,6 +473,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   // Formata o contador regressivo em 00:SS
   const timerStr = `00:${String(countdownSeconds).padStart(2, '0')}`;
 
+  // Pedra atual (Blue): bolas já sorteadas nesta rodada (vem do SSE via
+  // `sequenceNumber` = drawnBalls.length) contra o total do bingo de 90.
+  const drawnCount = Math.max(0, Math.min(TOTAL_BALLS, sequenceNumber ?? 0));
+  const ballsLeft = TOTAL_BALLS - drawnCount;
+
   return (
     <div
       style={{
@@ -766,7 +774,42 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
-        {/* LEFT: 3D HOURGLASS + COUNTDOWN */}
+        {/* LEFT: Blue — bola 3D com a pedra atual + "PEDRA X DE 90 · FALTAM Y" +
+            contador. Demais temas: ampulheta + contador, como sempre foi. */}
+        {isBlue ? (
+          <div className={blueStyles.seqRow}>
+            <div key={drawnCount} className={blueStyles.seqBall}>
+              <span className={blueStyles.seqBallShine} />
+              <span className={blueStyles.seqBallNumber}>{drawnCount}</span>
+            </div>
+            <div className={blueStyles.seqInfo}>
+              <span className={blueStyles.seqLabel}>PEDRA</span>
+              <span className={`${goldStyles.goldMetalTextCompact} ${blueStyles.seqValue}`}>
+                {drawnCount} DE {TOTAL_BALLS}
+              </span>
+              <span className={blueStyles.seqLeft}>
+                {ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}
+              </span>
+            </div>
+            <span className={blueStyles.seqDivider} aria-hidden="true" />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span className={blueStyles.seqLabel}>PRÓXIMO NÚMERO EM</span>
+              <span
+                style={{
+                  fontSize: 32,
+                  fontWeight: 900,
+                  letterSpacing: 2,
+                  fontFamily: 'Barlow Condensed, monospace, sans-serif',
+                  lineHeight: 1,
+                  marginTop: 2,
+                  ...goldNumberStyle,
+                }}
+              >
+                {timerStr}
+              </span>
+            </div>
+          </div>
+        ) : (
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14 }}>
           <img
             /* Blue: ampulheta transparente nova (mesmo asset aprovado no lobby).
@@ -810,6 +853,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             </span>
           </div>
         </div>
+        )}
 
         {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
