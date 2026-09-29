@@ -774,8 +774,9 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
-        {/* LEFT: Blue — bola 3D com a pedra atual + "PEDRA X DE 90 · FALTAM Y" +
-            contador. Demais temas: ampulheta + contador, como sempre foi. */}
+        {/* LEFT: Blue — bola 3D com a pedra atual + "PEDRA X DE 90 · FALTAM Y" (sem
+            contador: a bola substitui a informação). Demais temas: ampulheta +
+            contador, como sempre foi. */}
         {isBlue ? (
           <div className={blueStyles.seqRow}>
             <div key={drawnCount} className={blueStyles.seqBall}>
@@ -789,23 +790,6 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               </span>
               <span className={blueStyles.seqLeft}>
                 {ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}
-              </span>
-            </div>
-            <span className={blueStyles.seqDivider} aria-hidden="true" />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span className={blueStyles.seqLabel}>PRÓXIMO NÚMERO EM</span>
-              <span
-                style={{
-                  fontSize: 32,
-                  fontWeight: 900,
-                  letterSpacing: 2,
-                  fontFamily: 'Barlow Condensed, monospace, sans-serif',
-                  lineHeight: 1,
-                  marginTop: 2,
-                  ...goldNumberStyle,
-                }}
-              >
-                {timerStr}
               </span>
             </div>
           </div>

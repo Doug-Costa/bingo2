@@ -544,7 +544,7 @@
 
 /* ─── Pedra atual (rodapé do card) ───────────────────────────────────────
  * Substitui a ampulheta: bola 3D no mesmo acabamento da bola central, com o nº
- * de bolas já sorteadas, + "PEDRA X DE 90 · FALTAM Y" + o contador. A bola
+ * de bolas já sorteadas, + "PEDRA X DE 90 · FALTAM Y" (sem o contador). A bola
  * remonta (key) a cada pedra nova e dá um pulso curto. */
 .seqRow {
   display: flex;
@@ -637,12 +637,6 @@
   font-weight: 800;
   letter-spacing: 1.2px;
   text-shadow: 0 0 6px rgba(0, 190, 255, 0.35);
-}
-
-.seqDivider {
-  width: 1px;
-  height: 46px;
-  background: linear-gradient(180deg, transparent, rgba(92, 170, 255, 0.6), transparent);
 }
 
 @keyframes seqBallPulse {
