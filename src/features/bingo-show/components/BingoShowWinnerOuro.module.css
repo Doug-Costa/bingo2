@@ -80,8 +80,6 @@
   font-size: 26px;
   font-weight: 900;
   letter-spacing: 2px;
-  color: #ffd23f;
-  text-shadow: 0 0 10px rgba(255, 200, 30, 0.45);
   animation: riseIn 450ms ease-out 550ms both;
 }
 
@@ -255,12 +253,7 @@
   line-height: 1.08;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  background: linear-gradient(180deg, #fff6c2 0%, #ffe066 30%, #f5b800 58%, #c98200 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  filter: drop-shadow(0 2px 0 #6e3c00) drop-shadow(0 0 6px rgba(255, 190, 30, 0.3));
+  /* cor: ouro metálico (goldMetalText → goldValueActive) */
 }
 
 .jackpotTag {
@@ -350,8 +343,25 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: linear-gradient(180deg, #fff1a0 0%, #ffd43f 22%, #f0a315 60%, #b36304 100%);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 -6px 12px rgba(111, 51, 0, 0.3);
+  /* Mesmo ouro metálico em faixas do tema (goldMetalText), como placa. */
+  background: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 244, 184, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -6px 12px rgba(92, 49, 0, 0.35);
   opacity: 0;
   animation: goldOn 360ms ease-out var(--win-delay) both;
 }

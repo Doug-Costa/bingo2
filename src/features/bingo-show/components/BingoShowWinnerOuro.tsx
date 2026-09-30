@@ -100,10 +100,10 @@ const OuroCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         <div className={styles.valueCapsule}>
           <div className={styles.valueBox} data-fit-box>
             {/* Cópia invisível com o valor final: fonte fixa enquanto conta. */}
-            <span ref={value.ref} aria-hidden="true" className={styles.value} style={{ position: 'absolute', visibility: 'hidden', fontSize: value.size }}>
+            <span ref={value.ref} aria-hidden="true" className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ position: 'absolute', visibility: 'hidden', fontSize: value.size }}>
               {w.prize}
             </span>
-            <span className={styles.value} style={{ fontSize: value.size }} aria-label={w.prize}>
+            <span className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ fontSize: value.size }} aria-label={w.prize}>
               {counting}
             </span>
           </div>
@@ -204,9 +204,11 @@ export const BingoShowWinnerOuro: React.FC<BingoShowWinnerOuroProps> = ({ sealTe
         >
           {winners.length > 1 && (
             <div className={styles.subtitle}>
-              <span className={styles.subtitleStar}>★</span>
-              {winners.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
-              <span className={styles.subtitleStar}>★</span>
+              <span className={goldStyles.goldIcon}>★</span>
+              <span className={goldStyles.goldMetalTextCompact}>
+                {winners.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
+              </span>
+              <span className={goldStyles.goldIcon}>★</span>
             </div>
           )}
           <div key={page} className={styles.cards} style={gridStyle}>

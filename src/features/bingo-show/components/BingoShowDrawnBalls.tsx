@@ -71,9 +71,9 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, position: 'relative', marginTop: -2, marginBottom: 8 }}>
         {/* Blue: título em ouro metálico compacto + glow verde discreto nos trevos
             (goldMetalText.module.css); demais temas inalterados. */}
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
         <span
-          className={isBlueTheme ? goldStyles.goldMetalTextCompact : undefined}
+          className={isBlueTheme || isOuro ? goldStyles.goldMetalTextCompact : undefined}
           style={{
             fontSize: 20,
             fontWeight: 900,
@@ -81,12 +81,12 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
             textTransform: 'uppercase',
             textAlign: 'center',
             fontFamily: 'Barlow Condensed, sans-serif',
-            ...(isBlueTheme ? {} : { color: '#FFCF12', textShadow: `0 0 14px rgba(255, 207, 18, 0.7)` }),
+            ...(isBlueTheme || isOuro ? {} : { color: '#FFCF12', textShadow: `0 0 14px rgba(255, 207, 18, 0.7)` }),
           }}
         >
           ÚLTIMOS NÚMEROS SORTEADOS
         </span>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
       {isBlueTheme ? (

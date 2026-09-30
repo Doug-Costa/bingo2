@@ -97,7 +97,7 @@ const PrizeRow: React.FC<{
   // Bingo Show (Ouro & Espaço): mesmos assets do tema em 9-slice, valor em ouro
   // metálico que cabe sempre (BlueMoney é neutro: só mede e encolhe o texto).
   if (themeId === 'bingo-show') {
-    const goldClass = isActive ? ouroStyles.goldActive : isCompleted ? ouroStyles.goldDone : ouroStyles.goldIdle;
+    const goldClass = isActive ? goldStyles.goldValueActive : isCompleted ? goldStyles.goldValueDone : goldStyles.goldValueWaiting;
     return (
       <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
         <div className={`${ouroStyles.row} ${isActive ? ouroStyles.active : isCompleted ? ouroStyles.completed : ouroStyles.pending}`}>
@@ -412,7 +412,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
             ACUMULADO
           </span>
           {isBlue || isOuro ? (
-            <BlueMoney value={accumulatedAmount} role="jackpot" className={isOuro ? ouroStyles.goldActive : goldStyles.goldValueActive} />
+            <BlueMoney value={accumulatedAmount} role="jackpot" className={goldStyles.goldValueActive} />
           ) : (
             <span style={{ fontSize: 32, fontWeight: 900, marginTop: 2, whiteSpace: 'nowrap', color: primaryColor, textShadow: `0 0 16px ${primaryColor}` }}>
               {accumulatedAmount}

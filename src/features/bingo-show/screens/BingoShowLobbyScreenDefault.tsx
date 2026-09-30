@@ -25,6 +25,7 @@ import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { GOLD_METAL_INLINE } from '../utils/ouroGold';
 
 const AccumulatedSparkle: React.FC<{
   left: string;
@@ -268,7 +269,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
       <BingoShowTopWinnersFrame padding="sm" style={{ width: '100%', height: '100%' }}>
         <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <BingoShowText preset="label" color="primary" style={{ textAlign: 'center', fontSize: 32, fontWeight: 900, textTransform: 'uppercase', marginBottom: 4, color: theme.primary }}>
+            <BingoShowText preset="label" color="primary" style={{ textAlign: 'center', fontSize: 32, fontWeight: 900, textTransform: 'uppercase', marginBottom: 4, color: theme.primary, ...(isOuro ? GOLD_METAL_INLINE : {}) }}>
               PRÓXIMOS SORTEIOS
             </BingoShowText>
             <div style={{ height: 1.5, width: '100%', backgroundColor: `${theme.secondary}66`, marginTop: 4 }} />
@@ -312,7 +313,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
           >
             <div style={{ position: 'absolute', left: '23.5%', top: '36.5%', width: '53%', height: '33%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: BingoShowSpacing.xxs }}>
               <div style={{ position: 'absolute', top: -128, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: BingoShowSpacing.xxs, pointerEvents: 'none' }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: theme.primary, letterSpacing: 2.8, textShadow: `0 0 10px ${theme.primaryGlow || 'rgba(255, 193, 7, 0.45)'}`, fontFamily: 'var(--bs-font-heading)' }}>
+                <span style={{ fontSize: 36, fontWeight: 800, color: theme.primary, letterSpacing: 2.8, textShadow: `0 0 10px ${theme.primaryGlow || 'rgba(255, 193, 7, 0.45)'}`, fontFamily: 'var(--bs-font-heading)', ...(isOuro ? GOLD_METAL_INLINE : {}) }}>
                   {mock.drawNumber}
                 </span>
                 <span style={{ fontSize: 28, fontWeight: 700, color: theme.textSecondary, letterSpacing: 3, textTransform: 'uppercase' }}>
@@ -325,7 +326,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
                 label=""
                 showTimerFrame={false}
                 style={{ marginTop: 48 }}
-                timerTextStyle={{ fontSize: 92, letterSpacing: 4, color: theme.countdownText || theme.primary, fontFamily: 'var(--bs-font-heading)' }}
+                timerTextStyle={{ fontSize: 92, letterSpacing: 4, color: theme.countdownText || theme.primary, fontFamily: 'var(--bs-font-heading)', ...(isOuro ? GOLD_METAL_INLINE : {}) }}
               />
             </div>
           </div>

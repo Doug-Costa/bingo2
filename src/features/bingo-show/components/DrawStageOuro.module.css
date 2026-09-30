@@ -236,12 +236,10 @@
 }
 
 .seqValue {
-  color: #ffcf12;
   font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
   font-size: 34px;
   font-weight: 900;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 207, 18, 0.45);
+  letter-spacing: 1px; /* cor: ouro metálico (goldMetalTextCompact) */
   font-variant-numeric: tabular-nums;
 }
 

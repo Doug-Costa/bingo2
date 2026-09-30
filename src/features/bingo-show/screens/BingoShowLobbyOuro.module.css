@@ -3,8 +3,9 @@
  * Imperial / Cyber Neon / Safira PUB, então tudo aqui entra atrás de
  * `themeId === 'bingo-show'` no TSX.
  *
- * Valores em degradê liso e nítido (sem o brilho largo que embaçava na TV), cada
- * card no seu tom — a 2ª linha deixa de ser azul sobre fundo azul. */
+ * Valores no ouro metálico do tema (a mesma receita de goldMetalText.module.css:
+ * faixas abruptas, contorno fino e relevo por drop-shadow) — em todos os cards,
+ * como no Blue. */
 
 .money {
   display: block;
@@ -20,19 +21,28 @@
   color: transparent;
 }
 
-.gold {
-  background-image: linear-gradient(180deg, #fff6c2 0%, #ffe066 32%, #f5b800 62%, #d08a00 100%);
-  filter: drop-shadow(0 2px 0 #5c3300) drop-shadow(0 0 5px rgba(255, 190, 30, 0.3));
-}
-
-.cyan {
-  background-image: linear-gradient(180deg, #ffffff 0%, #d6f7ff 35%, #6fe6ff 70%, #22b8e6 100%);
-  filter: drop-shadow(0 2px 0 #032a44) drop-shadow(0 0 5px rgba(60, 210, 255, 0.3));
-}
-
+.gold,
+.cyan,
 .green {
-  background-image: linear-gradient(180deg, #ffffff 0%, #d9ffe9 35%, #5cf5a0 70%, #16bf62 100%);
-  filter: drop-shadow(0 2px 0 #033016) drop-shadow(0 0 5px rgba(60, 230, 140, 0.3));
+  background-image: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  -webkit-text-stroke: 1px rgba(100, 47, 0, 0.72);
+  filter:
+    drop-shadow(0 2px 0 #713600)
+    drop-shadow(0 4px 1px rgba(25, 9, 0, 0.66))
+    drop-shadow(0 0 4px rgba(255, 199, 34, 0.45));
 }
 
 /* Ícone PNG do tema ao lado de DATA/HORA no header. */

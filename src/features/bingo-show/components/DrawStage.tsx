@@ -528,21 +528,21 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           {/* Blue: ouro metálico compacto (goldMetalText.module.css); demais temas
               mantêm o amarelo chapado. Tamanho/fonte/espaçamento iguais. */}
-          <span className={isBlue ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro ? {} : { color: '#FFCF12' }) }}>★</span>
           <span
-            className={isBlue ? goldStyles.goldMetalTextCompact : undefined}
+            className={isBlue || isOuro ? goldStyles.goldMetalTextCompact : undefined}
             style={{
               fontWeight: 900,
               fontSize: 22,
               letterSpacing: 3,
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
-              ...(isBlue ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
+              ...(isBlue || isOuro ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
             }}
           >
             {title}
           </span>
-          <span className={isBlue ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro ? {} : { color: '#FFCF12' }) }}>★</span>
         </div>
 
         {/* RIGHT SUB-TITLE */}
@@ -841,7 +841,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             </div>
             <div className={ouroStyles.seqInfo}>
               <span className={ouroStyles.seqLabel}>PEDRA</span>
-              <span className={ouroStyles.seqValue}>
+              <span className={`${goldStyles.goldMetalTextCompact} ${ouroStyles.seqValue}`}>
                 {drawnCount} DE {TOTAL_BALLS}
               </span>
               <span className={ouroStyles.seqLeft}>{ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}</span>

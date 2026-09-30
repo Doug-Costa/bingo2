@@ -57,7 +57,9 @@ import { ThemeSelector } from '@/components/theme';
 
 export const BingoShowDrawScreen: React.FC = () => {
   const mock = useBingoShowRealtimeDraw();
-  const { isBlue } = useAppTheme();
+  const { isBlue, themeId } = useAppTheme();
+  // Ouro metálico dos títulos: Blue e Bingo Show (Ouro & Espaço).
+  const goldTitle = isBlue || themeId === 'bingo-show';
   const [soundOn, setSoundOn] = useState(true);
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
@@ -112,40 +114,40 @@ export const BingoShowDrawScreen: React.FC = () => {
               fonte e espaçamento continuam os mesmos em todos os temas. */}
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <span
-              className={isBlue ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(isBlue ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
             <span
-              className={isBlue ? goldStyles.goldMetalText : undefined}
+              className={goldTitle ? goldStyles.goldMetalText : undefined}
               style={{
                 fontSize: 32,
                 fontWeight: 900,
                 letterSpacing: 3,
                 fontFamily: 'Barlow Condensed, sans-serif',
                 textTransform: 'uppercase',
-                ...(isBlue ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
+                ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
               }}
             >
               BINGO AO VIVO
             </span>
             <span
-              className={isBlue ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(isBlue ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
           </div>
           <span
-            className={isBlue ? goldStyles.liveSubtitle : undefined}
+            className={goldTitle ? goldStyles.liveSubtitle : undefined}
             style={{
               fontSize: 13,
               fontWeight: 900,
               letterSpacing: 3,
               textTransform: 'uppercase',
               marginTop: -4,
-              ...(isBlue ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
+              ...(goldTitle ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
             }}
           >
             ★ SUA SORTE, NOSSO BINGO! ★

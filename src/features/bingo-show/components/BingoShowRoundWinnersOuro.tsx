@@ -54,10 +54,10 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
       )}
       <div className={styles.valueCapsule}>
         <div className={styles.valueBox} data-fit-box>
-          <span ref={value.ref} aria-hidden="true" className={styles.value} style={{ position: 'absolute', visibility: 'hidden', fontSize: value.size }}>
+          <span ref={value.ref} aria-hidden="true" className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ position: 'absolute', visibility: 'hidden', fontSize: value.size }}>
             {w.prize}
           </span>
-          <span className={styles.value} style={{ fontSize: value.size }} aria-label={w.prize}>
+          <span className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ fontSize: value.size }} aria-label={w.prize}>
             {counting}
           </span>
         </div>
