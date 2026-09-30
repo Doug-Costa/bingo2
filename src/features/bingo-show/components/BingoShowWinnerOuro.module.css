@@ -1,0 +1,485 @@
+/* BingoShowWinnerOuro.module.css — popup de ganhador(es) SOMENTE no tema Bingo
+ * Show (Ouro & Espaço, id bingo-show). Mesmo acabamento dos cards de prêmio do
+ * tema: os assets do tema são aplicados em 9-slice (border-image) numa camada
+ * ::before, então os cantos arredondados e os brilhos das bordas ficam EXATOS em
+ * qualquer tamanho (esticar a imagem inteira deformaria os cantos):
+ *   card do ganhador ........ card-prize.png        (azul + brilho dourado)
+ *   cápsula do valor / selo . card-prize-value.png  (dourado + brilho azul)
+ *   moldura da cartela ...... card-metadata-gold.png (dourado)
+ * Palco 1920×1080 (o popup é `position: fixed` dentro do TvStage, que já escala). */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(30, 90, 220, 0.28) 0%, transparent 60%),
+    rgba(0, 4, 20, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  animation: fadeIn 350ms ease-out both;
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Moldura externa (BingoShowTopWinnersFrame — a mesma dos painéis do tema). */
+.frameBox {
+  position: absolute;
+  left: 56px;
+  right: 56px;
+  top: 96px;
+  bottom: 40px;
+  animation: frameIn 450ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* ─── Selo do prêmio (topo, sobre a moldura) ─────────────────────────────── */
+
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 44px;
+  z-index: 3;
+  transform: translateX(-50%);
+  padding: 20px 72px 18px;
+  white-space: nowrap;
+  animation: sealIn 650ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 250ms both;
+}
+
+.seal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 30px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 30px stretch;
+  pointer-events: none;
+}
+
+.sealText {
+  position: relative;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffd23f;
+  text-shadow: 0 0 10px rgba(255, 200, 30, 0.45);
+  animation: riseIn 450ms ease-out 550ms both;
+}
+
+.subtitleStar {
+  color: #ffd23f;
+  font-size: 22px;
+}
+
+/* ─── Grade de cards ─────────────────────────────────────────────────────── */
+
+.cards {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 20px;
+}
+
+/* ─── Card de um ganhador (card-prize.png em 9-slice) ────────────────────── */
+
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  align-items: center;
+  gap: 18px;
+  padding: 22px 28px;
+  animation: cardIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--enter) both;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 34px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 34px stretch;
+  pointer-events: none;
+}
+
+.card > * {
+  position: relative;
+}
+
+/* Selo pequeno "GANHADOR 1/4" no canto superior esquerdo do card. */
+.badge {
+  position: absolute !important;
+  top: 12px;
+  left: 26px;
+  z-index: 2;
+  padding: 3px 12px 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe46b 0%, #f7c928 55%, #d99a06 100%);
+  box-shadow: 0 0 8px rgba(255, 190, 30, 0.45), 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #2a1600;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+}
+
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.soloTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+/* Baú do tema sob o valor (só 1 ganhador). */
+.soloChest {
+  width: 260px;
+  height: auto;
+  margin-top: 8px;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+  animation: chestIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1400ms both;
+}
+
+@keyframes chestIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+.nameBox {
+  width: 100%;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.06;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 3px 0 rgba(0, 10, 40, 0.75), 0 0 14px rgba(60, 150, 255, 0.35);
+}
+
+.nameWrap {
+  white-space: normal;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Cupom numa pílula de contorno dourado. */
+.coupon {
+  padding: 4px 18px 3px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 207, 18, 0.85);
+  background: rgba(255, 207, 18, 0.08);
+  color: #ffd23f;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+.prizeLabel {
+  color: #9fd8ff;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+}
+
+/* Cápsula do valor (card-prize-value.png em 9-slice). */
+.valueCapsule {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 14px 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.valueCapsule::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 24px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 24px stretch;
+  pointer-events: none;
+}
+
+.valueBox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.value {
+  display: block;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  background: linear-gradient(180deg, #fff6c2 0%, #ffe066 30%, #f5b800 58%, #c98200 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #6e3c00) drop-shadow(0 0 6px rgba(255, 190, 30, 0.3));
+}
+
+.jackpotTag {
+  padding: 3px 14px;
+  border-radius: 999px;
+  border: 2px solid #ffd23f;
+  color: #ffd23f;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+/* ─── Cartela (card-metadata-gold.png em 9-slice) ────────────────────────── */
+
+.cartela {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px 18px;
+}
+
+.cartela::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 26px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-metadata-gold.png') 200 fill / 26px stretch;
+  pointer-events: none;
+}
+
+.cartela > * {
+  position: relative;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.headCell {
+  display: grid;
+  place-items: center;
+  padding: 3px 0;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(180deg, rgba(40, 150, 255, 0.55) 0%, rgba(12, 70, 170, 0.6) 100%);
+  border: 1.5px solid rgba(120, 200, 255, 0.8);
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+/* Célula comum: azul-marinho, número branco. */
+.cell {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9px;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #17387c 0%, #0c285f 55%, #071a47 100%);
+  border: 1.5px solid rgba(110, 175, 255, 0.45);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -8px 14px rgba(0, 6, 30, 0.35);
+  text-shadow: 0 2px 3px rgba(0, 10, 40, 0.8);
+  animation: cellIn 260ms ease-out var(--in-delay) both;
+}
+
+/* Célula vencedora: acende em sequência (--win-delay) em ouro metálico, número
+ * azul-marinho escuro e ✓. */
+.cellGold {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff1a0 0%, #ffd43f 22%, #f0a315 60%, #b36304 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 -6px 12px rgba(111, 51, 0, 0.3);
+  opacity: 0;
+  animation: goldOn 360ms ease-out var(--win-delay) both;
+}
+
+.cellNum {
+  position: relative;
+}
+
+.cellWin {
+  animation:
+    cellIn 260ms ease-out var(--in-delay) both,
+    winBorder 360ms ease-out var(--win-delay) both;
+}
+
+.cellWin .cellNum {
+  animation: winInk 360ms ease-out var(--win-delay) both;
+}
+
+.check {
+  position: absolute !important;
+  top: 2px;
+  right: 4px;
+  color: #0b1a3e;
+  font-size: 0.42em;
+  font-weight: 900;
+  opacity: 0;
+  animation: checkIn 300ms ease-out var(--win-delay) both;
+}
+
+/* Brilho passando pela linha vencedora depois que ela acende. */
+.beam {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 9px;
+}
+
+.beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22%;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 210, 0.85), transparent);
+  transform: translateX(-120%);
+  animation: sweepAcross 650ms ease-in-out var(--beam-delay) both;
+}
+
+/* ─── Animações ──────────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes frameIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sealIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.85); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(36px) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cellIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes goldOn {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes winBorder {
+  to {
+    border-color: #fff2a3;
+    box-shadow: 0 0 12px rgba(255, 200, 40, 0.7);
+  }
+}
+
+@keyframes winInk {
+  to {
+    color: #0b1a3e;
+    text-shadow: 0 1px 0 rgba(255, 244, 190, 0.7);
+  }
+}
+
+@keyframes checkIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sweepAcross {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(560%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .frameBox,
+  .seal,
+  .subtitle,
+  .card,
+  .cell,
+  .cellWin,
+  .cellGold,
+  .cellWin .cellNum,
+  .check,
+  .soloChest {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+
+  .beam::after {
+    display: none;
+  }
+}

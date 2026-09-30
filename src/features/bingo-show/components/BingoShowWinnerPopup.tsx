@@ -39,6 +39,7 @@ import { formatBrl } from '../utils/format';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
 import { BingoShowWinnerGroupBlue, groupDurationMs, GROUP_PAGE_SIZE } from './BingoShowWinnerGroupBlue';
+import { BingoShowWinnerOuro } from './BingoShowWinnerOuro';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useCountUp } from '../hooks/useCountUp';
@@ -1093,7 +1094,9 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   onClose,
   isLive = true,
 }) => {
-  const { isBlue } = useAppTheme();
+  const { isBlue, themeId } = useAppTheme();
+  // Bingo Show (Ouro & Espaço): popup próprio (1 ou vários ganhadores).
+  const isOuro = themeId === 'bingo-show';
   // Popup = GRUPO de ganhadores do mesmo prêmio (1 = popup individual; 2+ = todos
   // juntos, cards menores com cartela). Ver enqueueWinners.
   const [activeGroup, setActiveGroup] = useState<WinnerEvent[] | null>(null);
@@ -1555,6 +1558,31 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const normType = normalizeWinnerType(singleWinner.type) || 'bingo';
   const themeColor = normType === 'line1' ? BingoShowColors.primary : normType === 'line2' ? BingoShowColors.cyanNeon : BingoShowColors.greenSuccess;
   const currentPrizeText = normType === 'line1' ? line1Prize : normType === 'line2' ? line2Prize : bingoPrize;
+
+  // Ouro & Espaço: mesmo componente para 1 ou vários ganhadores, com o acabamento
+  // dos cards de prêmio do tema. A key é o 1º ganhador do grupo.
+  if (isOuro) {
+    return (
+      <BingoShowWinnerOuro
+        key={`${drawNumber}-${normType}-${winnerKey(singleWinner)}`}
+        sealText={getPrizeDisplay(normType).full}
+        winners={group.map((w, idx) => {
+          const hasCard = Array.isArray(w.numbers) && w.numbers.length > 0;
+          return {
+            id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
+            name: getWinnerDisplayName(w),
+            coupon: formatCouponDisplay(w),
+            prize: getWinnerPrizeDisplay(w, group.length > 1, currentPrizeText),
+            jackpot: w.jackpotWon === true,
+            cardNumbers: hasCard ? w.numbers : undefined,
+            paintedRows: hasCard
+              ? Array.from(computeRowsToPaint(w.numbers!, drawnNumbers, w.drawnNumbersAtWin, w.type, w.winningLines)).sort((a, b) => a - b)
+              : [],
+          };
+        })}
+      />
+    );
+  }
 
   // Vários ganhadores do mesmo prêmio: todos juntos, cards menores, cada um com
   // a sua cartela. Valor = parte de cada um (prizeAmount do backend). A key é o
