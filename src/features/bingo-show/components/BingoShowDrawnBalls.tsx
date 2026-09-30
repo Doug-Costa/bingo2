@@ -5,6 +5,8 @@ import { BingoShowAssets } from '../assets';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
 import blueGrid from './BingoShowDrawnBallsBlue.module.css';
+import ouroGrid from './BingoShowDrawnBallsOuro.module.css';
+import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowDrawnBallsProps {
   drawnBalls: number[];
@@ -24,6 +26,8 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   const latestBall = drawnBalls.length > 0 ? drawnBalls[drawnBalls.length - 1] : undefined;
 
   const isBlueTheme = themeId === 'bingo-show-blue';
+  // Bingo Show (Ouro & Espaço): grade própria com as bolas 3D do tema.
+  const isOuro = themeId === 'bingo-show';
 
   const panelBg = isBlueTheme
     ? `url(/themes/bingo-show-blue/panels/panel-main.png), ${theme.panelBg}`
@@ -99,6 +103,21 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
             const latestClass = num === latestBall ? blueGrid.historyBallLatest : '';
             return (
               <div key={num} className={`${blueGrid.historyBall} ${stateClass} ${latestClass}`}>
+                {num}
+              </div>
+            );
+          })}
+        </div>
+      ) : isOuro ? (
+        <div className={ouroGrid.grid}>
+          {ALL_90_NUMBERS.map((num) => {
+            const isDrawn = drawnSet.has(num);
+            return (
+              <div
+                key={num}
+                className={`${ouroGrid.ball} ${isDrawn ? ouroGrid.drawn : ouroGrid.pending} ${num === latestBall ? ouroGrid.latest : ''}`}
+                style={{ '--ball-img': `url(${ouroBallAsset(num)})` } as React.CSSProperties}
+              >
                 {num}
               </div>
             );
