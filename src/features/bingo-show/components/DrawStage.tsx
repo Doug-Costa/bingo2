@@ -445,7 +445,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   currentNumber,
   nextBalls = [],
   sequenceNumber,
-  countdownSeconds = 30,
+  countdownSeconds: _countdownSeconds,
   style,
 }) => {
   const { theme, isBlue, themeId } = useAppTheme();
@@ -488,28 +488,9 @@ export const DrawStage: React.FC<DrawStageProps> = ({
     return () => anim.cancel();
   }, [ballKey, isBlue, reducedMotion]);
 
-  // Mesma receita de ouro metalico do contador do lobby (goldReflectionShift),
-  // so aplicada no tema Blue - demais temas mantem a cor solida atual.
-  const goldNumberStyle: React.CSSProperties = isBlue
-    ? {
-        backgroundImage:
-          'linear-gradient(180deg, #6f3e00 0%, #b97808 8%, #fff4b8 18%, #ffd76a 25%, #d9a514 42%, #fff0a0 51%, #b97808 59%, #f5c542 73%, #fff4b8 82%, #a86200 92%, #5c3100 100%)',
-        backgroundSize: '100% 220%',
-        WebkitBackgroundClip: 'text',
-        backgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        color: 'transparent',
-        animation: reducedMotion ? undefined : 'bs-gold-reflection-shift 4s ease-in-out infinite',
-      }
-    : {};
-
-  // Formata o contador regressivo em 00:SS
-  const timerStr = `00:${String(countdownSeconds).padStart(2, '0')}`;
-
-  // Pedra atual (Blue): bolas já sorteadas nesta rodada (vem do SSE via
+  // Bola atual: bolas já sorteadas nesta rodada (vem do SSE via
   // `sequenceNumber` = drawnBalls.length) contra o total do bingo de 90.
   const drawnCount = Math.max(0, Math.min(TOTAL_BALLS, sequenceNumber ?? 0));
-  const ballsLeft = TOTAL_BALLS - drawnCount;
 
   const content = (
     <>
@@ -813,84 +794,29 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
-        {/* LEFT: Blue — bola 3D com a pedra atual + "PEDRA X DE 90 · FALTAM Y" (sem
-            contador: a bola substitui a informação). Demais temas: ampulheta +
-            contador, como sempre foi. */}
+        {/* LEFT (todos os temas): bola com a pedra atual + "BOLA X/90". Blue com a
+            bola 3D do tema; demais com a bola dourada do Bingo Show. */}
         {isBlue ? (
           <div className={blueStyles.seqRow}>
             <div key={drawnCount} className={blueStyles.seqBall}>
               <span className={blueStyles.seqBallShine} />
               <span className={blueStyles.seqBallNumber}>{drawnCount}</span>
             </div>
-            <div className={blueStyles.seqInfo}>
-              <span className={blueStyles.seqLabel}>PEDRA</span>
-              <span className={`${goldStyles.goldMetalTextCompact} ${blueStyles.seqValue}`}>
-                {drawnCount} DE {TOTAL_BALLS}
-              </span>
-              <span className={blueStyles.seqLeft}>
-                {ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}
-              </span>
-            </div>
+            <span className={`${goldStyles.goldMetalTextCompact} ${blueStyles.seqValue}`}>
+              BOLA {drawnCount}/{TOTAL_BALLS}
+            </span>
           </div>
-        ) : isOuro ? (
+        ) : (
           <div className={ouroStyles.seqRow}>
             <div key={drawnCount} className={ouroStyles.seqBall}>
               {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
               <img className={ouroStyles.seqBallImg} src={BingoShowAssets.balls.gold.default} alt="" draggable={false} />
               <span className={ouroStyles.seqBallNumber}>{drawnCount}</span>
             </div>
-            <div className={ouroStyles.seqInfo}>
-              <span className={ouroStyles.seqLabel}>PEDRA</span>
-              <span className={`${goldStyles.goldMetalTextCompact} ${ouroStyles.seqValue}`}>
-                {drawnCount} DE {TOTAL_BALLS}
-              </span>
-              <span className={ouroStyles.seqLeft}>{ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}</span>
-            </div>
-          </div>
-        ) : (
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <img
-            /* Blue: ampulheta transparente nova (mesmo asset aprovado no lobby).
-               Demais temas: mantido exatamente como antes (asset antigo, sem
-               transparencia real) - fora do escopo desta tarefa (so Blue). */
-            src={isBlue ? '/themes/bingo-show-blue/relogio-areia-dourado.png' : '/themes/bingo-show-blue/relogio_areia.png'}
-            alt="Ampulheta"
-            style={{
-              height: isBlue ? 64 : 54,
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 0 8px rgba(255, 207, 18, 0.5))',
-            }}
-          />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span
-              style={{
-                color: '#FFFFFF',
-                fontSize: 12,
-                fontWeight: 900,
-                letterSpacing: 1.5,
-                textTransform: 'uppercase',
-                opacity: 0.9,
-              }}
-            >
-              PRÓXIMO NÚMERO EM
-            </span>
-            <span
-              style={{
-                color: isBlue ? undefined : '#FFCF12',
-                fontSize: 32,
-                fontWeight: 900,
-                letterSpacing: 2,
-                fontFamily: 'Barlow Condensed, monospace, sans-serif',
-                textShadow: isBlue ? undefined : '0 0 14px rgba(255, 207, 18, 0.8)',
-                lineHeight: 1,
-                marginTop: 2,
-                ...goldNumberStyle,
-              }}
-            >
-              {timerStr}
+            <span className={`${goldStyles.goldMetalTextCompact} ${ouroStyles.seqValue}`}>
+              BOLA {drawnCount}/{TOTAL_BALLS}
             </span>
           </div>
-        </div>
         )}
 
         {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK */}
