@@ -40,6 +40,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowWinnerPresentationBlue } from './BingoShowWinnerPresentationBlue';
 import { BingoShowWinnerGroupBlue, groupDurationMs, GROUP_PAGE_SIZE } from './BingoShowWinnerGroupBlue';
 import { BingoShowWinnerOuro } from './BingoShowWinnerOuro';
+import { BingoShowRoundWinnersOuro } from './BingoShowRoundWinnersOuro';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useCountUp } from '../hooks/useCountUp';
@@ -1349,7 +1350,8 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     // Tema Blue: mesmos ganhadores deduplicados, mesmo split (2+ ganhadores), mesmos
     // valores individuais do backend e mesmo tempo total — só a apresentação muda.
     // A key é a rodada + os ganhadores: só um novo resultado reinicia a sequência.
-    if (isBlue) {
+    // Ouro & Espaço usa os mesmos dados, com componente próprio.
+    if (isBlue || isOuro) {
       const toView = (list: WinnerEvent[], defaultPrizeStr: string) =>
         list.map((w, idx) => ({
           id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
@@ -1363,8 +1365,9 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         { key: 'line2', winners: toView(line2Winners, line2Prize) },
         { key: 'bingo', winners: toView(bingoWinners, bingoPrize) },
       ];
+      const RoundWinners = isOuro ? BingoShowRoundWinnersOuro : BingoShowRoundWinnersBlue;
       return (
-        <BingoShowRoundWinnersBlue
+        <RoundWinners
           key={`${drawNumber}-${dedupedWinners.map(winnerKey).join('|')}`}
           drawNumber={drawNumber}
           dateStr={dateStr}
