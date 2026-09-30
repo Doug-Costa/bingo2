@@ -16,6 +16,8 @@ import {
   BingoShowGlowHalo,
 } from '../components';
 import { BingoShowAssetPanel } from '../components/BingoShowAssetPanel';
+import ouro from './BingoShowLobbyOuro.module.css';
+import { moneyLengthTier } from '../utils/moneyLength';
 import { BingoShowIcon, type BingoShowIconName } from '../components/BingoShowIcon';
 import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackground';
 import { BingoShowAssets } from '../assets';
@@ -56,19 +58,32 @@ const HeaderInfoBlock: React.FC<{
   icon?: BingoShowIconName;
   labelColor?: string;
   valueColor?: string;
-}> = ({ label, value, icon, labelColor = BingoShowColors.cyanNeon, valueColor = '#FFFFFF' }) => (
+  /** Ícone PNG do tema (Ouro & Espaço) no lugar do ícone vetorial. */
+  iconSrc?: string;
+}> = ({ label, value, icon, labelColor = BingoShowColors.cyanNeon, valueColor = '#FFFFFF', iconSrc }) => (
   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
     <span style={{ fontSize: 15, fontWeight: 900, color: labelColor, letterSpacing: 1, whiteSpace: 'nowrap' }}>
       {label}
     </span>
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 1 }}>
-      {icon ? <BingoShowIcon name={icon} size={18} color={labelColor} transparentBg /> : null}
+      {iconSrc ? (
+        // eslint-disable-next-line @next/next/no-img-element -- asset estático do tema
+        <img src={iconSrc} alt="" className={ouro.headerIcon} />
+      ) : icon ? (
+        <BingoShowIcon name={icon} size={18} color={labelColor} transparentBg />
+      ) : null}
       <span suppressHydrationWarning style={{ fontSize: 26, fontWeight: 900, color: valueColor, letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
         {value}
       </span>
     </div>
   </div>
 );
+
+/** Ouro & Espaço: fonte do valor pela faixa de comprimento (cabe sempre). */
+function ouroMoneySize(value: string, sizes: [number, number, number]): number {
+  const tier = moneyLengthTier(value);
+  return tier === 'normal' ? sizes[0] : tier === 'long' ? sizes[1] : sizes[2];
+}
 
 const DRAW_PAGE_SIZE = 5;
 const DRAW_PAGE_INTERVAL_MS = 6000;
@@ -180,6 +195,9 @@ const PrizeCardDivider: React.FC<{ color: string }> = ({ color }) => (
 export const BingoShowLobbyScreenDefault: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
   const { themeId, theme, isBlue } = useAppTheme();
+  // Bingo Show (Ouro & Espaço): ajustes só deste tema (a home Default também
+  // serve Ouro Imperial / Cyber Neon / Safira PUB).
+  const isOuro = themeId === 'bingo-show';
 
   const logoSrc = isBlue
     ? '/themes/bingo-show-blue/logos/logo-main.png'
@@ -200,25 +218,31 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
           <HeaderDivider color={`${theme.secondary}55`} />
           <HeaderInfoBlock label="PRÓXIMO SORTEIO" value={mock.drawNumberShort} labelColor={theme.secondary} />
           <HeaderDivider color={`${theme.secondary}55`} />
-          <HeaderInfoBlock label="DATA" value={mock.currentDate} icon="calendar" labelColor={theme.secondary} />
+          <HeaderInfoBlock label="DATA" value={mock.currentDate} icon="calendar" labelColor={theme.secondary} iconSrc={isOuro ? '/themes/bingo-show/assets/icons/calendario.png' : undefined} />
           <HeaderDivider color={`${theme.secondary}55`} />
-          <HeaderInfoBlock label="HORA" value={mock.currentTime} icon="clock" labelColor={theme.secondary} />
+          <HeaderInfoBlock label="HORA" value={mock.currentTime} icon="clock" labelColor={theme.secondary} iconSrc={isOuro ? '/themes/bingo-show/assets/icons/relogio.png' : undefined} />
           <HeaderDivider color={`${theme.secondary}55`} />
 
           <div style={{ flex: 2, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            <img src={BingoShowAssets.jackpot.artwork} alt="Baú de Ouro" style={{ width: 136, height: 86, objectFit: 'contain', flexShrink: 0 }} />
+            <img src={BingoShowAssets.jackpot.artwork} alt="Baú de Ouro" style={{ width: isOuro ? 172 : 136, height: isOuro ? 108 : 86, objectFit: 'contain', flexShrink: 0 }} />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', minWidth: 0 }}>
               <span style={{ color: theme.secondary, fontSize: 15, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase' }}>
                 ACUMULADO ESPECIAL
               </span>
+              {isOuro ? (
+                <span key={mock.accumulatedPrize} className={`${ouro.money} ${ouro.gold} ${ouro.accumulatedPop}`} style={{ fontSize: ouroMoneySize(mock.accumulatedPrize, [40, 34, 28]), marginTop: 2 }}>
+                  {mock.accumulatedPrize}
+                </span>
+              ) : (
               <span style={{ color: theme.primary || '#FFDE38', fontSize: 28, fontWeight: 900, marginTop: 1, textShadow: `0 0 10px ${theme.primaryGlow || '#FF9100'}`, fontFamily: 'var(--bs-font-heading)' }}>
                 {mock.accumulatedPrize}
               </span>
+              )}
             </div>
             <div
               style={{
-                width: 92,
-                height: 92,
+                width: isOuro ? 112 : 92,
+                height: isOuro ? 112 : 92,
                 backgroundImage: `url(${BingoShowAssets.jackpot.star})`,
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
@@ -229,7 +253,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
                 flexShrink: 0,
               }}
             >
-              <span style={{ color: '#FFF6D6', fontSize: 24, fontWeight: 900, textShadow: '0 1px 3px rgba(0,10,45,0.95)', fontFamily: 'var(--bs-font-heading)' }}>
+              <span style={{ color: '#FFF6D6', fontSize: isOuro ? 30 : 24, fontWeight: 900, textShadow: '0 1px 3px rgba(0,10,45,0.95)', fontFamily: 'var(--bs-font-heading)' }}>
                 {mock.triggerBallLimit}
               </span>
             </div>
@@ -336,23 +360,29 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
             <AccumulatedSparkle left="88%" top="65%" size={9} />
 
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%', gap: 10, position: 'relative', zIndex: 2 }}>
-              <img src={BingoShowAssets.jackpot.artwork} alt="Baú de Ouro" style={{ width: 120, height: 80, objectFit: 'contain', flexShrink: 0, marginLeft: 28 }} />
+              <img src={BingoShowAssets.jackpot.artwork} alt="Baú de Ouro" style={{ width: isOuro ? 170 : 120, height: isOuro ? 110 : 80, objectFit: 'contain', flexShrink: 0, marginLeft: isOuro ? 20 : 28 }} />
 
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 <span style={{ color: theme.secondary, fontSize: 24, fontWeight: 900, letterSpacing: 1.4, flexShrink: 0, textShadow: `0 0 6px ${theme.secondary}` }}>
                   ACUMULADO
                 </span>
+                {isOuro ? (
+                  <span key={mock.accumulatedPrize} className={`${ouro.money} ${ouro.gold} ${ouro.accumulatedPop}`} style={{ fontSize: ouroMoneySize(mock.accumulatedPrize, [58, 48, 40]), flexShrink: 1 }}>
+                    {mock.accumulatedPrize}
+                  </span>
+                ) : (
                 <span style={{ color: theme.primary, fontSize: 36, fontWeight: 900, letterSpacing: 0.3, textShadow: `0 0 10px ${theme.primaryGlow}`, flexShrink: 1, whiteSpace: 'nowrap', fontFamily: 'var(--bs-font-heading)' }}>
                   {mock.accumulatedPrize}
                 </span>
+                )}
               </div>
 
               {mock.triggerBallLimit !== undefined && (
                 <div
                   style={{
-                    width: 100,
-                    height: 100,
-                    marginRight: 48,
+                    width: isOuro ? 130 : 100,
+                    height: isOuro ? 130 : 100,
+                    marginRight: isOuro ? 34 : 48,
                     backgroundImage: `url(${BingoShowAssets.jackpot.star})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
@@ -363,7 +393,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
                     flexShrink: 0,
                   }}
                 >
-                  <span style={{ color: '#FFF6D6', fontSize: 24, fontWeight: 900, textShadow: '0 1px 3px rgba(0,10,45,0.95)', fontFamily: 'var(--bs-font-heading)' }}>
+                  <span style={{ color: '#FFF6D6', fontSize: isOuro ? 34 : 24, fontWeight: 900, textShadow: '0 1px 3px rgba(0,10,45,0.95)', fontFamily: 'var(--bs-font-heading)' }}>
                     {mock.triggerBallLimit}
                   </span>
                 </div>
@@ -425,9 +455,15 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
           <PrizeCardDivider color={theme.primary} />
 
           <div style={{ width: '100%', padding: '4px 0', marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isOuro ? (
+              <span className={`${ouro.money} ${ouro.gold}`} style={{ fontSize: ouroMoneySize(mock.line1Prize, [58, 52, 44]) }}>
+                {mock.line1Prize}
+              </span>
+            ) : (
             <span style={{ fontSize: 48, fontWeight: 900, letterSpacing: 0.4, color: theme.primary, textShadow: `0 0 7px ${theme.primaryGlow}`, fontFamily: 'var(--bs-font-heading)' }}>
               {mock.line1Prize}
             </span>
+            )}
           </div>
         </div>
       </BingoShowGlowHalo>
@@ -462,9 +498,15 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
           <PrizeCardDivider color={theme.secondary} />
 
           <div style={{ width: '100%', padding: '4px 0', marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isOuro ? (
+              <span className={`${ouro.money} ${ouro.cyan}`} style={{ fontSize: ouroMoneySize(mock.line2Prize, [58, 52, 44]) }}>
+                {mock.line2Prize}
+              </span>
+            ) : (
             <span style={{ fontSize: 48, fontWeight: 900, letterSpacing: 0.4, color: theme.secondary, textShadow: `0 0 7px ${theme.secondary}`, fontFamily: 'var(--bs-font-heading)' }}>
               {mock.line2Prize}
             </span>
+            )}
           </div>
         </div>
       </BingoShowGlowHalo>
@@ -499,9 +541,15 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
           <PrizeCardDivider color={theme.success} />
 
           <div style={{ width: '100%', padding: '4px 0', marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isOuro ? (
+              <span className={`${ouro.money} ${ouro.green}`} style={{ fontSize: ouroMoneySize(mock.bingoPrize, [58, 52, 44]) }}>
+                {mock.bingoPrize}
+              </span>
+            ) : (
             <span style={{ fontSize: 48, fontWeight: 900, letterSpacing: 0.4, color: theme.success, textShadow: '0 0 7px rgba(60, 220, 140, 0.7)', fontFamily: 'var(--bs-font-heading)' }}>
               {mock.bingoPrize}
             </span>
+            )}
           </div>
         </div>
       </BingoShowGlowHalo>
