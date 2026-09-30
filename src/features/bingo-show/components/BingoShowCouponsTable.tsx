@@ -4,6 +4,11 @@ import { BingoShowColors } from '../design-system';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
+import ouroTable from './BingoShowCouponsTableOuro.module.css';
+import { ouroBallAsset } from '../utils/ouroBall';
+
+/** Módulo de estilos da tabela em cards (Blue ou Ouro — mesmos nomes de classe). */
+type CardTableCss = typeof blueTable;
 
 export interface BingoShowCouponsTableProps {
   coupons: CouponItem[];
@@ -17,11 +22,12 @@ export interface BingoShowCouponsTableProps {
 const MISSING_SLOTS = 5;
 const VISIBLE_ROWS = 10;
 
-/** Card de um registro (tema Blue). Só apresentação: mesmos campos, mesma ordem.
+/** Card de um registro (temas Blue e Bingo Show/Ouro — só muda o módulo de CSS e,
+ * no Ouro, a imagem da bola). Só apresentação: mesmos campos, mesma ordem.
  * A proximidade vem do tamanho de `missing` — a lista de números que ainda faltam
  * enviada pelo backend (`missingNumbers`) — só quando o registro tem dados e a
  * lista não está vazia; sem isso, nenhuma marca é exibida. */
-const BlueCouponRow: React.FC<{ row: CouponItem }> = ({ row }) => {
+const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string }> = ({ row, css: blueTable, ballImage }) => {
   const hasData = row.coupon !== '---';
   const missing = row.missing || [];
   const missingCount = hasData ? missing.length : 0;
@@ -57,6 +63,7 @@ const BlueCouponRow: React.FC<{ row: CouponItem }> = ({ row }) => {
             <div
               key={`n${val}`}
               className={`${blueTable.ball} ${blueTable.ballActive} ${update.fresh.has(val) ? blueTable.ballEnter : ''}`}
+              style={ballImage ? ({ '--ball-img': `url(${ballImage(val)})` } as React.CSSProperties) : undefined}
             >
               {val}
             </div>
@@ -69,7 +76,12 @@ const BlueCouponRow: React.FC<{ row: CouponItem }> = ({ row }) => {
   );
 };
 
-const BlueCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean }> = ({ rows, compact }) => {
+const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string }> = ({
+  rows,
+  compact,
+  css: blueTable,
+  ballImage,
+}) => {
   // Key estável por registro (cupom + ocorrência, pois o mesmo cupom pode vir
   // em mais de uma linha), para o card manter o estado de "antes" quando o
   // backend reordena a lista numa atualização. Não altera a ordem exibida.
@@ -83,10 +95,10 @@ const BlueCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean }> = ({ 
       </div>
       <div className={blueTable.list}>
         {rows.map((row, idx) => {
-          if (row.coupon === '---') return <BlueCouponRow key={`empty-${idx}`} row={row} />;
+          if (row.coupon === '---') return <CardCouponRow key={`empty-${idx}`} row={row} css={blueTable} ballImage={ballImage} />;
           const n = seen.get(row.coupon) ?? 0;
           seen.set(row.coupon, n + 1);
-          return <BlueCouponRow key={`${row.coupon}#${n}`} row={row} />;
+          return <CardCouponRow key={`${row.coupon}#${n}`} row={row} css={blueTable} ballImage={ballImage} />;
         })}
       </div>
     </div>
@@ -98,7 +110,8 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   style,
   compact = false,
 }) => {
-  const { theme, isBlue } = useAppTheme();
+  const { isBlue, themeId } = useAppTheme();
+  const isOuro = themeId === 'bingo-show';
 
   const rows = React.useMemo(() => {
     const list = [...coupons];
@@ -111,7 +124,17 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   if (isBlue) {
     return (
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
-        <BlueCouponsTable rows={rows} compact={compact} />
+        <CardCouponsTable rows={rows} compact={compact} css={blueTable} />
+      </BingoShowTopWinnersFrame>
+    );
+  }
+
+  // Bingo Show (Ouro & Espaço): mesma tabela em cards, com o visual do tema e as
+  // bolas 3D do tema no FALTAM.
+  if (isOuro) {
+    return (
+      <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
+        <CardCouponsTable rows={rows} compact={compact} css={ouroTable} ballImage={ouroBallAsset} />
       </BingoShowTopWinnersFrame>
     );
   }

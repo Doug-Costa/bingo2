@@ -199,6 +199,7 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import blueStyles from './DrawStageBlue.module.css';
 import { BlueHandoffOverlay, BlueRecentColumn, useBlueBallHandoff } from './DrawStageBlueHandoff';
 import ouroStyles from './DrawStageOuro.module.css';
+import { ouroBallAsset } from '../utils/ouroBall';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { BingoShowAssets } from '../assets';
 import goldStyles from './goldMetalText.module.css';
@@ -412,11 +413,6 @@ export interface DrawStageProps {
   style?: React.CSSProperties;
 }
 
-/** Cor da bola pela faixa do número (mesma do histórico do tema Bingo Show). */
-function ouroBallAsset(n: number): string {
-  const c = n <= 18 ? 'blue' : n <= 36 ? 'red' : n <= 54 ? 'green' : n <= 72 ? 'yellow' : 'purple';
-  return `/bingoshow-v2/balls/4x/ball-${c}-default.png`;
-}
 
 // Anel de LEDs dourados do centro Ouro (estático; o grupo gira no CSS).
 const OURO_LEDS = (
