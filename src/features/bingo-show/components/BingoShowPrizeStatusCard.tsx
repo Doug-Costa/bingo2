@@ -5,6 +5,7 @@ import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
 import blueStyles from './BingoShowPrizeStatusBlue.module.css';
+import ouroStyles from './BingoShowPrizeStatusOuro.module.css';
 import { useFitText } from '../hooks/useFitText';
 import { moneyLengthTier, type MoneyLengthTier } from '../utils/moneyLength';
 
@@ -86,16 +87,41 @@ const PrizeRow: React.FC<{
   status: PrizeRowStatus;
   bgAsset: string;
 }> = ({ label, value, status, bgAsset }) => {
-  const { theme, isBlue } = useAppTheme();
+  const { theme, isBlue, themeId } = useAppTheme();
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const statusText = isActive ? 'EM DISPUTA' : isCompleted ? 'CONCLUÍDO' : 'AGUARDANDO';
   const opacity = isActive ? 1 : 0.55;
+  const valueTick = useChangeTick(value);
+
+  // Bingo Show (Ouro & Espaço): mesmos assets do tema em 9-slice, valor em ouro
+  // metálico que cabe sempre (BlueMoney é neutro: só mede e encolhe o texto).
+  if (themeId === 'bingo-show') {
+    const goldClass = isActive ? ouroStyles.goldActive : isCompleted ? ouroStyles.goldDone : ouroStyles.goldIdle;
+    return (
+      <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
+        <div className={`${ouroStyles.row} ${isActive ? ouroStyles.active : isCompleted ? ouroStyles.completed : ouroStyles.pending}`}>
+          <div className={ouroStyles.labels}>
+            <span className={ouroStyles.label}>{label}</span>
+            <span className={`${ouroStyles.status} ${isActive ? ouroStyles.statusActive : isCompleted ? ouroStyles.statusDone : ouroStyles.statusWaiting}`}>
+              {isActive && <span className={ouroStyles.liveDot} />}
+              {isCompleted ? '✓ ' : ''}
+              {statusText}
+            </span>
+          </div>
+          <div className={ouroStyles.capsule}>
+            {isActive && <span className={goldStyles.goldShine} />}
+            {valueTick > 0 && <span key={valueTick} className={goldStyles.goldFlash} />}
+            <BlueMoney value={value} role={isActive ? 'active' : 'idle'} className={goldClass} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const activeColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
   const successColor = theme.success || '#00FF88';
-  const valueTick = useChangeTick(value);
   // Blue: ouro metálico por estado (em disputa / aguardando / concluído).
   const blueValueClass = isActive
     ? goldStyles.goldValueActive
@@ -313,7 +339,8 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   timeStr = '',
   style,
 }) => {
-  const { theme, isBlue } = useAppTheme();
+  const { theme, isBlue, themeId } = useAppTheme();
+  const isOuro = themeId === 'bingo-show';
   const primaryColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 
@@ -384,8 +411,8 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
           <span style={{ fontSize: 20, fontWeight: 900, color: secondaryColor, letterSpacing: 2, textTransform: 'uppercase' }}>
             ACUMULADO
           </span>
-          {isBlue ? (
-            <BlueMoney value={accumulatedAmount} role="jackpot" className={goldStyles.goldValueActive} />
+          {isBlue || isOuro ? (
+            <BlueMoney value={accumulatedAmount} role="jackpot" className={isOuro ? ouroStyles.goldActive : goldStyles.goldValueActive} />
           ) : (
             <span style={{ fontSize: 32, fontWeight: 900, marginTop: 2, whiteSpace: 'nowrap', color: primaryColor, textShadow: `0 0 16px ${primaryColor}` }}>
               {accumulatedAmount}

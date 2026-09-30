@@ -1,0 +1,179 @@
+/* BingoShowPrizeStatusOuro.module.css — painel de prêmios (1 LINHA / 2 LINHAS /
+ * BINGO) da tela de sorteio, SOMENTE no tema Bingo Show (Ouro & Espaço).
+ * Mesmos assets do tema, agora em 9-slice (border-image) — cantos e brilhos
+ * exatos em vez da imagem inteira esticada:
+ *   card da faixa ...... card-prize.png
+ *   cápsula do valor ... card-prize-value.png
+ * Estados: EM DISPUTA (cheio, aro dourado pulsando, valor em ouro metálico
+ * grande) · CONCLUÍDO (legível, ✓ verde, ouro apagado) · AGUARDANDO (discreto). */
+
+.row {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 26px;
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 30px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 30px stretch;
+  pointer-events: none;
+}
+
+.row > * {
+  position: relative;
+}
+
+.active {
+  opacity: 1;
+}
+
+/* Aro dourado pulsando em volta do prêmio em disputa. */
+.active::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 210, 63, 0.85);
+  box-shadow: 0 0 14px rgba(255, 190, 30, 0.45), inset 0 0 14px rgba(255, 190, 30, 0.18);
+  pointer-events: none;
+  animation: activePulse 2.4s ease-in-out infinite;
+}
+
+.completed {
+  opacity: 0.82;
+}
+
+.pending {
+  opacity: 0.6;
+  filter: saturate(0.6);
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: none;
+}
+
+.label {
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  line-height: 1.05;
+  text-shadow: 0 2px 2px rgba(0, 8, 30, 0.7);
+}
+
+.active .label {
+  font-size: 30px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 3px;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.statusActive {
+  color: #2fd8ff;
+}
+
+.statusDone {
+  color: #2ee88a;
+}
+
+.statusWaiting {
+  color: rgba(220, 235, 255, 0.65);
+}
+
+/* Ponto "ao vivo" ao lado de EM DISPUTA. */
+.liveDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2fd8ff;
+  box-shadow: 0 0 8px #2fd8ff;
+  animation: liveBlink 1.2s ease-in-out infinite;
+}
+
+/* Cápsula do valor (card-prize-value.png em 9-slice). */
+.capsule {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 9px 18px 7px;
+  overflow: hidden;
+}
+
+.capsule::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 14px solid transparent;
+  /* aro a ~110px da borda do PNG → ~9px aqui: nunca cruza o número */
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 170 fill / 14px stretch;
+  pointer-events: none;
+}
+
+.active .capsule {
+  max-width: 330px;
+}
+
+/* Ouro liso e nítido (o mesmo do popup/resumo do tema) — sem as faixas metálicas
+ * nem contorno, que embaçam nesses tamanhos. */
+.goldActive,
+.goldIdle,
+.goldDone {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.goldActive {
+  background-image: linear-gradient(180deg, #fff6c2 0%, #ffe066 32%, #f5b800 62%, #d08a00 100%);
+  filter: drop-shadow(0 2px 0 #6e3c00) drop-shadow(0 0 6px rgba(255, 190, 30, 0.35));
+}
+
+.goldDone {
+  background-image: linear-gradient(180deg, #fff1b0 0%, #f0cf62 45%, #c99a2e 100%);
+  filter: drop-shadow(0 2px 0 rgba(60, 34, 0, 0.8));
+}
+
+.goldIdle {
+  background-image: linear-gradient(180deg, #f2f5ff 0%, #cdd6ea 55%, #a4afc8 100%);
+  filter: drop-shadow(0 2px 0 rgba(0, 10, 40, 0.8));
+}
+
+@keyframes activePulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .active::after,
+  .liveDot {
+    animation: none;
+  }
+}
