@@ -14,6 +14,11 @@ import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import styles from './BingoShowLobbyScreenBlue.module.css';
 import { BingoShowBlueBenefitsStrip } from '../components/BingoShowBlueBenefitsStrip';
+import { moneyLengthTier } from '../utils/moneyLength';
+
+// Valores dos cards de próximos sorteios: a fonte segue o MAIOR valor do card
+// (os três ficam do mesmo tamanho), para caber em ~120px por coluna.
+const DRAW_CARD_VALUE_PX = { normal: 24, long: 19, xlong: 16 } as const;
 
 const DRAW_PAGE_SIZE = 5;
 const DRAW_PAGE_INTERVAL_MS = 6000;
@@ -197,6 +202,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <div className={styles.drawsList}>
             {currentPage.map((item, idx) => {
               const isHot = Boolean((item as any).hotdraw || idx === 0);
+              const longest = [item.line1Prize, item.line2Prize, item.bingoPrize].reduce((m, v) => (v.length > m.length ? v : m), '');
+              const valueStyle = { fontSize: DRAW_CARD_VALUE_PX[moneyLengthTier(longest)] };
               return (
                 <div
                   key={item.id || idx}
@@ -221,19 +228,25 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                       <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGold}`}>
                         1ª LINHA
                       </span>
-                      <span className={styles.drawCardPrizeValue}>{item.line1Prize}</span>
+                      <span className={styles.drawCardPrizeValue} style={valueStyle}>
+                        {item.line1Prize}
+                      </span>
                     </div>
                     <div className={styles.drawCardPrizeCol}>
                       <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelCyan}`}>
                         2ª LINHA
                       </span>
-                      <span className={styles.drawCardPrizeValue}>{item.line2Prize}</span>
+                      <span className={styles.drawCardPrizeValue} style={valueStyle}>
+                        {item.line2Prize}
+                      </span>
                     </div>
                     <div className={styles.drawCardPrizeCol}>
                       <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGreen}`}>
                         BINGO
                       </span>
-                      <span className={styles.drawCardPrizeValue}>{item.bingoPrize}</span>
+                      <span className={styles.drawCardPrizeValue} style={valueStyle}>
+                        {item.bingoPrize}
+                      </span>
                     </div>
                   </div>
                 </div>
