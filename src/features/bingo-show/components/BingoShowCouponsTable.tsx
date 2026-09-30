@@ -8,6 +8,10 @@ import blueTable from './BingoShowCouponsTableBlue.module.css';
 export interface BingoShowCouponsTableProps {
   coupons: CouponItem[];
   style?: React.CSSProperties;
+  /** Tema Blue: `true` quando o quadro divide a coluna com "MINHAS CARTELAS" —
+   * linhas compactas para os 10 caberem sem corte. `false`: linhas esticam até
+   * preencher o quadro inteiro (fontes/bolas maiores). */
+  compact?: boolean;
 }
 
 const MISSING_SLOTS = 5;
@@ -65,13 +69,13 @@ const BlueCouponRow: React.FC<{ row: CouponItem }> = ({ row }) => {
   );
 };
 
-const BlueCouponsTable: React.FC<{ rows: CouponItem[] }> = ({ rows }) => {
+const BlueCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean }> = ({ rows, compact }) => {
   // Key estável por registro (cupom + ocorrência, pois o mesmo cupom pode vir
   // em mais de uma linha), para o card manter o estado de "antes" quando o
   // backend reordena a lista numa atualização. Não altera a ordem exibida.
   const seen = new Map<string, number>();
   return (
-    <div className={blueTable.table}>
+    <div className={`${blueTable.table} ${compact ? blueTable.compact : blueTable.full}`}>
       <div className={blueTable.header}>
         <span className={blueTable.headCoupon}>CUPOM</span>
         <span className={blueTable.headDonor}>DOADOR</span>
@@ -92,6 +96,7 @@ const BlueCouponsTable: React.FC<{ rows: CouponItem[] }> = ({ rows }) => {
 export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   coupons,
   style,
+  compact = false,
 }) => {
   const { theme, isBlue } = useAppTheme();
 
@@ -106,7 +111,7 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   if (isBlue) {
     return (
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
-        <BlueCouponsTable rows={rows} />
+        <BlueCouponsTable rows={rows} compact={compact} />
       </BingoShowTopWinnersFrame>
     );
   }

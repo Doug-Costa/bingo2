@@ -253,7 +253,7 @@ export const BingoShowDrawScreen: React.FC = () => {
             card de Cupons se expande até o rodapé (pedido explícito do usuário). */}
         <div style={{ flex: 32, minHeight: 0, display: 'flex', flexDirection: 'column', gap: BingoShowSpacing.xs }}>
           <div style={{ flex: hasTickets ? 55 : 1, minHeight: 0 }}>
-            <BingoShowCouponsTable coupons={mock.coupons} />
+            <BingoShowCouponsTable coupons={mock.coupons} compact={hasTickets} />
           </div>
           {hasTickets ? (
             <div style={{ flex: 45, minHeight: 0 }}>

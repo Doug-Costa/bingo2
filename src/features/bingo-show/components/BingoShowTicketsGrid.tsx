@@ -48,6 +48,10 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
     return null;
   }
 
+  // Fonte das células/rótulo pelo tamanho da cartela na grade.
+  const sizes =
+    displayTickets.length === 1 ? { cell: 30, label: 16 } : displayTickets.length === 2 ? { cell: 20, label: 14 } : { cell: 14, label: 12 };
+
   return (
     <div
       style={{
@@ -84,12 +88,27 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
         <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 20, height: 20, objectFit: 'contain' }} />
       </div>
 
-      {/* 2X2 GRID */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: 8, minHeight: 0 }}>
+      {/* GRADE pela quantidade (grade de 4 colunas, cada cartela ocupa 2 quando há
+          2 por linha): 1 → quadro inteiro; 2 → lado a lado; 3 → 2 em cima e 1
+          centralizada embaixo; 4 → 2×2. Menos cartelas = números maiores. */}
+      <div
+        style={{
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+          gridTemplateRows: displayTickets.length <= 2 ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+          gap: 8,
+          minHeight: 0,
+        }}
+      >
         {displayTickets.map((ticket, idx) => (
           <div
             key={ticket.id || idx}
             style={{
+              gridColumn:
+                displayTickets.length === 1 ? '1 / -1' : displayTickets.length === 3 && idx === 2 ? '2 / span 2' : 'span 2',
+              minWidth: 0,
+              minHeight: 0,
               display: 'flex',
               flexDirection: 'column',
               backgroundColor: '#FFFFFF',
@@ -105,7 +124,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 3 }}>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: sizes.label,
                   fontWeight: 900,
                   backgroundColor: '#FFCF12',
                   color: '#1A1100',
@@ -125,7 +144,6 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
               {(ticket.numbers || []).flatMap((row, rIdx) =>
                 (row || []).map((num, cIdx) => {
                   const isHit = drawnSet.has(num);
-                  const isStar = rIdx === 1 && cIdx === 2;
 
                   return (
                     <div
@@ -134,10 +152,10 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
                         width: '100%',
                         height: '100%',
                         borderRadius: 4,
-                        backgroundColor: isHit ? '#10B981' : isStar ? 'rgba(255, 207, 18, 0.15)' : 'transparent',
-                        color: isHit ? '#FFFFFF' : isStar ? '#FFCF12' : '#0F172A',
+                        backgroundColor: isHit ? '#10B981' : 'transparent',
+                        color: isHit ? '#FFFFFF' : '#0F172A',
                         border: isHit ? '1px solid #059669' : '1px solid rgba(188, 224, 245, 0.6)',
-                        fontSize: 14,
+                        fontSize: sizes.cell,
                         fontWeight: 900,
                         display: 'flex',
                         alignItems: 'center',
@@ -146,7 +164,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
                         lineHeight: 1,
                       }}
                     >
-                      {isStar ? '⭐' : String(num).padStart(2, '0')}
+                      {String(num).padStart(2, '0')}
                     </div>
                   );
                 }),

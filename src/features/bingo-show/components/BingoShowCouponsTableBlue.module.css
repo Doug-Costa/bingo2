@@ -2,9 +2,12 @@
  * FALTAM da tela de sorteio, SOMENTE tema Blue (demais temas seguem com a
  * tabela inline de BingoShowCouponsTable.tsx).
  *
- * Mesmo espaço de sempre: no palco 1920×1080 a área das linhas mede 598×916.
- * Os 10 registros viram cards de 66px com gap de 12px, alinhados a partir do
- * cabeçalho (768px); a sobra fica no fim da coluna.
+ * As 10 linhas DIVIDEM a altura da área (flex: 1) — nunca sobra espaço vazio
+ * embaixo nem corta linha:
+ *   .full    — quadro na coluna inteira (sem cartelas): ~82px por linha,
+ *              fontes e bolas maiores;
+ *   .compact — quadro dividindo a coluna com "MINHAS CARTELAS": ~42px por
+ *              linha, fontes e bolas menores.
  *
  * Grid interno fixo (112px | 1fr | 210px), igual no cabeçalho e em todos os
  * cards: as colunas não se deslocam conforme a quantidade de bolas.
@@ -14,12 +17,34 @@
   --cols: 112px minmax(0, 1fr) 210px;
   --col-gap: 12px;
   --pad-x: 16px;
+  --row-gap: 10px;
+  --ball: 34px;
+  --ball-font: 17px;
+  --coupon-font: 19px;
+  --donor-font: 20px;
 
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+}
+
+.full {
+  --cols: 124px minmax(0, 1fr) 236px;
+  --row-gap: 10px;
+  --ball: 40px;
+  --ball-font: 19px;
+  --coupon-font: 23px;
+  --donor-font: 24px;
+}
+
+.compact {
+  --row-gap: 5px;
+  --ball: 28px;
+  --ball-font: 14px;
+  --coupon-font: 17px;
+  --donor-font: 18px;
 }
 
 /* ─── Cabeçalho ─────────────────────────────────────────────────────────── */
@@ -73,14 +98,14 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 12px;
+  gap: var(--row-gap);
   padding-top: 6px;
 }
 
 .card {
   position: relative;
-  flex: none;
-  height: 66px;
+  flex: 1 1 0;
+  min-height: 0;
   padding: 0 var(--pad-x);
   box-sizing: border-box;
   display: grid;
@@ -115,7 +140,7 @@
   left: calc(var(--col-gap) / -2 - 0.5px);
   top: 50%;
   width: 1px;
-  height: 34px;
+  height: 55%;
   transform: translateY(-50%);
   background: linear-gradient(180deg, transparent, rgba(65, 174, 255, 0.45), transparent);
 }
@@ -170,7 +195,7 @@
 
 .coupon {
   color: #ff4a47;
-  font-size: 19px;
+  font-size: var(--coupon-font);
   font-weight: 800;
   letter-spacing: 0.5px;
   font-variant-numeric: tabular-nums;
@@ -184,7 +209,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #f5f8ff;
-  font-size: 20px;
+  font-size: var(--donor-font);
   font-weight: 800;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -207,13 +232,13 @@
 
 .ball {
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: var(--ball);
+  height: var(--ball);
   border-radius: 50%;
   box-sizing: border-box;
   display: grid;
   place-items: center;
-  font-size: 17px;
+  font-size: var(--ball-font);
   font-weight: 900;
   line-height: 1;
   font-variant-numeric: tabular-nums;
