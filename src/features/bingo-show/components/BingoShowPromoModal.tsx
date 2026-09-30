@@ -18,6 +18,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import qrcode from 'qrcode-generator';
 import { useGameSocket, type Promotion } from '@/contexts/SSEContext';
+import { useAppTheme } from '@/contexts/ThemeContext';
 import {
   PROMO_BLACKOUT_BEFORE_DRAW_MS,
   PROMO_DEFAULT_SECONDS,
@@ -363,6 +364,8 @@ function useNextDrawAt(): number | null {
 
 export const BingoShowPromoModal: React.FC = () => {
   const { promotions } = useGameSocket();
+  // Bingo Show (Ouro & Espaço): moldura/contador/barra com os assets do tema.
+  const isOuro = useAppTheme().themeId === 'bingo-show';
   const promos = useMemo(() => (Array.isArray(promotions) ? promotions.filter((p) => p && p.id) : []), [promotions]);
   const nextDrawAt = useNextDrawAt();
 
@@ -434,7 +437,7 @@ export const BingoShowPromoModal: React.FC = () => {
 
   return (
     <div className={styles.backdrop} role="dialog" aria-label={nonEmpty(promo.title) || 'Promoção'}>
-      <div key={`${promo.id}-${startedAt}`} className={styles.frame}>
+      <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''}`}>
         <PromoContent promo={promo} durationMs={durationMs} onGiveUp={skip} />
 
         <div className={styles.counter} aria-label={`Promoção termina em ${seconds} segundos`}>

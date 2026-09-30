@@ -241,6 +241,70 @@
   animation-fill-mode: both;
 }
 
+/* ─── Bingo Show (Ouro & Espaço) ────────────────────────────────────────────
+ * Mesmo acabamento dos cards de prêmio do tema, em 9-slice (cantos e brilhos
+ * exatos): moldura = card-prize.png (azul + brilho dourado), contador numa
+ * cápsula card-prize-value.png, barra de progresso dourada. */
+.frameOuro {
+  border: none;
+  border-radius: 30px;
+  background: rgba(3, 10, 32, 0.96);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  padding: 22px;
+}
+
+.frameOuro::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 40px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 150 / 40px stretch;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.frameOuro .content {
+  border-radius: 16px;
+}
+
+.frameOuro .counter {
+  top: 36px;
+  right: 36px;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  padding: 12px 28px 10px;
+}
+
+.frameOuro .counter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 16px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 170 fill / 16px stretch;
+  pointer-events: none;
+}
+
+.frameOuro .counterValue {
+  position: relative;
+  color: #ffe066;
+}
+
+.frameOuro .progressTrack {
+  left: 48px;
+  right: 48px;
+  bottom: 10px;
+  height: 5px;
+  background: rgba(255, 207, 18, 0.15);
+  z-index: 4;
+}
+
+.frameOuro .progressBar {
+  background: linear-gradient(90deg, #d99a06, #ffe066, #fff6c2);
+  box-shadow: 0 0 8px rgba(255, 200, 40, 0.6);
+}
+
 @keyframes backdropIn {
   from { opacity: 0; }
   to { opacity: 1; }
