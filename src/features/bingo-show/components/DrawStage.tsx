@@ -198,6 +198,9 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import blueStyles from './DrawStageBlue.module.css';
 import { BlueHandoffOverlay, BlueRecentColumn, useBlueBallHandoff } from './DrawStageBlueHandoff';
+import ouroStyles from './DrawStageOuro.module.css';
+import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
+import { BingoShowAssets } from '../assets';
 import goldStyles from './goldMetalText.module.css';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
@@ -409,6 +412,38 @@ export interface DrawStageProps {
   style?: React.CSSProperties;
 }
 
+/** Cor da bola pela faixa do número (mesma do histórico do tema Bingo Show). */
+function ouroBallAsset(n: number): string {
+  const c = n <= 18 ? 'blue' : n <= 36 ? 'red' : n <= 54 ? 'green' : n <= 72 ? 'yellow' : 'purple';
+  return `/bingoshow-v2/balls/4x/ball-${c}-default.png`;
+}
+
+// Anel de LEDs dourados do centro Ouro (estático; o grupo gira no CSS).
+const OURO_LEDS = (
+  <svg viewBox="0 0 300 300" width="100%" height="100%" aria-hidden="true">
+    <circle cx="150" cy="150" r="141" stroke="#FFE27A" strokeWidth="5" strokeDasharray="1 17" strokeLinecap="round" fill="none" />
+  </svg>
+);
+
+/** Ouro & Espaço: as 3 últimas bolas (valores/ordem de `nextBalls`, SSE) como
+ * bolas 3D do tema; a mais recente entra com um pop. */
+const OuroRecentColumn: React.FC<{ balls: number[] }> = ({ balls }) => (
+  <div className={ouroStyles.recentCol}>
+    {Array.from({ length: 3 }).map((_, i) => {
+      const n = balls[i];
+      if (!n) return <div key={`e${i}`} className={ouroStyles.recentEmpty} />;
+      return (
+        <div key={`${n}-${i}`} className={`${ouroStyles.recentBall} ${i === 0 ? ouroStyles.recentNew : ''}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
+          <img className={ouroStyles.recentImg} src={ouroBallAsset(n)} alt="" draggable={false} />
+          <span className={ouroStyles.recentDisc} />
+          <span className={ouroStyles.recentNum}>{n}</span>
+        </div>
+      );
+    })}
+  </div>
+);
+
 export const DrawStage: React.FC<DrawStageProps> = ({
   title = 'NÚMERO SORTEADO',
   currentNumber,
@@ -417,7 +452,9 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   countdownSeconds = 30,
   style,
 }) => {
-  const { theme, isBlue } = useAppTheme();
+  const { theme, isBlue, themeId } = useAppTheme();
+  // Tema Bingo Show (Ouro & Espaço): moldura 9-slice + palco com assets do tema.
+  const isOuro = themeId === 'bingo-show';
   const primaryColor = theme.primary || '#FFCF12';
   const secondaryColor = theme.secondary || '#17C8FF';
   const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
@@ -478,25 +515,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const drawnCount = Math.max(0, Math.min(TOTAL_BALLS, sequenceNumber ?? 0));
   const ballsLeft = TOTAL_BALLS - drawnCount;
 
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : theme.panelBg,
-        border: `2px solid ${isBlue ? '#087FFC' : theme.borderPrimary}`,
-        borderRadius: 24,
-        padding: '14px 20px',
-        boxSizing: 'border-box',
-        boxShadow: `0 0 24px rgba(8, 127, 252, 0.35)`,
-        position: 'relative',
-        overflow: 'hidden',
-        ...style,
-      }}
-    >
+  const content = (
+    <>
       {/* 1. HEADER ROW: ★ NÚMERO SORTEADO ★ (center) + PRÓXIMOS/ÚLTIMOS NÚMEROS (right) */}
       <div
         style={{
@@ -545,7 +565,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           >
             {/* Blue: a coluna mostra as bolas que JÁ passaram pelo centro (as 3
                 últimas sorteadas), não as próximas — rótulo corrigido só no Blue. */}
-            {isBlue ? (
+            {isBlue || isOuro ? (
               <>
                 ÚLTIMOS<br />NÚMEROS
               </>
@@ -611,6 +631,29 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             {/* Últimas bolas (valores/ordem de `nextBalls`, SSE): as antigas descem
                 uma posição; a nova só aparece no 1º slot quando a bola pousa. */}
             <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} />
+          </>
+        ) : isOuro ? (
+          <>
+            {/* Ouro & Espaço: brilho + raios de luz → anel de LEDs dourados → bola
+                3D do tema na cor da faixa → número. A key remonta só a bola a cada
+                bola real nova (entrada com quique); o fundo nunca reinicia. */}
+            <div className={ouroStyles.stage}>
+              <div className={ouroStyles.glow} />
+              <div className={ouroStyles.burst} />
+              <div className={ouroStyles.halo} />
+              <div className={ouroStyles.ring} />
+              <div className={ouroStyles.ringLeds}>{OURO_LEDS}</div>
+              <div key={ballKey} className={ouroStyles.ballWrap}>
+                {currentNumber > 0 && (
+                  // eslint-disable-next-line @next/next/no-img-element -- asset estático do tema
+                  <img className={ouroStyles.ball} src={ouroBallAsset(currentNumber)} alt="" draggable={false} />
+                )}
+                <span className={ouroStyles.numberDisc} />
+                <span className={ouroStyles.number}>{currentNumber > 0 ? currentNumber : '--'}</span>
+                <span className={ouroStyles.ballFlash} />
+              </div>
+            </div>
+            <OuroRecentColumn balls={displayedNextBalls} />
           </>
         ) : (
           <>
@@ -793,6 +836,21 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               </span>
             </div>
           </div>
+        ) : isOuro ? (
+          <div className={ouroStyles.seqRow}>
+            <div key={drawnCount} className={ouroStyles.seqBall}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
+              <img className={ouroStyles.seqBallImg} src={BingoShowAssets.balls.gold.default} alt="" draggable={false} />
+              <span className={ouroStyles.seqBallNumber}>{drawnCount}</span>
+            </div>
+            <div className={ouroStyles.seqInfo}>
+              <span className={ouroStyles.seqLabel}>PEDRA</span>
+              <span className={ouroStyles.seqValue}>
+                {drawnCount} DE {TOTAL_BALLS}
+              </span>
+              <span className={ouroStyles.seqLeft}>{ballsLeft === 0 ? 'TODAS SORTEADAS' : `FALTAM ${ballsLeft}`}</span>
+            </div>
+          </div>
         ) : (
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14 }}>
           <img
@@ -847,12 +905,12 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                verdade um banner "AQUI E SORTE!" mal nomeado; bingo-cage.jpg e'
                JPG opaco). Decisao confirmada com o usuario. Demais temas:
                inalterado (continuam com o bingo-cage.jpg de sempre). */
-            src={isBlue ? '/themes/bingo-show-blue/globo-bingo.gif' : '/themes/bingo-show-blue/bingo-cage.jpg'}
+            src={isBlue || isOuro ? '/themes/bingo-show-blue/globo-bingo.gif' : '/themes/bingo-show-blue/bingo-cage.jpg'}
             alt="Globo de Bingo 3D"
             style={{
-              height: isBlue ? 118 : 80,
+              height: isBlue || isOuro ? 118 : 80,
               width: 'auto',
-              borderRadius: isBlue ? 0 : 12,
+              borderRadius: isBlue || isOuro ? 0 : 12,
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 10px rgba(8, 127, 252, 0.5))',
             }}
@@ -862,6 +920,42 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           />
         </div>
       </div>
+    </>
+  );
+
+  // Ouro & Espaço: mesma moldura neon 9-slice dos cupons e do centro do lobby.
+  if (isOuro) {
+    return (
+      <BingoShowTopWinnersFrame
+        padding="sm"
+        style={{ width: '100%', height: '100%', ...style }}
+        contentStyle={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '14px 22px', position: 'relative', overflow: 'hidden' }}
+      >
+        {content}
+      </BingoShowTopWinnersFrame>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : theme.panelBg,
+        border: `2px solid ${isBlue ? '#087FFC' : theme.borderPrimary}`,
+        borderRadius: 24,
+        padding: '14px 20px',
+        boxSizing: 'border-box',
+        boxShadow: `0 0 24px rgba(8, 127, 252, 0.35)`,
+        position: 'relative',
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      {content}
     </div>
   );
 };
