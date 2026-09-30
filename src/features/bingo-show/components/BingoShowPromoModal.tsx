@@ -71,6 +71,21 @@ function youtubeId(url: string): string | null {
   return m ? m[1]! : null;
 }
 
+/** Início do vídeo no link: `t=354`, `t=5m54s`, `start=354`, `#t=1h2m3s` → segundos. */
+function youtubeStart(url: string): number {
+  const m = url.match(/[?&#](?:t|start)=([\dhms]+)/i);
+  if (!m) return 0;
+  const v = m[1]!;
+  if (/^\d+s?$/i.test(v)) return parseInt(v, 10);
+  const part = (u: string) => Number(v.match(new RegExp(`(\\d+)${u}`, 'i'))?.[1] ?? 0);
+  return part('h') * 3600 + part('m') * 60 + part('s');
+}
+
+function vimeoId(url: string): string | null {
+  const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+  return m ? m[1]! : null;
+}
+
 const isVideoFile = (u: string) => /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8)$/i.test(u.split(/[?#]/)[0]!);
 
 /** Textos 1 (topo) e 2 (base) sobre imagem ou fundo — cor/tamanho do backend. */
@@ -147,7 +162,7 @@ const ImagePromo: React.FC<{ promo: Promotion; durationMs: number; onGiveUp: () 
   );
 };
 
-/** VIDEO: arquivo de vídeo no tamanho do modal. Tenta com som; se o navegador
+/** Arquivo de vídeo no tamanho do modal. Tenta com som; se o navegador
  * bloquear, toca mudo (melhor do que tela parada). */
 const VideoPromo: React.FC<{ src: string; onGiveUp: () => void }> = ({ src, onGiveUp }) => {
   const ref = useRef<HTMLVideoElement>(null);
@@ -163,19 +178,41 @@ const VideoPromo: React.FC<{ src: string; onGiveUp: () => void }> = ({ src, onGi
   return <video ref={ref} className={styles.media} src={src} playsInline loop onError={onGiveUp} />;
 };
 
-/** YOUTUBE: player embutido, autoplay, com som quando o navegador permite. */
-const YoutubePromo: React.FC<{ id: string; title: string }> = ({ id, title }) => {
+/** Player embutido (YouTube/Vimeo) ou página externa no tamanho do modal. */
+const EmbedPromo: React.FC<{ src: string; title: string }> = ({ src, title }) => (
+  <iframe
+    className={styles.frameEmbed}
+    src={src}
+    title={title}
+    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+);
+
+/** Qualquer URL de vídeo (tipo VIDEO ou YOUTUBE) tocando no modal em autoplay:
+ *  - YouTube (youtu.be, watch, shorts, live, embed) → player do YouTube, a partir
+ *    do `t=` do link;
+ *  - Vimeo → player do Vimeo;
+ *  - arquivo (.mp4, .webm…) ou outra URL → <video>; se não for vídeo tocável,
+ *    abre a URL como página no modal.
+ * Som: ligado quando o navegador permite autoplay com áudio; senão, mudo. */
+const AnyVideoPromo: React.FC<{ url: string; title: string; onGiveUp: () => void }> = ({ url, title, onGiveUp }) => {
   const [mute] = useState(() => (canAutoplayWithSound() ? 0 : 1));
-  const src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=${mute}&controls=0&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1`;
-  return (
-    <iframe
-      className={styles.frameEmbed}
-      src={src}
-      title={title}
-      allow="autoplay; encrypted-media; picture-in-picture"
-      referrerPolicy="strict-origin-when-cross-origin"
-    />
-  );
+  const [asPage, setAsPage] = useState(false);
+  const yt = youtubeId(url);
+  if (yt) {
+    const start = youtubeStart(url);
+    return (
+      <EmbedPromo
+        title={title}
+        src={`https://www.youtube.com/embed/${yt}?autoplay=1&mute=${mute}&controls=0&loop=1&playlist=${yt}&playsinline=1&rel=0&modestbranding=1${start > 0 ? `&start=${start}` : ''}`}
+      />
+    );
+  }
+  const vm = vimeoId(url);
+  if (vm) return <EmbedPromo title={title} src={`https://player.vimeo.com/video/${vm}?autoplay=1&muted=${mute}&loop=1&controls=0`} />;
+  if (asPage) return <EmbedPromo title={title} src={url} />;
+  return <VideoPromo src={url} onGiveUp={isVideoFile(url) ? onGiveUp : () => setAsPage(true)} />;
 };
 
 /** QRCODE: QR do `linkurl` no centro, textos acima/abaixo. */
@@ -289,13 +326,10 @@ const PromoContent: React.FC<{ promo: Promotion; durationMs: number; onGiveUp: (
   let body: React.ReactNode = null;
 
   if (type === 'IMAGE') body = <ImagePromo promo={promo} durationMs={durationMs} onGiveUp={onGiveUp} />;
-  if (type === 'VIDEO') {
-    const src = urls.find(isVideoFile) ?? urls[0];
-    body = src ? <VideoPromo src={src} onGiveUp={onGiveUp} /> : null;
-  }
-  if (type === 'YOUTUBE') {
-    const id = urls.map(youtubeId).find(Boolean);
-    body = id ? <YoutubePromo id={id} title={nonEmpty(promo.title) || 'Promoção'} /> : null;
+  if (type === 'VIDEO' || type === 'YOUTUBE') {
+    // Preferência: link do YouTube/Vimeo, depois arquivo de vídeo, depois a 1ª URL.
+    const src = urls.find((u) => youtubeId(u) || vimeoId(u)) ?? urls.find(isVideoFile) ?? urls[0];
+    body = src ? <AnyVideoPromo url={src} title={nonEmpty(promo.title) || 'Promoção'} onGiveUp={onGiveUp} /> : null;
   }
   if (type === 'QRCODE' && nonEmpty(promo.linkurl)) body = <QrPromo promo={promo} url={nonEmpty(promo.linkurl)} />;
   if (type === 'API' && nonEmpty(promo.linkurl)) body = <ApiPromo promo={promo} url={nonEmpty(promo.linkurl)} onGiveUp={onGiveUp} />;
