@@ -19,14 +19,14 @@
   min-height: 0;
   width: 100%;
   box-sizing: border-box;
+  /* Padrão de todos os temas (proporção do tema Ouro Imperial): 18×5 células
+   * iguais ocupando o painel inteiro, bola centrada em cada uma. */
   display: grid;
-  grid-template-columns: repeat(18, var(--history-ball-size));
-  grid-template-rows: repeat(5, var(--history-ball-size));
-  justify-content: space-between;
-  align-content: space-evenly;
-  column-gap: 0;
-  row-gap: 0;
-  padding: 12px 70px 22px;
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  padding: 2px 0 6px;
 }
 
 .historyBall {

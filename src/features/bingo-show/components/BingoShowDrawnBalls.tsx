@@ -50,7 +50,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
               <div
                 key={num}
                 className={`${goldTheme.ball} ${isLatest ? `${goldTheme.ballRed} ${goldHistory.latest}` : isDrawn ? '' : goldTheme.ballPending}`}
-                style={{ '--b': '44px', '--f': '19px' } as React.CSSProperties}
+                style={{ '--b': '52px', '--f': '22px' } as React.CSSProperties}
               >
                 {num}
               </div>
@@ -165,15 +165,14 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
           style={{
             flex: 1,
             display: 'grid',
-            gridTemplateColumns: 'repeat(18, 1fr)',
-            gridTemplateRows: isBlueTheme ? 'repeat(5, 42px)' : 'repeat(5, 38px)',
-            rowGap: isBlueTheme ? 8 : 6,
-            columnGap: 4,
+            // Padrão de todos os temas: 18×5 células iguais ocupando o painel.
+            gridTemplateColumns: 'repeat(18, minmax(0, 1fr))',
+            gridTemplateRows: 'repeat(5, minmax(0, 1fr))',
+            minHeight: 0,
+
             alignItems: 'center',
             justifyItems: 'center',
-            alignContent: 'center',
-            justifyContent: 'center',
-            padding: '4px 16px 8px 16px',
+            padding: '2px 0 6px',
           }}
         >
           {ALL_90_NUMBERS.map((num) => {
@@ -191,8 +190,10 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
                 number={num}
                 state={ballState}
                 size="sm"
-                diameterOverride={isBlueTheme ? 39 : 34}
-                fontSizeOverride={isBlueTheme ? 20 : 15}
+                // A esfera ocupa ~75% do PNG: caixa de 70px → bola visível de ~52px,
+                // o mesmo tamanho padrão dos outros temas.
+                diameterOverride={70}
+                fontSizeOverride={22}
                 style={{
                   opacity: 1,
                   filter: isDrawn ? 'drop-shadow(0 0 6px rgba(23, 200, 255, 0.8))' : 'none',
