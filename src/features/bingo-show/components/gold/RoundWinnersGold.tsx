@@ -8,7 +8,6 @@
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
 import { useCountUp } from '../../hooks/useCountUp';
-import { BingoShowAssets } from '../../assets';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import goldTheme from './GoldTheme.module.css';
 import styles from './RoundWinnersGold.module.css';
@@ -161,7 +160,7 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-        <img className={styles.logo} src={BingoShowAssets.logos.badge} alt="Bingo Show" draggable={false} />
+        <img className={styles.logo} src="/themes/tema-ouro/logos/logo-bingo-show.png" alt="Bingo Show" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>

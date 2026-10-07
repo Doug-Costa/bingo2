@@ -41,7 +41,6 @@ import { useBingoAudio } from '../hooks/useBingoAudio';
 import { type PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import goldStyles from '../components/goldMetalText.module.css';
-import { BingoShowAssets } from '../assets';
 import goldTheme from '../components/gold/GoldTheme.module.css';
 import { useAppTheme } from '@/contexts/ThemeContext';
 
@@ -98,10 +97,10 @@ export const BingoShowDrawScreen: React.FC = () => {
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220 }}>
           <img
-            src={isGold ? BingoShowAssets.logos.badge : '/themes/bingo-show-blue/logos/logo-main.png'}
+            src={isGold ? '/themes/tema-ouro/logos/logo-bingo-show.png' : '/themes/bingo-show-blue/logos/logo-main.png'}
             alt="BINGO SHOW"
             style={{
-              height: 52,
+              height: isGold ? 58 : 52,
               objectFit: 'contain',
               filter: isGold ? 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6))' : 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
             }}

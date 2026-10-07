@@ -16,7 +16,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackground';
-import { BingoShowAssets } from '../assets';
 import { moneyLengthTier } from '../utils/moneyLength';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import gold from '../components/gold/GoldTheme.module.css';
@@ -139,7 +138,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
       <div className={`${gold.vars} ${styles.screen}`}>
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={`${gold.panel} ${styles.header}`}>
-          <Image className={styles.logo} src={BingoShowAssets.logos.badge} alt="Bingo Show" width={196} height={111} sizes="196px" priority />
+          <Image className={styles.logo} src={`${ASSET}/logos/logo-bingo-show.png`} alt="Bingo Show" width={290} height={104} sizes="290px" priority />
 
           <div className={styles.infoGroup}>
             <div className={styles.info}>
