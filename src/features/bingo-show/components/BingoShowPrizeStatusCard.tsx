@@ -401,7 +401,7 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   <div className={`${goldTheme.vars} ${goldPrize.column}`} style={style}>
     <div className={`${goldTheme.panel} ${goldPrize.jackpot} ${jackpotActive ? '' : goldPrize.jackpotOff}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={goldPrize.bag} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.png`} alt="" />
+      <img className={`${goldPrize.bag} ${goldTheme.bagAlive}`} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.png`} alt="" />
       <div className={goldPrize.jackpotText}>
         <span className={goldPrize.jackpotLabel}>ACUMULADO</span>
         <BlueMoney value={accumulatedAmount} role="jackpot" className={goldTheme.goldValue} />

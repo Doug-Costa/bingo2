@@ -162,7 +162,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           </div>
 
           <div className={styles.headerJackpot}>
-            <Image className={styles.headerBag} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={120} height={102} sizes="120px" />
+            <Image className={`${styles.headerBag} ${gold.bagAlive}`} style={{ '--bag-delay': '1.5s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={120} height={102} sizes="120px" />
             <div className={styles.headerJackpotText}>
               <span className={styles.headerJackpotLabel}>ACUMULADO ESPECIAL</span>
               <span className={`${gold.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [40, 34, 28]) }}>
@@ -218,7 +218,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
               <span className={`${gold.goldValue} ${styles.bandValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [62, 52, 44]) }}>
                 {mock.accumulatedPrize}
               </span>
-              <Image className={styles.bandArt} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={104} height={88} sizes="104px" />
+              <Image className={`${styles.bandArt} ${gold.bagAlive}`} style={{ '--bag-delay': '6s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={104} height={88} sizes="104px" />
             </div>
           </section>
 

@@ -40,6 +40,41 @@
   animation: haloBreath 6s ease-in-out infinite alternate;
 }
 
+/* Luz de palco atrás da bola:
+ *  .rays  — leque de raios dourados girando devagar, com intermitência suave;
+ *  .spot  — dois canhões de luz vindos de cima, balançando e alternando.
+ * Só transform/opacity animados; o blur dos canhões é estático. */
+.rays {
+  width: 680px;
+  height: 680px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 120, 0.3) 0deg 5deg, transparent 5deg 22deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 22%, #000 30%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
+  mask: radial-gradient(circle, transparent 0 22%, #000 30%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
+  pointer-events: none;
+  animation:
+    spin 48s linear infinite,
+    stageFlicker 5.2s ease-in-out infinite;
+}
+
+.spot {
+  width: 260px;
+  height: 520px;
+  transform-origin: 50% 0;
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(255, 240, 190, 0.05) 0%, rgba(255, 215, 120, 0.3) 55%, rgba(255, 190, 80, 0.08) 100%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.spotLeft {
+  animation: swingLeft 7s ease-in-out infinite, spotFade 3.6s ease-in-out infinite;
+}
+
+.spotRight {
+  animation: swingRight 7s ease-in-out infinite, spotFade 3.6s ease-in-out 1.8s infinite;
+}
+
 /* Anel de laca vermelha com filetes de ouro. */
 .ring {
   width: 292px;
@@ -169,6 +204,32 @@
   object-fit: cover;
 }
 
+/* Intermitência de palco: sobe e desce de forma irregular, nunca apaga. */
+@keyframes stageFlicker {
+  0%, 100% { opacity: 0.55; }
+  18% { opacity: 0.95; }
+  32% { opacity: 0.6; }
+  48% { opacity: 1; }
+  66% { opacity: 0.5; }
+  82% { opacity: 0.85; }
+}
+
+/* Canhões presos acima do palco (o topo do cone fica fora do painel). */
+@keyframes swingLeft {
+  0%, 100% { transform: translate(-150px, -270px) rotate(-26deg); }
+  50% { transform: translate(-150px, -270px) rotate(-12deg); }
+}
+
+@keyframes swingRight {
+  0%, 100% { transform: translate(150px, -270px) rotate(26deg); }
+  50% { transform: translate(150px, -270px) rotate(12deg); }
+}
+
+@keyframes spotFade {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.9; }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -198,8 +259,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .halo,
-  .beads {
+  .beads,
+  .rays {
     animation: none;
+  }
+
+  .spot {
+    display: none;
   }
 
   .ballWrap,

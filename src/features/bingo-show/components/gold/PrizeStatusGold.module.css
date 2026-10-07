@@ -108,10 +108,20 @@
   position: absolute;
   inset: -3px;
   border-radius: 22px;
-  border: 2px solid rgba(255, 217, 90, 0.85);
-  box-shadow: 0 0 16px rgba(255, 179, 0, 0.5);
+  border: 2px solid rgba(255, 226, 120, 0.95);
+  box-shadow:
+    0 0 14px rgba(255, 200, 60, 0.75),
+    0 0 34px rgba(255, 179, 0, 0.45),
+    0 0 70px rgba(255, 150, 0, 0.22),
+    inset 0 0 18px rgba(255, 190, 40, 0.25);
   pointer-events: none;
-  animation: activePulse 2.4s ease-in-out infinite;
+  animation: activePulse 2.8s ease-in-out infinite;
+}
+
+/* Luz quente por dentro do card em disputa, respirando junto. */
+.rowActive::after {
+  background: radial-gradient(ellipse 70% 90% at 70% 50%, rgba(255, 190, 40, 0.16) 0%, transparent 70%) !important;
+  animation: activePulse 2.8s ease-in-out infinite;
 }
 
 .rowDone {
@@ -260,13 +270,15 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Intermitência suave: nunca apaga, só respira entre 45% e 100%. */
 @keyframes activePulse {
-  0%, 100% { opacity: 0.6; }
+  0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rowActive::before {
+  .rowActive::before,
+  .rowActive::after {
     animation: none;
   }
 }
