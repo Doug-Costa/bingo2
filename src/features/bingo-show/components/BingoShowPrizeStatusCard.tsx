@@ -6,6 +6,8 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
 import blueStyles from './BingoShowPrizeStatusBlue.module.css';
 import ouroStyles from './BingoShowPrizeStatusOuro.module.css';
+import goldTheme from './gold/GoldTheme.module.css';
+import goldPrize from './gold/PrizeStatusGold.module.css';
 import { useFitText } from '../hooks/useFitText';
 import { moneyLengthTier, type MoneyLengthTier } from '../utils/moneyLength';
 
@@ -323,6 +325,110 @@ const MetaCard: React.FC<{
   );
 };
 
+const GOLD_ASSET = '/themes/tema-ouro';
+
+/** tema-ouro: uma faixa de prêmio (mesmos dados/estados das outras versões). */
+const GoldPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
+  const isActive = status === 'active';
+  const isCompleted = status === 'completed';
+  const valueTick = useChangeTick(value);
+  const statusText = isActive ? 'EM DISPUTA' : isCompleted ? 'CONCLUÍDO' : 'AGUARDANDO';
+  return (
+    <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
+      <div
+        className={`${goldTheme.panel} ${isActive ? goldTheme.panelHot : ''} ${goldPrize.row} ${
+          isActive ? goldPrize.rowActive : isCompleted ? goldPrize.rowDone : goldPrize.rowWaiting
+        }`}
+      >
+        <div className={goldPrize.labels}>
+          <span className={`${goldTheme.lacquer} ${goldPrize.tag}`}>{label}</span>
+          <span
+            className={`${goldPrize.status} ${isActive ? goldPrize.statusActive : isCompleted ? goldPrize.statusDone : goldPrize.statusWaiting}`}
+          >
+            {isActive && <span className={goldTheme.jadeDot} />}
+            {isCompleted ? '✓ ' : ''}
+            {statusText}
+          </span>
+        </div>
+        <div className={goldPrize.capsule}>
+          {isActive && <span className={goldStyles.goldShine} />}
+          {valueTick > 0 && <span key={valueTick} className={goldStyles.goldFlash} />}
+          <BlueMoney
+            value={value}
+            role={isActive ? 'active' : 'idle'}
+            className={isActive ? goldTheme.goldValue : isCompleted ? `${goldTheme.goldText} ${goldPrize.valueDone}` : goldPrize.valueWaiting}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GoldMetaCard: React.FC<{ icon?: string; mark?: string; label: string; value: string }> = ({ icon, mark, label, value }) => (
+  <div className={`${goldTheme.panel} ${goldPrize.metaCard}`}>
+    {icon ? (
+      // eslint-disable-next-line @next/next/no-img-element -- ícone do tema
+      <img className={goldPrize.metaIcon} src={icon} alt="" />
+    ) : (
+      <span className={`${goldTheme.lacquer} ${goldPrize.metaIconText}`}>
+        <span className={goldTheme.goldText}>{mark}</span>
+      </span>
+    )}
+    <div className={goldPrize.metaText}>
+      <span className={goldPrize.metaLabel}>{label}</span>
+      <span className={goldPrize.metaValue}>{value || '---'}</span>
+    </div>
+  </div>
+);
+
+/** tema-ouro: o painel inteiro (acumulado + 3 prêmios + dados), com os mesmos props. */
+const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
+  accumulatedAmount = 'GS. 0',
+  triggerBallLimit,
+  jackpotActive = false,
+  line1Amount = 'GS. 0',
+  line2Amount = 'GS. 0',
+  bingoAmount = 'GS. 0',
+  line1Status = 'active',
+  line2Status = 'pending',
+  bingoStatus = 'pending',
+  drawNumber = '---',
+  donationAmount = '',
+  dateStr = '',
+  timeStr = '',
+  style,
+}) => (
+  <div className={`${goldTheme.vars} ${goldPrize.column}`} style={style}>
+    <div className={`${goldTheme.panel} ${goldPrize.jackpot} ${jackpotActive ? '' : goldPrize.jackpotOff}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+      <img className={goldPrize.bag} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.png`} alt="" />
+      <div className={goldPrize.jackpotText}>
+        <span className={goldPrize.jackpotLabel}>ACUMULADO</span>
+        <BlueMoney value={accumulatedAmount} role="jackpot" className={goldTheme.goldValue} />
+      </div>
+      {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
+        <div className={goldPrize.limitBadge}>
+          <span className={goldPrize.limitLabel}>ATÉ A BOLA</span>
+          <span className={`${goldTheme.goldText} ${goldPrize.limitValue}`}>{triggerBallLimit}</span>
+        </div>
+      )}
+    </div>
+
+    <div className={goldPrize.rows}>
+      <GoldPrizeRow label="1 LINHA" value={line1Amount} status={line1Status} />
+      <GoldPrizeRow label="2 LINHAS" value={line2Amount} status={line2Status} />
+      <GoldPrizeRow label="BINGO" value={bingoAmount} status={bingoStatus} />
+    </div>
+
+    <div className={goldPrize.meta}>
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/pata.png`} label="SORTEIO" value={drawNumber} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/decorative/pilha-moedas.png`} label="DOAÇÃO" value={donationAmount} />
+      <GoldMetaCard mark="◆" label="DATA" value={dateStr} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/ampulheta.png`} label="HORA" value={timeStr} />
+    </div>
+  </div>
+);
+
 export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
   triggerBallLimit,
@@ -341,6 +447,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
 }) => {
   const { theme, isBlue, themeId } = useAppTheme();
   const isOuro = themeId === 'bingo-show';
+  const isGold = themeId === 'tema-ouro';
   const primaryColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 
@@ -349,6 +456,28 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
     { label: isBlue ? 'PRÊMIO 2' : '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
     { label: isBlue ? 'PRÊMIO 3' : 'BINGO', value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
   ];
+
+  // tema-ouro ("Fortuna"): painel próprio, mesmos props/dados.
+  if (isGold) {
+    return (
+      <GoldPrizeStatus
+        accumulatedAmount={accumulatedAmount}
+        triggerBallLimit={triggerBallLimit}
+        jackpotActive={jackpotActive}
+        line1Amount={line1Amount}
+        line2Amount={line2Amount}
+        bingoAmount={bingoAmount}
+        line1Status={line1Status}
+        line2Status={line2Status}
+        bingoStatus={bingoStatus}
+        drawNumber={drawNumber}
+        donationAmount={donationAmount}
+        dateStr={dateStr}
+        timeStr={timeStr}
+        style={style}
+      />
+    );
+  }
 
   return (
     <div

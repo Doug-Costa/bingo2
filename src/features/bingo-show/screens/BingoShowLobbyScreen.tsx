@@ -11,6 +11,7 @@ import React from 'react';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowLobbyScreenBlue } from './BingoShowLobbyScreenBlue';
 import { BingoShowLobbyScreenDefault } from './BingoShowLobbyScreenDefault';
+import { BingoShowLobbyScreenGold } from './BingoShowLobbyScreenGold';
 
 export const BingoShowLobbyScreen: React.FC = () => {
   const { themeId, isBlue } = useAppTheme();
@@ -19,6 +20,11 @@ export const BingoShowLobbyScreen: React.FC = () => {
 
   if (isBlueTheme) {
     return <BingoShowLobbyScreenBlue />;
+  }
+
+  // Tema `tema-ouro` ("Fortuna"): home própria, mesmos dados.
+  if (themeId === 'tema-ouro') {
+    return <BingoShowLobbyScreenGold />;
   }
 
   return <BingoShowLobbyScreenDefault />;

@@ -203,6 +203,8 @@ import { ouroBallAsset } from '../utils/ouroBall';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { BingoShowAssets } from '../assets';
 import goldStyles from './goldMetalText.module.css';
+import goldTheme from './gold/GoldTheme.module.css';
+import goldStage from './gold/DrawStageGold.module.css';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
  * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
@@ -423,6 +425,33 @@ const OURO_LEDS = (
 
 /** Ouro & Espaço: as 3 últimas bolas (valores/ordem de `nextBalls`, SSE) como
  * bolas 3D do tema; a mais recente entra com um pop. */
+/** Tema `tema-ouro`: as 3 últimas bolas (valores/ordem de `nextBalls`, SSE) como
+ * bolas de ouro em CSS; a mais recente entra com um pop. */
+const GoldRecentColumn: React.FC<{ balls: number[] }> = ({ balls }) => (
+  <div className={goldStage.recentCol}>
+    {Array.from({ length: 3 }).map((_, i) => {
+      const n = balls[i];
+      if (!n) return <div key={`e${i}`} className={goldStage.recentEmpty} />;
+      return (
+        <div
+          key={`${n}-${i}`}
+          className={`${goldTheme.ball} ${i === 0 ? goldStage.recentNew : ''}`}
+          style={{ '--b': '72px', '--f': '30px' } as React.CSSProperties}
+        >
+          {n}
+        </div>
+      );
+    })}
+  </div>
+);
+
+// Contas de ouro em volta da bola central (estáticas; o grupo gira no CSS).
+const GOLD_BEADS = (
+  <svg viewBox="0 0 300 300" width="100%" height="100%" aria-hidden="true">
+    <circle cx="150" cy="150" r="146" stroke="#FFD95A" strokeWidth="5" strokeDasharray="1 21" strokeLinecap="round" fill="none" />
+  </svg>
+);
+
 const OuroRecentColumn: React.FC<{ balls: number[] }> = ({ balls }) => (
   <div className={ouroStyles.recentCol}>
     {Array.from({ length: 3 }).map((_, i) => {
@@ -451,6 +480,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const { theme, isBlue, themeId } = useAppTheme();
   // Tema Bingo Show (Ouro & Espaço): moldura 9-slice + palco com assets do tema.
   const isOuro = themeId === 'bingo-show';
+  // Tema `tema-ouro` ("Fortuna"): painel de ouro do tema + bola de ouro em CSS.
+  const isGold = themeId === 'tema-ouro';
   const primaryColor = theme.primary || '#FFCF12';
   const secondaryColor = theme.secondary || '#17C8FF';
   const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
@@ -509,21 +540,21 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           {/* Blue: ouro metálico compacto (goldMetalText.module.css); demais temas
               mantêm o amarelo chapado. Tamanho/fonte/espaçamento iguais. */}
-          <span className={isBlue || isOuro ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro || isGold ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12' }) }}>★</span>
           <span
-            className={isBlue || isOuro ? goldStyles.goldMetalTextCompact : undefined}
+            className={isGold ? goldTheme.goldText : isBlue || isOuro ? goldStyles.goldMetalTextCompact : undefined}
             style={{
               fontWeight: 900,
               fontSize: 22,
               letterSpacing: 3,
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
-              ...(isBlue || isOuro ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
+              ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
             }}
           >
             {title}
           </span>
-          <span className={isBlue || isOuro ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro || isGold ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12' }) }}>★</span>
         </div>
 
         {/* RIGHT SUB-TITLE */}
@@ -542,7 +573,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           >
             {/* Blue: a coluna mostra as bolas que JÁ passaram pelo centro (as 3
                 últimas sorteadas), não as próximas — rótulo corrigido só no Blue. */}
-            {isBlue || isOuro ? (
+            {isBlue || isOuro || isGold ? (
               <>
                 ÚLTIMOS<br />NÚMEROS
               </>
@@ -608,6 +639,24 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             {/* Últimas bolas (valores/ordem de `nextBalls`, SSE): as antigas descem
                 uma posição; a nova só aparece no 1º slot quando a bola pousa. */}
             <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} />
+          </>
+        ) : isGold ? (
+          <>
+            {/* tema-ouro: halo âmbar → anel de laca com contas de ouro → bola de ouro
+                (CSS). A key remonta só a bola a cada bola real nova. */}
+            <div className={goldStage.stage}>
+              <div className={goldStage.halo} />
+              <div className={goldStage.ring} />
+              <div className={goldStage.beads}>{GOLD_BEADS}</div>
+              <div key={ballKey} className={goldStage.ballWrap}>
+                <div className={`${goldTheme.ball} ${goldStage.bigBall}`} style={{ '--b': '250px', '--f': '118px' } as React.CSSProperties}>
+                  {currentNumber > 0 ? currentNumber : '--'}
+                </div>
+                <span className={goldStage.shine} />
+              </div>
+              <span key={`f-${ballKey}`} className={goldStage.flash} />
+            </div>
+            <GoldRecentColumn balls={displayedNextBalls} />
           </>
         ) : isOuro ? (
           <>
@@ -790,7 +839,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           paddingLeft: 12,
           paddingRight: 12,
           paddingTop: 6,
-          borderTop: isBlue ? '1px solid rgba(23, 200, 255, 0.5)' : '1px solid rgba(25, 117, 210, 0.4)',
+          borderTop: isBlue ? '1px solid rgba(23, 200, 255, 0.5)' : isGold ? '1px solid rgba(233, 169, 26, 0.35)' : '1px solid rgba(25, 117, 210, 0.4)',
           boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
@@ -803,6 +852,15 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               <span className={blueStyles.seqBallNumber}>{drawnCount}</span>
             </div>
             <span className={`${goldStyles.goldMetalTextCompact} ${blueStyles.seqValue}`}>
+              BOLA {drawnCount}/{TOTAL_BALLS}
+            </span>
+          </div>
+        ) : isGold ? (
+          <div className={goldStage.seqRow}>
+            <div key={drawnCount} className={`${goldTheme.ball} ${goldTheme.ballRed} ${goldStage.seqPop}`} style={{ '--b': '62px', '--f': '26px' } as React.CSSProperties}>
+              {drawnCount}
+            </div>
+            <span className={`${goldTheme.goldText} ${goldStage.seqValue}`}>
               BOLA {drawnCount}/{TOTAL_BALLS}
             </span>
           </div>
@@ -819,7 +877,13 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           </div>
         )}
 
-        {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK */}
+        {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK (tema-ouro: o Maneki-Neko) */}
+        {isGold ? (
+          <div className={goldStage.catFrame}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- GIF animado do tema */}
+            <img className={goldStage.cat} src="/themes/tema-ouro/decorative/maneki-neko.gif" alt="Gato da sorte" draggable={false} />
+          </div>
+        ) : (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
           <img
             /* Blue: GIF do globo com transparencia real (mesmo asset do lobby) -
@@ -841,9 +905,19 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             }}
           />
         </div>
+        )}
       </div>
     </>
   );
+
+  // tema-ouro: painel de ouro do tema (moldura em gradiente + filete interno).
+  if (isGold) {
+    return (
+      <div className={`${goldTheme.vars} ${goldTheme.panel} ${goldTheme.panelHot} ${goldStage.frame}`} style={{ position: 'relative', ...style }}>
+        {content}
+      </div>
+    );
+  }
 
   // Ouro & Espaço: mesma moldura neon 9-slice dos cupons e do centro do lobby.
   if (isOuro) {

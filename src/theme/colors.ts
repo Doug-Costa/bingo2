@@ -62,34 +62,36 @@ export const Colors = {
   },
 
   temaOuro: {
-    backgroundPrimary: '#120d04', // Fundo nobre âmbar escuro
-    backgroundSecondary: '#241805', // Painel intermediário
-    backgroundDeep: '#080602', // Fundo preto ônix profundo
-    surfacePrimary: '#2d1e07', // Superfície dourada escura
-    surfaceSecondary: '#402a0a', // Superfície destacada
-    surfaceGlass: 'rgba(45, 30, 7, 0.85)', // Vidro dourado
-    surfaceElevated: '#54370d', // Superfície elevada
-    goldPrimary: '#FFD700', // Ouro puro brilhante
-    goldSecondary: '#B8860B', // Ouro escuro
-    goldLight: '#FFF066', // Champagne neon
-    bluePrimary: '#FF9900', // Acento âmbar vibrante
-    blueSecondary: '#CC7A00', // Âmbar escuro
-    blueNeon: '#FFB833', // Brilho âmbar dourado
-    textPrimary: '#FFFDF5', // Branco levemente dourado
-    textSecondary: '#E8D4A2', // Dourado claro suave
-    textMuted: '#A89260', // Dourado muted
-    textOnGold: '#120D04', // Texto escuro em botões dourados
-    success: '#00E676', // Verde esmeralda de sucesso
-    warning: '#FFD700', // Ouro aviso
-    error: '#FF3B30', // Vermelho rubi
-    info: '#FFB833', // Dourado âmbar info
-    borderPrimary: '#FFD700', // Borda dourada nobre
-    borderSecondary: '#B8860B', // Borda dourada escura
-    borderGlow: 'rgba(255, 215, 0, 0.55)', // Glow dourado puro
-    overlay: 'rgba(18, 13, 4, 0.85)',
-    scrim: 'rgba(8, 6, 2, 0.92)',
-    focus: '#FFD700',
-    disabled: 'rgba(232, 212, 162, 0.25)',
+    // Paleta "Fortuna" (Maneki-Neko dourado): preto profundo, ouro em vários tons,
+    // vermelho laca e toques discretos de jade.
+    backgroundPrimary: '#03040A', // preto-tinta
+    backgroundSecondary: '#080B14', // painel preto
+    backgroundDeep: '#03040A',
+    surfacePrimary: '#151008', // painel quente
+    surfaceSecondary: '#1E160A',
+    surfaceGlass: 'rgba(8, 11, 20, 0.88)',
+    surfaceElevated: '#2A1E0C',
+    goldPrimary: '#FFD95A', // ouro claro (títulos/valores)
+    goldSecondary: '#8A4D00', // ouro profundo
+    goldLight: '#FFF3CF', // creme
+    bluePrimary: '#FFB300', // âmbar (acento secundário)
+    blueSecondary: '#E9A91A', // ouro principal
+    blueNeon: '#FFD95A',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#FFF3CF',
+    textMuted: '#BFA77A',
+    textOnGold: '#2A1600',
+    success: '#16A778', // jade
+    warning: '#FFB300',
+    error: '#C71F25', // vermelho laca
+    info: '#FFD95A',
+    borderPrimary: '#E9A91A',
+    borderSecondary: '#8A4D00',
+    borderGlow: 'rgba(233, 169, 26, 0.45)',
+    overlay: 'rgba(3, 4, 10, 0.85)',
+    scrim: 'rgba(3, 4, 10, 0.92)',
+    focus: '#FFD95A',
+    disabled: 'rgba(255, 243, 207, 0.25)',
   },
 
   temaNeon: {

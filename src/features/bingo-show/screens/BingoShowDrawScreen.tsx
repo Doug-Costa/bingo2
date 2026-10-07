@@ -41,6 +41,8 @@ import { useBingoAudio } from '../hooks/useBingoAudio';
 import { type PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import goldStyles from '../components/goldMetalText.module.css';
+import { BingoShowAssets } from '../assets';
+import goldTheme from '../components/gold/GoldTheme.module.css';
 import { useAppTheme } from '@/contexts/ThemeContext';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
@@ -60,6 +62,8 @@ export const BingoShowDrawScreen: React.FC = () => {
   const { isBlue, themeId } = useAppTheme();
   // Ouro metálico dos títulos: Blue e Bingo Show (Ouro & Espaço).
   const goldTitle = isBlue || themeId === 'bingo-show';
+  // tema-ouro ("Fortuna"): ouro em vários tons, laca vermelha e o logo dourado.
+  const isGold = themeId === 'tema-ouro';
   const [soundOn, setSoundOn] = useState(true);
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
@@ -94,12 +98,12 @@ export const BingoShowDrawScreen: React.FC = () => {
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220 }}>
           <img
-            src="/themes/bingo-show-blue/logos/logo-main.png"
+            src={isGold ? BingoShowAssets.logos.badge : '/themes/bingo-show-blue/logos/logo-main.png'}
             alt="BINGO SHOW"
             style={{
               height: 52,
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
+              filter: isGold ? 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6))' : 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
             }}
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = 'none';
@@ -114,40 +118,40 @@ export const BingoShowDrawScreen: React.FC = () => {
               fonte e espaçamento continuam os mesmos em todos os temas. */}
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <span
-              className={goldTitle ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle || isGold ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
             <span
-              className={goldTitle ? goldStyles.goldMetalText : undefined}
+              className={isGold ? goldTheme.goldText : goldTitle ? goldStyles.goldMetalText : undefined}
               style={{
                 fontSize: 32,
                 fontWeight: 900,
                 letterSpacing: 3,
                 fontFamily: 'Barlow Condensed, sans-serif',
                 textTransform: 'uppercase',
-                ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
+                ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
               }}
             >
               BINGO AO VIVO
             </span>
             <span
-              className={goldTitle ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(goldTitle ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle || isGold ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
           </div>
           <span
-            className={goldTitle ? goldStyles.liveSubtitle : undefined}
+            className={goldTitle || isGold ? goldStyles.liveSubtitle : undefined}
             style={{
               fontSize: 13,
               fontWeight: 900,
               letterSpacing: 3,
               textTransform: 'uppercase',
               marginTop: -4,
-              ...(goldTitle ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
+              ...(goldTitle || isGold ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
             }}
           >
             ★ SUA SORTE, NOSSO BINGO! ★
@@ -165,11 +169,11 @@ export const BingoShowDrawScreen: React.FC = () => {
               flexDirection: 'row',
               alignItems: 'center',
               gap: 8,
-              backgroundColor: 'rgba(3, 17, 48, 0.88)',
-              border: '1.5px solid rgba(25, 117, 210, 0.6)',
+              backgroundColor: isGold ? 'rgba(21, 16, 8, 0.92)' : 'rgba(3, 17, 48, 0.88)',
+              border: isGold ? '1.5px solid rgba(233, 169, 26, 0.75)' : '1.5px solid rgba(25, 117, 210, 0.6)',
               borderRadius: 20,
               padding: '6px 14px',
-              boxShadow: '0 0 14px rgba(8, 127, 252, 0.3)',
+              boxShadow: isGold ? '0 0 12px rgba(255, 179, 0, 0.25)' : '0 0 14px rgba(8, 127, 252, 0.3)',
               boxSizing: 'border-box',
             }}
           >
@@ -186,8 +190,8 @@ export const BingoShowDrawScreen: React.FC = () => {
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: soundOn ? '#087FFC' : 'rgba(3, 17, 48, 0.88)',
-              borderColor: soundOn ? '#17C8FF' : 'rgba(25, 117, 210, 0.5)',
+              backgroundColor: isGold ? (soundOn ? '#A3161C' : 'rgba(21, 16, 8, 0.92)') : soundOn ? '#087FFC' : 'rgba(3, 17, 48, 0.88)',
+              borderColor: isGold ? '#E9A91A' : soundOn ? '#17C8FF' : 'rgba(25, 117, 210, 0.5)',
               borderWidth: 1.5,
               borderStyle: 'solid',
               display: 'flex',
@@ -195,7 +199,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               justifyContent: 'center',
               cursor: 'pointer',
               boxSizing: 'border-box',
-              boxShadow: soundOn ? '0 0 14px rgba(23, 200, 255, 0.6)' : 'none',
+              boxShadow: soundOn ? (isGold ? '0 0 12px rgba(255, 179, 0, 0.5)' : '0 0 14px rgba(23, 200, 255, 0.6)') : 'none',
               transition: 'all 200ms ease',
             }}
           >

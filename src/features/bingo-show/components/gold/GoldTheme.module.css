@@ -1,0 +1,201 @@
+/* GoldTheme.module.css — peças visuais compartilhadas do tema `tema-ouro`
+ * ("Fortuna": Maneki-Neko dourado, ouro metálico, preto profundo, vermelho laca,
+ * toques de jade). Só apresentação; todo seletor é uma classe do módulo, então
+ * nada vaza para os outros temas. Assets: só os PNG/GIF de public/themes/tema-ouro;
+ * molduras, fundos e ornamentos são CSS. */
+
+.vars {
+  --gold-bright: #ffd95a;
+  --gold-main: #e9a91a;
+  --gold-deep: #8a4d00;
+  --amber: #ffb300;
+  --red-main: #c71f25;
+  --red-deep: #620b12;
+  --jade-main: #16a778;
+  --jade-deep: #074d3b;
+  --ink-black: #03040a;
+  --panel-black: #080b14;
+  --panel-warm: #151008;
+  --cream: #fff3cf;
+
+  /* Ouro em múltiplos tons (highlight → corpo → sombra → reflexo). */
+  --gold-metal: linear-gradient(180deg, #fff7b0 0%, #ffd95a 14%, #e7a416 42%, #8a4d00 72%, #f6c84a 88%, #fff2a0 100%);
+  /* Ouro para texto: mais faixas de brilho, lê bem em tamanhos grandes. */
+  --gold-text: linear-gradient(180deg, #fff7b0 0%, #ffe27a 18%, #f2b72a 40%, #b06a06 62%, #f6c84a 80%, #fff2a0 100%);
+  /* Filete de moldura: ouro horizontal com reflexo no meio. */
+  --gold-line: linear-gradient(90deg, #8a4d00 0%, #e9a91a 20%, #fff2a0 50%, #e9a91a 80%, #8a4d00 100%);
+}
+
+/* ─── Texto ──────────────────────────────────────────────────────────────── */
+
+/* Ouro para títulos, números e valores (relevo por drop-shadow: com
+ * background-clip: text o text-shadow pintaria por cima do gradiente). */
+.goldText {
+  color: #ffd95a; /* fallback */
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .goldText {
+    /* gradiente literal (não depende de .vars no ancestral) */
+    background: linear-gradient(180deg, #fff7b0 0%, #ffe27a 18%, #f2b72a 40%, #b06a06 62%, #f6c84a 80%, #fff2a0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.goldText {
+  -webkit-text-stroke: 0.6px rgba(90, 45, 0, 0.6);
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 247, 190, 0.55))
+    drop-shadow(0 2px 0 #6b3800)
+    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.6));
+}
+
+/* Versão para valores grandes: um halo âmbar contido. */
+.goldValue {
+  composes: goldText;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 247, 190, 0.5))
+    drop-shadow(0 2px 0 #6b3800)
+    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 8px rgba(255, 179, 0, 0.3));
+}
+
+/* Rótulos secundários: creme claro, legível, sem ouro. */
+.label {
+  color: var(--cream);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ─── Painéis ────────────────────────────────────────────────────────────── */
+
+/* Painel preto-quente com moldura de ouro (gradiente na borda) e um filete
+ * interno fino — cantos arredondados uniformes em qualquer tamanho. */
+.panel {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 179, 0, 0.09) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #120d07 0%, #0a0a10 55%, #07080f 100%) padding-box,
+    var(--gold-metal) border-box;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.55),
+    0 0 14px rgba(233, 169, 26, 0.18);
+}
+
+/* Filete interno (6px para dentro). */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 217, 90, 0.22);
+  pointer-events: none;
+}
+
+/* Painel em destaque (prêmio principal / em disputa). */
+.panelHot {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(255, 179, 0, 0.35),
+    0 0 0 1px rgba(255, 242, 160, 0.35);
+}
+
+/* Faixa de laca vermelha com filetes de ouro (selos, etiquetas, rodapé). */
+.lacquer {
+  position: relative;
+  box-sizing: border-box;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 40%) padding-box,
+    linear-gradient(180deg, #d42a2f 0%, #a3161c 55%, #620b12 100%) padding-box,
+    var(--gold-metal) border-box;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 220, 200, 0.25);
+}
+
+/* Divisória de ouro com losango central. */
+.divider {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background: var(--gold-line);
+  opacity: 0.85;
+}
+
+.divider::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  background: var(--gold-metal);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 6px rgba(255, 200, 60, 0.6);
+}
+
+/* Ponto jade (status "ao vivo / próximo"). */
+.jadeDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7af0c4 0%, #16a778 55%, #074d3b 100%);
+  box-shadow: 0 0 8px rgba(22, 167, 120, 0.8);
+}
+
+/* ─── Bolas (CSS, sem asset) ───────────────────────────────────────────────
+ * Tamanho por --b e fonte por --f no uso. Ouro = sorteada; laca vermelha com aro
+ * de ouro = destaque (última/atual); escura = pendente (legível, apagada). */
+
+.ball {
+  position: relative;
+  width: var(--b, 44px);
+  height: var(--b, 44px);
+  flex: none;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  font-size: var(--f, 18px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #2a1600;
+  text-shadow: 0 1px 0 rgba(255, 246, 200, 0.65);
+  background: radial-gradient(circle at 34% 28%, #fffbe0 0%, #ffe27a 14%, #f2b72a 40%, #b06a06 72%, #5c2f00 100%);
+  box-shadow:
+    inset -3px -5px 9px rgba(70, 30, 0, 0.55),
+    inset 2px 3px 5px rgba(255, 250, 220, 0.45),
+    0 3px 6px rgba(0, 0, 0, 0.55);
+}
+
+.ballRed {
+  color: #fff3cf;
+  text-shadow: 0 1px 2px rgba(60, 0, 0, 0.85);
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 34% 28%, #ff8a7a 0%, #e0353a 18%, #a3161c 55%, #4a070c 100%) padding-box,
+    var(--gold-metal) border-box;
+  box-shadow:
+    inset -3px -5px 9px rgba(40, 0, 0, 0.5),
+    inset 2px 3px 5px rgba(255, 210, 200, 0.35),
+    0 0 10px rgba(255, 179, 0, 0.45),
+    0 3px 6px rgba(0, 0, 0, 0.55);
+}
+
+.ballPending {
+  color: rgba(255, 243, 207, 0.55);
+  text-shadow: none;
+  background: radial-gradient(circle at 34% 28%, #3a3224 0%, #1d1912 45%, #0b0a0c 100%);
+  border: 1px solid rgba(233, 169, 26, 0.28);
+  box-shadow: inset -2px -3px 6px rgba(0, 0, 0, 0.6);
+}

@@ -5,6 +5,8 @@ import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
 import ouroTable from './BingoShowCouponsTableOuro.module.css';
+import goldTable from './BingoShowCouponsTableGold.module.css';
+import goldPanel from './gold/GoldTheme.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
 /** Módulo de estilos da tabela em cards (Blue ou Ouro — mesmos nomes de classe). */
@@ -126,6 +128,15 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
         <CardCouponsTable rows={rows} compact={compact} css={blueTable} />
       </BingoShowTopWinnersFrame>
+    );
+  }
+
+  // tema-ouro ("Fortuna"): mesma tabela em cards, bolas de ouro em CSS.
+  if (themeId === 'tema-ouro') {
+    return (
+      <div className={`${goldPanel.vars} ${goldPanel.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
+        <CardCouponsTable rows={rows} compact={compact} css={goldTable} />
+      </div>
     );
   }
 

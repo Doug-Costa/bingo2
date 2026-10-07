@@ -4,6 +4,7 @@ import { BingoShowIcon } from './BingoShowIcon';
 import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import goldTheme from './gold/GoldTheme.module.css';
 
 export interface BingoShowTicketsGridProps {
   tickets: TicketCardItem[];
@@ -33,6 +34,8 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
   style,
 }) => {
   const { themeId, theme, isBlue } = useAppTheme();
+  // tema-ouro ("Fortuna"): cartelas preto-quente com filete de ouro, acertos em ouro.
+  const isGold = themeId === 'tema-ouro';
   const drawnSet = useMemo(() => new Set(drawnBalls), [drawnBalls]);
 
   // As 4 primeiras cartelas (ou ranqueadas por proximidade)
@@ -59,13 +62,13 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : theme.panelBg,
-        border: `2px solid ${isBlue ? '#087FFC' : theme.borderPrimary}`,
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : isGold ? '#0a0a10' : theme.panelBg,
+        border: `2px solid ${isBlue ? '#087FFC' : isGold ? '#E9A91A' : theme.borderPrimary}`,
         borderRadius: 24,
         padding: '10px 14px',
         boxSizing: 'border-box',
         overflow: 'hidden',
-        boxShadow: `0 0 24px rgba(8, 127, 252, 0.35)`,
+        boxShadow: isGold ? '0 10px 30px rgba(0, 0, 0, 0.55), 0 0 14px rgba(233, 169, 26, 0.2)' : `0 0 24px rgba(8, 127, 252, 0.35)`,
         position: 'relative',
         justifyContent: 'space-between',
         ...style,
@@ -73,8 +76,9 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
     >
       {/* HEADER: 🍀 MINHAS CARTELAS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+        <img src={isGold ? '/themes/tema-ouro/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
         <span
+          className={isGold ? goldTheme.goldText : undefined}
           style={{
             fontSize: 18,
             fontWeight: 900,
@@ -85,7 +89,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
         >
           MINHAS CARTELAS
         </span>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+        <img src={isGold ? '/themes/tema-ouro/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
       </div>
 
       {/* GRADE pela quantidade (grade de 4 colunas, cada cartela ocupa 2 quando há
@@ -111,12 +115,12 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
               minHeight: 0,
               display: 'flex',
               flexDirection: 'column',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #57C3FF',
+              backgroundColor: isGold ? '#151008' : '#FFFFFF',
+              border: isGold ? '1.5px solid rgba(233, 169, 26, 0.7)' : '1.5px solid #57C3FF',
               borderRadius: 14,
               padding: '4px 6px 6px 6px',
               boxSizing: 'border-box',
-              boxShadow: '0 2px 8px rgba(0, 50, 120, 0.25)',
+              boxShadow: isGold ? '0 4px 10px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0, 50, 120, 0.25)',
               justifyContent: 'space-between',
             }}
           >
@@ -126,8 +130,9 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
                 style={{
                   fontSize: sizes.label,
                   fontWeight: 900,
-                  backgroundColor: '#FFCF12',
-                  color: '#1A1100',
+                  background: isGold ? 'linear-gradient(180deg, #e0353a 0%, #a3161c 60%, #620b12 100%)' : '#FFCF12',
+                  color: isGold ? '#FFF3CF' : '#1A1100',
+                  border: isGold ? '1px solid #E9A91A' : undefined,
                   padding: '1px 12px',
                   borderRadius: 10,
                   letterSpacing: 1,
@@ -152,15 +157,27 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
                         width: '100%',
                         height: '100%',
                         borderRadius: 4,
-                        backgroundColor: isHit ? '#10B981' : 'transparent',
-                        color: isHit ? '#FFFFFF' : '#0F172A',
-                        border: isHit ? '1px solid #059669' : '1px solid rgba(188, 224, 245, 0.6)',
+                        background: isGold
+                          ? isHit
+                            ? 'linear-gradient(180deg, #fff1a0 0%, #ffd43f 22%, #f0a315 60%, #b36304 100%)'
+                            : 'rgba(255, 243, 207, 0.04)'
+                          : isHit
+                          ? '#10B981'
+                          : 'transparent',
+                        color: isGold ? (isHit ? '#2A1600' : '#FFF3CF') : isHit ? '#FFFFFF' : '#0F172A',
+                        border: isGold
+                          ? isHit
+                            ? '1px solid #FFF2A0'
+                            : '1px solid rgba(233, 169, 26, 0.25)'
+                          : isHit
+                          ? '1px solid #059669'
+                          : '1px solid rgba(188, 224, 245, 0.6)',
                         fontSize: sizes.cell,
                         fontWeight: 900,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: isHit ? '0 0 6px rgba(16, 185, 129, 0.6)' : undefined,
+                        boxShadow: isHit ? (isGold ? '0 0 6px rgba(255, 179, 0, 0.55)' : '0 0 6px rgba(16, 185, 129, 0.6)') : undefined,
                         lineHeight: 1,
                       }}
                     >

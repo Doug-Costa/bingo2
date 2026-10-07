@@ -1,0 +1,111 @@
+/* GoldBackground.module.css — fundo do tema `tema-ouro`, só CSS, em camadas:
+ * 1. base preta/azul-preto · 2. vinheta · 3. halo âmbar central · 4. ondas
+ * seigaiha (padrão japonês) em baixíssima opacidade · 5. poucas partículas de ouro
+ * subindo devagar pelas laterais (longe dos textos) · 6. reflexo quente ocasional ·
+ * 7. vermelho profundo discreto nas extremidades.
+ * Só transform/opacity animados (leve para TV Box). */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #03040a;
+  pointer-events: none;
+}
+
+/* 1 + 7: base com vermelho profundo nos cantos inferiores. */
+.base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 45% 40% at 0% 100%, rgba(98, 11, 18, 0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 40% at 100% 100%, rgba(98, 11, 18, 0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 35% 30% at 100% 0%, rgba(98, 11, 18, 0.3) 0%, transparent 70%),
+    linear-gradient(180deg, #05060d 0%, #03040a 55%, #040309 100%);
+}
+
+/* 3: halo âmbar atrás da área central, respirando bem devagar. */
+.halo {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 1400px;
+  height: 900px;
+  margin: -450px 0 0 -700px;
+  background: radial-gradient(ellipse at center, rgba(255, 179, 0, 0.16) 0%, rgba(233, 169, 26, 0.07) 35%, transparent 65%);
+  animation: haloBreath 14s ease-in-out infinite alternate;
+}
+
+/* 4: ondas seigaiha (arcos concêntricos) — textura quase imperceptível. */
+.pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image:
+    radial-gradient(circle at 50% 100%, transparent 0 28%, #e9a91a 29% 31%, transparent 32% 45%, #e9a91a 46% 48%, transparent 49% 62%, #e9a91a 63% 65%, transparent 66%),
+    radial-gradient(circle at 50% 100%, transparent 0 28%, #e9a91a 29% 31%, transparent 32% 45%, #e9a91a 46% 48%, transparent 49% 62%, #e9a91a 63% 65%, transparent 66%);
+  background-size: 72px 36px;
+  background-position: 0 0, 36px 18px;
+  -webkit-mask: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, #000 85%);
+  mask: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, #000 85%);
+}
+
+/* 2: vinheta. */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* 6: reflexo quente que atravessa a tela de vez em quando. */
+.sweep {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, rgba(255, 210, 120, 0.05), transparent);
+  transform: translateX(-140%) skewX(-18deg);
+  animation: warmSweep 22s ease-in-out 4s infinite;
+}
+
+/* 5: partículas de ouro (poucas, lentas, só nas laterais). */
+.particle {
+  position: absolute;
+  bottom: -20px;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff2a0 0%, #ffd95a 35%, rgba(233, 169, 26, 0) 70%);
+  opacity: 0;
+  animation: rise var(--dur) linear var(--delay) infinite;
+}
+
+@keyframes haloBreath {
+  from { opacity: 0.75; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes warmSweep {
+  0%, 70% { transform: translateX(-140%) skewX(-18deg); }
+  100% { transform: translateX(680%) skewX(-18deg); }
+}
+
+@keyframes rise {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  12% { opacity: var(--o); }
+  80% { opacity: calc(var(--o) * 0.6); }
+  100% { opacity: 0; transform: translate3d(var(--dx), -1100px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo,
+  .sweep,
+  .particle {
+    animation: none;
+  }
+
+  .particle {
+    display: none;
+  }
+}

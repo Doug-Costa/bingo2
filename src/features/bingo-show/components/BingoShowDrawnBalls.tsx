@@ -6,6 +6,8 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import goldStyles from './goldMetalText.module.css';
 import blueGrid from './BingoShowDrawnBallsBlue.module.css';
 import ouroGrid from './BingoShowDrawnBallsOuro.module.css';
+import goldTheme from './gold/GoldTheme.module.css';
+import goldHistory from './gold/HistoryGold.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowDrawnBallsProps {
@@ -28,6 +30,36 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   const isBlueTheme = themeId === 'bingo-show-blue';
   // Bingo Show (Ouro & Espaço): grade própria com as bolas 3D do tema.
   const isOuro = themeId === 'bingo-show';
+
+  // tema-ouro ("Fortuna"): painel de ouro + 90 bolas de ouro em CSS.
+  if (themeId === 'tema-ouro') {
+    return (
+      <div className={`${goldTheme.vars} ${goldTheme.panel} ${goldHistory.panel}`} style={style}>
+        <div className={goldHistory.title}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
+          <img className={goldHistory.paw} src="/themes/tema-ouro/icons/pata.png" alt="" />
+          <span className={goldTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
+          <img className={goldHistory.paw} src="/themes/tema-ouro/icons/pata.png" alt="" />
+        </div>
+        <div className={goldHistory.grid}>
+          {ALL_90_NUMBERS.map((num) => {
+            const isDrawn = drawnSet.has(num);
+            const isLatest = num === latestBall;
+            return (
+              <div
+                key={num}
+                className={`${goldTheme.ball} ${isLatest ? `${goldTheme.ballRed} ${goldHistory.latest}` : isDrawn ? '' : goldTheme.ballPending}`}
+                style={{ '--b': '44px', '--f': '19px' } as React.CSSProperties}
+              >
+                {num}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   const panelBg = isBlueTheme
     ? `url(/themes/bingo-show-blue/panels/panel-main.png), ${theme.panelBg}`

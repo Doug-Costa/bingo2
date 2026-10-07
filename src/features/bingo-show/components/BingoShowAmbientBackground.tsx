@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { GoldBackground } from './gold/GoldBackground';
 
 
 interface ParticleSpec {
@@ -84,7 +85,19 @@ export function BingoShowAmbientBackground({
   vignetteStrength = 1,
   accentGlow = false,
 }: BingoShowAmbientBackgroundProps) {
-  const { theme, isBlue } = useAppTheme();
+  const { theme, isBlue, themeId } = useAppTheme();
+
+  // Tema `tema-ouro` ("Fortuna"): fundo próprio, só CSS (camadas, seigaiha,
+  // partículas de ouro). O conteúdo continua igual.
+  if (themeId === 'tema-ouro') {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#03040A', overflow: 'hidden' }}>
+        <GoldBackground />
+        <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
+      </div>
+    );
+  }
+
   const isLight = brightness === 'light';
   const spaceSource = isBlue
     ? backdrop === 'blue'

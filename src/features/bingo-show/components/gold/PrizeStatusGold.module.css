@@ -1,0 +1,272 @@
+/* PrizeStatusGold.module.css — painel de prêmios da tela de sorteio do tema
+ * `tema-ouro`: acumulado (saco da sorte + limite de bolas), 1 LINHA / 2 LINHAS /
+ * BINGO com estados (EM DISPUTA, CONCLUÍDO, AGUARDANDO) e os 4 quadros de dados.
+ * Painéis/laca/ouro vêm do GoldTheme. */
+
+.column {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+/* ─── Acumulado ─────────────────────────────────────────────────────────── */
+
+.jackpot {
+  flex: none;
+  height: 136px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 8px;
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+
+.jackpotOff {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+}
+
+.bag {
+  width: 128px;
+  height: auto;
+  flex: none;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.6));
+}
+
+.jackpotText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.jackpotLabel {
+  color: #fff3cf;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.limitBadge {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid transparent;
+  background:
+    radial-gradient(circle at 40% 30%, #e0353a 0%, #a3161c 55%, #620b12 100%) padding-box,
+    var(--gold-metal) border-box;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55), 0 0 12px rgba(255, 179, 0, 0.3);
+}
+
+.limitLabel {
+  color: #fff3cf;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.limitValue {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* ─── Prêmios ───────────────────────────────────────────────────────────── */
+
+.rows {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 22px;
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+
+.rowActive::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 22px;
+  border: 2px solid rgba(255, 217, 90, 0.85);
+  box-shadow: 0 0 16px rgba(255, 179, 0, 0.5);
+  pointer-events: none;
+  animation: activePulse 2.4s ease-in-out infinite;
+}
+
+.rowDone {
+  opacity: 0.85;
+}
+
+.rowWaiting {
+  opacity: 0.6;
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex: none;
+}
+
+.tag {
+  padding: 4px 16px 3px;
+  border-radius: 999px;
+  color: #fff3cf;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  line-height: 1.1;
+}
+
+.rowActive .tag {
+  font-size: 26px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.statusActive {
+  color: #ffd95a;
+}
+
+.statusDone {
+  color: #7af0c4;
+}
+
+.statusWaiting {
+  color: rgba(255, 243, 207, 0.6);
+}
+
+/* Cápsula preta com filete de ouro para o valor. */
+.capsule {
+  position: relative;
+  flex: 1;
+  max-width: 310px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px 16px 6px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(180deg, #0c0b10 0%, #05060c 100%) padding-box,
+    var(--gold-metal) border-box;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.rowActive .capsule {
+  max-width: 340px;
+}
+
+/* Valores: ouro (em disputa), ouro suave (concluído), creme (aguardando). */
+.valueDone {
+  opacity: 0.85;
+}
+
+.valueWaiting {
+  color: rgba(255, 243, 207, 0.75);
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* ─── Dados (sorteio, doação, data, hora) ───────────────────────────────── */
+
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metaCard {
+  min-width: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: 14px !important;
+}
+
+.metaCard::after {
+  border-radius: 9px !important;
+  inset: 4px !important;
+}
+
+.metaIcon {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+
+.metaIconText {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.metaText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.metaLabel {
+  color: #bfa77a;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.metaValue {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes activePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowActive::before {
+    animation: none;
+  }
+}
