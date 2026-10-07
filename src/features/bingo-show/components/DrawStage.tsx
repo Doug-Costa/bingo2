@@ -645,10 +645,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             {/* tema-ouro: halo âmbar → anel de laca com contas de ouro → bola de ouro
                 (CSS). A key remonta só a bola a cada bola real nova. */}
             <div className={goldStage.stage}>
-              {/* Luz de palco: raios girando + 2 canhões balançando (intermitentes). */}
+              {/* Luz de palco: duas camadas de feixes girando (sentidos opostos) +
+                  brilho quente atrás da bola, com intermitência suave. */}
+              <div className={goldStage.raysB} />
               <div className={goldStage.rays} />
-              <span className={`${goldStage.spot} ${goldStage.spotLeft}`} />
-              <span className={`${goldStage.spot} ${goldStage.spotRight}`} />
+              <div className={goldStage.glowCore} />
               <div className={goldStage.halo} />
               <div className={goldStage.ring} />
               <div className={goldStage.beads}>{GOLD_BEADS}</div>

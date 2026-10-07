@@ -40,39 +40,146 @@
   animation: haloBreath 6s ease-in-out infinite alternate;
 }
 
-/* Luz de palco atrás da bola:
- *  .rays  — leque de raios dourados girando devagar, com intermitência suave;
- *  .spot  — dois canhões de luz vindos de cima, balançando e alternando.
- * Só transform/opacity animados; o blur dos canhões é estático. */
-.rays {
-  width: 680px;
-  height: 680px;
+/* Luz de palco atrás da bola — feixes "de verdade":
+ *  .rays / .raysB — duas camadas de feixes com larguras e intensidades variadas e
+ *  bordas esfumaçadas (cada feixe sobe e desce suave no gradiente), girando em
+ *  sentidos e velocidades diferentes → os feixes se cruzam de forma orgânica.
+ *  A máscara radial apaga a luz suavemente para fora; o blur (estático) tira o
+ *  serrilhado e dá o aspecto de luz no ar. Intermitência suave e desencontrada.
+ *  .glowCore — brilho quente e macio colado atrás da bola, respirando.
+ * Animados só transform/opacity. */
+.rays,
+.raysB {
+  width: 720px;
+  height: 720px;
   border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 120, 0.3) 0deg 5deg, transparent 5deg 22deg);
-  -webkit-mask: radial-gradient(circle, transparent 0 22%, #000 30%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
-  mask: radial-gradient(circle, transparent 0 22%, #000 30%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
+  -webkit-mask: radial-gradient(circle, transparent 0 17%, #000 24%, rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 0.35) 56%, transparent 71%);
+  mask: radial-gradient(circle, transparent 0 17%, #000 24%, rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 0.35) 56%, transparent 71%);
+  filter: blur(3px);
   pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.rays {
+  background: conic-gradient(from 0deg,
+    transparent 0deg,
+    transparent 0.0deg,
+    rgba(255, 214, 130,0.24) -5.0deg,
+    rgba(255, 214, 130,0.53) -2.9deg,
+    rgba(255, 214, 130,0.24) -0.7deg,
+    transparent 1.9deg,
+    transparent 19.1deg,
+    rgba(255, 214, 130,0.19) 22.7deg,
+    rgba(255, 214, 130,0.43) 25.7deg,
+    rgba(255, 214, 130,0.19) 28.7deg,
+    transparent 32.4deg,
+    transparent 51.7deg,
+    rgba(255, 214, 130,0.14) 55.3deg,
+    rgba(255, 214, 130,0.34) 58.2deg,
+    rgba(255, 214, 130,0.14) 61.2deg,
+    transparent 64.8deg,
+    transparent 92.7deg,
+    rgba(255, 214, 130,0.16) 95.1deg,
+    rgba(255, 214, 130,0.35) 97.1deg,
+    rgba(255, 214, 130,0.16) 99.1deg,
+    transparent 101.4deg,
+    transparent 121.5deg,
+    rgba(255, 214, 130,0.16) 126.0deg,
+    rgba(255, 214, 130,0.35) 129.7deg,
+    rgba(255, 214, 130,0.16) 133.3deg,
+    transparent 137.8deg,
+    transparent 152.0deg,
+    rgba(255, 214, 130,0.29) 155.9deg,
+    rgba(255, 214, 130,0.62) 159.1deg,
+    rgba(255, 214, 130,0.29) 162.3deg,
+    transparent 166.2deg,
+    transparent 191.6deg,
+    rgba(255, 214, 130,0.29) 194.9deg,
+    rgba(255, 214, 130,0.64) 197.6deg,
+    rgba(255, 214, 130,0.29) 200.3deg,
+    transparent 203.6deg,
+    transparent 213.4deg,
+    rgba(255, 214, 130,0.19) 217.9deg,
+    rgba(255, 214, 130,0.42) 221.7deg,
+    rgba(255, 214, 130,0.19) 225.4deg,
+    transparent 230.0deg,
+    transparent 251.4deg,
+    rgba(255, 214, 130,0.19) 253.9deg,
+    rgba(255, 214, 130,0.42) 256.0deg,
+    rgba(255, 214, 130,0.19) 258.1deg,
+    transparent 260.6deg,
+    transparent 294.8deg,
+    rgba(255, 214, 130,0.22) 297.5deg,
+    rgba(255, 214, 130,0.51) 299.7deg,
+    rgba(255, 214, 130,0.22) 301.9deg,
+    transparent 304.6deg,
+    transparent 323.7deg,
+    rgba(255, 214, 130,0.22) 326.9deg,
+    rgba(255, 214, 130,0.50) 329.5deg,
+    rgba(255, 214, 130,0.22) 332.2deg,
+    transparent 335.4deg,
+    transparent 360deg);
   animation:
-    spin 48s linear infinite,
-    stageFlicker 5.2s ease-in-out infinite;
+    spin 70s linear infinite,
+    stageFlicker 6.5s ease-in-out infinite;
 }
 
-.spot {
-  width: 260px;
-  height: 520px;
-  transform-origin: 50% 0;
-  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgba(255, 240, 190, 0.05) 0%, rgba(255, 215, 120, 0.3) 55%, rgba(255, 190, 80, 0.08) 100%);
-  filter: blur(6px);
+.raysB {
+  background: conic-gradient(from 0deg,
+    transparent 0deg,
+    transparent 0.0deg,
+    rgba(255, 190, 90,0.10) -12.7deg,
+    rgba(255, 190, 90,0.19) -9.8deg,
+    rgba(255, 190, 90,0.10) -7.0deg,
+    transparent -3.5deg,
+    transparent 40.5deg,
+    rgba(255, 190, 90,0.10) 45.2deg,
+    rgba(255, 190, 90,0.22) 49.1deg,
+    rgba(255, 190, 90,0.10) 52.9deg,
+    transparent 57.6deg,
+    transparent 83.2deg,
+    rgba(255, 190, 90,0.10) 88.0deg,
+    rgba(255, 190, 90,0.22) 91.9deg,
+    rgba(255, 190, 90,0.10) 95.8deg,
+    transparent 100.6deg,
+    transparent 131.4deg,
+    rgba(255, 190, 90,0.10) 137.0deg,
+    rgba(255, 190, 90,0.21) 141.6deg,
+    rgba(255, 190, 90,0.10) 146.2deg,
+    transparent 151.8deg,
+    transparent 172.5deg,
+    rgba(255, 190, 90,0.14) 177.6deg,
+    rgba(255, 190, 90,0.34) 181.7deg,
+    rgba(255, 190, 90,0.14) 185.8deg,
+    transparent 190.8deg,
+    transparent 222.4deg,
+    rgba(255, 190, 90,0.16) 226.7deg,
+    rgba(255, 190, 90,0.35) 230.2deg,
+    rgba(255, 190, 90,0.16) 233.6deg,
+    transparent 237.9deg,
+    transparent 252.9deg,
+    rgba(255, 190, 90,0.14) 257.6deg,
+    rgba(255, 190, 90,0.30) 261.4deg,
+    rgba(255, 190, 90,0.14) 265.2deg,
+    transparent 269.9deg,
+    transparent 298.2deg,
+    rgba(255, 190, 90,0.08) 303.1deg,
+    rgba(255, 190, 90,0.16) 307.2deg,
+    rgba(255, 190, 90,0.08) 311.2deg,
+    transparent 316.1deg,
+    transparent 360deg);
+  animation:
+    spinBack 95s linear infinite,
+    stageFlickerB 8.3s ease-in-out infinite;
+}
+
+.glowCore {
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 180, 0.42) 0%, rgba(255, 196, 80, 0.2) 32%, rgba(255, 160, 40, 0.06) 55%, transparent 70%);
   pointer-events: none;
-}
-
-.spotLeft {
-  animation: swingLeft 7s ease-in-out infinite, spotFade 3.6s ease-in-out infinite;
-}
-
-.spotRight {
-  animation: swingRight 7s ease-in-out infinite, spotFade 3.6s ease-in-out 1.8s infinite;
+  animation: coreBreath 6.5s ease-in-out infinite;
 }
 
 /* Anel de laca vermelha com filetes de ouro. */
@@ -205,29 +312,29 @@
 }
 
 /* Intermitência de palco: sobe e desce de forma irregular, nunca apaga. */
+/* Intermitência de palco: sobe e desce devagar e de forma irregular, nunca apaga. */
 @keyframes stageFlicker {
-  0%, 100% { opacity: 0.55; }
-  18% { opacity: 0.95; }
-  32% { opacity: 0.6; }
-  48% { opacity: 1; }
-  66% { opacity: 0.5; }
-  82% { opacity: 0.85; }
+  0%, 100% { opacity: 0.7; }
+  22% { opacity: 1; }
+  41% { opacity: 0.78; }
+  63% { opacity: 0.95; }
+  84% { opacity: 0.68; }
 }
 
-/* Canhões presos acima do palco (o topo do cone fica fora do painel). */
-@keyframes swingLeft {
-  0%, 100% { transform: translate(-150px, -270px) rotate(-26deg); }
-  50% { transform: translate(-150px, -270px) rotate(-12deg); }
+@keyframes stageFlickerB {
+  0%, 100% { opacity: 0.9; }
+  30% { opacity: 0.55; }
+  58% { opacity: 1; }
+  79% { opacity: 0.65; }
 }
 
-@keyframes swingRight {
-  0%, 100% { transform: translate(150px, -270px) rotate(26deg); }
-  50% { transform: translate(150px, -270px) rotate(12deg); }
+@keyframes coreBreath {
+  0%, 100% { opacity: 0.75; transform: scale(0.97); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 
-@keyframes spotFade {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.9; }
+@keyframes spinBack {
+  to { transform: rotate(-360deg); }
 }
 
 @keyframes spin {
@@ -260,12 +367,10 @@
 @media (prefers-reduced-motion: reduce) {
   .halo,
   .beads,
-  .rays {
+  .rays,
+  .raysB,
+  .glowCore {
     animation: none;
-  }
-
-  .spot {
-    display: none;
   }
 
   .ballWrap,
