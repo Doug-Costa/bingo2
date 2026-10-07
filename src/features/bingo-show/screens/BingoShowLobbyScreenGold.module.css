@@ -182,13 +182,19 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
 }
 
 .drawCard {
   position: relative;
-  padding: 10px 14px 10px;
+  /* Cada card ocupa 1/5 da coluna (5 por página, gap 10px): sem vão entre eles,
+   * e numa página com menos sorteios os cards mantêm o mesmo tamanho. */
+  flex: 0 0 calc((100% - 40px) / 5);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 12px;
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(30, 22, 10, 0.9) 0%, rgba(12, 11, 16, 0.92) 100%);
   border: 1px solid rgba(233, 169, 26, 0.3);
@@ -208,11 +214,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 
 .drawNumber {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 900;
   line-height: 1;
 }
@@ -222,7 +228,7 @@
   align-items: center;
   gap: 6px;
   color: #7af0c4;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: 1.5px;
 }
@@ -230,7 +236,7 @@
 .drawTime {
   margin-left: auto;
   color: #ffffff;
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
 }
@@ -238,7 +244,7 @@
 .drawPrizes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 6px;
 }
 
 .drawPrize {
@@ -250,7 +256,7 @@
 
 .drawPrizeLabel {
   color: #bfa77a;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 900;
   letter-spacing: 1.2px;
 }

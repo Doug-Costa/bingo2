@@ -58,7 +58,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
       <div key={page} className={styles.drawsList}>
         {list.map((d, i) => {
           const longest = [d.line1Prize, d.line2Prize, d.bingoPrize].reduce((m, v) => (v.length > m.length ? v : m), '');
-          const valueSize = moneySize(longest, [20, 15, 13]);
+          const valueSize = moneySize(longest, [22, 15, 13]);
           return (
             <div
               key={d.id || i}
