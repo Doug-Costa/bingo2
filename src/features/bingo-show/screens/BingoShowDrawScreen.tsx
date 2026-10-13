@@ -66,7 +66,8 @@ export const BingoShowDrawScreen: React.FC = () => {
   const [soundOn, setSoundOn] = useState(true);
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
-  useBingoAudio(soundOn, mock.currentBall, mock.winners);
+  // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
+  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber);
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
