@@ -14,9 +14,9 @@ import styles from './RoundWinnersGold.module.css';
 
 // Arte de cada faixa (assets do tema).
 const ART: Record<RoundCategoryKey, string> = {
-  line1: '/themes/tema-ouro/decorative/pilha-moedas.png',
-  line2: '/themes/tema-ouro/decorative/dinheiro-moedas.png',
-  bingo: '/themes/tema-ouro/icons/coroa.png',
+  line1: '/themes/tema-ouro/sm/decorative/pilha-moedas.png',
+  line2: '/themes/tema-ouro/sm/decorative/dinheiro-moedas.png',
+  bingo: '/themes/tema-ouro/sm/icons/coroa.png',
 };
 
 const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LINHA', line2: '2ª LINHA', bingo: 'BINGO' };
@@ -160,7 +160,7 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-        <img className={styles.logo} src="/themes/tema-ouro/logos/logo-bingo-show.png" alt="Bingo Show" draggable={false} />
+        <img className={styles.logo} src="/themes/tema-ouro/sm/logos/logo-bingo-show.png" alt="Bingo Show" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>

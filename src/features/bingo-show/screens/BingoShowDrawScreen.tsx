@@ -97,7 +97,7 @@ export const BingoShowDrawScreen: React.FC = () => {
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220 }}>
           <img
-            src={isGold ? '/themes/tema-ouro/logos/logo-bingo-show.png' : '/themes/bingo-show-blue/logos/logo-main.png'}
+            src={isGold ? '/themes/tema-ouro/sm/logos/logo-bingo-show.png' : '/themes/bingo-show-blue/logos/logo-main.png'}
             alt="BINGO SHOW"
             style={{
               height: isGold ? 58 : 52,

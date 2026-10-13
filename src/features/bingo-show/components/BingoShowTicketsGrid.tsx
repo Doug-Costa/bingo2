@@ -76,7 +76,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
     >
       {/* HEADER: 🍀 MINHAS CARTELAS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
-        <img src={isGold ? '/themes/tema-ouro/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
+        <img src={isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
         <span
           className={isGold ? goldTheme.goldText : undefined}
           style={{
@@ -89,7 +89,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
         >
           MINHAS CARTELAS
         </span>
-        <img src={isGold ? '/themes/tema-ouro/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
+        <img src={isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'} alt="" style={{ width: isGold ? 24 : 20, height: 20, objectFit: 'contain' }} />
       </div>
 
       {/* GRADE pela quantidade (grade de 4 colunas, cada cartela ocupa 2 quando há

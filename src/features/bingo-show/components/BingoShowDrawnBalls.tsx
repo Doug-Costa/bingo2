@@ -37,10 +37,10 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
       <div className={`${goldTheme.vars} ${goldTheme.panel} ${goldHistory.panel}`} style={style}>
         <div className={goldHistory.title}>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img className={goldHistory.paw} src="/themes/tema-ouro/icons/pata.png" alt="" />
+          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
           <span className={goldTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img className={goldHistory.paw} src="/themes/tema-ouro/icons/pata.png" alt="" />
+          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
         </div>
         <div className={goldHistory.grid}>
           {ALL_90_NUMBERS.map((num) => {

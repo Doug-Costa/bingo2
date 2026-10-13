@@ -117,7 +117,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         {total === 1 &&
           (isBingo ? (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${styles.soloChest} ${styles.soloCrown}`} src="/themes/tema-ouro/icons/coroa.png" alt="" draggable={false} />
+            <img className={`${styles.soloChest} ${styles.soloCrown}`} src="/themes/tema-ouro/sm/icons/coroa.png" alt="" draggable={false} />
           ) : (
             <div className={styles.soloArtFrame}>
               {/* eslint-disable-next-line @next/next/no-img-element -- GIF animado do tema */}

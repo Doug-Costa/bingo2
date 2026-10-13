@@ -325,7 +325,9 @@ const MetaCard: React.FC<{
   );
 };
 
-const GOLD_ASSET = '/themes/tema-ouro';
+// Cópias reduzidas (public/themes/tema-ouro/sm): estes <img> não passam pelo
+// otimizador do Next — o original de 1–2 MB seria decodificado inteiro na TV Box.
+const GOLD_ASSET = '/themes/tema-ouro/sm';
 
 /** tema-ouro: uma faixa de prêmio (mesmos dados/estados das outras versões). */
 const GoldPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
