@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackground';
 import { moneyLengthTier } from '../utils/moneyLength';
+import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import py from '../components/paraguay/ParaguayTheme.module.css';
 import styles from './BingoShowLobbyScreenParaguay.module.css';
@@ -140,7 +141,9 @@ const PrizeCard: React.FC<{ label: string; value: string; tone: CardTone; art: s
 export const BingoShowLobbyScreenParaguay: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
   const secs = Math.max(0, mock.countdownSeconds || 0);
-  const countdown = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`;
+  const countdown = formatCountdown(secs);
+  // Contador com hora (H:MM:SS) é mais largo: fonte menor para caber no palco.
+  const timerSize = countdown.length > 5 ? 96 : 132;
   // Faixas do contador (respondem ao tempo REAL): globo vibra perto do sorteio.
   const near = secs > 0 && secs <= 30;
   const drawTitle = mock.drawNumberShort && mock.drawNumberShort !== '#---' ? `SORTEO ${mock.drawNumberShort}` : 'SORTEO EN BREVE';
@@ -216,7 +219,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
                 <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={120} height={189} sizes="120px" />
               </div>
               <div className={styles.timerFrame}>
-                <span key={countdown} className={`${py.goldValue} ${styles.timer}`} suppressHydrationWarning>
+                <span key={countdown} className={`${py.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
                   {countdown}
                 </span>
               </div>

@@ -14,6 +14,7 @@ import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import styles from './BingoShowLobbyScreenBlue.module.css';
 import { BingoShowBlueBenefitsStrip } from '../components/BingoShowBlueBenefitsStrip';
+import { formatCountdown } from '../utils/countdown';
 import { moneyLengthTier } from '../utils/moneyLength';
 
 // Valores dos cards de próximos sorteios: a fonte segue o MAIOR valor do card
@@ -85,10 +86,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
 
   // Formatação do relógio MM:SS
   const formattedCountdown = useMemo(() => {
-    const totalSecs = Math.max(0, mock.countdownSeconds || 0);
-    const mm = String(Math.floor(totalSecs / 60)).padStart(2, '0');
-    const ss = String(totalSecs % 60).padStart(2, '0');
-    return `${mm}:${ss}`;
+    return formatCountdown(mock.countdownSeconds || 0);
   }, [mock.countdownSeconds]);
 
   // =========================================================================

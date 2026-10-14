@@ -360,10 +360,12 @@
   flex: 1;
   min-height: 0;
   width: 100%;
+  box-sizing: border-box;
+  padding: 0 70px 0 10px; /* reserva o canto da guampa */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 22px;
 }
 
 /* Ñandutí atrás do contador: rotação perceptível e escala pulsando suave. */
@@ -386,7 +388,7 @@
 }
 
 .hourglass {
-  width: 120px;
+  width: 104px;
   height: auto;
   filter: drop-shadow(0 10px 14px rgba(0, 3, 12, 0.6));
   transform-origin: 50% 70%;
@@ -429,7 +431,7 @@
 }
 
 .globe {
-  width: 210px;
+  width: 190px;
   height: auto;
   filter: drop-shadow(0 12px 16px rgba(0, 3, 12, 0.6)) drop-shadow(0 0 16px rgba(47, 111, 214, 0.3));
 }

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { formatCountdown } from '../utils/countdown';
 import { BingoShowColors, BingoShowSpacing, BingoShowRadius, BingoShowTypography } from '../design-system';
 
 export interface BingoShowCountdownProps {
@@ -17,9 +18,7 @@ export const BingoShowCountdown: React.FC<BingoShowCountdownProps> = ({
   timerTextStyle,
 }) => {
   const formattedTime = useMemo(() => {
-    const mins = Math.floor(Math.max(0, seconds) / 60);
-    const secs = Math.floor(Math.max(0, seconds) % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return formatCountdown(seconds);
   }, [seconds]);
 
   const isDanger = seconds <= 10 && seconds > 0;

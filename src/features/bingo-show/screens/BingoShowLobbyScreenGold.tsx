@@ -17,6 +17,7 @@ import Image from 'next/image';
 import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
 import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackground';
 import { moneyLengthTier } from '../utils/moneyLength';
+import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import gold from '../components/gold/GoldTheme.module.css';
 import styles from './BingoShowLobbyScreenGold.module.css';
@@ -130,7 +131,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
 
   const countdown = useMemo(() => {
     const total = Math.max(0, mock.countdownSeconds || 0);
-    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+    return formatCountdown(total);
   }, [mock.countdownSeconds]);
 
   return (
@@ -202,7 +203,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
               <span className={styles.stageGlow} />
               <Image className={styles.hourglass} src={`${ASSET}/icons/ampulheta.png`} alt="" width={124} height={188} sizes="124px" />
               <div className={styles.timerFrame}>
-                <span className={`${gold.goldValue} ${styles.timer}`} suppressHydrationWarning>
+                <span className={`${gold.goldValue} ${styles.timer}`} style={{ fontSize: countdown.length > 5 ? 92 : undefined }} suppressHydrationWarning>
                   {countdown}
                 </span>
               </div>
