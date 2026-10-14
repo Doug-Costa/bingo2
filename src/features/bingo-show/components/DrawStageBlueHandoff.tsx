@@ -18,9 +18,15 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { getBallColorName } from './BingoShowBall';
 import blueStyles from './DrawStageBlue.module.css';
 
+/** Módulo de estilos do palco (Blue por padrão; o Paraguay usa um módulo próprio
+ * com os mesmos nomes de classe). */
+export type StageCss = typeof blueStyles;
+
+const defaultCss = blueStyles;
+
 /** Bola lateral do tema Blue — esfera CSS com a mesma linguagem da bola central;
  * cor pela regra existente por faixa. */
-export const BlueNextBall: React.FC<{ number?: number }> = ({ number }) =>
+export const BlueNextBall: React.FC<{ number?: number; css?: StageCss }> = ({ number, css: blueStyles = defaultCss }) =>
   number === undefined ? (
     <div className={`${blueStyles.nextBall} ${blueStyles.nextBallEmpty}`} />
   ) : (
@@ -116,7 +122,11 @@ export function useBlueBallHandoff(
  * lateral (crossfade) enquanto encolhe até o tamanho do slot. Só a superfície
  * central gira; a face lateral chega com o número reto. Web Animations API com os
  * valores medidos (sem calc() multiplicando variáveis — mais seguro em WebView). */
-export const BlueHandoffOverlay: React.FC<{ overlay: Overlay; onLanded: (_overlay: Overlay) => void }> = ({ overlay, onLanded }) => {
+export const BlueHandoffOverlay: React.FC<{ overlay: Overlay; onLanded: (_overlay: Overlay) => void; css?: StageCss }> = ({
+  overlay,
+  onLanded,
+  css: blueStyles = defaultCss,
+}) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const sideRef = useRef<HTMLDivElement>(null);
@@ -198,7 +208,7 @@ export const BlueHandoffOverlay: React.FC<{ overlay: Overlay; onLanded: (_overla
       </div>
       <div ref={sideRef} className={blueStyles.handoffLayer} style={{ opacity: 0 }}>
         <div style={{ transform: `scale(${sideScale})` }}>
-          <BlueNextBall number={overlay.number} />
+          <BlueNextBall number={overlay.number} css={blueStyles} />
         </div>
       </div>
     </div>
@@ -211,8 +221,8 @@ export const BlueHandoffOverlay: React.FC<{ overlay: Overlay; onLanded: (_overla
  * em trânsito (`hidden`) fica invisível no slot até pousar; no pouso, só ela pulsa. */
 export const BlueRecentColumn = React.forwardRef<
   HTMLDivElement,
-  { balls: number[]; hidden: number | null; landed: { n: number; tick: number } | null }
->(({ balls, hidden, landed }, ref) => {
+  { balls: number[]; hidden: number | null; landed: { n: number; tick: number } | null; css?: StageCss }
+>(({ balls, hidden, landed, css: blueStyles = defaultCss }, ref) => {
   const visible = balls.slice(0, 3);
   const [leaving, setLeaving] = useState<number[]>([]);
   const prevRef = useRef<number[]>(visible);
@@ -246,7 +256,7 @@ export const BlueRecentColumn = React.forwardRef<
             style={{ transform: `translateY(${s.slot * SLOT_PITCH_PX}px)`, opacity: isHidden || s.leaving ? 0 : 1 }}
           >
             <div key={isLanded ? `l${landed!.tick}` : 's'} className={isLanded ? blueStyles.slotLanding : undefined}>
-              <BlueNextBall number={s.number} />
+              <BlueNextBall number={s.number} css={blueStyles} />
             </div>
           </div>
         );

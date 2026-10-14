@@ -8,6 +8,8 @@ import blueStyles from './BingoShowPrizeStatusBlue.module.css';
 import ouroStyles from './BingoShowPrizeStatusOuro.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldPrize from './gold/PrizeStatusGold.module.css';
+import pyTheme from './paraguay/ParaguayTheme.module.css';
+import pyPrize from './paraguay/PrizeStatusParaguay.module.css';
 import { useFitText } from '../hooks/useFitText';
 import { moneyLengthTier, type MoneyLengthTier } from '../utils/moneyLength';
 
@@ -431,6 +433,103 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   </div>
 );
 
+const PY_ASSET = '/themes/bingo-show-paraguay/sm';
+
+/** Paraguay: uma faixa de prêmio (mesmos dados/estados; textos em espanhol). */
+const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
+  const isActive = status === 'active';
+  const isCompleted = status === 'completed';
+  const valueTick = useChangeTick(value);
+  const statusText = isActive ? 'EN DISPUTA' : isCompleted ? 'CONCLUIDO' : 'ESPERANDO';
+  return (
+    <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
+      <div
+        className={`${pyTheme.panel} ${isActive ? pyTheme.panelRed : ''} ${pyPrize.row} ${
+          isActive ? pyPrize.rowActive : isCompleted ? pyPrize.rowDone : pyPrize.rowWaiting
+        }`}
+      >
+        <div className={pyPrize.labels}>
+          <span className={`${pyTheme.ribbon} ${pyPrize.tag}`} style={{ padding: '4px 16px 3px', fontWeight: 900, letterSpacing: 1.5 }}>
+            {label}
+          </span>
+          <span className={`${pyPrize.status} ${isActive ? pyPrize.statusActive : isCompleted ? pyPrize.statusDone : pyPrize.statusWaiting}`}>
+            {isCompleted ? '✓ ' : ''}
+            {statusText}
+          </span>
+        </div>
+        <div className={pyPrize.capsule}>
+          {isActive && <span className={goldStyles.goldShine} />}
+          {valueTick > 0 && <span key={valueTick} className={goldStyles.goldFlash} />}
+          <BlueMoney
+            value={value}
+            role={isActive ? 'active' : 'idle'}
+            className={isActive ? pyTheme.goldValue : isCompleted ? `${pyTheme.goldText} ${pyPrize.valueDone}` : pyPrize.valueWaiting}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }> = ({ icon, label, value }) => (
+  <div className={`${pyTheme.panel} ${pyPrize.metaCard}`}>
+    {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
+    <img className={`${pyTheme.art} ${pyPrize.metaIcon}`} src={icon} alt="" draggable={false} />
+    <div className={pyPrize.metaText}>
+      <span className={pyPrize.metaLabel}>{label}</span>
+      <span className={pyPrize.metaValue}>{value || '---'}</span>
+    </div>
+  </div>
+);
+
+/** Paraguay: o painel inteiro (acumulado + 3 prêmios + dados), com os mesmos props. */
+const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
+  accumulatedAmount = 'GS. 0',
+  triggerBallLimit,
+  jackpotActive = false,
+  line1Amount = 'GS. 0',
+  line2Amount = 'GS. 0',
+  bingoAmount = 'GS. 0',
+  line1Status = 'active',
+  line2Status = 'pending',
+  bingoStatus = 'pending',
+  drawNumber = '---',
+  donationAmount = '',
+  dateStr = '',
+  timeStr = '',
+  style,
+}) => (
+  <div className={`${pyTheme.vars} ${pyPrize.column}`} style={style}>
+    <div className={`${pyTheme.panel} ${pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+      <img className={`${pyTheme.art} ${pyPrize.bag}`} src={`${PY_ASSET}/decorative/moedas-guarani.png`} alt="" draggable={false} />
+      <div className={pyPrize.jackpotText}>
+        <span className={pyPrize.jackpotLabel}>ACUMULADO</span>
+        <BlueMoney value={accumulatedAmount} role="jackpot" className={pyTheme.goldValue} />
+      </div>
+      {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
+        <div className={pyPrize.limitBadge}>
+          <span className={pyPrize.limitLabel}>HASTA LA BOLA</span>
+          <span className={`${pyTheme.goldText} ${pyPrize.limitValue}`}>{triggerBallLimit}</span>
+        </div>
+      )}
+    </div>
+
+    <div className={pyPrize.rows}>
+      <ParaguayPrizeRow label="PREMIO 1" value={line1Amount} status={line1Status} />
+      <ParaguayPrizeRow label="PREMIO 2" value={line2Amount} status={line2Status} />
+      <ParaguayPrizeRow label="PREMIO 3" value={bingoAmount} status={bingoStatus} />
+    </div>
+
+    <div className={pyPrize.meta}>
+      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/nanduti.png`} label="SORTEO" value={drawNumber} />
+      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/moedas-guarani.png`} label="DONACIÓN" value={donationAmount} />
+      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/lapacho.png`} label="FECHA" value={dateStr} />
+      <ParaguayMetaCard icon={`${PY_ASSET}/icons/ampulheta.png`} label="HORA" value={timeStr} />
+    </div>
+  </div>
+);
+
 export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
   triggerBallLimit,
@@ -450,6 +549,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   const { theme, isBlue, themeId } = useAppTheme();
   const isOuro = themeId === 'bingo-show';
   const isGold = themeId === 'tema-ouro';
+  const isParaguay = themeId === 'bingo-show-paraguay';
   const primaryColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 
@@ -458,6 +558,28 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
     { label: isBlue ? 'PRÊMIO 2' : '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
     { label: isBlue ? 'PRÊMIO 3' : 'BINGO', value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
   ];
+
+  // Bingo Show Paraguay: painel próprio, mesmos props/dados.
+  if (isParaguay) {
+    return (
+      <ParaguayPrizeStatus
+        accumulatedAmount={accumulatedAmount}
+        triggerBallLimit={triggerBallLimit}
+        jackpotActive={jackpotActive}
+        line1Amount={line1Amount}
+        line2Amount={line2Amount}
+        bingoAmount={bingoAmount}
+        line1Status={line1Status}
+        line2Status={line2Status}
+        bingoStatus={bingoStatus}
+        drawNumber={drawNumber}
+        donationAmount={donationAmount}
+        dateStr={dateStr}
+        timeStr={timeStr}
+        style={style}
+      />
+    );
+  }
 
   // tema-ouro ("Fortuna"): painel próprio, mesmos props/dados.
   if (isGold) {

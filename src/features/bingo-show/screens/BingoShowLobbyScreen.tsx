@@ -12,6 +12,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowLobbyScreenBlue } from './BingoShowLobbyScreenBlue';
 import { BingoShowLobbyScreenDefault } from './BingoShowLobbyScreenDefault';
 import { BingoShowLobbyScreenGold } from './BingoShowLobbyScreenGold';
+import { BingoShowLobbyScreenParaguay } from './BingoShowLobbyScreenParaguay';
 
 export const BingoShowLobbyScreen: React.FC = () => {
   const { themeId, isBlue } = useAppTheme();
@@ -20,6 +21,11 @@ export const BingoShowLobbyScreen: React.FC = () => {
 
   if (isBlueTheme) {
     return <BingoShowLobbyScreenBlue />;
+  }
+
+  // Tema Bingo Show Paraguay: home própria (espanhol, guarani), mesmos dados.
+  if (themeId === 'bingo-show-paraguay') {
+    return <BingoShowLobbyScreenParaguay />;
   }
 
   // Tema `tema-ouro` ("Fortuna"): home própria, mesmos dados.

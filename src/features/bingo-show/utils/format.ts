@@ -10,12 +10,36 @@ export function formatGs(value: number | undefined | null): string {
   })}`;
 }
 
-export function formatBrl(value: number | undefined | null): string {
+/** Moeda de exibição. Provisório: definida pelo tema (Paraguay → guarani). Quando
+ * o SSE passar a enviar a moeda, basta chamar setMoneyCurrency com o valor dele —
+ * todas as telas usam formatBrl/formatMoney e mudam juntas. */
+export type MoneyCurrency = 'BRL' | 'PYG';
+let moneyCurrency: MoneyCurrency = 'BRL';
+
+export function setMoneyCurrency(c: MoneyCurrency): void {
+  moneyCurrency = c;
+}
+
+export function getMoneyCurrency(): MoneyCurrency {
+  return moneyCurrency;
+}
+
+/** Valor formatado na moeda atual: "R$ 1.250,00" ou "₲ 1.250" (guarani sem centavos).
+ * O número é o mesmo que chega do backend — sem conversão. */
+export function formatMoney(value: number | undefined | null): string {
   const n = Number(value ?? 0);
+  if (moneyCurrency === 'PYG') {
+    return `₲ ${Math.round(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
+  }
   return `R$ ${n.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
+}
+
+/** Mantido pelo nome histórico: formata na moeda atual (ver formatMoney). */
+export function formatBrl(value: number | undefined | null): string {
+  return formatMoney(value);
 }
 
 export function parseBrl(value: string | undefined | null): number {

@@ -1,0 +1,117 @@
+/* HistoryParaguay.module.css — "ÚLTIMOS NÚMEROS SORTEADOS" do tema Paraguay.
+ * 90 bolas em CSS (18 × 5, proporção padrão de todos os temas, ~52px). Pendente:
+ * grafite azulado legível, sem glow. Sorteada: cor do tema pela regra por faixa
+ * (getBallColorName). Mais recente: ouro, entrada 0,5 → 1,22 → 1 com giro curto e
+ * flash; depois só o aro dourado fica. Nenhuma bola pulsa continuamente. */
+
+.panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px 12px;
+  box-sizing: border-box;
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.titleNanduti {
+  width: 26px;
+  height: 26px;
+  opacity: 0.85;
+}
+
+.grid {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+}
+
+.ball {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #ffffff);
+  text-shadow: var(--ink-shadow, 0 1px 2px rgba(0, 0, 0, 0.6));
+  background: radial-gradient(circle at 32% 26%, var(--hi) 0%, var(--mid) 32%, var(--low) 66%, var(--deep) 100%);
+  border: 2px solid rgba(229, 180, 71, 0.85);
+  box-shadow:
+    inset 4px 5px 7px rgba(255, 255, 255, 0.24),
+    inset -5px -6px 9px rgba(0, 0, 20, 0.45),
+    0 3px 6px rgba(0, 3, 12, 0.5);
+}
+
+/* Pendente: grafite azulado, número legível, sem glow nem aro de ouro. */
+.pending {
+  --hi: #3b4a6b;
+  --mid: #1d2840;
+  --low: #121a2d;
+  --deep: #090e1a;
+  --ink: rgba(214, 224, 245, 0.62);
+  --ink-shadow: none;
+  border-color: rgba(120, 140, 185, 0.3);
+  box-shadow: inset -3px -4px 7px rgba(0, 0, 0, 0.5);
+}
+
+.c_blue { --hi: #a9c8ff; --mid: #2f6fd6; --low: #123d8c; --deep: #06152d; }
+.c_red { --hi: #ffb0b0; --mid: #d01f2f; --low: #8f0c1b; --deep: #3a0208; }
+.c_green { --hi: #ffffff; --mid: #f4f1e8; --low: #d6cdb4; --deep: #9a8e6c; --ink: #0b2a5e; --ink-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+/* Dourado é só do número mais recente: a faixa 55–72 usa o vermelho. */
+.c_yellow { --hi: #ffb0b0; --mid: #d01f2f; --low: #8f0c1b; --deep: #3a0208; }
+.c_purple { --hi: #8fb0ef; --mid: #1c3f8f; --low: #0b2457; --deep: #030b22; }
+
+/* Mais recente: ouro + entrada. */
+.latest {
+  --hi: #fffbe0;
+  --mid: #ffe27a;
+  --low: #d99a14;
+  --deep: #6a3c02;
+  --ink: #2a1a02;
+  --ink-shadow: 0 1px 0 rgba(255, 246, 200, 0.7);
+  border-color: #fff0a2;
+  box-shadow:
+    inset 4px 5px 7px rgba(255, 255, 255, 0.35),
+    inset -5px -6px 9px rgba(90, 50, 0, 0.45),
+    0 0 0 2px rgba(255, 240, 162, 0.55),
+    0 0 14px rgba(243, 206, 99, 0.7);
+  animation: paraguayBallLatest 600ms cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+
+@keyframes paraguayBallLatest {
+  0% { transform: scale(0.5) rotate(-40deg); filter: brightness(1.6); }
+  60% { transform: scale(1.22) rotate(6deg); filter: brightness(1.25); }
+  100% { transform: none; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .latest {
+    animation: none;
+  }
+}

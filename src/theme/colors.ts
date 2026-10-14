@@ -125,6 +125,38 @@ export const Colors = {
     disabled: 'rgba(226, 184, 255, 0.25)',
   },
 
+  temaParaguay: {
+    // Bingo Show Paraguay: azul-marinho profundo, cobalto, vermelho, branco
+    // perolado e ouro champagne (tricolor como acento controlado).
+    backgroundPrimary: '#06152D',
+    backgroundSecondary: '#0A2350',
+    backgroundDeep: '#020814',
+    surfacePrimary: '#0B2A5E',
+    surfaceSecondary: '#123D8C',
+    surfaceGlass: 'rgba(6, 21, 45, 0.9)',
+    surfaceElevated: '#14478F',
+    goldPrimary: '#F3CE63',
+    goldSecondary: '#75500E',
+    goldLight: '#FFF0A2',
+    bluePrimary: '#2F6FD6',
+    blueSecondary: '#123D8C',
+    blueNeon: '#5B9BFF',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#F4F1E8',
+    textMuted: '#A9B6D3',
+    textOnGold: '#2A1A02',
+    success: '#2ECC71',
+    warning: '#F3CE63',
+    error: '#B81024',
+    info: '#5B9BFF',
+    borderPrimary: '#E5B447',
+    borderSecondary: '#75500E',
+    borderGlow: 'rgba(229, 180, 71, 0.45)',
+    overlay: 'rgba(2, 8, 20, 0.85)',
+    scrim: 'rgba(2, 8, 20, 0.92)',
+    focus: '#F3CE63',
+    disabled: 'rgba(244, 241, 232, 0.25)',
+  },
   temaPub: {
     backgroundPrimary: '#031525', // Azul safira noturno profundo
     backgroundSecondary: '#062846', // Azul marinho intermediário

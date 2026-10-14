@@ -369,6 +369,7 @@ export const BingoShowPromoModal: React.FC = () => {
   const isOuro = themeId === 'bingo-show';
   // tema-ouro ("Fortuna"): moldura de ouro em CSS, contador em laca vermelha.
   const isGold = themeId === 'tema-ouro';
+  const isParaguay = themeId === 'bingo-show-paraguay';
   const promos = useMemo(() => (Array.isArray(promotions) ? promotions.filter((p) => p && p.id) : []), [promotions]);
   const nextDrawAt = useNextDrawAt();
 
@@ -440,7 +441,7 @@ export const BingoShowPromoModal: React.FC = () => {
 
   return (
     <div className={styles.backdrop} role="dialog" aria-label={nonEmpty(promo.title) || 'Promoção'}>
-      <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''} ${isGold ? styles.frameGold : ''}`}>
+      <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''} ${isGold ? styles.frameGold : ''} ${isParaguay ? styles.frameParaguay : ''}`}>
         <PromoContent promo={promo} durationMs={durationMs} onGiveUp={skip} />
 
         <div className={styles.counter} aria-label={`Promoção termina em ${seconds} segundos`}>

@@ -42,6 +42,7 @@ import { type PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import goldStyles from '../components/goldMetalText.module.css';
 import goldTheme from '../components/gold/GoldTheme.module.css';
+import pyTheme from '../components/paraguay/ParaguayTheme.module.css';
 import { useAppTheme } from '@/contexts/ThemeContext';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
@@ -63,11 +64,15 @@ export const BingoShowDrawScreen: React.FC = () => {
   const goldTitle = isBlue || themeId === 'bingo-show';
   // tema-ouro ("Fortuna"): ouro em vários tons, laca vermelha e o logo dourado.
   const isGold = themeId === 'tema-ouro';
+  // Bingo Show Paraguay: textos em espanhol, Loteria'i como marca principal.
+  const isParaguay = themeId === 'bingo-show-paraguay';
+  // Temas com o título em ouro próprio (classe do tema) e acentos dourados.
+  const warm = isGold || isParaguay;
   const [soundOn, setSoundOn] = useState(true);
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
   // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
-  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber);
+  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, isParaguay ? 'es' : 'pt');
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
@@ -96,14 +101,24 @@ export const BingoShowDrawScreen: React.FC = () => {
         }}
       >
         {/* LEFT: 3D LOGO */}
-        <div style={{ display: 'flex', alignItems: 'center', minWidth: 220 }}>
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 220, gap: 6 }}>
+          {isParaguay && (
+            // eslint-disable-next-line @next/next/no-img-element -- marca principal do tema
+            <img src="/themes/bingo-show-paraguay/sm/logos/logo-loteriai.png" alt="Loteria'i" style={{ height: 60, objectFit: 'contain', filter: 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' }} />
+          )}
           <img
-            src={isGold ? '/themes/tema-ouro/sm/logos/logo-bingo-show.png' : '/themes/bingo-show-blue/logos/logo-main.png'}
+            src={
+              isParaguay
+                ? '/themes/bingo-show-paraguay/sm/logos/logo-bingo-show-paraguay.png'
+                : isGold
+                ? '/themes/tema-ouro/sm/logos/logo-bingo-show.png'
+                : '/themes/bingo-show-blue/logos/logo-main.png'
+            }
             alt="BINGO SHOW"
             style={{
-              height: isGold ? 58 : 52,
+              height: isParaguay ? 50 : isGold ? 58 : 52,
               objectFit: 'contain',
-              filter: isGold ? 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6))' : 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
+              filter: warm ? 'drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6))' : 'drop-shadow(0 0 12px rgba(8, 127, 252, 0.6))',
             }}
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = 'none';
@@ -118,43 +133,43 @@ export const BingoShowDrawScreen: React.FC = () => {
               fonte e espaçamento continuam os mesmos em todos os temas. */}
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <span
-              className={goldTitle || isGold ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle || warm ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
             <span
-              className={isGold ? goldTheme.goldText : goldTitle ? goldStyles.goldMetalText : undefined}
+              className={isParaguay ? pyTheme.goldText : isGold ? goldTheme.goldText : goldTitle ? goldStyles.goldMetalText : undefined}
               style={{
                 fontSize: 32,
                 fontWeight: 900,
                 letterSpacing: 3,
                 fontFamily: 'Barlow Condensed, sans-serif',
                 textTransform: 'uppercase',
-                ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
+                ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
               }}
             >
-              BINGO AO VIVO
+              {isParaguay ? 'BINGO EN VIVO' : 'BINGO AO VIVO'}
             </span>
             <span
-              className={goldTitle || isGold ? goldStyles.goldIcon : undefined}
-              style={{ fontSize: 22, ...(goldTitle || isGold ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
+              className={goldTitle || warm ? goldStyles.goldIcon : undefined}
+              style={{ fontSize: 22, ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
           </div>
           <span
-            className={goldTitle || isGold ? goldStyles.liveSubtitle : undefined}
+            className={goldTitle || warm ? goldStyles.liveSubtitle : undefined}
             style={{
               fontSize: 13,
               fontWeight: 900,
               letterSpacing: 3,
               textTransform: 'uppercase',
               marginTop: -4,
-              ...(goldTitle || isGold ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
+              ...(goldTitle || warm ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
             }}
           >
-            ★ SUA SORTE, NOSSO BINGO! ★
+            {isParaguay ? '★ TU SUERTE, NUESTRO BINGO ★' : '★ SUA SORTE, NOSSO BINGO! ★'}
           </span>
         </div>
 
@@ -169,11 +184,11 @@ export const BingoShowDrawScreen: React.FC = () => {
               flexDirection: 'row',
               alignItems: 'center',
               gap: 8,
-              backgroundColor: isGold ? 'rgba(21, 16, 8, 0.92)' : 'rgba(3, 17, 48, 0.88)',
-              border: isGold ? '1.5px solid rgba(233, 169, 26, 0.75)' : '1.5px solid rgba(25, 117, 210, 0.6)',
+              backgroundColor: isParaguay ? 'rgba(6, 21, 45, 0.92)' : isGold ? 'rgba(21, 16, 8, 0.92)' : 'rgba(3, 17, 48, 0.88)',
+              border: warm ? '1.5px solid rgba(233, 169, 26, 0.75)' : '1.5px solid rgba(25, 117, 210, 0.6)',
               borderRadius: 20,
               padding: '6px 14px',
-              boxShadow: isGold ? '0 0 12px rgba(255, 179, 0, 0.25)' : '0 0 14px rgba(8, 127, 252, 0.3)',
+              boxShadow: warm ? '0 0 12px rgba(255, 179, 0, 0.25)' : '0 0 14px rgba(8, 127, 252, 0.3)',
               boxSizing: 'border-box',
             }}
           >
@@ -190,8 +205,8 @@ export const BingoShowDrawScreen: React.FC = () => {
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: isGold ? (soundOn ? '#A3161C' : 'rgba(21, 16, 8, 0.92)') : soundOn ? '#087FFC' : 'rgba(3, 17, 48, 0.88)',
-              borderColor: isGold ? '#E9A91A' : soundOn ? '#17C8FF' : 'rgba(25, 117, 210, 0.5)',
+              backgroundColor: warm ? (soundOn ? '#A3161C' : 'rgba(21, 16, 8, 0.92)') : soundOn ? '#087FFC' : 'rgba(3, 17, 48, 0.88)',
+              borderColor: warm ? '#E9A91A' : soundOn ? '#17C8FF' : 'rgba(25, 117, 210, 0.5)',
               borderWidth: 1.5,
               borderStyle: 'solid',
               display: 'flex',
@@ -199,7 +214,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               justifyContent: 'center',
               cursor: 'pointer',
               boxSizing: 'border-box',
-              boxShadow: soundOn ? (isGold ? '0 0 12px rgba(255, 179, 0, 0.5)' : '0 0 14px rgba(23, 200, 255, 0.6)') : 'none',
+              boxShadow: soundOn ? (warm ? '0 0 12px rgba(255, 179, 0, 0.5)' : '0 0 14px rgba(23, 200, 255, 0.6)') : 'none',
               transition: 'all 200ms ease',
             }}
           >

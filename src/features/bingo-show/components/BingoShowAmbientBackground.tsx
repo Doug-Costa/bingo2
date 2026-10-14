@@ -5,6 +5,7 @@ import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { GoldBackground } from './gold/GoldBackground';
+import { ParaguayBackground } from './paraguay/ParaguayBackground';
 
 
 interface ParticleSpec {
@@ -89,6 +90,16 @@ export function BingoShowAmbientBackground({
 
   // Tema `tema-ouro` ("Fortuna"): fundo próprio, só CSS (camadas, seigaiha,
   // partículas de ouro). O conteúdo continua igual.
+  // Tema Bingo Show Paraguay: fundo vivo próprio (ñandutí, halos, partículas).
+  if (themeId === 'bingo-show-paraguay') {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#06152D', overflow: 'hidden' }}>
+        <ParaguayBackground />
+        <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
+      </div>
+    );
+  }
+
   if (themeId === 'tema-ouro') {
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#03040A', overflow: 'hidden' }}>

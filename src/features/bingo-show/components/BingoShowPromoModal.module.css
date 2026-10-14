@@ -358,6 +358,58 @@
   box-shadow: 0 0 8px rgba(255, 190, 40, 0.6);
 }
 
+/* ─── Bingo Show Paraguay ──────────────────────────────────────────────────
+ * Moldura azul-marinho com borda de ouro e filete; contador em vermelho com aro
+ * de ouro; barra de progresso tricolor. Fullscreen e regras inalterados. */
+.frameParaguay {
+  border: 3px solid transparent;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, #0b2a5e 0%, #061636 100%) padding-box,
+    linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+  box-shadow: 0 24px 60px rgba(0, 3, 12, 0.6), 0 0 28px rgba(229, 180, 71, 0.3);
+  padding: 18px;
+}
+
+.frameParaguay::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 240, 162, 0.3);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.frameParaguay .content {
+  border-radius: 16px;
+}
+
+.frameParaguay .counter {
+  top: 34px;
+  right: 34px;
+  border: 2px solid #f3ce63;
+  background: linear-gradient(180deg, #d01f2f 0%, #a10f21 60%, #6e0814 100%);
+  box-shadow: 0 6px 14px rgba(0, 3, 12, 0.55), 0 0 12px rgba(229, 180, 71, 0.35);
+}
+
+.frameParaguay .counterValue {
+  color: #ffffff;
+}
+
+.frameParaguay .progressTrack {
+  left: 40px;
+  right: 40px;
+  bottom: 7px;
+  height: 6px;
+  background: rgba(244, 241, 232, 0.15);
+  z-index: 4;
+}
+
+.frameParaguay .progressBar {
+  background: linear-gradient(90deg, #d01f2f 0 33.4%, #f4f1e8 33.4% 66.6%, #1f4fb4 66.6% 100%);
+}
+
 @keyframes backdropIn {
   from { opacity: 0; }
   to { opacity: 1; }

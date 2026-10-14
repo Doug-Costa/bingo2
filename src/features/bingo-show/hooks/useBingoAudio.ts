@@ -16,21 +16,28 @@ import { WinnerEvent } from '../../../contexts/SSEContext';
  *   toca; ao ficar ao vivo, a bola atual e os prêmios já existentes são marcados
  *   como anunciados — a TV não repete o que já tinha falado.
  * - Só bolas 1–90 (sem o "0.mp3" inexistente do início da rodada).
+ * - Idioma da voz pelo tema (Paraguay → espanhol, em /audio/es/ com os mesmos nomes
+ *   de arquivo). Arquivo em espanhol que não existir cai para o mesmo em português,
+ *   e fica marcado para não ser tentado de novo.
  */
 
-type Clip = { kind: 'ball' | 'prize'; src: string };
+type Clip = { kind: 'ball' | 'prize'; src: string; fallback?: string };
+export type VoiceLang = 'pt' | 'es';
 
 const MAX_SOUND_MS = 6000; // proteção caso 'ended' nunca dispare
 
 let queue: Clip[] = [];
 let playing = false;
 let current: HTMLAudioElement | null = null;
+const missing = new Set<string>(); // arquivos que não existem (não tentar de novo)
 
 function playNext() {
   if (playing) return;
-  const clip = queue.shift();
+  let clip = queue.shift();
   if (!clip) return;
+  if (missing.has(clip.src) && clip.fallback) clip = { ...clip, src: clip.fallback, fallback: undefined };
   playing = true;
+  const thisClip = clip;
   const audio = new Audio(clip.src);
   current = audio;
   audio.volume = 1.0;
@@ -45,9 +52,19 @@ function playNext() {
   };
   const guard = setTimeout(finish, MAX_SOUND_MS);
   audio.addEventListener('ended', finish, { once: true });
-  audio.addEventListener('error', finish, { once: true });
+  // Arquivo inexistente/ilegível: marca e toca a versão alternativa (português).
+  const fail = () => {
+    if (done) return;
+    if (thisClip.fallback) {
+      missing.add(thisClip.src);
+      queue.unshift({ ...thisClip, src: thisClip.fallback, fallback: undefined });
+    }
+    finish();
+  };
+  audio.addEventListener('error', fail, { once: true });
   audio.play().catch((e) => {
-    console.log('[AUDIO] reprodução bloqueada:', clip.src, e?.name || e);
+    if (e?.name === 'NotSupportedError') return fail();
+    console.log('[AUDIO] reprodução bloqueada:', thisClip.src, e?.name || e);
     finish();
   });
 }
@@ -76,11 +93,16 @@ function prizeTypeOf(type?: string): 'line1' | 'line2' | 'bingo' | null {
   return null;
 }
 
-const PRIZE_SRC: Record<'line1' | 'line2' | 'bingo', string> = {
-  line1: '/audio/pt/win_line1.mp3',
-  line2: '/audio/pt/win_line2.mp3',
-  bingo: '/audio/pt/win_bingo.mp3',
+const PRIZE_FILE: Record<'line1' | 'line2' | 'bingo', string> = {
+  line1: 'win_line1.mp3',
+  line2: 'win_line2.mp3',
+  bingo: 'win_bingo.mp3',
 };
+
+/** Clip no idioma pedido; espanhol leva o português como alternativa. */
+function voiceClip(kind: Clip['kind'], file: string, lang: VoiceLang): Clip {
+  return lang === 'es' ? { kind, src: `/audio/es/${file}`, fallback: `/audio/pt/${file}` } : { kind, src: `/audio/pt/${file}` };
+}
 
 export function useBingoAudio(
   soundOn: boolean,
@@ -88,6 +110,7 @@ export function useBingoAudio(
   winners: WinnerEvent[],
   isLive: boolean = true,
   drawId: string = '',
+  lang: VoiceLang = 'pt',
 ) {
   // O que já está na tela quando o componente monta (ex.: reload, troca de tela)
   // conta como já anunciado — só mudanças a partir daqui são faladas.
@@ -124,8 +147,8 @@ export function useBingoAudio(
     lastBallRef.current = currentBall;
     // Restaurando (reload/reconexão): registra sem falar.
     if (!isLive || !soundOn) return;
-    enqueue({ kind: 'ball', src: `/audio/pt/${currentBall}.mp3` });
-  }, [currentBall, soundOn, isLive]);
+    enqueue(voiceClip('ball', `${currentBall}.mp3`, lang));
+  }, [currentBall, soundOn, isLive, lang]);
 
   // 2. Voz dos prêmios (uma vez por faixa por sorteio)
   useEffect(() => {
@@ -143,7 +166,7 @@ export function useBingoAudio(
       announcedRef.current.add(t);
       // Restaurando: marca como já anunciado, sem tocar.
       if (!isLive || !soundOn) return;
-      enqueue({ kind: 'prize', src: PRIZE_SRC[t] });
+      enqueue(voiceClip('prize', PRIZE_FILE[t], lang));
     });
-  }, [winners, soundOn, isLive]);
+  }, [winners, soundOn, isLive, lang]);
 }

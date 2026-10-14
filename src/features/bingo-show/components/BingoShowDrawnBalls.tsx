@@ -8,6 +8,8 @@ import blueGrid from './BingoShowDrawnBallsBlue.module.css';
 import ouroGrid from './BingoShowDrawnBallsOuro.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldHistory from './gold/HistoryGold.module.css';
+import pyTheme from './paraguay/ParaguayTheme.module.css';
+import pyHistory from './paraguay/HistoryParaguay.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowDrawnBallsProps {
@@ -30,6 +32,32 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   const isBlueTheme = themeId === 'bingo-show-blue';
   // Bingo Show (Ouro & Espaço): grade própria com as bolas 3D do tema.
   const isOuro = themeId === 'bingo-show';
+
+  // Bingo Show Paraguay: painel cobalto com moldura de ouro + 90 bolas em CSS.
+  if (themeId === 'bingo-show-paraguay') {
+    return (
+      <div className={`${pyTheme.vars} ${pyTheme.panel} ${pyTheme.sweep} ${pyHistory.panel}`} style={{ ['--sweep-delay' as string]: '6s', ...style }}>
+        <div className={pyHistory.title}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src="/themes/bingo-show-paraguay/sm/decorative/nanduti.png" alt="" draggable={false} />
+          <span className={pyTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src="/themes/bingo-show-paraguay/sm/decorative/nanduti.png" alt="" draggable={false} />
+        </div>
+        <div className={pyHistory.grid}>
+          {ALL_90_NUMBERS.map((num) => {
+            const isDrawn = drawnSet.has(num);
+            const cls = num === latestBall ? pyHistory.latest : isDrawn ? pyHistory[`c_${getBallColorName(num, 'drawn')}`] : pyHistory.pending;
+            return (
+              <div key={num} className={`${pyHistory.ball} ${cls}`}>
+                {num}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   // tema-ouro ("Fortuna"): painel de ouro + 90 bolas de ouro em CSS.
   if (themeId === 'tema-ouro') {

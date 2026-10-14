@@ -821,6 +821,48 @@ export const temaNeonTokens: ThemeTokens = {
 };
 
 // ─── Tema Safira PUB (tema03 / tema-pub) ─────────────────────────────────────
+// ─── Tema Bingo Show Paraguay (bingo-show-paraguay) ────────────────────────
+// Mesma estrutura do Ouro Imperial; só cores e metadados próprios. A apresentação
+// específica do tema vive nos componentes `paraguay/` (atrás do themeId).
+export const temaParaguayTokens: ThemeTokens = {
+  ...temaOuroTokens,
+  bgColor: Colors.temaParaguay.backgroundPrimary,
+  panelBg: Colors.temaParaguay.surfaceGlass,
+  headerBg: Colors.temaParaguay.surfacePrimary,
+  glassBg: 'rgba(11, 42, 94, 0.45)',
+  primary: Colors.temaParaguay.goldPrimary,
+  primaryGlow: Colors.temaParaguay.borderGlow,
+  secondary: Colors.temaParaguay.bluePrimary,
+  accent: Colors.temaParaguay.goldLight,
+  jackpotText: Colors.temaParaguay.goldPrimary,
+  ballBg: Colors.temaParaguay.surfaceSecondary,
+  ballText: '#FFFFFF',
+  countdownBg: Colors.temaParaguay.backgroundSecondary,
+  countdownText: Colors.temaParaguay.goldPrimary,
+  borderPrimary: Colors.temaParaguay.borderPrimary,
+  borderSecondary: Colors.temaParaguay.borderSecondary,
+  borderMuted: Colors.temaParaguay.borderGlow,
+  textPrimary: Colors.temaParaguay.textPrimary,
+  textSecondary: Colors.temaParaguay.textSecondary,
+  textMuted: Colors.temaParaguay.textMuted,
+  success: Colors.temaParaguay.success,
+  error: Colors.temaParaguay.error,
+  gridDrawn: Colors.temaParaguay.error,
+  gridCurrent: Colors.temaParaguay.goldPrimary,
+  gridEmpty: 'rgba(20, 32, 60, 0.65)',
+  meta: {
+    id: 'bingo-show-paraguay',
+    name: 'bingo-show-paraguay',
+    displayName: 'Bingo Show Paraguay',
+    version: '1.0.0',
+    description: 'Tema paraguaio: azul-marinho, tricolor, ñandutí, lapacho e valores em guarani',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+  colorsExtended: Colors.temaParaguay,
+};
+
 export const temaPubTokens: ThemeTokens = {
   bgColor: Colors.temaPub.backgroundPrimary,
   panelBg: Colors.temaPub.surfaceGlass,
@@ -994,6 +1036,19 @@ export const AVAILABLE_THEMES: ThemeOption[] = [
     },
   },
   {
+    id: 'bingo-show-paraguay',
+    name: 'bingo-show-paraguay',
+    displayName: 'Bingo Show Paraguay',
+    description: 'Azul-marinho, tricolor e ouro champagne, com ñandutí e lapacho. Valores em guarani.',
+    badge: 'PY',
+    previewColors: {
+      primary: '#F3CE63',
+      secondary: '#B81024',
+      background: '#06152D',
+      accent: '#FFFFFF',
+    },
+  },
+  {
     id: 'tema-pub',
     name: 'tema-pub',
     displayName: 'Safira PUB (Azul & Esmeralda)',
@@ -1015,6 +1070,9 @@ export function getThemeKey(themeInput?: unknown): string {
   if (!themeInput) return 'bingo-show';
   if (typeof themeInput === 'string') {
     const norm = themeInput.toLowerCase().trim();
+    if (norm.includes('paraguay') || norm === 'py') {
+      return 'bingo-show-paraguay';
+    }
     if (norm.includes('blue') || norm === 'tema-blue' || norm === 'bingo-show-blue') {
       return 'bingo-show-blue';
     }
@@ -1031,6 +1089,7 @@ export function getThemeKey(themeInput?: unknown): string {
   }
   if (typeof themeInput === 'object' && themeInput !== null) {
     const id = String((themeInput as any).id || (themeInput as any).name || (themeInput as any).type || '').toLowerCase();
+    if (id.includes('paraguay')) return 'bingo-show-paraguay';
     if (id.includes('blue') || id === 'tema-blue') return 'bingo-show-blue';
     if (id.includes('ouro') || id.includes('gold') || id === 'tema01' || id === 'tema-ouro') return 'tema-ouro';
     if (id.includes('neon') || id.includes('cyber') || id.includes('ambar') || id === 'tema02' || id === 'tema-neon') return 'tema-neon';
@@ -1053,6 +1112,8 @@ export function resolveTheme(themeInput?: unknown): ThemeTokens {
       return temaNeonTokens;
     case 'tema-pub':
       return temaPubTokens;
+    case 'bingo-show-paraguay':
+      return temaParaguayTokens;
     case 'bingo-show':
     default:
       return temaBingoShow;

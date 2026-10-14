@@ -205,18 +205,23 @@ import { BingoShowAssets } from '../assets';
 import goldStyles from './goldMetalText.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldStage from './gold/DrawStageGold.module.css';
+import pyStage from './paraguay/DrawStageParaguay.module.css';
+import pyTheme from './paraguay/ParaguayTheme.module.css';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
  * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
  * elementos a cada render/tick. */
 const BLUE_OUTER_DOT_COUNT = 24;
-const BLUE_OUTER_DOTS = Array.from({ length: BLUE_OUTER_DOT_COUNT }, (_, i) => (
-  <span
-    key={i}
-    className={blueStyles.outerDot}
-    style={{ transform: `rotate(${(i * 360) / BLUE_OUTER_DOT_COUNT}deg) translateY(calc(var(--outer) / -2 + 1px))` }}
-  />
-));
+const outerDots = (dotClass: string) =>
+  Array.from({ length: BLUE_OUTER_DOT_COUNT }, (_, i) => (
+    <span
+      key={i}
+      className={dotClass}
+      style={{ transform: `rotate(${(i * 360) / BLUE_OUTER_DOT_COUNT}deg) translateY(calc(var(--outer) / -2 + 1px))` }}
+    />
+  ));
+const BLUE_OUTER_DOTS = outerDots(blueStyles.outerDot ?? '');
+const PY_OUTER_DOTS = outerDots(pyStage.outerDot ?? '');
 
 /** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
 const ExitBall: React.FC<{ number: number }> = ({ number }) => {
@@ -482,6 +487,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const isOuro = themeId === 'bingo-show';
   // Tema `tema-ouro` ("Fortuna"): painel de ouro do tema + bola de ouro em CSS.
   const isGold = themeId === 'tema-ouro';
+  // Bingo Show Paraguay: mesmo palco "com passagem" do Blue (entrada pela esquerda,
+  // saída para a coluna), com o módulo visual do tema.
+  const isParaguay = themeId === 'bingo-show-paraguay';
+  const stagedBall = isBlue || isParaguay;
+  const sc = isParaguay ? pyStage : blueStyles;
   const primaryColor = theme.primary || '#FFCF12';
   const secondaryColor = theme.secondary || '#17C8FF';
   const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
@@ -500,14 +510,14 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   // lateral continua sendo `nextBalls` (SSE).
   const stageRef = useRef<HTMLDivElement>(null);
   const columnRef = useRef<HTMLDivElement>(null);
-  const handoff = useBlueBallHandoff(isBlue, currentNumber, reducedMotion, stageRef, columnRef);
+  const handoff = useBlueBallHandoff(stagedBall, currentNumber, reducedMotion, stageRef, columnRef);
 
   // Reação dos anéis ao impacto: um pulso curto no wrapper, disparado uma vez por
   // bola. Web Animations API em vez de remontar os anéis — a rotação contínua deles
   // nunca reinicia, e não há render do React por quadro.
   useEffect(() => {
     const el = ringsRef.current;
-    if (!isBlue || reducedMotion || !el || typeof el.animate !== 'function') return;
+    if (!stagedBall || reducedMotion || !el || typeof el.animate !== 'function') return;
     const anim = el.animate(
       [
         { transform: 'scale(1)', filter: 'brightness(1)' },
@@ -517,7 +527,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
       { duration: 440, delay: 1000, easing: 'ease-out' },
     );
     return () => anim.cancel();
-  }, [ballKey, isBlue, reducedMotion]);
+  }, [ballKey, stagedBall, reducedMotion]);
 
   // Bola atual: bolas já sorteadas nesta rodada (vem do SSE via
   // `sequenceNumber` = drawnBalls.length) contra o total do bingo de 90.
@@ -540,21 +550,21 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           {/* Blue: ouro metálico compacto (goldMetalText.module.css); demais temas
               mantêm o amarelo chapado. Tamanho/fonte/espaçamento iguais. */}
-          <span className={isBlue || isOuro || isGold ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro || isGold || isParaguay ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold || isParaguay ? {} : { color: '#FFCF12' }) }}>★</span>
           <span
-            className={isGold ? goldTheme.goldText : isBlue || isOuro ? goldStyles.goldMetalTextCompact : undefined}
+            className={isParaguay ? pyTheme.goldText : isGold ? goldTheme.goldText : isBlue || isOuro ? goldStyles.goldMetalTextCompact : undefined}
             style={{
               fontWeight: 900,
               fontSize: 22,
               letterSpacing: 3,
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
-              ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
+              ...(isBlue || isOuro || isGold || isParaguay ? {} : { color: '#FFCF12', textShadow: `0 0 14px ${glowColor}` }),
             }}
           >
             {title}
           </span>
-          <span className={isBlue || isOuro || isGold ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold ? {} : { color: '#FFCF12' }) }}>★</span>
+          <span className={isBlue || isOuro || isGold || isParaguay ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold || isParaguay ? {} : { color: '#FFCF12' }) }}>★</span>
         </div>
 
         {/* RIGHT SUB-TITLE */}
@@ -573,7 +583,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           >
             {/* Blue: a coluna mostra as bolas que JÁ passaram pelo centro (as 3
                 últimas sorteadas), não as próximas — rótulo corrigido só no Blue. */}
-            {isBlue || isOuro || isGold ? (
+            {isBlue || isOuro || isGold || isParaguay ? (
               <>
                 ÚLTIMOS<br />NÚMEROS
               </>
@@ -599,46 +609,46 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           gap: 24,
         }}
       >
-        {isBlue ? (
+        {stagedBall ? (
           <>
             {/* Palco Blue em camadas (atmosfera → anel externo → anel interno →
                 reflexos → bola → número). Estilos em DrawStageBlue.module.css.
                 `key={ballKey}` remonta SÓ a bola quando chega uma bola real nova,
                 reiniciando a entrada; os anéis ficam fora da key e nunca reiniciam. */}
-            <div ref={stageRef} className={blueStyles.blueDrawStage}>
-              <div className={blueStyles.stageAtmosphere} />
-              <div ref={ringsRef} className={blueStyles.ringsGroup}>
-                <div className={blueStyles.outerRing}>{BLUE_OUTER_DOTS}</div>
-                <div className={blueStyles.innerRing} />
-                <div className={blueStyles.stageRays} />
+            <div ref={stageRef} className={sc.blueDrawStage}>
+              <div className={sc.stageAtmosphere} />
+              <div ref={ringsRef} className={sc.ringsGroup}>
+                <div className={sc.outerRing}>{isParaguay ? PY_OUTER_DOTS : BLUE_OUTER_DOTS}</div>
+                <div className={sc.innerRing} />
+                <div className={sc.stageRays} />
               </div>
               {/* Chegada dramática: remonta só com `ballKey` (bola real nova).
                   ballFlight = trajetória/escala/rastro · ballSpin = rotação ·
                   mainBingoBall = a bola aprovada · número fora da rotação. */}
               <React.Fragment key={ballKey}>
-                <span className={blueStyles.ballImpactFlash} />
-                <div className={blueStyles.ballFlight}>
-                  <div className={blueStyles.ballSpin}>
-                    <div className={blueStyles.mainBingoBall}>
-                      <span className={blueStyles.ballSpecular} />
-                      <span className={blueStyles.ballReflection} />
-                      <span className={blueStyles.ballGlint} />
+                <span className={sc.ballImpactFlash} />
+                <div className={sc.ballFlight}>
+                  <div className={sc.ballSpin}>
+                    <div className={sc.mainBingoBall}>
+                      <span className={sc.ballSpecular} />
+                      <span className={sc.ballReflection} />
+                      <span className={sc.ballGlint} />
                     </div>
                   </div>
-                  <span className={blueStyles.ballNumber}>{currentNumber > 0 ? currentNumber : '--'}</span>
+                  <span className={sc.ballNumber}>{currentNumber > 0 ? currentNumber : '--'}</span>
                 </div>
-                <span className={blueStyles.ballImpactRing} />
+                <span className={sc.ballImpactRing} />
               </React.Fragment>
               {/* Bola anterior saindo pela DIREITA: encolhe e pousa no 1º slot
                   lateral (posição medida), virando a bola lateral no caminho. */}
               {handoff.overlay && (
-                <BlueHandoffOverlay key={handoff.overlay.id} overlay={handoff.overlay} onLanded={handoff.onLanded} />
+                <BlueHandoffOverlay key={handoff.overlay.id} overlay={handoff.overlay} onLanded={handoff.onLanded} css={sc} />
               )}
             </div>
 
             {/* Últimas bolas (valores/ordem de `nextBalls`, SSE): as antigas descem
                 uma posição; a nova só aparece no 1º slot quando a bola pousa. */}
-            <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} />
+            <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} css={sc} />
           </>
         ) : isGold ? (
           <>
@@ -828,7 +838,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         )}
 
         {/* Flying ball exit effect (tema Blue renderiza a sua dentro do palco) */}
-        {!isBlue && flyingBalls.map((fb) => (
+        {!stagedBall && flyingBalls.map((fb) => (
           <FlyingExitBall key={fb.id} number={fb.number} />
         ))}
       </div>
@@ -844,19 +854,23 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           paddingLeft: 12,
           paddingRight: 12,
           paddingTop: 6,
-          borderTop: isBlue ? '1px solid rgba(23, 200, 255, 0.5)' : isGold ? '1px solid rgba(233, 169, 26, 0.35)' : '1px solid rgba(25, 117, 210, 0.4)',
+          borderTop: isBlue
+            ? '1px solid rgba(23, 200, 255, 0.5)'
+            : isGold || isParaguay
+            ? '1px solid rgba(233, 169, 26, 0.35)'
+            : '1px solid rgba(25, 117, 210, 0.4)',
           boxShadow: isBlue ? 'inset 0 1px 0 rgba(23, 200, 255, 0.25), 0 -6px 16px -10px rgba(23, 200, 255, 0.6)' : undefined,
         }}
       >
         {/* LEFT (todos os temas): bola com a pedra atual + "BOLA X/90". Blue com a
             bola 3D do tema; demais com a bola dourada do Bingo Show. */}
-        {isBlue ? (
-          <div className={blueStyles.seqRow}>
-            <div key={drawnCount} className={blueStyles.seqBall}>
-              <span className={blueStyles.seqBallShine} />
-              <span className={blueStyles.seqBallNumber}>{drawnCount}</span>
+        {stagedBall ? (
+          <div className={sc.seqRow}>
+            <div key={drawnCount} className={sc.seqBall}>
+              <span className={sc.seqBallShine} />
+              <span className={sc.seqBallNumber}>{drawnCount}</span>
             </div>
-            <span className={`${goldStyles.goldMetalTextCompact} ${blueStyles.seqValue}`}>
+            <span className={`${isParaguay ? pyTheme.goldText : goldStyles.goldMetalTextCompact} ${sc.seqValue}`}>
               BOLA {drawnCount}/{TOTAL_BALLS}
             </span>
           </div>
@@ -882,8 +896,16 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           </div>
         )}
 
-        {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK (tema-ouro: o Maneki-Neko) */}
-        {isGold ? (
+        {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK (tema-ouro: o Maneki-Neko;
+            Paraguay: guampa de tereré + globo do tema, flutuando devagar) */}
+        {isParaguay ? (
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+            <img className={`${pyTheme.art} ${pyTheme.float}`} src="/themes/bingo-show-paraguay/sm/decorative/guampa-terere.png" alt="" draggable={false} style={{ height: 70, width: 'auto' }} />
+            {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+            <img className={`${pyTheme.art} ${pyTheme.float}`} src="/themes/bingo-show-paraguay/sm/decorative/globo.png" alt="Globo" draggable={false} style={{ height: 112, width: 'auto', ['--float-delay' as string]: '1.2s' }} />
+          </div>
+        ) : isGold ? (
           <div className={goldStage.catFrame}>
             {/* eslint-disable-next-line @next/next/no-img-element -- GIF animado do tema */}
             <img className={goldStage.cat} src="/themes/tema-ouro/decorative/maneki-neko.gif" alt="Gato da sorte" draggable={false} />
@@ -914,6 +936,18 @@ export const DrawStage: React.FC<DrawStageProps> = ({
       </div>
     </>
   );
+
+  // Paraguay: painel cobalto com moldura de ouro e reflexo eventual na borda.
+  if (isParaguay) {
+    return (
+      <div
+        className={`${pyTheme.vars} ${pyTheme.panel} ${pyTheme.sweep} ${goldStage.frame}`}
+        style={{ position: 'relative', ['--sweep-delay' as string]: '4s', ...style }}
+      >
+        {content}
+      </div>
+    );
+  }
 
   // tema-ouro: painel de ouro do tema (moldura em gradiente + filete interno).
   if (isGold) {

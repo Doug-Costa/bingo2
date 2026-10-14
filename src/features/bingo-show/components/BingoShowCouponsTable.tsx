@@ -6,11 +6,18 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
 import ouroTable from './BingoShowCouponsTableOuro.module.css';
 import goldTable from './BingoShowCouponsTableGold.module.css';
+import pyTable from './paraguay/CouponsTableParaguay.module.css';
+import pyTheme from './paraguay/ParaguayTheme.module.css';
 import goldPanel from './gold/GoldTheme.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
-/** Módulo de estilos da tabela em cards (Blue ou Ouro — mesmos nomes de classe). */
+/** Módulo de estilos da tabela em cards (Blue, Ouro, Paraguay — mesmos nomes de classe). */
 type CardTableCss = typeof blueTable;
+
+/** Textos da tabela (o Paraguay usa espanhol). */
+type TableLabels = { coupon: string; donor: string; missing: string; almost: string };
+const PT_LABELS: TableLabels = { coupon: 'CUPOM', donor: 'DOADOR', missing: 'FALTAM', almost: 'QUASE!' };
+const ES_LABELS: TableLabels = { coupon: 'CUPÓN', donor: 'DONADOR', missing: 'FALTAN', almost: '¡CASI!' };
 
 export interface BingoShowCouponsTableProps {
   coupons: CouponItem[];
@@ -29,7 +36,12 @@ const VISIBLE_ROWS = 10;
  * A proximidade vem do tamanho de `missing` — a lista de números que ainda faltam
  * enviada pelo backend (`missingNumbers`) — só quando o registro tem dados e a
  * lista não está vazia; sem isso, nenhuma marca é exibida. */
-const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string }> = ({ row, css: blueTable, ballImage }) => {
+const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string; almostText?: string }> = ({
+  row,
+  css: blueTable,
+  ballImage,
+  almostText = PT_LABELS.almost,
+}) => {
   const hasData = row.coupon !== '---';
   const missing = row.missing || [];
   const missingCount = hasData ? missing.length : 0;
@@ -53,7 +65,7 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
   return (
     <div className={`${blueTable.card} ${tier} ${hasData ? '' : blueTable.cardEmpty}`}>
       {update.n > 0 && <span key={update.n} className={blueTable.flash} />}
-      {missingCount === 1 && <span className={blueTable.almostBadge}>QUASE!</span>}
+      {missingCount === 1 && <span className={blueTable.almostBadge}>{almostText}</span>}
 
       <span className={`${blueTable.coupon} ${hasData ? '' : blueTable.placeholderText}`}>{row.coupon}</span>
       <span className={`${blueTable.donor} ${hasData ? '' : blueTable.placeholderText}`}>{row.donor}</span>
@@ -78,11 +90,12 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
   );
 };
 
-const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string }> = ({
+const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string; labels?: TableLabels }> = ({
   rows,
   compact,
   css: blueTable,
   ballImage,
+  labels = PT_LABELS,
 }) => {
   // Key estável por registro (cupom + ocorrência, pois o mesmo cupom pode vir
   // em mais de uma linha), para o card manter o estado de "antes" quando o
@@ -91,16 +104,16 @@ const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: Ca
   return (
     <div className={`${blueTable.table} ${compact ? blueTable.compact : blueTable.full}`}>
       <div className={blueTable.header}>
-        <span className={blueTable.headCoupon}>CUPOM</span>
-        <span className={blueTable.headDonor}>DOADOR</span>
-        <span className={blueTable.headMissing}>FALTAM</span>
+        <span className={blueTable.headCoupon}>{labels.coupon}</span>
+        <span className={blueTable.headDonor}>{labels.donor}</span>
+        <span className={blueTable.headMissing}>{labels.missing}</span>
       </div>
       <div className={blueTable.list}>
         {rows.map((row, idx) => {
-          if (row.coupon === '---') return <CardCouponRow key={`empty-${idx}`} row={row} css={blueTable} ballImage={ballImage} />;
+          if (row.coupon === '---') return <CardCouponRow key={`empty-${idx}`} row={row} css={blueTable} ballImage={ballImage} almostText={labels.almost} />;
           const n = seen.get(row.coupon) ?? 0;
           seen.set(row.coupon, n + 1);
-          return <CardCouponRow key={`${row.coupon}#${n}`} row={row} css={blueTable} ballImage={ballImage} />;
+          return <CardCouponRow key={`${row.coupon}#${n}`} row={row} css={blueTable} ballImage={ballImage} almostText={labels.almost} />;
         })}
       </div>
     </div>
@@ -128,6 +141,15 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
         <CardCouponsTable rows={rows} compact={compact} css={blueTable} />
       </BingoShowTopWinnersFrame>
+    );
+  }
+
+  // Bingo Show Paraguay: mesma tabela em cards, textos em espanhol.
+  if (themeId === 'bingo-show-paraguay') {
+    return (
+      <div className={`${pyTheme.vars} ${pyTheme.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
+        <CardCouponsTable rows={rows} compact={compact} css={pyTable} labels={ES_LABELS} />
+      </div>
     );
   }
 

@@ -1,0 +1,108 @@
+/* ParaguayBackground.module.css — fundo vivo do tema `bingo-show-paraguay`, em
+ * camadas: 1. base azul-marinho · 2. ñandutí como textura (baixíssima opacidade,
+ * tamanhos variados, alguns cortados nas bordas, rotação muito lenta alternando
+ * sentido) · 3. halos de luz respirando · 4. poucas partículas (pseudo-elementos,
+ * só nas laterais) · vinheta. Animados só transform/opacity. */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(18, 61, 140, 0.34), transparent 42%),
+    radial-gradient(circle at 12% 80%, rgba(184, 16, 36, 0.14), transparent 35%),
+    radial-gradient(circle at 88% 18%, rgba(214, 168, 53, 0.1), transparent 30%),
+    linear-gradient(145deg, #020814 0%, #06152d 48%, #020711 100%);
+}
+
+/* 2. Ñandutí (textura) */
+.nanduti {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: url('/themes/bingo-show-paraguay/sm/decorative/nanduti.png') center / contain no-repeat;
+  opacity: var(--o);
+  animation: paraguayNandutiRotate var(--dur) linear infinite var(--dir, normal);
+}
+
+/* 3. Halos respirando */
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  animation: paraguayHaloBreath 9s ease-in-out infinite alternate;
+}
+
+.haloBlue {
+  left: 50%;
+  top: 46%;
+  width: 1200px;
+  height: 800px;
+  margin: -400px 0 0 -600px;
+  background: radial-gradient(ellipse, rgba(47, 111, 214, 0.22) 0%, transparent 65%);
+}
+
+.haloRed {
+  left: -8%;
+  bottom: -20%;
+  width: 760px;
+  height: 560px;
+  background: radial-gradient(ellipse, rgba(184, 16, 36, 0.2) 0%, transparent 65%);
+  animation-delay: 3s;
+}
+
+.haloGold {
+  right: -6%;
+  top: -18%;
+  width: 760px;
+  height: 520px;
+  background: radial-gradient(ellipse, rgba(229, 180, 71, 0.13) 0%, transparent 65%);
+  animation-delay: 5s;
+}
+
+/* 4. Partículas: poucas, lentas, só nas faixas laterais. */
+.particle {
+  position: absolute;
+  bottom: -20px;
+  width: var(--ps);
+  height: var(--ps);
+  border-radius: 50%;
+  background: var(--pc);
+  box-shadow: 0 0 6px var(--pc);
+  opacity: 0;
+  animation: paraguayParticleDrift var(--pdur) linear var(--pdelay) infinite;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 78% 72% at 50% 50%, transparent 58%, rgba(0, 2, 10, 0.72) 100%);
+}
+
+@keyframes paraguayNandutiRotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes paraguayHaloBreath {
+  from { opacity: 0.7; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes paraguayParticleDrift {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  12% { opacity: var(--po); }
+  80% { opacity: calc(var(--po) * 0.6); }
+  100% { opacity: 0; transform: translate3d(var(--pdx), -1100px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nanduti,
+  .halo {
+    animation: none;
+  }
+
+  .particle {
+    display: none;
+  }
+}
