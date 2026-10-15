@@ -94,36 +94,7 @@ export const Colors = {
     disabled: 'rgba(255, 243, 207, 0.25)',
   },
 
-  temaNeon: {
-    backgroundPrimary: '#13021f', // Fundo violeta escuro
-    backgroundSecondary: '#26053b', // Superfície roxa profunda
-    backgroundDeep: '#0a0110', // Preto ultravioleta profundo
-    surfacePrimary: '#30084c', // Painéis cyberpunk
-    surfaceSecondary: '#470c70', // Elementos destacados
-    surfaceGlass: 'rgba(48, 8, 76, 0.85)', // Vidro neon translúcido
-    surfaceElevated: '#5c1090', // Superfície elevada neon
-    goldPrimary: '#E000FF', // Magenta neon principal
-    goldSecondary: '#9A00B3', // Magenta escuro
-    goldLight: '#FF54FF', // Rosa neon brilhante
-    bluePrimary: '#7928CA', // Roxo ultravioleta
-    blueSecondary: '#00F5FF', // Ciano cyberpunk
-    blueNeon: '#00F5FF', // Ciano neon elétrico
-    textPrimary: '#FFFFFF', // Branco puro
-    textSecondary: '#E2B8FF', // Lavanda neon legível
-    textMuted: '#9B74B8', // Roxo acinzentado
-    textOnGold: '#13021F', // Texto escuro em botões
-    success: '#00FF9D', // Verde neon futurista
-    warning: '#FFE600', // Amarelo neon elétrico
-    error: '#FF0055', // Magenta avermelhado de erro
-    info: '#00F5FF', // Ciano cyberpunk
-    borderPrimary: '#E000FF', // Borda magenta neon
-    borderSecondary: '#7928CA', // Borda roxa ultravioleta
-    borderGlow: 'rgba(224, 0, 255, 0.6)', // Brilho neon magenta
-    overlay: 'rgba(19, 2, 31, 0.85)',
-    scrim: 'rgba(10, 1, 16, 0.92)',
-    focus: '#00F5FF',
-    disabled: 'rgba(226, 184, 255, 0.25)',
-  },
+
 
   temaParaguay: {
     // Bingo Show Paraguay: azul-marinho profundo, cobalto, vermelho, branco
@@ -157,36 +128,7 @@ export const Colors = {
     focus: '#F3CE63',
     disabled: 'rgba(244, 241, 232, 0.25)',
   },
-  temaPub: {
-    backgroundPrimary: '#031525', // Azul safira noturno profundo
-    backgroundSecondary: '#062846', // Azul marinho intermediário
-    backgroundDeep: '#010b14', // Preto safira ultra-escuro
-    surfacePrimary: '#083863', // Superfície azul pub
-    surfaceSecondary: '#0d4e8a', // Superfície destacada
-    surfaceGlass: 'rgba(8, 56, 99, 0.85)', // Vidro azul marinho
-    surfaceElevated: '#1264b0', // Superfície elevada
-    goldPrimary: '#00B4D8', // Azul safira vibrante
-    goldSecondary: '#0077B6', // Azul marinho nobre
-    goldLight: '#90E0EF', // Safira luminoso
-    bluePrimary: '#0077B6', // Azul royal do pub
-    blueSecondary: '#06D6A0', // Verde esmeralda refrescante
-    blueNeon: '#06D6A0', // Esmeralda neon
-    textPrimary: '#FFFFFF', // Branco puro
-    textSecondary: '#CAF0F8', // Azul gelo claro
-    textMuted: '#6B9080', // Verde acinzentado
-    textOnGold: '#031525', // Texto escuro em botões
-    success: '#06D6A0', // Verde esmeralda
-    warning: '#FFD166', // Âmbar pub suave
-    error: '#EF476F', // Coral neon
-    info: '#00B4D8', // Safira info
-    borderPrimary: '#00B4D8', // Borda safira
-    borderSecondary: '#0077B6', // Borda marinho
-    borderGlow: 'rgba(0, 180, 216, 0.55)', // Brilho neon safira
-    overlay: 'rgba(3, 21, 37, 0.85)',
-    scrim: 'rgba(1, 11, 20, 0.92)',
-    focus: '#06D6A0',
-    disabled: 'rgba(202, 240, 248, 0.25)',
-  },
+
 };
 
 export default Colors;

@@ -197,7 +197,7 @@ export const BingoShowLobbyScreenDefault: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
   const { themeId, theme, isBlue } = useAppTheme();
   // Bingo Show (Ouro & Espaço): ajustes só deste tema (a home Default também
-  // serve Ouro Imperial / Cyber Neon / Safira PUB).
+  // serve outros temas que não têm home própria).
   const isOuro = themeId === 'bingo-show';
 
   const logoSrc = isBlue

@@ -16,9 +16,9 @@ import { WinnerEvent } from '../../../contexts/SSEContext';
  *   toca; ao ficar ao vivo, a bola atual e os prêmios já existentes são marcados
  *   como anunciados — a TV não repete o que já tinha falado.
  * - Só bolas 1–90 (sem o "0.mp3" inexistente do início da rodada).
- * - Idioma da voz pelo tema (Paraguay → espanhol, em /audio/es/ com os mesmos nomes
- *   de arquivo). Arquivo em espanhol que não existir cai para o mesmo em português,
- *   e fica marcado para não ser tentado de novo.
+ * - Idioma da voz pelo tema: português (padrão) em /audio/pt-br/, Paraguay em
+ *   /audio/es/, com os mesmos nomes de arquivo. Arquivo que não existir cai para a
+ *   voz antiga em /audio/pt/ e fica marcado para não ser tentado de novo.
  */
 
 type Clip = { kind: 'ball' | 'prize'; src: string; fallback?: string };
@@ -100,8 +100,11 @@ const PRIZE_FILE: Record<'line1' | 'line2' | 'bingo', string> = {
 };
 
 /** Clip no idioma pedido; espanhol leva o português como alternativa. */
+/** Clip no idioma pedido. Português usa a voz nova (/audio/pt-br) e espanhol a
+ * voz em /audio/es; arquivo que faltar cai para a voz antiga completa (/audio/pt). */
 function voiceClip(kind: Clip['kind'], file: string, lang: VoiceLang): Clip {
-  return lang === 'es' ? { kind, src: `/audio/es/${file}`, fallback: `/audio/pt/${file}` } : { kind, src: `/audio/pt/${file}` };
+  const dir = lang === 'es' ? 'es' : 'pt-br';
+  return { kind, src: `/audio/${dir}/${file}`, fallback: `/audio/pt/${file}` };
 }
 
 export function useBingoAudio(
