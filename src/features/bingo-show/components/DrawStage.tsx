@@ -205,8 +205,7 @@ import { BingoShowAssets } from '../assets';
 import goldStyles from './goldMetalText.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldStage from './gold/DrawStageGold.module.css';
-import pyStage from './paraguay/DrawStageParaguay.module.css';
-import pyTheme from './paraguay/ParaguayTheme.module.css';
+import { getEsSkin, LOTERIAI_SKIN, PARAGUAY_SKIN } from './esSkin';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
  * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
@@ -221,7 +220,10 @@ const outerDots = (dotClass: string) =>
     />
   ));
 const BLUE_OUTER_DOTS = outerDots(blueStyles.outerDot ?? '');
-const PY_OUTER_DOTS = outerDots(pyStage.outerDot ?? '');
+const ES_OUTER_DOTS: Record<string, React.ReactNode> = {
+  [PARAGUAY_SKIN.id]: outerDots(PARAGUAY_SKIN.css.stage.outerDot ?? ''),
+  [LOTERIAI_SKIN.id]: outerDots(LOTERIAI_SKIN.css.stage.outerDot ?? ''),
+};
 
 /** Bola do efeito de saída — versão mais leve que o `HeroBall` estático */
 const ExitBall: React.FC<{ number: number }> = ({ number }) => {
@@ -487,11 +489,13 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   const isOuro = themeId === 'bingo-show';
   // Tema `tema-ouro` ("Fortuna"): painel de ouro do tema + bola de ouro em CSS.
   const isGold = themeId === 'tema-ouro';
-  // Bingo Show Paraguay: mesmo palco "com passagem" do Blue (entrada pela esquerda,
-  // saída para a coluna), com o módulo visual do tema.
-  const isParaguay = themeId === 'bingo-show-paraguay';
+  // Família es-PY (Bingo Show Paraguay, Loteria'i): mesmo palco "com passagem" do
+  // Blue (entrada pela esquerda, saída para a coluna), com o módulo visual da skin.
+  const es = getEsSkin(themeId);
+  const isParaguay = es !== null;
+  const pyTheme = es?.css.theme ?? PARAGUAY_SKIN.css.theme;
   const stagedBall = isBlue || isParaguay;
-  const sc = isParaguay ? pyStage : blueStyles;
+  const sc = es ? es.css.stage : blueStyles;
   const primaryColor = theme.primary || '#FFCF12';
   const secondaryColor = theme.secondary || '#17C8FF';
   const glowColor = theme.primaryGlow || 'rgba(255, 207, 18, 0.6)';
@@ -571,7 +575,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         <div style={{ width: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <span
             style={{
-              color: '#FFFFFF',
+              color: es ? es.tone.panelText : '#FFFFFF',
               fontSize: 12,
               fontWeight: 900,
               letterSpacing: 1.2,
@@ -618,7 +622,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             <div ref={stageRef} className={sc.blueDrawStage}>
               <div className={sc.stageAtmosphere} />
               <div ref={ringsRef} className={sc.ringsGroup}>
-                <div className={sc.outerRing}>{isParaguay ? PY_OUTER_DOTS : BLUE_OUTER_DOTS}</div>
+                <div className={sc.outerRing}>{es ? ES_OUTER_DOTS[es.id] : BLUE_OUTER_DOTS}</div>
                 <div className={sc.innerRing} />
                 <div className={sc.stageRays} />
               </div>
@@ -898,12 +902,12 @@ export const DrawStage: React.FC<DrawStageProps> = ({
 
         {/* RIGHT: 3D BINGO CAGE / GLOBE ARTWORK (tema-ouro: o Maneki-Neko;
             Paraguay: guampa de tereré + globo do tema, flutuando devagar) */}
-        {isParaguay ? (
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
+        {es ? (
+          <div className={sc.stageArt} style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-            <img className={`${pyTheme.art} ${pyTheme.float}`} src="/themes/bingo-show-paraguay/sm/decorative/guampa-terere.png" alt="" draggable={false} style={{ height: 70, width: 'auto' }} />
+            <img className={`${pyTheme.art} ${pyTheme.float} ${sc.stageCompanion ?? ''}`} src={es.art.stageCompanion} alt="" draggable={false} style={{ height: 70, width: 'auto' }} />
             {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-            <img className={`${pyTheme.art} ${pyTheme.float}`} src="/themes/bingo-show-paraguay/sm/decorative/globo.png" alt="Globo" draggable={false} style={{ height: 112, width: 'auto', ['--float-delay' as string]: '1.2s' }} />
+            <img className={`${pyTheme.art} ${pyTheme.float} ${sc.stageGlobe ?? ''}`} src={es.art.globe} alt="Globo" draggable={false} style={{ height: 112, width: 'auto', ['--float-delay' as string]: '1.2s' }} />
           </div>
         ) : isGold ? (
           <div className={goldStage.catFrame}>

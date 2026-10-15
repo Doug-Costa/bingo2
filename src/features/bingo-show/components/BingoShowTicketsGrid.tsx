@@ -5,7 +5,7 @@ import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import goldTheme from './gold/GoldTheme.module.css';
-import pyTheme from './paraguay/ParaguayTheme.module.css';
+import { getEsSkin } from './esSkin';
 
 export interface BingoShowTicketsGridProps {
   tickets: TicketCardItem[];
@@ -37,8 +37,12 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
   const { themeId, theme, isBlue } = useAppTheme();
   // tema-ouro ("Fortuna"): cartelas preto-quente com filete de ouro, acertos em ouro.
   const isGold = themeId === 'tema-ouro';
-  // Bingo Show Paraguay: textos em espanhol, cartela azul-marinho, acerto em vermelho.
-  const isParaguay = themeId === 'bingo-show-paraguay';
+  // Família es-PY: textos em espanhol, acerto em vermelho. Paraguay: cartela
+  // azul-marinho; Loteria'i: painel mel com cartelas creme.
+  const es = getEsSkin(themeId);
+  const isParaguay = es !== null;
+  const isLoteriai = es?.id === 'loteriai';
+  const pyTheme = es?.css.theme;
   const drawnSet = useMemo(() => new Set(drawnBalls), [drawnBalls]);
 
   // As 4 primeiras cartelas (ou ranqueadas por proximidade)
@@ -65,13 +69,13 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : isParaguay ? '#071a3f' : isGold ? '#0a0a10' : theme.panelBg,
-        border: `2px solid ${isBlue ? '#087FFC' : isGold || isParaguay ? '#E9A91A' : theme.borderPrimary}`,
+        backgroundColor: isBlue ? 'rgba(3, 17, 48, 0.95)' : isLoteriai ? '#FFE07A' : isParaguay ? '#071a3f' : isGold ? '#0a0a10' : theme.panelBg,
+        border: `2px solid ${isBlue ? '#087FFC' : isLoteriai ? '#D98A00' : isGold || isParaguay ? '#E9A91A' : theme.borderPrimary}`,
         borderRadius: 24,
         padding: '10px 14px',
         boxSizing: 'border-box',
         overflow: 'hidden',
-        boxShadow: isGold || isParaguay ? '0 10px 30px rgba(0, 0, 0, 0.55), 0 0 14px rgba(233, 169, 26, 0.2)' : `0 0 24px rgba(8, 127, 252, 0.35)`,
+        boxShadow: isLoteriai ? '0 8px 20px rgba(104, 57, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.6)' : isGold || isParaguay ? '0 10px 30px rgba(0, 0, 0, 0.55), 0 0 14px rgba(233, 169, 26, 0.2)' : `0 0 24px rgba(8, 127, 252, 0.35)`,
         position: 'relative',
         justifyContent: 'space-between',
         ...style,
@@ -80,12 +84,12 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
       {/* HEADER: 🍀 MINHAS CARTELAS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
         <img
-          src={isParaguay ? '/themes/bingo-show-paraguay/sm/decorative/nanduti.png' : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
+          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
           alt=""
           style={{ width: isGold || isParaguay ? 24 : 20, height: isParaguay ? 24 : 20, objectFit: 'contain' }}
         />
         <span
-          className={isParaguay ? pyTheme.goldText : isGold ? goldTheme.goldText : undefined}
+          className={pyTheme ? pyTheme.goldText : isGold ? goldTheme.goldText : undefined}
           style={{
             fontSize: 18,
             fontWeight: 900,
@@ -97,7 +101,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
           {isParaguay ? 'MIS CARTONES' : 'MINHAS CARTELAS'}
         </span>
         <img
-          src={isParaguay ? '/themes/bingo-show-paraguay/sm/decorative/nanduti.png' : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
+          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
           alt=""
           style={{ width: isGold || isParaguay ? 24 : 20, height: isParaguay ? 24 : 20, objectFit: 'contain' }}
         />
@@ -126,12 +130,12 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
               minHeight: 0,
               display: 'flex',
               flexDirection: 'column',
-              backgroundColor: isParaguay ? '#0b2a5e' : isGold ? '#151008' : '#FFFFFF',
+              backgroundColor: isLoteriai ? '#FFFBEA' : isParaguay ? '#0b2a5e' : isGold ? '#151008' : '#FFFFFF',
               border: isGold || isParaguay ? '1.5px solid rgba(233, 169, 26, 0.7)' : '1.5px solid #57C3FF',
               borderRadius: 14,
               padding: '4px 6px 6px 6px',
               boxSizing: 'border-box',
-              boxShadow: isGold || isParaguay ? '0 4px 10px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0, 50, 120, 0.25)',
+              boxShadow: isLoteriai ? '0 3px 8px rgba(104, 57, 0, 0.25)' : isGold || isParaguay ? '0 4px 10px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0, 50, 120, 0.25)',
               justifyContent: 'space-between',
             }}
           >
@@ -213,7 +217,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
       {/* BANNER AQUI É SORTE! TODO DIA! */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
         <img
-          src={isParaguay ? '/themes/bingo-show-paraguay/sm/logos/logo-loteriai.png' : '/themes/bingo-show-blue/banner-luck.png'}
+          src={es ? es.art.logo : '/themes/bingo-show-blue/banner-luck.png'}
           alt={isParaguay ? "Loteria'i" : 'Aqui é Sorte! Todo dia!'}
           style={{
             maxHeight: 48,

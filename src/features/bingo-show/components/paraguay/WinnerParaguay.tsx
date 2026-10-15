@@ -14,8 +14,7 @@ import { useCountUp } from '../../hooks/useCountUp';
 import { WINNER_POPUP_MS } from '../../timing';
 import { GROUP_PAGE_SIZE, type GroupWinnerView } from '../BingoShowWinnerGroupBlue';
 import goldStyles from '../goldMetalText.module.css';
-import pyTheme from './ParaguayTheme.module.css';
-import styles from './WinnerParaguay.module.css';
+import { useEsSkin } from '../esSkin';
 
 export interface WinnerParaguayProps {
   sealText: string;
@@ -57,6 +56,8 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   isBingo,
   style,
 }) => {
+  const skin = useEsSkin();
+  const { theme: pyTheme, winner: styles } = skin.css;
   const sz = SIZES[density];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
@@ -119,10 +120,10 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         {total === 1 &&
           (isBingo ? (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloCrown}`} src="/themes/bingo-show-paraguay/sm/decorative/moedas-guarani.png" alt="" draggable={false} />
+            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloCrown}`} src={skin.art.winnerBingo} alt="" draggable={false} />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloLapacho}`} src="/themes/bingo-show-paraguay/sm/decorative/lapacho.png" alt="" draggable={false} />
+            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloLapacho}`} src={skin.art.winnerLine} alt="" draggable={false} />
           ))}
       </div>
 
@@ -181,6 +182,8 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
 };
 
 export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winners, isBingo = false }) => {
+  const skin = useEsSkin();
+  const { theme: pyTheme, winner: styles } = skin.css;
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -224,9 +227,9 @@ export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winner
 
       <span className={styles.nanduti} />
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={`${pyTheme.art} ${styles.lapachoLeft}`} src="/themes/bingo-show-paraguay/sm/decorative/lapacho.png" alt="" draggable={false} />
+      <img className={`${pyTheme.art} ${styles.lapachoLeft}`} src={skin.art.winnerSide} alt="" draggable={false} />
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={`${pyTheme.art} ${styles.lapachoRight}`} src="/themes/bingo-show-paraguay/sm/decorative/lapacho.png" alt="" draggable={false} />
+      <img className={`${pyTheme.art} ${styles.lapachoRight}`} src={skin.art.winnerSide} alt="" draggable={false} />
 
       <div className={styles.frameBox}>
         <div

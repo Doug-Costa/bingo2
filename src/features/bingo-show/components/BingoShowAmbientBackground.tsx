@@ -6,6 +6,7 @@ import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { GoldBackground } from './gold/GoldBackground';
 import { ParaguayBackground } from './paraguay/ParaguayBackground';
+import { LoteriaiBackground } from './loteriai/LoteriaiBackground';
 
 
 interface ParticleSpec {
@@ -95,6 +96,16 @@ export function BingoShowAmbientBackground({
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#06152D', overflow: 'hidden' }}>
         <ParaguayBackground />
+        <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
+      </div>
+    );
+  }
+
+  // Tema Loteria'i: fundo solar próprio (raios, ñandutí, partículas, reflexo).
+  if (themeId === 'loteriai') {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#FDBD13', overflow: 'hidden' }}>
+        <LoteriaiBackground />
         <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
       </div>
     );

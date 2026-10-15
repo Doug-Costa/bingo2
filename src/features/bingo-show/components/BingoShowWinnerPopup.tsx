@@ -45,6 +45,7 @@ import { WinnerGold } from './gold/WinnerGold';
 import { RoundWinnersGold } from './gold/RoundWinnersGold';
 import { WinnerParaguay } from './paraguay/WinnerParaguay';
 import { RoundWinnersParaguay } from './paraguay/RoundWinnersParaguay';
+import { getEsSkin } from './esSkin';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useCountUp } from '../hooks/useCountUp';
@@ -99,9 +100,14 @@ function formatCouponDisplay(winner: Pick<WinnerEvent, 'ticketId' | 'incremental
 
 // Normalização estrita de tipo de vencedor (line1, line2, bingo, jackpot -> bingo)
 
-/** Selo do prêmio em espanhol (tema Paraguay). */
-function getPrizeDisplayEs(type?: string): string {
+/** Selo do prêmio em espanhol (família es-PY; a Loteria'i nomeia o 3º prêmio). */
+function getPrizeDisplayEs(type?: string, skinId?: string): string {
   const norm = normalizeWinnerType(type) || 'bingo';
+  if (skinId === 'loteriai') {
+    if (norm === 'line1') return '1er PREMIO • 1ª LÍNEA';
+    if (norm === 'line2') return '2° PREMIO • 2ª LÍNEA';
+    return "3er PREMIO • LOTERIA'I";
+  }
   if (norm === 'line1') return '1° PREMIO • 1 LÍNEA';
   if (norm === 'line2') return '2° PREMIO • 2 LÍNEAS';
   return '3° PREMIO • BINGO';
@@ -1112,8 +1118,10 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   const isOuro = themeId === 'bingo-show';
   // tema-ouro ("Fortuna"): popup e resumo próprios, mesmos dados.
   const isGold = themeId === 'tema-ouro';
-  // Bingo Show Paraguay: popup e resumo próprios (espanhol), mesmos dados.
-  const isParaguay = themeId === 'bingo-show-paraguay';
+  // Família es-PY (Bingo Show Paraguay, Loteria'i): popup e resumo próprios
+  // (espanhol), mesmos dados; a aparência vem da skin do tema.
+  const esSkin = getEsSkin(themeId);
+  const isParaguay = esSkin !== null;
   // Popup = GRUPO de ganhadores do mesmo prêmio (1 = popup individual; 2+ = todos
   // juntos, cards menores com cartela). Ver enqueueWinners.
   const [activeGroup, setActiveGroup] = useState<WinnerEvent[] | null>(null);
@@ -1592,7 +1600,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       <Popup
         isBingo={normType === 'bingo'}
         key={`${drawNumber}-${normType}-${winnerKey(singleWinner)}`}
-        sealText={isParaguay ? getPrizeDisplayEs(normType) : getPrizeDisplay(normType).full}
+        sealText={isParaguay ? getPrizeDisplayEs(normType, esSkin?.id) : getPrizeDisplay(normType).full}
         winners={group.map((w, idx) => {
           const hasCard = Array.isArray(w.numbers) && w.numbers.length > 0;
           return {

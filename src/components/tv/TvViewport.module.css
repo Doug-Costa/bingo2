@@ -6,3 +6,9 @@
   overflow: hidden;
   background-color: var(--bs-color-bg-deep);
 }
+
+/* Loteria'i: faixas fora do palco (janela fora de 16:9) em âmbar, contínuas com
+ * o fundo solar do tema, em vez do azul-escuro padrão. */
+:global([data-theme='loteriai']) .viewport {
+  background-color: #c97800;
+}

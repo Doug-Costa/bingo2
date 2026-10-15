@@ -1,0 +1,927 @@
+/* WinnerLoteriai.module.css — popup de ganhador(es) do tema `loteriai`.
+ * Mesma estrutura (classes) do popup do Paraguay; overrides no fim: luz solar,
+ * selo vermelho com aro de ouro, nome azul-marinho, valor em ouro com contorno
+ * vermelho, troféu entrando por baixo, cartela creme com B-I-N-G-O colorido e
+ * acertos amarelos com check verde acendendo em sequência; trevos só nas bordas. */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(30, 90, 220, 0.28) 0%, transparent 60%),
+    rgba(0, 4, 20, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  animation: fadeIn 350ms ease-out both;
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Moldura externa (BingoShowTopWinnersFrame — a mesma dos painéis do tema). */
+.frameBox {
+  position: absolute;
+  left: 56px;
+  right: 56px;
+  top: 96px;
+  bottom: 40px;
+  animation: frameIn 450ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* ─── Selo do prêmio (topo, sobre a moldura) ─────────────────────────────── */
+
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 44px;
+  z-index: 3;
+  transform: translateX(-50%);
+  padding: 20px 72px 18px;
+  white-space: nowrap;
+  animation: sealIn 650ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 250ms both;
+}
+
+.seal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 30px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 30px stretch;
+  pointer-events: none;
+}
+
+.sealText {
+  position: relative;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  animation: riseIn 450ms ease-out 550ms both;
+}
+
+.subtitleStar {
+  color: #ffd23f;
+  font-size: 22px;
+}
+
+/* ─── Grade de cards ─────────────────────────────────────────────────────── */
+
+.cards {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 20px;
+}
+
+/* ─── Card de um ganhador (card-prize.png em 9-slice) ────────────────────── */
+
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  align-items: center;
+  gap: 18px;
+  padding: 22px 28px;
+  animation: cardIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--enter) both;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 34px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 34px stretch;
+  pointer-events: none;
+}
+
+.card > * {
+  position: relative;
+}
+
+/* Selo pequeno "GANHADOR 1/4" no canto superior esquerdo do card. */
+.badge {
+  position: absolute !important;
+  top: 12px;
+  left: 26px;
+  z-index: 2;
+  padding: 3px 12px 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe46b 0%, #f7c928 55%, #d99a06 100%);
+  box-shadow: 0 0 8px rgba(255, 190, 30, 0.45), 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #2a1600;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+}
+
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.soloTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+/* Baú do tema sob o valor (só 1 ganhador). */
+.soloChest {
+  width: 260px;
+  height: auto;
+  margin-top: 8px;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+  animation: chestIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1400ms both;
+}
+
+@keyframes chestIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+.nameBox {
+  width: 100%;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.06;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 3px 0 rgba(0, 10, 40, 0.75), 0 0 14px rgba(60, 150, 255, 0.35);
+}
+
+.nameWrap {
+  white-space: normal;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Cupom numa pílula de contorno dourado. */
+.coupon {
+  padding: 4px 18px 3px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 207, 18, 0.85);
+  background: rgba(255, 207, 18, 0.08);
+  color: #ffd23f;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+.prizeLabel {
+  color: #9fd8ff;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+}
+
+/* Cápsula do valor (card-prize-value.png em 9-slice). */
+.valueCapsule {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 14px 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.valueCapsule::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 24px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 24px stretch;
+  pointer-events: none;
+}
+
+.valueBox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.value {
+  display: block;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  /* cor: ouro metálico (goldMetalText → goldValueActive) */
+}
+
+.jackpotTag {
+  padding: 3px 14px;
+  border-radius: 999px;
+  border: 2px solid #ffd23f;
+  color: #ffd23f;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+/* ─── Cartela (card-metadata-gold.png em 9-slice) ────────────────────────── */
+
+.cartela {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px 18px;
+}
+
+.cartela::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 26px solid transparent;
+  border-image: url('/bingoshow-v2/cards/4x/card-metadata-gold.png') 200 fill / 26px stretch;
+  pointer-events: none;
+}
+
+.cartela > * {
+  position: relative;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.headCell {
+  display: grid;
+  place-items: center;
+  padding: 3px 0;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(180deg, rgba(40, 150, 255, 0.55) 0%, rgba(12, 70, 170, 0.6) 100%);
+  border: 1.5px solid rgba(120, 200, 255, 0.8);
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+/* Célula comum: azul-marinho, número branco. */
+.cell {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9px;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #17387c 0%, #0c285f 55%, #071a47 100%);
+  border: 1.5px solid rgba(110, 175, 255, 0.45);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -8px 14px rgba(0, 6, 30, 0.35);
+  text-shadow: 0 2px 3px rgba(0, 10, 40, 0.8);
+  animation: cellIn 260ms ease-out var(--in-delay) both;
+}
+
+/* Célula vencedora: acende em sequência (--win-delay) em ouro metálico, número
+ * azul-marinho escuro e ✓. */
+.cellGold {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  /* Mesmo ouro metálico em faixas do tema (goldMetalText), como placa. */
+  background: linear-gradient(
+    180deg,
+    #6f3e00 0%,
+    #b97808 8%,
+    #fff4b8 18%,
+    #ffd76a 25%,
+    #d9a514 42%,
+    #fff0a0 51%,
+    #b97808 59%,
+    #f5c542 73%,
+    #fff4b8 82%,
+    #a86200 92%,
+    #5c3100 100%
+  );
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 244, 184, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -6px 12px rgba(92, 49, 0, 0.35);
+  opacity: 0;
+  animation: goldOn 360ms ease-out var(--win-delay) both;
+}
+
+.cellNum {
+  position: relative;
+}
+
+.cellWin {
+  animation:
+    cellIn 260ms ease-out var(--in-delay) both,
+    winBorder 360ms ease-out var(--win-delay) both;
+}
+
+.cellWin .cellNum {
+  animation: winInk 360ms ease-out var(--win-delay) both;
+}
+
+.check {
+  position: absolute !important;
+  top: 2px;
+  right: 4px;
+  color: #0b1a3e;
+  font-size: 0.42em;
+  font-weight: 900;
+  opacity: 0;
+  animation: checkIn 300ms ease-out var(--win-delay) both;
+}
+
+/* Brilho passando pela linha vencedora depois que ela acende. */
+.beam {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 9px;
+}
+
+.beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22%;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 210, 0.85), transparent);
+  transform: translateX(-120%);
+  animation: sweepAcross 650ms ease-in-out var(--beam-delay) both;
+}
+
+/* ─── Animações ──────────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes frameIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sealIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.85); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(36px) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cellIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes goldOn {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes winBorder {
+  to {
+    border-color: #fff2a3;
+    box-shadow: 0 0 12px rgba(255, 200, 40, 0.7);
+  }
+}
+
+@keyframes winInk {
+  to {
+    color: #0b1a3e;
+    text-shadow: 0 1px 0 rgba(255, 244, 190, 0.7);
+  }
+}
+
+@keyframes checkIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sweepAcross {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(560%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .frameBox,
+  .seal,
+  .subtitle,
+  .card,
+  .cell,
+  .cellWin,
+  .cellGold,
+  .cellWin .cellNum,
+  .check,
+  .soloChest {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+
+  .beam::after {
+    display: none;
+  }
+}
+
+
+/* ─── tema-ouro: molduras em CSS (substituem os assets 9-slice) ───────────── */
+
+.root {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255, 179, 0, 0.18) 0%, transparent 60%),
+    rgba(3, 4, 10, 0.9);
+}
+
+.frameBox {
+  border-radius: 26px;
+}
+
+.seal::before,
+.card::before,
+.valueCapsule::before,
+.cartela::before {
+  display: none;
+}
+
+/* Selo do prêmio: laca vermelha com borda de ouro. */
+.seal {
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, transparent 45%) padding-box,
+    linear-gradient(180deg, #d42a2f 0%, #a3161c 55%, #620b12 100%) padding-box,
+    linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+  box-shadow: 0 0 0 3px #1a0a04, 0 0 0 5px rgba(233, 169, 26, 0.6), 0 0 26px rgba(255, 179, 0, 0.4);
+}
+
+/* Card do ganhador: painel preto-quente com moldura de ouro + filete interno. */
+.card {
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 0%, rgba(255, 179, 0, 0.1) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #120d07 0%, #0a0a10 60%, #07080f 100%) padding-box,
+    linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), 0 0 14px rgba(233, 169, 26, 0.2);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 217, 90, 0.2);
+  pointer-events: none;
+}
+
+/* Selo GANHADOR n/N em laca. */
+.badge {
+  background: linear-gradient(180deg, #e0353a 0%, #a3161c 60%, #620b12 100%);
+  border: 1px solid #ffd95a;
+  color: #fff3cf;
+}
+
+.coupon {
+  border-color: rgba(233, 169, 26, 0.85);
+  background: rgba(233, 169, 26, 0.08);
+  color: #ffd95a;
+}
+
+.prizeLabel {
+  color: #fff3cf;
+}
+
+/* Cápsula do valor: placa preta com moldura de ouro. */
+.valueCapsule {
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #0c0b10 0%, #05060c 100%) padding-box,
+    linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 179, 0, 0.2);
+}
+
+/* Cartela: moldura de ouro. */
+.cartela {
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #0f0c09 0%, #08080d 100%) padding-box,
+    linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+}
+
+.headCell {
+  background: linear-gradient(180deg, #d42a2f 0%, #a3161c 60%, #620b12 100%);
+  border-color: rgba(255, 217, 90, 0.8);
+  color: #fff3cf;
+}
+
+.cell {
+  background: linear-gradient(180deg, #1f1810 0%, #120e09 55%, #0a0806 100%);
+  border-color: rgba(233, 169, 26, 0.3);
+  color: #fff3cf;
+}
+
+/* Gato da sorte (linhas) / coroa (bingo) sob o valor, no card único. */
+.soloArtFrame {
+  margin-top: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: #000 padding-box, linear-gradient(120deg, #75500e 0%, #f8d978 18%, #fff2ae 34%, #9c6a15 52%, #f3ce63 74%, #684309 100%) border-box;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 14px rgba(255, 179, 0, 0.3);
+  animation: chestIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1400ms both;
+}
+
+.soloCat {
+  display: block;
+  width: 190px;
+  height: 190px;
+  object-fit: cover;
+}
+
+.soloCrown {
+  width: 220px;
+}
+
+/* Confete em CSS (ouro, laca e jade) — sem asset de partícula. */
+.piece {
+  position: absolute;
+  top: -30px;
+  width: 12px;
+  height: 18px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: fall var(--dur) ease-in var(--delay) both;
+}
+
+@keyframes fall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--dx), 1150px, 0) rotate(var(--rot)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece {
+    display: none;
+  }
+
+  .soloArtFrame {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+}
+
+
+/* ═══ Overrides do tema Loteria'i ═════════════════════════════════════════ */
+
+/* 1. O fundo recebe luz solar (abre num aumento suave de luz). */
+.root {
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(255, 250, 205, 0.95) 0%, rgba(255, 216, 74, 0.9) 45%, rgba(242, 169, 0, 0.94) 80%, rgba(198, 111, 0, 0.97) 100%);
+  animation: loteriaiLightUp 600ms ease-out both;
+}
+
+/* Raios solares lentos atrás de tudo (usa a camada do ñandutí do Paraguay). */
+.nanduti {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 2000px;
+  height: 2000px;
+  margin: -1000px 0 0 -1000px;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.16) 0deg 6deg, transparent 6deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 35%, transparent 60%);
+  mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 35%, transparent 60%);
+  pointer-events: none;
+  animation:
+    loteriaiRaysIn 900ms cubic-bezier(0.2, 0.9, 0.3, 1) 100ms both,
+    loteriaiRaysSway 30s ease-in-out 1s infinite alternate;
+}
+
+/* 2. Moldura: escala 0,97 → 1. */
+.frameBox {
+  animation: loteriaiFrameIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) 150ms both;
+}
+
+/* Trevos nos cantos inferiores, fora do conteúdo, flutuando devagar. */
+.lapachoLeft,
+.lapachoRight {
+  position: absolute;
+  bottom: 6px;
+  width: 112px;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(104, 57, 0, 0.35));
+  animation:
+    loteriaiCloverIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1500ms both,
+    loteriaiCloverFloat 6s ease-in-out 2.2s infinite alternate;
+}
+
+.lapachoLeft {
+  left: 8px;
+  rotate: -14deg;
+}
+
+.lapachoRight {
+  right: 8px;
+  rotate: 14deg;
+}
+
+/* 3. Faixa do prêmio desce: vermelha com aro de ouro e texto branco. */
+.seal {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 45%) padding-box,
+    linear-gradient(180deg, #f03246 0%, #d7192d 55%, #9f1021 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 0 0 3px #fff8dc, 0 0 0 5px rgba(217, 138, 0, 0.7), 0 10px 22px rgba(104, 57, 0, 0.4);
+}
+
+.seal .sealText {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  filter: drop-shadow(0 2px 0 rgba(110, 8, 20, 0.9)) drop-shadow(0 3px 4px rgba(60, 0, 0, 0.35));
+}
+
+/* Card: creme/mel com ouro fino. */
+.card {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 0%, rgba(255, 255, 255, 0.9) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #fffbea 0%, #fff1c2 60%, #ffe48a 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 8px 18px rgba(104, 57, 0, 0.3);
+}
+
+.card::after {
+  border-color: rgba(217, 138, 0, 0.3);
+}
+
+.badge {
+  background: linear-gradient(180deg, #f03246 0%, #d7192d 60%, #9f1021 100%);
+  border-color: #fff2a6;
+  color: #ffffff;
+}
+
+/* 4. Nome do ganhador: azul-marinho com relevo claro. */
+.name {
+  color: #08245c;
+  text-shadow: 0 2px 0 #ffffff, 0 4px 0 rgba(166, 92, 0, 0.35), 0 8px 12px rgba(104, 57, 0, 0.25);
+  animation: loteriaiRise 500ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(var(--enter) + 250ms) both;
+}
+
+.coupon {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fff4cf 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  color: #d7192d;
+  box-shadow: 0 2px 5px rgba(104, 57, 0, 0.2);
+}
+
+.prizeLabel {
+  color: #072c68;
+}
+
+/* 5. Valor: ouro metálico com contorno vermelho, cresce de 0,92 para 1. */
+.valueCapsule {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 4px 8px;
+  animation: loteriaiValueIn 650ms cubic-bezier(0.2, 0.9, 0.3, 1.2) calc(var(--enter) + 400ms) both;
+}
+
+.valueCapsule .value {
+  filter:
+    drop-shadow(1px 0 0 #9f1021)
+    drop-shadow(-1px 0 0 #9f1021)
+    drop-shadow(0 3px 0 #6e0814)
+    drop-shadow(0 6px 6px rgba(104, 57, 0, 0.35));
+}
+
+.jackpotTag {
+  border-color: #d7192d;
+  color: #d7192d;
+  background: #fffbea;
+}
+
+/* 6. Troféu entra por baixo com pequeno overshoot; brilho ocasional depois. */
+.soloChest {
+  width: 250px;
+  margin-top: 4px;
+  filter: drop-shadow(0 8px 12px rgba(104, 57, 0, 0.35));
+  animation:
+    loteriaiTrophyIn 750ms cubic-bezier(0.2, 0.9, 0.3, 1.3) 1450ms both,
+    loteriaiTrophyShine 7s ease-in-out 3s infinite;
+}
+
+.soloCrown,
+.soloLapacho {
+  width: 230px;
+}
+
+/* 7. Cartela entra pela direita: creme com ouro fino. */
+.cartela {
+  background:
+    linear-gradient(180deg, #fffdf4 0%, #fff4d6 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 8px 18px rgba(104, 57, 0, 0.28);
+  animation: loteriaiCardRight 600ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(var(--enter) + 200ms) both;
+}
+
+/* Cabeçalho B-I-N-G-O alternando vermelho, azul e branco. */
+.headCell {
+  background: linear-gradient(180deg, #f03246 0%, #d7192d 60%, #9f1021 100%);
+  border-color: rgba(255, 242, 166, 0.85);
+  color: #ffffff;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
+}
+
+.headCell:nth-child(2),
+.headCell:nth-child(5) {
+  background: linear-gradient(180deg, #2f6fd6 0%, #0648a8 60%, #072c68 100%);
+}
+
+.headCell:nth-child(3) {
+  background: linear-gradient(180deg, #ffffff 0%, #f1ead8 100%);
+  color: #08245c;
+  text-shadow: none;
+}
+
+.cell {
+  background: linear-gradient(180deg, #ffffff 0%, #fff6e0 100%);
+  border-color: rgba(217, 138, 0, 0.4);
+  color: #08245c;
+  text-shadow: none;
+  box-shadow: inset 0 -6px 10px rgba(217, 138, 0, 0.12);
+}
+
+/* 8. Acerto: placa amarela com aro de ouro; número azul-marinho; ✓ verde. */
+.cellGold {
+  background: linear-gradient(180deg, #fff6b0 0%, #ffe14d 35%, #fdbd13 75%, #f2a900 100%) !important;
+  box-shadow: inset 0 0 0 2px #f6c443, inset 0 2px 0 rgba(255, 255, 255, 0.7), inset 0 -6px 10px rgba(166, 92, 0, 0.3) !important;
+}
+
+@keyframes loteriaiWinInk {
+  to { color: #08245c; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8); }
+}
+
+.cellWin .cellNum {
+  animation-name: loteriaiWinInk;
+}
+
+.check {
+  top: 4px;
+  right: 4px;
+  width: 1.05em;
+  height: 1.05em;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, #6be07f 0%, #24a83f 60%, #0c7428 100%);
+  color: #ffffff;
+  box-shadow: 0 0 0 1.5px #ffffff, 0 2px 3px rgba(0, 40, 10, 0.4);
+}
+
+.beam::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+}
+
+@keyframes loteriaiLightUp {
+  from { opacity: 0; filter: brightness(0.85); }
+  to { opacity: 1; filter: none; }
+}
+
+@keyframes loteriaiRaysIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiRaysSway {
+  from { rotate: -5deg; }
+  to { rotate: 5deg; }
+}
+
+@keyframes loteriaiFrameIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiValueIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiTrophyIn {
+  0% { opacity: 0; transform: translateY(60px) scale(0.85); }
+  70% { opacity: 1; transform: translateY(-8px) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiTrophyShine {
+  0%, 88%, 100% { filter: drop-shadow(0 8px 12px rgba(104, 57, 0, 0.35)); }
+  93% { filter: drop-shadow(0 8px 12px rgba(104, 57, 0, 0.35)) brightness(1.18); }
+}
+
+@keyframes loteriaiCardRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiCloverIn {
+  from { opacity: 0; translate: 0 30px; scale: 0.7; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+@keyframes loteriaiCloverFloat {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(-6px) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .nanduti,
+  .frameBox,
+  .lapachoLeft,
+  .lapachoRight,
+  .name,
+  .valueCapsule,
+  .soloChest,
+  .cartela {
+    animation: none;
+  }
+}

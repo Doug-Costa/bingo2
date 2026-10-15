@@ -8,8 +8,7 @@ import blueStyles from './BingoShowPrizeStatusBlue.module.css';
 import ouroStyles from './BingoShowPrizeStatusOuro.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldPrize from './gold/PrizeStatusGold.module.css';
-import pyTheme from './paraguay/ParaguayTheme.module.css';
-import pyPrize from './paraguay/PrizeStatusParaguay.module.css';
+import { getEsSkin, useEsSkin } from './esSkin';
 import { useFitText } from '../hooks/useFitText';
 import { moneyLengthTier, type MoneyLengthTier } from '../utils/moneyLength';
 
@@ -433,10 +432,10 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   </div>
 );
 
-const PY_ASSET = '/themes/bingo-show-paraguay/sm';
-
-/** Paraguay: uma faixa de prêmio (mesmos dados/estados; textos em espanhol). */
+/** Família es-PY: uma faixa de prêmio (mesmos dados/estados; textos em espanhol).
+ * Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i). */
 const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
+  const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const valueTick = useChangeTick(value);
@@ -471,7 +470,9 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
   );
 };
 
-const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }> = ({ icon, label, value }) => (
+const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }> = ({ icon, label, value }) => {
+  const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
+  return (
   <div className={`${pyTheme.panel} ${pyPrize.metaCard}`}>
     {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
     <img className={`${pyTheme.art} ${pyPrize.metaIcon}`} src={icon} alt="" draggable={false} />
@@ -480,7 +481,8 @@ const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }>
       <span className={pyPrize.metaValue}>{value || '---'}</span>
     </div>
   </div>
-);
+  );
+};
 
 /** Paraguay: o painel inteiro (acumulado + 3 prêmios + dados), com os mesmos props. */
 const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
@@ -498,11 +500,14 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   dateStr = '',
   timeStr = '',
   style,
-}) => (
+}) => {
+  const skin = useEsSkin();
+  const { theme: pyTheme, prize: pyPrize } = skin.css;
+  return (
   <div className={`${pyTheme.vars} ${pyPrize.column}`} style={style}>
     <div className={`${pyTheme.panel} ${pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={`${pyTheme.art} ${pyPrize.bag}`} src={`${PY_ASSET}/decorative/moedas-guarani.png`} alt="" draggable={false} />
+      <img className={`${pyTheme.art} ${pyPrize.bag}`} src={skin.art.jackpot} alt="" draggable={false} />
       <div className={pyPrize.jackpotText}>
         <span className={pyPrize.jackpotLabel}>ACUMULADO</span>
         <BlueMoney value={accumulatedAmount} role="jackpot" className={pyTheme.goldValue} />
@@ -522,13 +527,14 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
     </div>
 
     <div className={pyPrize.meta}>
-      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/nanduti.png`} label="SORTEO" value={drawNumber} />
-      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/moedas-guarani.png`} label="DONACIÓN" value={donationAmount} />
-      <ParaguayMetaCard icon={`${PY_ASSET}/decorative/lapacho.png`} label="FECHA" value={dateStr} />
-      <ParaguayMetaCard icon={`${PY_ASSET}/icons/ampulheta.png`} label="HORA" value={timeStr} />
+      <ParaguayMetaCard icon={skin.art.meta.draw} label="SORTEO" value={drawNumber} />
+      <ParaguayMetaCard icon={skin.art.meta.donation} label="DONACIÓN" value={donationAmount} />
+      <ParaguayMetaCard icon={skin.art.meta.date} label="FECHA" value={dateStr} />
+      <ParaguayMetaCard icon={skin.art.meta.time} label="HORA" value={timeStr} />
     </div>
   </div>
-);
+  );
+};
 
 export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
@@ -549,7 +555,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   const { theme, isBlue, themeId } = useAppTheme();
   const isOuro = themeId === 'bingo-show';
   const isGold = themeId === 'tema-ouro';
-  const isParaguay = themeId === 'bingo-show-paraguay';
+  const isParaguay = getEsSkin(themeId) !== null;
   const primaryColor = theme.primary || '#FFDE38';
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 

@@ -410,6 +410,58 @@
   background: linear-gradient(90deg, #d01f2f 0 33.4%, #f4f1e8 33.4% 66.6%, #1f4fb4 66.6% 100%);
 }
 
+/* ─── Loteria'i ──────────────────────────────────────────────────────────────
+ * Moldura creme/mel com borda de ouro e filete; contador vermelho com aro de
+ * ouro; barra tricolor. Fullscreen e regras inalterados. */
+.frameLoteriai {
+  border: 3px solid transparent;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, #fffbea 0%, #fff1c2 100%) padding-box,
+    linear-gradient(120deg, #a65c00 0%, #ffe36a 18%, #fff8c7 34%, #cf7900 52%, #f6c443 74%, #8a4b00 100%) border-box;
+  box-shadow: 0 24px 60px rgba(104, 57, 0, 0.45), 0 0 28px rgba(255, 205, 55, 0.4);
+  padding: 18px;
+}
+
+.frameLoteriai::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 22px;
+  border: 1px solid rgba(180, 101, 0, 0.45);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.frameLoteriai .content {
+  border-radius: 16px;
+}
+
+.frameLoteriai .counter {
+  top: 34px;
+  right: 34px;
+  border: 2px solid #f6c443;
+  background: linear-gradient(180deg, #e8263a 0%, #d7192d 55%, #9f1021 100%);
+  box-shadow: 0 6px 14px rgba(104, 57, 0, 0.45), 0 0 12px rgba(255, 205, 55, 0.4);
+}
+
+.frameLoteriai .counterValue {
+  color: #ffffff;
+}
+
+.frameLoteriai .progressTrack {
+  left: 40px;
+  right: 40px;
+  bottom: 7px;
+  height: 6px;
+  background: rgba(8, 36, 92, 0.15);
+  z-index: 4;
+}
+
+.frameLoteriai .progressBar {
+  background: linear-gradient(90deg, #d7192d 0 33.4%, #ffffff 33.4% 66.6%, #0648a8 66.6% 100%);
+}
+
 @keyframes backdropIn {
   from { opacity: 0; }
   to { opacity: 1; }

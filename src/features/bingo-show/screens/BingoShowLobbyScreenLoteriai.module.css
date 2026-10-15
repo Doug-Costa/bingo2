@@ -1,0 +1,936 @@
+/* BingoShowLobbyScreenLoteriai.module.css — home do tema `loteriai`.
+ * Palco 1920×1080. Header 128 · linha tricolor · main · footer 96. Peças
+ * compartilhadas em components/loteriai/LoteriaiTheme. Keyframes `loteriai`.
+ * Animações só em transform/opacity (filtros curtos e pontuais). */
+
+.screen {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 14px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-inter), 'Arial Black', sans-serif;
+  color: var(--lt-text);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+
+.header {
+  flex: none;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 4px;
+  animation: loteriaiDropIn 650ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.headerLine {
+  flex: none;
+  margin: -6px 0 0;
+}
+
+.logo {
+  flex: none;
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 5px 8px rgba(104, 57, 0, 0.35));
+  animation:
+    loteriaiLogoIn 850ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+    loteriaiAmbientFloat 6s ease-in-out 1s infinite alternate;
+}
+
+.infoGroup {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Pílula creme com filete de ouro. */
+.info {
+  flex: 1;
+  min-width: 0;
+  height: 92px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 18px;
+  border-radius: 18px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #fffdf2 0%, #fff4cf 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 6px 14px var(--lt-shadow), inset 0 1px 0 #fff;
+  animation: loteriaiDropIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both;
+}
+
+.infoIcon {
+  flex: none;
+  height: 52px;
+  width: auto;
+  filter: drop-shadow(0 2px 3px rgba(104, 57, 0, 0.3));
+}
+
+.infoText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.infoLabel {
+  color: var(--lt-blue-dark);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.infoValue {
+  color: var(--lt-text);
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Número do próximo sorteio numa bola vermelha. */
+.infoBall {
+  flex: none;
+  min-width: 70px;
+  height: 70px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.55) 0 12%, transparent 30%),
+    radial-gradient(circle at 50% 50%, #f03246 0%, #d7192d 55%, #8f0c1b 100%);
+  border: 3px solid #f6c443;
+  box-shadow: 0 4px 8px rgba(104, 57, 0, 0.4), inset 0 -4px 8px rgba(80, 0, 0, 0.35);
+}
+
+/* Prêmio maior (vermelho com ouro). */
+.headerJackpot {
+  flex: none;
+  width: 520px;
+  height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 14px 0 26px;
+  overflow: visible !important;
+  animation: loteriaiDropIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both;
+}
+
+.headerJackpotText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.headerJackpotLabel {
+  color: #fff2a6;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.6);
+}
+
+.headerJackpotValue {
+  font-weight: 900;
+  line-height: 1.1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  animation: loteriaiValueIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.headerCoins {
+  flex: none;
+  width: 118px;
+  height: auto;
+  margin-right: -6px;
+  filter: drop-shadow(0 4px 6px rgba(80, 0, 0, 0.45));
+}
+
+/* ─── Main ───────────────────────────────────────────────────────────────── */
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 430px minmax(0, 1fr) 430px;
+  gap: 18px;
+}
+
+/* Próximos sorteios */
+.left {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 12px;
+  animation: loteriaiSlideRight 650ms cubic-bezier(0.2, 0.8, 0.3, 1) 150ms both;
+}
+
+/* Cabeçalho vermelho com filete de ouro e linha tricolor embaixo. */
+.sectionHead {
+  flex: none;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
+  background: linear-gradient(180deg, #e8263a 0%, #c8162b 60%, #9f1021 100%);
+  box-shadow: inset 0 -3px 0 #f6c443, inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.drawsList {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 14px;
+}
+
+.drawCard {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fff8dc 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 4px 10px var(--lt-shadow);
+  animation: loteriaiCardIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(250ms + var(--i) * 110ms) both;
+}
+
+.drawTop {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 6px 8px;
+}
+
+/* Etiqueta azul do número (vermelha no próximo). */
+.drawTag {
+  padding: 6px 16px 5px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 2px 2px rgba(0, 10, 40, 0.5);
+  background: linear-gradient(180deg, #2f6fd6 0%, #0648a8 60%, #072c68 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 20, 60, 0.3);
+}
+
+.drawCardNext .drawTag {
+  background: linear-gradient(180deg, #f03246 0%, #d7192d 60%, #9f1021 100%);
+  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
+}
+
+.drawWhen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1;
+}
+
+.drawNext {
+  color: var(--lt-red);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.drawTime {
+  color: var(--lt-text);
+  font-size: 30px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.drawPrizes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 14px 6px;
+}
+
+.drawPrize {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid rgba(217, 138, 0, 0.25);
+  padding-top: 2px;
+}
+
+.drawPrizeLabel {
+  color: var(--lt-blue-dark);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.drawPrizeValue {
+  color: var(--lt-text);
+  font-weight: 900;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.drawsEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: var(--lt-blue-dark);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+.emptyArt {
+  width: 140px;
+  height: auto;
+  opacity: 0.9;
+}
+
+.dots {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(8, 36, 92, 0.22);
+}
+
+.dotOn {
+  background: var(--lt-red);
+}
+
+/* ─── Centro: contagem ───────────────────────────────────────────────────── */
+
+.center {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 22px 18px;
+  animation: loteriaiRise 700ms cubic-bezier(0.2, 0.8, 0.3, 1) 60ms both;
+}
+
+/* Brilho solar atrás do palco (estático; só a opacidade respira). */
+.centerRays {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 1100px;
+  height: 1100px;
+  margin: -550px 0 0 -550px;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 210, 60, 0.22) 0deg 7deg, transparent 7deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  pointer-events: none;
+  animation: loteriaiBreathe 8s ease-in-out infinite alternate;
+}
+
+.centerTitles {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.drawTitle {
+  font-size: 92px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  animation: loteriaiTitleIn 800ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 200ms both;
+}
+
+.startsIn {
+  color: var(--lt-blue-dark);
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hourglassWrap {
+  position: relative;
+  flex: none;
+  animation: loteriaiHourglassIn 900ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 350ms both;
+}
+
+.hourglass {
+  display: block;
+  width: auto;
+  height: 250px;
+  filter: drop-shadow(0 8px 10px rgba(104, 57, 0, 0.35));
+}
+
+/* Brilho rápido no vidro da ampulheta, de vez em quando. */
+.glassGlint {
+  position: absolute;
+  left: 30%;
+  top: 22%;
+  width: 18%;
+  height: 56%;
+  border-radius: 40%;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.85) 50%, transparent 80%);
+  opacity: 0;
+  pointer-events: none;
+  animation: loteriaiGlint 7s ease-in-out 2s infinite;
+}
+
+/* Cápsula creme do contador com moldura de ouro. */
+.timerFrame {
+  position: relative;
+  flex: none;
+  min-width: 470px;
+  height: 214px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 0 34px;
+  border-radius: 110px;
+  border: 4px solid transparent;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 30%, #ffffff 0%, rgba(255, 255, 255, 0) 70%) padding-box,
+    linear-gradient(180deg, #fffbea 0%, #fff1c2 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 10px 22px rgba(104, 57, 0, 0.3), inset 0 -6px 14px rgba(217, 138, 0, 0.18);
+  animation: loteriaiCountdownBreath 2.6s ease-in-out infinite;
+}
+
+.timer {
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  /* Contorno por sombras (text-stroke grosso "come" o vão do 4). */
+  filter:
+    drop-shadow(1.5px 0 0 #b8460a)
+    drop-shadow(-1.5px 0 0 #b8460a)
+    drop-shadow(0 1.5px 0 #b8460a)
+    drop-shadow(0 4px 0 #7a2e00)
+    drop-shadow(0 8px 8px rgba(104, 57, 0, 0.35));
+}
+
+/* Últimos segundos: respiração um pouco mais forte e rápida. */
+.timerFinal {
+  animation: loteriaiCountdownFinal 1s ease-in-out infinite;
+}
+
+.globeWrap {
+  position: relative;
+  flex: none;
+  animation: loteriaiGlobeIn 1100ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both;
+}
+
+.globe {
+  display: block;
+  width: 250px;
+  height: auto;
+  filter: drop-shadow(0 8px 10px rgba(104, 57, 0, 0.35));
+}
+
+/* Perto do sorteio (tempo real): o globo ganha uma leve vibração. */
+.globeNear .globe {
+  animation: loteriaiGlobeShake 1.6s ease-in-out infinite;
+}
+
+.globeGlint {
+  position: absolute;
+  inset: 6% 18% 34%;
+  border-radius: 50%;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  animation: loteriaiGlint 9s ease-in-out 5s infinite;
+}
+
+.clover {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  width: 62px;
+  height: auto;
+  transform: rotate(12deg);
+}
+
+/* Faixa do prêmio maior acumulado. */
+.jackpotBand {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 150px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px 0 10px;
+  border-radius: 22px;
+  border: 3px solid transparent;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 0%, rgba(255, 255, 255, 0.85) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #fff8dc 0%, #ffe79a 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 8px 18px var(--lt-shadow);
+  animation: loteriaiRise 650ms cubic-bezier(0.2, 0.8, 0.3, 1) 500ms both;
+}
+
+.bandPot {
+  flex: none;
+  width: 156px;
+  height: auto;
+  margin: -26px 0 -6px;
+  filter: drop-shadow(0 6px 8px rgba(104, 57, 0, 0.35));
+}
+
+.bandText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bandLabel {
+  color: var(--lt-blue-dark);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+/* Valor vermelho com contorno de ouro (como o título). */
+.bandValue {
+  color: #d7192d;
+  font-weight: 900;
+  line-height: 1.05;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  /* Contorno por sombras (text-stroke "come"/risca o vão do 4). */
+  filter: drop-shadow(1.5px 0 0 #8a1010) drop-shadow(-1.5px 0 0 #8a1010) drop-shadow(0 2px 0 #fff2a6) drop-shadow(0 4px 0 #a65c00) drop-shadow(0 6px 6px rgba(104, 57, 0, 0.3));
+  animation: loteriaiValueIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.limitBadge {
+  flex: none;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #f6c443;
+  background: radial-gradient(circle at 50% 30%, #f03246 0%, #d7192d 55%, #8f0c1b 100%);
+  box-shadow: 0 4px 10px rgba(104, 57, 0, 0.4);
+}
+
+.limitLabel {
+  color: #fff2a6;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.limitValue {
+  color: #fff;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
+}
+
+/* ─── Direita: prêmios do próximo sorteio ────────────────────────────────── */
+
+.right {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prizeCard {
+  --tone-a: #2f6fd6;
+  --tone-b: #0648a8;
+  --tone-c: #072c68;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(180deg, #fffdf2 0%, #fff4cf 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 8px 18px var(--lt-shadow);
+  animation:
+    loteriaiSlideLeft 650ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(200ms + var(--slot) * 140ms) both,
+    loteriaiCardFocus 9s ease-in-out calc(2.5s + var(--slot) * 2.2s) infinite;
+}
+
+.tone_red {
+  --tone-a: #f03246;
+  --tone-b: #d7192d;
+  --tone-c: #9f1021;
+}
+
+.tone_green {
+  --tone-a: #3cc35a;
+  --tone-b: #24a83f;
+  --tone-c: #0c7428;
+}
+
+/* Reflexo diagonal sincronizado com o destaque do card. */
+.prizeCard::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+  transform: translateX(-110%);
+  animation: loteriaiCardSweep 9s ease-in-out calc(2.5s + var(--slot) * 2.2s) infinite;
+}
+
+.prizeHead {
+  flex: none;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(180deg, var(--tone-a) 0%, var(--tone-b) 55%, var(--tone-c) 100%);
+  box-shadow: inset 0 -3px 0 #f6c443, inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.prizeLabel {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Brilho em estrela de 4 pontas no canto do cabeçalho. */
+.prizeSpark {
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle, #fff 0 12%, transparent 13%), conic-gradient(from 45deg, transparent 0 20deg, #fff 20deg 25deg, transparent 25deg 110deg, #fff 110deg 115deg, transparent 115deg 200deg, #fff 200deg 205deg, transparent 205deg 290deg, #fff 290deg 295deg, transparent 295deg);
+  -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+  mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+  opacity: 0.9;
+}
+
+.prizeBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px 0 12px;
+}
+
+.prizeArt {
+  flex: none;
+  width: 92px;
+  height: auto;
+  filter: drop-shadow(0 4px 5px rgba(104, 57, 0, 0.3));
+}
+
+.prizeValue {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  color: var(--lt-text);
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 #fff, 0 3px 4px rgba(104, 57, 0, 0.18);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+
+.footer {
+  position: relative;
+  flex: none;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 0 26px;
+  border-radius: 22px;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(ellipse 60% 120% at 50% 0%, rgba(255, 255, 255, 0.9) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #fff6cc 0%, #ffe48a 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: 0 8px 18px var(--lt-shadow);
+  overflow: hidden;
+  animation: loteriaiRise 650ms ease-out 300ms both;
+}
+
+/* Fitas tricolores nos cantos inferiores (CSS, sem atravessar a tela). */
+.footerRibbonL,
+.footerRibbonR {
+  position: absolute;
+  bottom: 10px;
+  width: 300px;
+  height: 18px;
+  background: var(--lt-tricolor);
+  opacity: 0.9;
+}
+
+.footerRibbonL {
+  left: -40px;
+  transform: rotate(8deg);
+}
+
+.footerRibbonR {
+  right: -40px;
+  transform: rotate(-8deg);
+}
+
+.footerClover {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: auto;
+  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
+}
+
+.footerSlogan,
+.footerText {
+  position: relative;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.footerSlogan {
+  font-size: 58px;
+  letter-spacing: 0.5px;
+  font-style: italic;
+}
+
+.footerText {
+  color: var(--lt-blue-dark);
+  font-size: 34px;
+  letter-spacing: 1px;
+}
+
+.sloganRed {
+  color: #d7192d;
+  filter: drop-shadow(1px 0 0 #8a1010) drop-shadow(-1px 0 0 #8a1010) drop-shadow(0 2px 0 #fff2a6) drop-shadow(0 3px 0 #a65c00);
+}
+
+.sloganBlue {
+  color: #0648a8;
+  filter: drop-shadow(1px 0 0 #072c68) drop-shadow(-1px 0 0 #072c68) drop-shadow(0 2px 0 #ffffff) drop-shadow(0 3px 0 #a65c00);
+}
+
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+
+@keyframes loteriaiDropIn {
+  from { opacity: 0; transform: translateY(-18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiRise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiSlideRight {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiSlideLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiCardIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiLogoIn {
+  0% { opacity: 0; transform: scale(0.7) rotate(-6deg); }
+  70% { opacity: 1; transform: scale(1.06) rotate(1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiAmbientFloat {
+  from { translate: 0 0; }
+  to { translate: 0 -3px; }
+}
+
+@keyframes loteriaiTitleIn {
+  0% { opacity: 0; transform: scale(0.82); }
+  70% { opacity: 1; transform: scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiValueIn {
+  from { opacity: 0.4; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiBreathe {
+  from { opacity: 0.65; }
+  to { opacity: 1; }
+}
+
+/* Contador: respira de leve; a geometria do layout não muda (só transform). */
+@keyframes loteriaiCountdownBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.018); }
+}
+
+@keyframes loteriaiCountdownFinal {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+/* Ampulheta: pequena queda com rotação de ~4°, depois parada. */
+@keyframes loteriaiHourglassIn {
+  0% { opacity: 0; transform: translateY(-60px) rotate(-4deg); }
+  65% { opacity: 1; transform: translateY(6px) rotate(2deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Globo: entra pela direita desacelerando, com leve rotação; depois estável. */
+@keyframes loteriaiGlobeIn {
+  0% { opacity: 0; transform: translateX(120px) rotate(10deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes loteriaiGlobeShake {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-1.6deg); }
+  40% { transform: rotate(1.4deg); }
+  60% { transform: rotate(-0.8deg); }
+  80% { transform: rotate(0.5deg); }
+}
+
+@keyframes loteriaiGlint {
+  0%, 82% { opacity: 0; transform: translateX(-30%); }
+  88% { opacity: 1; }
+  96%, 100% { opacity: 0; transform: translateX(60%); }
+}
+
+/* Destaque em sequência: cada card tem ~1,2s de foco num ciclo de 9s
+ * (1ª linha → 2ª linha → prêmio principal → pausa). */
+@keyframes loteriaiCardFocus {
+  0%, 16%, 100% { transform: none; }
+  6% { transform: translateY(-4px) scale(1.02); }
+}
+
+@keyframes loteriaiCardSweep {
+  0% { transform: translateX(-110%); opacity: 0; }
+  1% { opacity: 1; }
+  12% { transform: translateX(110%); opacity: 1; }
+  13%, 100% { transform: translateX(110%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .info,
+  .headerJackpot,
+  .left,
+  .drawCard,
+  .center,
+  .centerRays,
+  .drawTitle,
+  .hourglassWrap,
+  .glassGlint,
+  .timerFrame,
+  .timerFinal,
+  .globeWrap,
+  .globeNear .globe,
+  .globeGlint,
+  .jackpotBand,
+  .bandValue,
+  .headerJackpotValue,
+  .prizeCard,
+  .prizeCard::after,
+  .footer,
+  .logo {
+    animation: none;
+  }
+
+  .glassGlint,
+  .globeGlint,
+  .prizeCard::after {
+    display: none;
+  }
+}

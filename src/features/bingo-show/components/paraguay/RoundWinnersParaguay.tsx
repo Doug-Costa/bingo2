@@ -9,18 +9,9 @@ import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
 import { useCountUp } from '../../hooks/useCountUp';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
-import pyTheme from './ParaguayTheme.module.css';
-import styles from './RoundWinnersParaguay.module.css';
+import { useEsSkin } from '../esSkin';
 
-// Arte de cada faixa (assets do tema).
-const ART: Record<RoundCategoryKey, string> = {
-  line1: '/themes/bingo-show-paraguay/sm/decorative/nanduti.png',
-  line2: '/themes/bingo-show-paraguay/sm/decorative/lapacho.png',
-  bingo: '/themes/bingo-show-paraguay/sm/decorative/moedas-guarani.png',
-};
-
-const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LÍNEA', line2: '2ª LÍNEA', bingo: 'BINGO' };
-const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
+// Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i): mesmas classes.
 const PER_PAGE = 4;
 const MIN_PAGE_MS = 5000;
 
@@ -39,6 +30,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   delay,
   jackpotAmount,
 }) => {
+  const { css: { theme: pyTheme, round: styles } } = useEsSkin();
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
@@ -77,6 +69,10 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   jackpotAmount,
   totalDurationMs,
 }) => {
+  const skin = useEsSkin();
+  const styles = skin.css.round;
+  const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LÍNEA', line2: '2ª LÍNEA', bingo: skin.text.bingoLabel };
+  const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -109,7 +105,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
         <span className={styles.title}>{TITLES[category.key]}</span>
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-      <img className={`${styles.coins} ${isSplit ? styles.coinsSmall : ''}`} src={ART[category.key]} alt="" draggable={false} />
+      <img className={`${styles.coins} ${isSplit ? styles.coinsSmall : ''}`} src={skin.art.round[category.key]} alt="" draggable={false} />
       {isSplit && (
         <div className={styles.splitBand}>
           <span>
@@ -155,17 +151,26 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   jackpotAmount,
   totalDurationMs,
   onClose,
-}) => (
+}) => {
+  const skin = useEsSkin();
+  const { theme: pyTheme, round: styles } = skin.css;
+  const titleIcon = skin.art.roundTitleIcon ? (
+    // eslint-disable-next-line @next/next/no-img-element -- asset estático do tema
+    <img className={styles.titleIcon} src={skin.art.roundTitleIcon} alt="" draggable={false} />
+  ) : (
+    <span>🏆</span>
+  );
+  return (
   <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label="Ganhadores da rodada">
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-        <img className={styles.logo} src="/themes/bingo-show-paraguay/sm/logos/logo-loteriai.png" alt="Loteria'i" draggable={false} />
+        <img className={styles.logo} src={skin.art.logo} alt="Loteria'i" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
-            <span>🏆</span>
+            {titleIcon}
             <span className={pyTheme.goldText}>GANADORES DE LA RONDA</span>
-            <span>🏆</span>
+            {titleIcon}
           </div>
           <span className={styles.headerSub}>
             SORTEO {drawNumber} • {dateStr} a las {timeStr}
@@ -182,9 +187,10 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
         ))}
       </div>
 
-      <footer className={styles.footer}>BINGO SHOW PARAGUAY • RESULTADOS DE LA RONDA</footer>
+      <footer className={styles.footer}>{skin.text.roundFooter}</footer>
     </div>
   </div>
-);
+  );
+};
 
 export default RoundWinnersParaguay;

@@ -756,6 +756,48 @@ export const temaParaguayTokens: ThemeTokens = {
   colorsExtended: Colors.temaParaguay,
 };
 
+// ─── Tema Loteria'i (loteriai) ─────────────────────────────────────────────
+// Mesma estrutura do Paraguay (família es-PY, guarani); identidade própria:
+// solar, popular e festiva. A apresentação vive em `components/loteriai/`.
+export const temaLoteriaiTokens: ThemeTokens = {
+  ...temaParaguayTokens,
+  bgColor: Colors.temaLoteriai.backgroundPrimary,
+  panelBg: Colors.temaLoteriai.surfaceGlass,
+  headerBg: Colors.temaLoteriai.surfacePrimary,
+  glassBg: 'rgba(255, 248, 220, 0.6)',
+  primary: Colors.temaLoteriai.goldPrimary,
+  primaryGlow: Colors.temaLoteriai.borderGlow,
+  secondary: Colors.temaLoteriai.bluePrimary,
+  accent: Colors.temaLoteriai.error,
+  jackpotText: Colors.temaLoteriai.error,
+  ballBg: Colors.temaLoteriai.surfacePrimary,
+  ballText: Colors.temaLoteriai.textPrimary,
+  countdownBg: Colors.temaLoteriai.surfacePrimary,
+  countdownText: Colors.temaLoteriai.error,
+  borderPrimary: Colors.temaLoteriai.borderPrimary,
+  borderSecondary: Colors.temaLoteriai.borderSecondary,
+  borderMuted: Colors.temaLoteriai.borderGlow,
+  textPrimary: Colors.temaLoteriai.textPrimary,
+  textSecondary: Colors.temaLoteriai.textSecondary,
+  textMuted: Colors.temaLoteriai.textMuted,
+  success: Colors.temaLoteriai.success,
+  error: Colors.temaLoteriai.error,
+  gridDrawn: Colors.temaLoteriai.error,
+  gridCurrent: Colors.temaLoteriai.warning,
+  gridEmpty: 'rgba(255, 248, 220, 0.85)',
+  meta: {
+    id: 'loteriai',
+    name: 'loteriai',
+    displayName: "Loteria'i",
+    version: '1.0.0',
+    description: "Tema oficial Loteria'i: solar, popular e festivo. Valores em guarani.",
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+  colorsExtended: Colors.temaLoteriai,
+};
+
 export interface ThemeOption {
   id: string;
   name: string;
@@ -825,6 +867,20 @@ export const AVAILABLE_THEMES: ThemeOption[] = [
     },
   },
 
+  {
+    id: 'loteriai',
+    name: 'loteriai',
+    displayName: "Loteria'i",
+    description: '¡Bueno, bonito y barato! Amarelo solar, creme e ouro com acentos tricolores. Valores em guarani.',
+    badge: 'PY',
+    previewColors: {
+      primary: '#FDBD13',
+      secondary: '#D7192D',
+      background: '#FFD84A',
+      accent: '#0648A8',
+    },
+  },
+
 ];
 
 /**
@@ -834,6 +890,9 @@ export function getThemeKey(themeInput?: unknown): string {
   if (!themeInput) return 'bingo-show';
   if (typeof themeInput === 'string') {
     const norm = themeInput.toLowerCase().trim();
+    if (norm.includes('loteria')) {
+      return 'loteriai';
+    }
     if (norm.includes('paraguay') || norm === 'py') {
       return 'bingo-show-paraguay';
     }
@@ -847,6 +906,7 @@ export function getThemeKey(themeInput?: unknown): string {
   }
   if (typeof themeInput === 'object' && themeInput !== null) {
     const id = String((themeInput as any).id || (themeInput as any).name || (themeInput as any).type || '').toLowerCase();
+    if (id.includes('loteria')) return 'loteriai';
     if (id.includes('paraguay')) return 'bingo-show-paraguay';
     if (id.includes('blue') || id === 'tema-blue') return 'bingo-show-blue';
     if (id.includes('ouro') || id.includes('gold') || id === 'tema01' || id === 'tema-ouro') return 'tema-ouro';
@@ -866,6 +926,8 @@ export function resolveTheme(themeInput?: unknown): ThemeTokens {
       return temaOuroTokens;
     case 'bingo-show-paraguay':
       return temaParaguayTokens;
+    case 'loteriai':
+      return temaLoteriaiTokens;
     case 'bingo-show':
     default:
       return temaBingoShow;

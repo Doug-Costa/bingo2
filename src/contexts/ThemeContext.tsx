@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useLayoutEffect, useState,
 import { resolveTheme, getThemeKey, AVAILABLE_THEMES, type ThemeTokens, type ThemeOption } from '@/theme/themes';
 import { getTheme, saveCredentials, getCredentials } from '@/storage/credentials';
 import { setMoneyCurrency } from '@/features/bingo-show/utils/format';
+import { getThemeProfile } from '@/theme/themeProfile';
 
 const STORAGE_THEME_KEY = 'bingo_show_selected_theme';
 
@@ -90,7 +91,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Moeda de exibição pelo tema (provisório até o SSE informar a moeda): definida
   // no render, antes dos filhos formatarem valores.
-  setMoneyCurrency(themeId === 'bingo-show-paraguay' ? 'PYG' : 'BRL');
+  setMoneyCurrency(getThemeProfile(themeId).currency);
 
   const value = useMemo(
     () => ({

@@ -129,6 +129,39 @@ export const Colors = {
     disabled: 'rgba(244, 241, 232, 0.25)',
   },
 
+  temaLoteriai: {
+    // Loteria'i: amarelo solar, mel e creme como ambiente; ouro metálico só em
+    // valores e filetes; vermelho/branco/azul como acento; azul-marinho no texto.
+    backgroundPrimary: '#FDBD13',
+    backgroundSecondary: '#FFD84A',
+    backgroundDeep: '#C97800',
+    surfacePrimary: '#FFF8DC',
+    surfaceSecondary: '#FFF4BD',
+    surfaceGlass: 'rgba(255, 248, 220, 0.94)',
+    surfaceElevated: '#FFFBEA',
+    goldPrimary: '#F6C443',
+    goldSecondary: '#A65C00',
+    goldLight: '#FFF2A6',
+    bluePrimary: '#0648A8',
+    blueSecondary: '#072C68',
+    blueNeon: '#2F6FD6',
+    textPrimary: '#08245C',
+    textSecondary: '#072C68',
+    textMuted: '#7A5A1E',
+    textOnGold: '#2A1A02',
+    success: '#24A83F',
+    warning: '#F2A900',
+    error: '#D7192D',
+    info: '#0648A8',
+    borderPrimary: '#D98A00',
+    borderSecondary: '#A65C00',
+    borderGlow: 'rgba(180, 101, 0, 0.45)',
+    overlay: 'rgba(104, 57, 0, 0.55)',
+    scrim: 'rgba(104, 57, 0, 0.7)',
+    focus: '#D7192D',
+    disabled: 'rgba(8, 36, 92, 0.25)',
+  },
+
 };
 
 export default Colors;

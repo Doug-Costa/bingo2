@@ -8,8 +8,7 @@ import blueGrid from './BingoShowDrawnBallsBlue.module.css';
 import ouroGrid from './BingoShowDrawnBallsOuro.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldHistory from './gold/HistoryGold.module.css';
-import pyTheme from './paraguay/ParaguayTheme.module.css';
-import pyHistory from './paraguay/HistoryParaguay.module.css';
+import { getEsSkin } from './esSkin';
 import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowDrawnBallsProps {
@@ -33,16 +32,18 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   // Bingo Show (Ouro & Espaço): grade própria com as bolas 3D do tema.
   const isOuro = themeId === 'bingo-show';
 
-  // Bingo Show Paraguay: painel cobalto com moldura de ouro + 90 bolas em CSS.
-  if (themeId === 'bingo-show-paraguay') {
+  // Família es-PY (Paraguay: painel cobalto; Loteria'i: painel mel) + 90 bolas em CSS.
+  const es = getEsSkin(themeId);
+  if (es) {
+    const { theme: pyTheme, history: pyHistory } = es.css;
     return (
       <div className={`${pyTheme.vars} ${pyTheme.panel} ${pyTheme.sweep} ${pyHistory.panel}`} style={{ ['--sweep-delay' as string]: '6s', ...style }}>
         <div className={pyHistory.title}>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src="/themes/bingo-show-paraguay/sm/decorative/nanduti.png" alt="" draggable={false} />
+          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src={es.art.ornament} alt="" draggable={false} />
           <span className={pyTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src="/themes/bingo-show-paraguay/sm/decorative/nanduti.png" alt="" draggable={false} />
+          <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src={es.art.ornament} alt="" draggable={false} />
         </div>
         <div className={pyHistory.grid}>
           {ALL_90_NUMBERS.map((num) => {

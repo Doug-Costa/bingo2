@@ -6,8 +6,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
 import ouroTable from './BingoShowCouponsTableOuro.module.css';
 import goldTable from './BingoShowCouponsTableGold.module.css';
-import pyTable from './paraguay/CouponsTableParaguay.module.css';
-import pyTheme from './paraguay/ParaguayTheme.module.css';
+import { getEsSkin } from './esSkin';
 import goldPanel from './gold/GoldTheme.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
@@ -144,11 +143,12 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
     );
   }
 
-  // Bingo Show Paraguay: mesma tabela em cards, textos em espanhol.
-  if (themeId === 'bingo-show-paraguay') {
+  // Família es-PY (Paraguay, Loteria'i): mesma tabela em cards, textos em espanhol.
+  const es = getEsSkin(themeId);
+  if (es) {
     return (
-      <div className={`${pyTheme.vars} ${pyTheme.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
-        <CardCouponsTable rows={rows} compact={compact} css={pyTable} labels={ES_LABELS} />
+      <div className={`${es.css.theme.vars} ${es.css.theme.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
+        <CardCouponsTable rows={rows} compact={compact} css={es.css.coupons} labels={{ ...ES_LABELS, donor: es.text.playerColumn }} />
       </div>
     );
   }

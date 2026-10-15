@@ -42,8 +42,9 @@ import { type PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import goldStyles from '../components/goldMetalText.module.css';
 import goldTheme from '../components/gold/GoldTheme.module.css';
-import pyTheme from '../components/paraguay/ParaguayTheme.module.css';
+import { getEsSkin } from '../components/esSkin';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { getThemeProfile } from '@/theme/themeProfile';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
 // exibição em si (`PrizeStatusType`, ex.: "EM DISPUTA"), não como o enum visual que
@@ -64,15 +65,17 @@ export const BingoShowDrawScreen: React.FC = () => {
   const goldTitle = isBlue || themeId === 'bingo-show';
   // tema-ouro ("Fortuna"): ouro em vários tons, laca vermelha e o logo dourado.
   const isGold = themeId === 'tema-ouro';
-  // Bingo Show Paraguay: textos em espanhol, Loteria'i como marca principal.
-  const isParaguay = themeId === 'bingo-show-paraguay';
+  // Família es-PY (Paraguay, Loteria'i): textos em espanhol, Loteria'i como marca
+  // principal; cores, logos e textos do cabeçalho vêm da skin do tema.
+  const es = getEsSkin(themeId);
+  const isParaguay = es !== null;
   // Temas com o título em ouro próprio (classe do tema) e acentos dourados.
   const warm = isGold || isParaguay;
   const [soundOn, setSoundOn] = useState(true);
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
   // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
-  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, isParaguay ? 'es' : 'pt');
+  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, getThemeProfile(themeId).voice);
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
@@ -102,14 +105,19 @@ export const BingoShowDrawScreen: React.FC = () => {
       >
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220, gap: 6 }}>
-          {isParaguay && (
+          {es && (
             // eslint-disable-next-line @next/next/no-img-element -- marca principal do tema
-            <img src="/themes/bingo-show-paraguay/sm/logos/logo-loteriai.png" alt="Loteria'i" style={{ height: 60, objectFit: 'contain', filter: 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' }} />
+            <img
+              src={es.art.logo}
+              alt="Loteria'i"
+              style={{ height: es.art.logoSecondary ? 60 : 64, objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
+            />
           )}
+          {(!es || es.art.logoSecondary) && (
           <img
             src={
-              isParaguay
-                ? '/themes/bingo-show-paraguay/sm/logos/logo-bingo-show-paraguay.png'
+              es?.art.logoSecondary
+                ? es.art.logoSecondary
                 : isGold
                 ? '/themes/tema-ouro/sm/logos/logo-bingo-show.png'
                 : '/themes/bingo-show-blue/logos/logo-main.png'
@@ -124,6 +132,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               (e.currentTarget as HTMLElement).style.display = 'none';
             }}
           />
+          )}
         </div>
 
         {/* CENTER: BINGO AO VIVO */}
@@ -133,13 +142,13 @@ export const BingoShowDrawScreen: React.FC = () => {
               fonte e espaçamento continuam os mesmos em todos os temas. */}
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <span
-              className={goldTitle || warm ? goldStyles.goldIcon : undefined}
+              className={es?.css.theme.starIcon ?? (goldTitle || warm ? goldStyles.goldIcon : undefined)}
               style={{ fontSize: 22, ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
             <span
-              className={isParaguay ? pyTheme.goldText : isGold ? goldTheme.goldText : goldTitle ? goldStyles.goldMetalText : undefined}
+              className={es ? es.css.theme.titleText ?? es.css.theme.goldText : isGold ? goldTheme.goldText : goldTitle ? goldStyles.goldMetalText : undefined}
               style={{
                 fontSize: 32,
                 fontWeight: 900,
@@ -149,17 +158,17 @@ export const BingoShowDrawScreen: React.FC = () => {
                 ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
               }}
             >
-              {isParaguay ? 'BINGO EN VIVO' : 'BINGO AO VIVO'}
+              {es ? es.text.liveTitle : 'BINGO AO VIVO'}
             </span>
             <span
-              className={goldTitle || warm ? goldStyles.goldIcon : undefined}
+              className={es?.css.theme.starIcon ?? (goldTitle || warm ? goldStyles.goldIcon : undefined)}
               style={{ fontSize: 22, ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 10px rgba(255, 207, 18, 0.8)' }) }}
             >
               ★
             </span>
           </div>
           <span
-            className={goldTitle || warm ? goldStyles.liveSubtitle : undefined}
+            className={es?.css.theme.liveSubtitle ?? (goldTitle || warm ? goldStyles.liveSubtitle : undefined)}
             style={{
               fontSize: 13,
               fontWeight: 900,
@@ -169,7 +178,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               ...(goldTitle || warm ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
             }}
           >
-            {isParaguay ? '★ TU SUERTE, NUESTRO BINGO ★' : '★ SUA SORTE, NOSSO BINGO! ★'}
+            {es ? es.text.liveSubtitle : '★ SUA SORTE, NOSSO BINGO! ★'}
           </span>
         </div>
 
@@ -184,18 +193,18 @@ export const BingoShowDrawScreen: React.FC = () => {
               flexDirection: 'row',
               alignItems: 'center',
               gap: 8,
-              backgroundColor: isParaguay ? 'rgba(6, 21, 45, 0.92)' : isGold ? 'rgba(21, 16, 8, 0.92)' : 'rgba(3, 17, 48, 0.88)',
-              border: warm ? '1.5px solid rgba(233, 169, 26, 0.75)' : '1.5px solid rgba(25, 117, 210, 0.6)',
+              background: es ? es.tone.pillBg : isGold ? 'rgba(21, 16, 8, 0.92)' : 'rgba(3, 17, 48, 0.88)',
+              border: es ? es.tone.pillBorder : warm ? '1.5px solid rgba(233, 169, 26, 0.75)' : '1.5px solid rgba(25, 117, 210, 0.6)',
               borderRadius: 20,
               padding: '6px 14px',
-              boxShadow: warm ? '0 0 12px rgba(255, 179, 0, 0.25)' : '0 0 14px rgba(8, 127, 252, 0.3)',
+              boxShadow: es ? es.tone.pillGlow : warm ? '0 0 12px rgba(255, 179, 0, 0.25)' : '0 0 14px rgba(8, 127, 252, 0.3)',
               boxSizing: 'border-box',
             }}
           >
             <img src="/themes/bingo-show-blue/calendario.png" alt="calendário" style={{ width: 18, height: 18, objectFit: 'contain' }} />
-            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.dateStr || '28/07/2026'}</span>
-            <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 700 }}>|</span>
-            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.currentTimeStr}</span>
+            <span style={{ color: es ? es.tone.pillText : '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.dateStr || '28/07/2026'}</span>
+            <span style={{ color: es ? es.tone.pillText : 'rgba(255,255,255,0.35)', opacity: es ? 0.35 : 1, fontWeight: 700 }}>|</span>
+            <span style={{ color: es ? es.tone.pillText : '#FFFFFF', fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>{mock.currentTimeStr}</span>
           </div>
 
           {/* Sound button — Circular Blue Speaker */}

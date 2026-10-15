@@ -1,0 +1,106 @@
+/* LoteriaiBackground.module.css — fundo solar do tema `loteriai`, em camadas
+ * independentes: 1. base amarela radial · 2. raios solares (deslocamento quase
+ * imperceptível) · 3. ñandutí quase estático · 4. reflexo lento · 5. poucas
+ * partículas douradas nas laterais · vinheta âmbar. Só transform/opacity. */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 22%,
+    rgba(255, 248, 188, 0.95) 0%,
+    rgba(255, 220, 74, 0.9) 28%,
+    rgba(246, 179, 17, 0.94) 66%,
+    rgba(198, 111, 0, 0.98) 100%
+  ),
+  #fdbd13;
+}
+
+/* 2. Raios solares partindo do alto, oscilando poucos graus (quase imperceptível). */
+.rays {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: 2000px;
+  height: 2000px;
+  margin: -1000px 0 0 -1000px;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.13) 0deg 6deg, transparent 6deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.55) 35%, transparent 62%);
+  mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.55) 35%, transparent 62%);
+  animation: loteriaiRaysTurn 40s ease-in-out infinite alternate;
+}
+
+/* 3. Ñandutí (textura, praticamente estático). */
+.nanduti {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  opacity: var(--o);
+  filter: sepia(1) saturate(2) hue-rotate(-10deg) brightness(1.2);
+}
+
+/* 4. Reflexo de luz muito lento atravessando a tela. */
+.sheen {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 28%;
+  background: linear-gradient(90deg, transparent, rgba(255, 252, 220, 0.28), transparent);
+  transform: translateX(-120%) skewX(-16deg);
+  animation: loteriaiSheen 22s ease-in-out 4s infinite;
+}
+
+/* 5. Partículas douradas (poucas, lentas, nas laterais). */
+.particle {
+  position: absolute;
+  bottom: -20px;
+  width: var(--ps);
+  height: var(--ps);
+  border-radius: 50%;
+  background: #fff6c4;
+  box-shadow: 0 0 6px rgba(255, 236, 150, 0.9);
+  opacity: 0;
+  animation: loteriaiParticleDrift var(--pdur) linear var(--pdelay) infinite;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 74% at 50% 46%, transparent 60%, rgba(160, 80, 0, 0.35) 100%);
+}
+
+@keyframes loteriaiRaysTurn {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+
+@keyframes loteriaiSheen {
+  0%, 55% { transform: translateX(-120%) skewX(-16deg); opacity: 0; }
+  60% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { transform: translateX(480%) skewX(-16deg); opacity: 0; }
+}
+
+@keyframes loteriaiParticleDrift {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  12% { opacity: var(--po); }
+  80% { opacity: calc(var(--po) * 0.6); }
+  100% { opacity: 0; transform: translate3d(var(--pdx), -1100px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .sheen {
+    animation: none;
+  }
+
+  .sheen,
+  .particle {
+    display: none;
+  }
+}
