@@ -19,6 +19,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import qrcode from 'qrcode-generator';
 import { useGameSocket, type Promotion } from '@/contexts/SSEContext';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useTvConfig, useT } from '@/contexts/TvConfigContext';
 import {
   PROMO_BLACKOUT_BEFORE_DRAW_MS,
   PROMO_DEFAULT_SECONDS,
@@ -322,6 +323,7 @@ function apiLines(data: unknown): string[] {
 }
 
 const PromoContent: React.FC<{ promo: Promotion; durationMs: number; onGiveUp: () => void }> = ({ promo, durationMs, onGiveUp }) => {
+  const t = useT();
   const type = promoType(promo);
   const urls = [nonEmpty(promo.linkurl), nonEmpty(promo.urlimg)].filter(Boolean);
   let body: React.ReactNode = null;
@@ -330,7 +332,7 @@ const PromoContent: React.FC<{ promo: Promotion; durationMs: number; onGiveUp: (
   if (type === 'VIDEO' || type === 'YOUTUBE') {
     // Preferência: link do YouTube/Vimeo, depois arquivo de vídeo, depois a 1ª URL.
     const src = urls.find((u) => youtubeId(u) || vimeoId(u)) ?? urls.find(isVideoFile) ?? urls[0];
-    body = src ? <AnyVideoPromo url={src} title={nonEmpty(promo.title) || 'Promoção'} onGiveUp={onGiveUp} /> : null;
+    body = src ? <AnyVideoPromo url={src} title={nonEmpty(promo.title) || t('promo.label')} onGiveUp={onGiveUp} /> : null;
   }
   if (type === 'QRCODE' && nonEmpty(promo.linkurl)) body = <QrPromo promo={promo} url={nonEmpty(promo.linkurl)} />;
   if (type === 'API' && nonEmpty(promo.linkurl)) body = <ApiPromo promo={promo} url={nonEmpty(promo.linkurl)} onGiveUp={onGiveUp} />;
@@ -371,7 +373,17 @@ export const BingoShowPromoModal: React.FC = () => {
   const isGold = themeId === 'tema-ouro';
   const isParaguay = themeId === 'bingo-show-paraguay';
   const isLoteriai = themeId === 'loteriai';
-  const promos = useMemo(() => (Array.isArray(promotions) ? promotions.filter((p) => p && p.id) : []), [promotions]);
+  // Promoções do login por PIN: override do operador/sala (sem campos de banco)
+  // vence o carrossel do SSE; linhas reais da sala só cobrem o SSE vazio.
+  const { promotes: pinPromotes } = useTvConfig();
+  const t = useT();
+  const promos = useMemo(() => {
+    const live = Array.isArray(promotions) ? promotions.filter((p) => p && p.id) : [];
+    const fromPin = pinPromotes.filter((p) => p && p.id && p.active !== false);
+    const isOverride = fromPin.length > 0 && fromPin.every((p) => !p.createdAt);
+    if (isOverride) return fromPin;
+    return live.length ? live : fromPin;
+  }, [promotions, pinPromotes]);
   const nextDrawAt = useNextDrawAt();
 
   const promosRef = useRef(promos);
@@ -441,11 +453,11 @@ export const BingoShowPromoModal: React.FC = () => {
   const seconds = Math.ceil(Math.max(0, endsAt - Date.now()) / 1000);
 
   return (
-    <div className={styles.backdrop} role="dialog" aria-label={nonEmpty(promo.title) || 'Promoção'}>
+    <div className={styles.backdrop} role="dialog" aria-label={nonEmpty(promo.title) || t('promo.label')}>
       <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''} ${isGold ? styles.frameGold : ''} ${isParaguay ? styles.frameParaguay : ''} ${isLoteriai ? styles.frameLoteriai : ''}`}>
         <PromoContent promo={promo} durationMs={durationMs} onGiveUp={skip} />
 
-        <div className={styles.counter} aria-label={`Promoção termina em ${seconds} segundos`}>
+        <div className={styles.counter} aria-label={t('promo.endsIn', { s: seconds })}>
           <span className={styles.counterValue}>{seconds}s</span>
         </div>
 

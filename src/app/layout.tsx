@@ -21,6 +21,7 @@ export const viewport: Viewport = {
 
 import { Barlow_Condensed, Inter } from 'next/font/google';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { TvConfigProvider } from '@/contexts/TvConfigContext';
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
@@ -45,8 +46,10 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${barlowCondensed.variable} ${inter.variable}`}>
       <body>
         <ThemeProvider>
-          <PwaRegister />
-          {children}
+          <TvConfigProvider>
+            <PwaRegister />
+            {children}
+          </TvConfigProvider>
         </ThemeProvider>
       </body>
     </html>

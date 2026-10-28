@@ -3,10 +3,8 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { resolveTheme, getThemeKey, AVAILABLE_THEMES, type ThemeTokens, type ThemeOption } from '@/theme/themes';
 import { getTheme, saveCredentials, getCredentials } from '@/storage/credentials';
-import { setMoneyCurrency } from '@/features/bingo-show/utils/format';
-import { getThemeProfile } from '@/theme/themeProfile';
 
-const STORAGE_THEME_KEY = 'bingo_show_selected_theme';
+export const STORAGE_THEME_KEY = 'bingo_show_selected_theme';
 
 export interface ThemeContextValue {
   themeId: string;
@@ -89,9 +87,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const activeTheme = useMemo(() => resolveTheme(themeId), [themeId]);
 
-  // Moeda de exibição pelo tema (provisório até o SSE informar a moeda): definida
-  // no render, antes dos filhos formatarem valores.
-  setMoneyCurrency(getThemeProfile(themeId).currency);
+  // Moeda e idioma: decididos no TvConfigProvider (backend → padrão do tema).
 
   const value = useMemo(
     () => ({

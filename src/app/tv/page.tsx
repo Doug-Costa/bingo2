@@ -24,6 +24,7 @@ const DEFAULT_CREDENTIALS: SavedCredentials = {
  * que NUNCA fique em tela em branco ou presa no carregamento.
  */
 import { ThemeSelector } from '@/components/theme';
+import { LanguageSelector } from '@/components/theme/LanguageSelector';
 
 export default function TvPage() {
   const router = useRouter();
@@ -80,7 +81,10 @@ export default function TvPage() {
         onMouseEnter={() => (hoverRef.current = true)}
         onMouseLeave={() => (hoverRef.current = false)}
       >
-        <ThemeSelector variant="dropdown" align="right" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <LanguageSelector />
+          <ThemeSelector variant="dropdown" align="right" />
+        </div>
       </div>
 
 

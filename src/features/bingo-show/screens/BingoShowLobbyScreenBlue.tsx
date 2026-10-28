@@ -16,6 +16,7 @@ import styles from './BingoShowLobbyScreenBlue.module.css';
 import { BingoShowBlueBenefitsStrip } from '../components/BingoShowBlueBenefitsStrip';
 import { formatCountdown } from '../utils/countdown';
 import { moneyLengthTier } from '../utils/moneyLength';
+import { useT } from '@/contexts/TvConfigContext';
 
 // Valores dos cards de próximos sorteios: a fonte segue o MAIOR valor do card
 // (os três ficam do mesmo tamanho), para caber em ~120px por coluna.
@@ -57,6 +58,7 @@ const CENTER_PARTICLES: Array<{ left: string; top: string; size: number; duratio
 
 export const BingoShowLobbyScreenBlue: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
+  const t = useT();
 
   // Paginação automática dos Próximos Sorteios (5 por página a cada 6s)
   const pages = useMemo(() => {
@@ -113,7 +115,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <div className={styles.headerPillsGroup}>
             {/* Pill 1: Próximo Sorteio */}
             <div className={`${styles.pill} ${styles.pillDraw}`}>
-              <span className={styles.pillLabel}>PRÓXIMO SORTEIO:</span>
+              <span className={styles.pillLabel}>{t('lobby.nextDraw')}:</span>
               <span className={styles.pillValue}>{drawNumberDisplay}</span>
             </div>
 
@@ -127,7 +129,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                   height={16}
                   className={styles.pillIcon}
                 />
-                <span className={styles.pillLabel}>DATA</span>
+                <span className={styles.pillLabel}>{t('lobby.date')}</span>
               </span>
               <span className={styles.pillValue}>{mock.currentDate}</span>
             </div>
@@ -142,7 +144,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                   height={16}
                   className={styles.pillIcon}
                 />
-                <span className={styles.pillLabel}>HORA</span>
+                <span className={styles.pillLabel}>{t('lobby.time')}</span>
               </span>
               <span className={styles.pillValue}>{mock.currentTime}</span>
             </div>
@@ -161,7 +163,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             />
 
             <div className={styles.jackpotTextCol}>
-              <span className={styles.jackpotHeaderLabel}>ACUMULADO ESPECIAL:</span>
+              <span className={styles.jackpotHeaderLabel}>{t('lobby.specialJackpot')}:</span>
               <span className={styles.jackpotHeaderValue}>{mock.accumulatedPrize}</span>
             </div>
 
@@ -192,7 +194,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
     return (
       <aside className={styles.leftColumn}>
         <div className={styles.columnHeader}>
-          <h2 className={styles.columnTitle}>PRÓXIMOS SORTEIOS</h2>
+          <h2 className={styles.columnTitle}>{t('lobby.nextDraws')}</h2>
           <div className={styles.columnDivider} />
         </div>
 
@@ -224,7 +226,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                   <div className={styles.drawCardPrizesRow}>
                     <div className={styles.drawCardPrizeCol}>
                       <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelGold}`}>
-                        1ª LINHA
+                        {t('prize.line1')}
                       </span>
                       <span className={styles.drawCardPrizeValue} style={valueStyle}>
                         {item.line1Prize}
@@ -232,7 +234,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                     </div>
                     <div className={styles.drawCardPrizeCol}>
                       <span className={`${styles.drawCardPrizeLabel} ${styles.drawCardPrizeLabelCyan}`}>
-                        2ª LINHA
+                        {t('prize.line2')}
                       </span>
                       <span className={styles.drawCardPrizeValue} style={valueStyle}>
                         {item.line2Prize}
@@ -262,8 +264,8 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
                 className={styles.emptyDrawsIcon}
               />
             </div>
-            <p className={styles.emptyDrawsTitle}>NENHUM SORTEIO NA FILA</p>
-            <span className={styles.emptyDrawsSub}>Aguardando abertura de novas rodadas</span>
+            <p className={styles.emptyDrawsTitle}>{t('lobby.emptyQueue')}</p>
+            <span className={styles.emptyDrawsSub}>{t('lobby.emptyQueueSub')}</span>
 
             <div className={styles.drawsSkeletonList}>
               <div className={styles.drawCardSkeleton} />
@@ -320,9 +322,9 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         {/* Títulos do Topo */}
         <div className={styles.centerTitlesGroup}>
           <h1 className={styles.centerDrawNumberTitle}>
-            {mock.drawNumber || 'SORTEIO EM BREVE'}
+            {mock.drawNumber || t('draw.soon')}
           </h1>
-          <span className={styles.centerSubTitle}>O SORTEIO COMEÇA EM</span>
+          <span className={styles.centerSubTitle}>{t('lobby.startsIn')}</span>
         </div>
 
         {/* Palco do Relógio com Ampulheta 3D, Timer Central e Globo de Bingo GIF em Tamanho Destaque */}
@@ -369,7 +371,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           />
 
           <div className={styles.centerAccumulatedTextGroup}>
-            <span className={styles.centerAccumulatedLabel}>ACUMULADO</span>
+            <span className={styles.centerAccumulatedLabel}>{t('prize.jackpot')}</span>
             <span
               className={styles.centerAccumulatedValue}
               // 20% maior que os cards de prêmio (mesmas faixas de comprimento).
@@ -406,7 +408,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         <div className={`${styles.prizeCard} ${styles.prizeCardLine1}`}>
           <div className={styles.prizeTop}>
             <div className={`${styles.prizeBadge} ${styles.prizeBadgeLine1}`}>
-              1ª LINHA
+              {t('prize.line1')}
             </div>
             <Image
               src="/themes/bingo-show/assets/icons/moedas-pilha.png"
@@ -426,7 +428,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         <div className={`${styles.prizeCard} ${styles.prizeCardLine2}`}>
           <div className={styles.prizeTop}>
             <div className={`${styles.prizeBadge} ${styles.prizeBadgeLine2}`}>
-              2ª LINHA
+              {t('prize.line2')}
             </div>
             <Image
               src="/themes/bingo-show/assets/icons/moedas-pilha.png"
@@ -446,7 +448,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         <div className={`${styles.prizeCard} ${styles.prizeCardBingo}`}>
           <div className={styles.prizeTop}>
             <div className={`${styles.prizeBadge} ${styles.prizeBadgeBingo}`}>
-              BINGO
+              {t('prize.bingo')}
             </div>
             <Image
               src="/themes/bingo-show/assets/icons/moedas-pilha.png"

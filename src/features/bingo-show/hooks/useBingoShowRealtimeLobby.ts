@@ -3,9 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useGameSocket, DrawSSE } from '@/contexts/SSEContext';
 import { BingoShowLobbyMock, NextDrawItem } from '../mocks/lobbyMock';
 import { formatBrl, formatDrawTime } from '../utils/format';
-
-const FALLBACK_MODALITY = 'BINGO SHOW TRADICIONAL';
-const FALLBACK_PROMO = 'COMPRE SUAS CARTELAS COM OS AGENTES AUTORIZADOS • BOA SORTE!';
+import { useT } from '@/contexts/TvConfigContext';
 
 export interface BingoShowRealtimeLobby extends BingoShowLobbyMock {
   connected: boolean;
@@ -17,6 +15,7 @@ export interface BingoShowRealtimeLobby extends BingoShowLobbyMock {
 
 export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
   const { connected, jackpotAmount, triggerBallLimit, nextDraws, promotions, drawClosingSeconds } = useGameSocket();
+  const t = useT();
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -59,11 +58,11 @@ export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
     const mo = String(now.getMonth() + 1).padStart(2, '0');
     const yyyy = now.getFullYear();
 
-    const promotionalMessage = promotions[0]?.title || FALLBACK_PROMO;
+    const promotionalMessage = promotions[0]?.title || t('lobby.promoFallback');
 
     return {
       connected,
-      drawNumber: drawIdText !== '---' ? `SORTEIO #${drawIdText}` : 'SORTEIO EM BREVE',
+      drawNumber: drawIdText !== '---' ? t('draw.numbered', { n: `#${drawIdText}` }) : t('draw.soon'),
       drawNumberShort: drawIdText !== '---' ? `#${drawIdText}` : '#---',
       countdownSeconds,
       accumulatedPrize: formatBrl(jackpotAmount),
@@ -76,9 +75,9 @@ export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
       promotionalMessage,
       currentTime: `${hh}:${mi}:${ss}`,
       currentDate: `${dd}/${mo}/${yyyy}`,
-      modalityName: FALLBACK_MODALITY,
+      modalityName: t('draw.modality'),
     };
-  }, [connected, jackpotAmount, triggerBallLimit, nextDraws, promotions, drawClosingSeconds, now]);
+  }, [connected, jackpotAmount, triggerBallLimit, nextDraws, promotions, drawClosingSeconds, now, t]);
 }
 
 export default useBingoShowRealtimeLobby;

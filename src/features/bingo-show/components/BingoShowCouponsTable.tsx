@@ -3,6 +3,7 @@ import { CouponItem } from '../mocks/drawMock';
 import { BingoShowColors } from '../design-system';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useT } from '@/contexts/TvConfigContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
 import ouroTable from './BingoShowCouponsTableOuro.module.css';
 import goldTable from './BingoShowCouponsTableGold.module.css';
@@ -13,10 +14,8 @@ import { ouroBallAsset } from '../utils/ouroBall';
 /** Módulo de estilos da tabela em cards (Blue, Ouro, Paraguay — mesmos nomes de classe). */
 type CardTableCss = typeof blueTable;
 
-/** Textos da tabela (o Paraguay usa espanhol). */
+/** Textos da tabela (traduzidos pelo idioma da TV). */
 type TableLabels = { coupon: string; donor: string; missing: string; almost: string };
-const PT_LABELS: TableLabels = { coupon: 'CUPOM', donor: 'DOADOR', missing: 'FALTAM', almost: 'QUASE!' };
-const ES_LABELS: TableLabels = { coupon: 'CUPÓN', donor: 'DONADOR', missing: 'FALTAN', almost: '¡CASI!' };
 
 export interface BingoShowCouponsTableProps {
   coupons: CouponItem[];
@@ -35,11 +34,11 @@ const VISIBLE_ROWS = 10;
  * A proximidade vem do tamanho de `missing` — a lista de números que ainda faltam
  * enviada pelo backend (`missingNumbers`) — só quando o registro tem dados e a
  * lista não está vazia; sem isso, nenhuma marca é exibida. */
-const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string; almostText?: string }> = ({
+const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string; almostText: string }> = ({
   row,
   css: blueTable,
   ballImage,
-  almostText = PT_LABELS.almost,
+  almostText,
 }) => {
   const hasData = row.coupon !== '---';
   const missing = row.missing || [];
@@ -89,12 +88,12 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
   );
 };
 
-const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string; labels?: TableLabels }> = ({
+const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string; labels: TableLabels }> = ({
   rows,
   compact,
   css: blueTable,
   ballImage,
-  labels = PT_LABELS,
+  labels,
 }) => {
   // Key estável por registro (cupom + ocorrência, pois o mesmo cupom pode vir
   // em mais de uma linha), para o card manter o estado de "antes" quando o
@@ -125,7 +124,16 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   compact = false,
 }) => {
   const { isBlue, themeId } = useAppTheme();
+  const t = useT();
   const isOuro = themeId === 'bingo-show';
+  // Família es-PY (Paraguay, Loteria'i): coluna do nome própria da marca.
+  const es = getEsSkin(themeId);
+  const labels: TableLabels = {
+    coupon: t('coupons.coupon'),
+    donor: t(es ? es.text.playerColumnKey : 'coupons.donor'),
+    missing: t('coupons.missing'),
+    almost: t('coupons.almost'),
+  };
 
   const rows = React.useMemo(() => {
     const list = [...coupons];
@@ -138,17 +146,16 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   if (isBlue) {
     return (
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
-        <CardCouponsTable rows={rows} compact={compact} css={blueTable} />
+        <CardCouponsTable rows={rows} compact={compact} css={blueTable} labels={labels} />
       </BingoShowTopWinnersFrame>
     );
   }
 
-  // Família es-PY (Paraguay, Loteria'i): mesma tabela em cards, textos em espanhol.
-  const es = getEsSkin(themeId);
+  // Família es-PY (Paraguay, Loteria'i): mesma tabela em cards.
   if (es) {
     return (
       <div className={`${es.css.theme.vars} ${es.css.theme.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
-        <CardCouponsTable rows={rows} compact={compact} css={es.css.coupons} labels={{ ...ES_LABELS, donor: es.text.playerColumn }} />
+        <CardCouponsTable rows={rows} compact={compact} css={es.css.coupons} labels={labels} />
       </div>
     );
   }
@@ -157,7 +164,7 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   if (themeId === 'tema-ouro') {
     return (
       <div className={`${goldPanel.vars} ${goldPanel.panel}`} style={{ width: '100%', height: '100%', padding: 10, boxSizing: 'border-box', ...style }}>
-        <CardCouponsTable rows={rows} compact={compact} css={goldTable} />
+        <CardCouponsTable rows={rows} compact={compact} css={goldTable} labels={labels} />
       </div>
     );
   }
@@ -167,7 +174,7 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
   if (isOuro) {
     return (
       <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
-        <CardCouponsTable rows={rows} compact={compact} css={ouroTable} ballImage={ouroBallAsset} />
+        <CardCouponsTable rows={rows} compact={compact} css={ouroTable} ballImage={ouroBallAsset} labels={labels} />
       </BingoShowTopWinnersFrame>
     );
   }
@@ -188,9 +195,9 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
             paddingRight: 8,
           }}
         >
-          <span style={{ width: '26%', fontSize: 18, fontWeight: 900, color: '#E52B21', letterSpacing: 1.5 }}>CUPOM</span>
-          <span style={{ width: '42%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>DOADOR</span>
-          <span style={{ width: '32%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, textAlign: 'center' }}>FALTAM</span>
+          <span style={{ width: '26%', fontSize: 18, fontWeight: 900, color: '#E52B21', letterSpacing: 1.5 }}>{labels.coupon}</span>
+          <span style={{ width: '42%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{labels.donor}</span>
+          <span style={{ width: '32%', fontSize: 18, fontWeight: 900, color: '#8FD9FF', letterSpacing: 1.5, textAlign: 'center' }}>{labels.missing}</span>
         </div>
 
         {/* ROWS */}

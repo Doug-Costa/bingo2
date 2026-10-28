@@ -44,7 +44,7 @@ import goldStyles from '../components/goldMetalText.module.css';
 import goldTheme from '../components/gold/GoldTheme.module.css';
 import { getEsSkin } from '../components/esSkin';
 import { useAppTheme } from '@/contexts/ThemeContext';
-import { getThemeProfile } from '@/theme/themeProfile';
+import { useTvConfig, useT } from '@/contexts/TvConfigContext';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
 // exibição em si (`PrizeStatusType`, ex.: "EM DISPUTA"), não como o enum visual que
@@ -72,10 +72,13 @@ export const BingoShowDrawScreen: React.FC = () => {
   // Temas com o título em ouro próprio (classe do tema) e acentos dourados.
   const warm = isGold || isParaguay;
   const [soundOn, setSoundOn] = useState(true);
+  // Voz pelo idioma da TV (espanhol → /audio/es; português e inglês → pt-br).
+  const { voice } = useTvConfig();
+  const t = useT();
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
   // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
-  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, getThemeProfile(themeId).voice);
+  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, voice);
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
@@ -158,7 +161,7 @@ export const BingoShowDrawScreen: React.FC = () => {
                 ...(goldTitle || warm ? {} : { color: '#FFCF12', textShadow: '0 0 20px rgba(255, 207, 18, 0.85), 0 2px 4px rgba(0,0,0,0.9)' }),
               }}
             >
-              {es ? es.text.liveTitle : 'BINGO AO VIVO'}
+              {t('draw.liveTitle', { brand: es ? es.text.liveBrand : 'BINGO' })}
             </span>
             <span
               className={es?.css.theme.starIcon ?? (goldTitle || warm ? goldStyles.goldIcon : undefined)}
@@ -178,7 +181,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               ...(goldTitle || warm ? {} : { color: '#FFDE38', textShadow: '0 0 8px rgba(255, 222, 56, 0.6)' }),
             }}
           >
-            {es ? es.text.liveSubtitle : '★ SUA SORTE, NOSSO BINGO! ★'}
+            {es?.text.slogan ?? t('draw.liveSubtitle')}
           </span>
         </div>
 
@@ -263,7 +266,7 @@ export const BingoShowDrawScreen: React.FC = () => {
             <div style={{ flex: 62, minHeight: 0, display: 'flex' }}>
               <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <DrawStage
-                  title="NÚMERO SORTEADO"
+                  title={t('draw.drawnNumber')}
                   currentNumber={mock.currentBall}
                   nextBalls={last3Balls}
                   sequenceNumber={mock.drawnBalls.length}

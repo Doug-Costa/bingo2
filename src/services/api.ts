@@ -7,6 +7,9 @@
  * Todo texto/campo abaixo é idêntico ao RN.
  */
 
+import type { Promotion } from '@/contexts/SSEContext';
+import type { TvPlayer, TvThemeConfig } from '@/storage/tvConfig';
+
 // ─── HTTP helper ────────────────────────────────────────────────────────────
 async function request<T>(
   baseUrl: string,
@@ -47,16 +50,14 @@ export interface ResolveResponse {
   roomId: string;
   roomName: string;
   resellerId?: string;
-  theme?: {
-    name?: string;
-    type?: string;
-    logoUrl?: string;
-    text?: string;
-    defaultLanguage?: string;
-    sound?: string;
-    enableSound?: boolean;
-    css?: Record<string, string>;
-  };
+  urlsite?: string;
+  affiliateId?: string;
+  /** Tema já resolvido em cascata (operador → sala → padrão do reseller). */
+  theme?: TvThemeConfig | null;
+  promotes?: Promotion[];
+  /** Espelho de theme/promotes em options.config.themetv / .promote. */
+  options?: Record<string, unknown> | null;
+  player?: TvPlayer | null;
 }
 
 /**

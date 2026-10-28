@@ -51,7 +51,7 @@ export default function PinPage() {
               </div>
 
               {/* Componente de PIN */}
-              <PinVerificationScreen onSuccess={(_roomId) => router.push('/tv')} />
+              <PinVerificationScreen />
             </div>
           </TvSafeArea>
         </BingoShowAmbientBackground>

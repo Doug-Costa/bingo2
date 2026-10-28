@@ -20,12 +20,12 @@ import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import lt from '../components/loteriai/LoteriaiTheme.module.css';
 import styles from './BingoShowLobbyScreenLoteriai.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 const A = '/themes/loteriai';
 const DRAW_PAGE_SIZE = 3;
 const DRAW_PAGE_INTERVAL_MS = 6000;
 // Mensagem padrão do hook (em português) → slogan do tema.
-const PT_FALLBACK = 'COMPRE SUAS CARTELAS COM OS AGENTES AUTORIZADOS • BOA SORTE!';
 
 function moneySize(value: string, sizes: [number, number, number]): number {
   const tier = moneyLengthTier(value);
@@ -53,6 +53,7 @@ function drawValueSize(value: string): number {
 }
 
 const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
+  const t = useT();
   const pages = useMemo(() => {
     const out: NextDrawItem[][] = [];
     for (let i = 0; i < draws.length; i += DRAW_PAGE_SIZE) out.push(draws.slice(i, i + DRAW_PAGE_SIZE));
@@ -73,7 +74,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
     return (
       <div className={styles.drawsEmpty}>
         <Image className={`${lt.art} ${styles.emptyArt}`} src={`${A}/sm/decorative/ferradura.png`} alt="" width={140} height={137} sizes="140px" />
-        <span>ESPERANDO PRÓXIMOS SORTEOS</span>
+        <span>{t('lobby.waitingDraws')}</span>
       </div>
     );
   }
@@ -86,17 +87,17 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
           return (
             <div key={d.id || i} className={`${styles.drawCard} ${d.isNext ? styles.drawCardNext : ''}`} style={{ '--i': i } as React.CSSProperties}>
               <div className={styles.drawTop}>
-                <span className={styles.drawTag}>SORTEO Nº {d.number.replace(/^#/, '')}</span>
+                <span className={styles.drawTag}>{t('lobby.drawNo', { n: d.number.replace(/^#/, '') })}</span>
                 <span className={styles.drawWhen}>
-                  {d.isNext && <span className={styles.drawNext}>PRÓXIMO</span>}
+                  {d.isNext && <span className={styles.drawNext}>{t('lobby.nextTag')}</span>}
                   <span className={styles.drawTime}>{d.time}</span>
                 </span>
               </div>
               <div className={styles.drawPrizes}>
                 {(
                   [
-                    ['1ª LÍNEA', d.line1Prize],
-                    ['2ª LÍNEA', d.line2Prize],
+                    [t('prize.line1'), d.line1Prize],
+                    [t('prize.line2'), d.line2Prize],
                     ["LOTERIA'I", d.bingoPrize],
                   ] as const
                 ).map(([label, value]) => (
@@ -152,6 +153,7 @@ const PrizeCard: React.FC<{ label: string; value: string; tone: CardTone; art: s
 
 export const BingoShowLobbyScreenLoteriai: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
+  const t = useT();
   const secs = Math.max(0, mock.countdownSeconds || 0);
   const countdown = formatCountdown(secs);
   // Contador com hora (H:MM:SS) é mais largo: fonte menor para caber no palco.
@@ -159,9 +161,9 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
   // Últimos segundos (tempo REAL): contador ganha um pouco mais de intensidade.
   const final = secs > 0 && secs <= 10;
   const near = secs > 0 && secs <= 30;
-  const drawTitle = secs > 0 && secs <= 3600 ? 'SORTEO EN BREVE' : 'PRÓXIMO SORTEO';
+  const drawTitle = secs > 0 && secs <= 3600 ? t('draw.soon') : t('lobby.nextDraw');
   const drawNumber = mock.drawNumberShort && mock.drawNumberShort !== '#---' ? mock.drawNumberShort.replace(/^#/, '') : '---';
-  const isSlogan = !mock.promotionalMessage || mock.promotionalMessage === PT_FALLBACK;
+  const isSlogan = !mock.promotionalMessage || mock.promotionalMessage === t('lobby.promoFallback');
 
   return (
     <BingoShowAmbientBackground>
@@ -173,16 +175,16 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           <div className={styles.infoGroup}>
             <div className={styles.info} style={{ '--d': '120ms' } as React.CSSProperties}>
               <span className={styles.infoLabel}>
-                PRÓXIMO
+                {t('lobby.nextTag')}
                 <br />
-                SORTEO
+                {t('lobby.drawWord')}
               </span>
               <span className={styles.infoBall}>{drawNumber}</span>
             </div>
             <div className={styles.info} style={{ '--d': '220ms' } as React.CSSProperties}>
               <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={44} height={46} sizes="44px" />
               <span className={styles.infoText}>
-                <span className={styles.infoLabel}>FECHA</span>
+                <span className={styles.infoLabel}>{t('lobby.date')}</span>
                 <span className={styles.infoValue} suppressHydrationWarning>
                   {mock.currentDate}
                 </span>
@@ -191,7 +193,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             <div className={styles.info} style={{ '--d': '320ms' } as React.CSSProperties}>
               <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/icons/ampulheta.png`} alt="" width={30} height={52} sizes="30px" />
               <span className={styles.infoText}>
-                <span className={styles.infoLabel}>HORA</span>
+                <span className={styles.infoLabel}>{t('lobby.time')}</span>
                 <span className={styles.infoValue} suppressHydrationWarning>
                   {mock.currentTime}
                 </span>
@@ -201,7 +203,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <div className={`${lt.panel} ${lt.panelRed} ${styles.headerJackpot}`} style={{ '--d': '440ms' } as React.CSSProperties}>
             <div className={styles.headerJackpotText}>
-              <span className={styles.headerJackpotLabel}>PREMIO MAYOR</span>
+              <span className={styles.headerJackpotLabel}>{t('lobby.grandPrize')}</span>
               <span key={mock.accumulatedPrize} className={`${lt.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [46, 40, 32]) }}>
                 {mock.accumulatedPrize}
               </span>
@@ -215,7 +217,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
         <main className={styles.main}>
           <section className={`${lt.panel} ${styles.left}`}>
             <div className={styles.sectionHead}>
-              <span>PRÓXIMOS SORTEOS</span>
+              <span>{t('lobby.nextDraws')}</span>
             </div>
             <NextDraws draws={mock.nextDraws} />
           </section>
@@ -224,7 +226,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             <span className={styles.centerRays} />
             <div className={styles.centerTitles}>
               <span className={`${lt.titleText} ${styles.drawTitle}`}>{drawTitle}</span>
-              <span className={styles.startsIn}>EL SORTEO COMIENZA EN</span>
+              <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
             </div>
 
             <div className={styles.stage}>
@@ -247,14 +249,14 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             <div className={`${lt.shimmer} ${styles.jackpotBand}`} style={{ '--shimmer-delay': '3s' } as React.CSSProperties}>
               <Image className={`${lt.art} ${styles.bandPot}`} src={`${A}/sm/decorative/pote-premio.png`} alt="" width={160} height={136} sizes="160px" />
               <div className={styles.bandText}>
-                <span className={styles.bandLabel}>PREMIO MAYOR ACUMULADO</span>
+                <span className={styles.bandLabel}>{t('lobby.grandPrizeJackpot')}</span>
                 <span key={mock.accumulatedPrize} className={styles.bandValue} style={{ fontSize: moneySize(mock.accumulatedPrize, [76, 64, 54]) }}>
                   {mock.accumulatedPrize}
                 </span>
               </div>
               {mock.hasTriggerBallLimit && (
                 <div className={styles.limitBadge}>
-                  <span className={styles.limitLabel}>HASTA LA BOLA</span>
+                  <span className={styles.limitLabel}>{t('lobby.untilBall')}</span>
                   <span className={styles.limitValue}>{mock.triggerBallLimit}</span>
                 </div>
               )}
@@ -262,8 +264,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           </section>
 
           <section className={styles.right}>
-            <PrizeCard label="1ª LÍNEA" value={mock.line1Prize} tone="blue" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
-            <PrizeCard label="2ª LÍNEA" value={mock.line2Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={1} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="blue" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={1} />
             <PrizeCard label="LOTERIA'I" value={mock.bingoPrize} tone="green" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={2} />
           </section>
         </main>
@@ -274,8 +276,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           {isSlogan ? (
             <span className={styles.footerSlogan}>
-              <span className={styles.sloganRed}>¡TU SUERTE</span> <span className={styles.sloganBlue}>PUEDE CAMBIAR</span>{' '}
-              <span className={styles.sloganRed}>HOY!</span>
+              <span className={styles.sloganRed}>{t('lobby.luck1')}</span> <span className={styles.sloganBlue}>{t('lobby.luck2')}</span>{' '}
+              <span className={styles.sloganRed}>{t('lobby.luck3')}</span>
             </span>
           ) : (
             <span className={styles.footerText}>{mock.promotionalMessage}</span>

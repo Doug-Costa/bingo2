@@ -66,15 +66,18 @@ export interface EsSkin {
     pillText: string;
     pillGlow: string;
   };
+  /** Textos de marca (não traduzidos); o resto vem do i18n (useT). */
   text: {
-    liveTitle: string;
-    liveSubtitle: string;
-    /** Nome do prêmio máximo (3º prêmio). */
-    bingoLabel: string;
-    /** Coluna do nome na tabela de cupons. */
-    playerColumn: string;
-    /** Rodapé do resumo da rodada. */
-    roundFooter: string;
+    /** Marca no título "<marca> AO VIVO" (draw.liveTitle). */
+    liveBrand: string;
+    /** Slogan fixo da marca; null usa o subtítulo traduzido (draw.liveSubtitle). */
+    slogan: string | null;
+    /** Nome do prêmio máximo (3º prêmio); null usa o traduzido (prize.bingo). */
+    bingoLabel: string | null;
+    /** Coluna do nome na tabela de cupons (chave do i18n). */
+    playerColumnKey: 'coupons.donor' | 'coupons.player';
+    /** Marca no rodapé do resumo da rodada (round.footer). */
+    roundBrand: string;
   };
 }
 
@@ -110,11 +113,11 @@ export const PARAGUAY_SKIN: EsSkin = {
     pillGlow: '0 0 12px rgba(255, 179, 0, 0.25)',
   },
   text: {
-    liveTitle: 'BINGO EN VIVO',
-    liveSubtitle: '★ TU SUERTE, NUESTRO BINGO ★',
-    bingoLabel: 'BINGO',
-    playerColumn: 'DONADOR',
-    roundFooter: 'BINGO SHOW PARAGUAY • RESULTADOS DE LA RONDA',
+    liveBrand: 'BINGO',
+    slogan: null,
+    bingoLabel: null,
+    playerColumnKey: 'coupons.donor',
+    roundBrand: 'BINGO SHOW PARAGUAY',
   },
 };
 
@@ -148,11 +151,11 @@ export const LOTERIAI_SKIN: EsSkin = {
     pillGlow: '0 3px 8px rgba(104, 57, 0, 0.28)',
   },
   text: {
-    liveTitle: "LOTERIA'I EN VIVO",
-    liveSubtitle: '¡BUENO, BONITO Y BARATO!',
+    liveBrand: "LOTERIA'I",
+    slogan: '¡BUENO, BONITO Y BARATO!',
     bingoLabel: "LOTERIA'I",
-    playerColumn: 'JUGADOR',
-    roundFooter: "LOTERIA'I • ¡BUENO, BONITO Y BARATO! • RESULTADOS DE LA RONDA",
+    playerColumnKey: 'coupons.player',
+    roundBrand: "LOTERIA'I • ¡BUENO, BONITO Y BARATO!",
   },
 };
 

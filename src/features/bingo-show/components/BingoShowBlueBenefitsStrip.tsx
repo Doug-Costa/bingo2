@@ -14,13 +14,13 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './BingoShowBlueBenefitsStrip.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 type Motion = 'tilt' | 'shield' | 'float' | 'sway' | 'trophy';
 
 interface Benefit {
   asset: string;
-  title: string;
-  subtitle: string;
+  key: 'cards' | 'secure' | 'chances' | 'prizes' | 'luck';
   tone: 'gold' | 'cyan';
   motion: Motion;
   alt: string;
@@ -32,18 +32,20 @@ interface Benefit {
 // Ordem e textos exatamente como na arte aprovada (Recorte 3).
 // Ciclos lentos (3,6–6s) e defasados: nenhum par começa junto.
 const BENEFITS: Benefit[] = [
-  { asset: 'cartela', title: 'COMPRE SUAS CARTELAS', subtitle: 'COM OS AGENTES AUTORIZADOS', tone: 'gold', motion: 'tilt', alt: 'Cartela', idle: { dur: 4600, delay: 1500 }, shine: { dur: 6000, delay: 3400 } },
-  { asset: 'escudo', title: '100% SEGURO', subtitle: 'Transação protegida', tone: 'cyan', motion: 'shield', alt: 'Escudo', idle: { dur: 5200, delay: 2300 }, shine: { dur: 5000, delay: 1700 } },
-  { asset: 'trofeu', title: 'MUITO MAIS CHANCES', subtitle: 'Mais cartelas, mais sorte', tone: 'cyan', motion: 'trophy', alt: 'Troféu', idle: { dur: 3800, delay: 3100 }, shine: { dur: 4400, delay: 2200 } },
-  { asset: 'presente', title: 'PRÊMIOS ESPECIAIS', subtitle: 'Promoções exclusivas', tone: 'cyan', motion: 'float', alt: 'Presente', idle: { dur: 4200, delay: 1900 }, shine: { dur: 6000, delay: 4600 } },
-  { asset: 'trevo', title: 'BOA SORTE!', subtitle: 'Que a sorte esteja com você!', tone: 'gold', motion: 'sway', alt: 'Trevo', idle: { dur: 5600, delay: 2700 }, shine: { dur: 6000, delay: 5800 } },
+  { asset: 'cartela', key: 'cards', tone: 'gold', motion: 'tilt', alt: 'Cartela', idle: { dur: 4600, delay: 1500 }, shine: { dur: 6000, delay: 3400 } },
+  { asset: 'escudo', key: 'secure', tone: 'cyan', motion: 'shield', alt: 'Escudo', idle: { dur: 5200, delay: 2300 }, shine: { dur: 5000, delay: 1700 } },
+  { asset: 'trofeu', key: 'chances', tone: 'cyan', motion: 'trophy', alt: 'Troféu', idle: { dur: 3800, delay: 3100 }, shine: { dur: 4400, delay: 2200 } },
+  { asset: 'presente', key: 'prizes', tone: 'cyan', motion: 'float', alt: 'Presente', idle: { dur: 4200, delay: 1900 }, shine: { dur: 6000, delay: 4600 } },
+  { asset: 'trevo', key: 'luck', tone: 'gold', motion: 'sway', alt: 'Trevo', idle: { dur: 5600, delay: 2700 }, shine: { dur: 6000, delay: 5800 } },
 ];
 
 const ENTRY_START_MS = 240;
 const ENTRY_STEP_MS = 120;
 
-export const BingoShowBlueBenefitsStrip: React.FC = () => (
-  <div className={styles.strip} aria-label="Benefícios Bingo Show">
+export const BingoShowBlueBenefitsStrip: React.FC = () => {
+  const t = useT();
+  return (
+  <div className={styles.strip} aria-label={t('benefits.aria')}>
     {BENEFITS.map((b, i) => {
       const src = `/themes/bingo-show-blue/footer/${b.asset}.png`;
       return (
@@ -69,12 +71,13 @@ export const BingoShowBlueBenefitsStrip: React.FC = () => (
               style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
             />
           </div>
-          <span className={`${styles.title} ${b.tone === 'gold' ? styles.titleGold : styles.titleCyan}`}>{b.title}</span>
-          <span className={styles.subtitle}>{b.subtitle}</span>
+          <span className={`${styles.title} ${b.tone === 'gold' ? styles.titleGold : styles.titleCyan}`}>{t(`benefits.${b.key}.title`)}</span>
+          <span className={styles.subtitle}>{t(`benefits.${b.key}.subtitle`)}</span>
         </div>
       );
     })}
   </div>
-);
+  );
+};
 
 export default BingoShowBlueBenefitsStrip;

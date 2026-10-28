@@ -546,6 +546,9 @@ export interface Promotion {
   fullscreenvideoimg?: boolean;
   text1tamanho?: number | string | null;
   text2tamanho?: number | string | null;
+  /** Só nas promoções vindas do resolve por PIN. */
+  active?: boolean;
+  createdAt?: string;
 }
 
 export interface MyTicket {
@@ -634,6 +637,12 @@ const SSEContext = createContext<SSEContextValue>({
   debugEventCount: 0,
 });
 
+export interface TvRestartInfo {
+  scope?: string;
+  roomId?: string;
+  resellerId?: string;
+}
+
 // ─── Provider ────────────────────────────────────────────────────────────────
 export function GameSocketProvider({
   baseUrl,
@@ -648,7 +657,8 @@ export function GameSocketProvider({
   pin?: string;
   token?: string;
   children: React.ReactNode;
-  onRestartEvent?: () => void;
+  /** `tv_restart`: { scope: 'pin' | 'room' | 'reseller' | 'global', roomId?, resellerId? }. */
+  onRestartEvent?: (_info: TvRestartInfo) => void;
 }) {
   // SSR-SAFE: todo estado abaixo começa com o MESMO valor neutro no servidor e no
   // 1º render do cliente (sem lazy initializer lendo `localStorage` — isso é o que
@@ -1505,10 +1515,10 @@ export function GameSocketProvider({
 
           case 'tv_restart':
           case 'restart':
-            console.log(`${TAG} 🔁 restart`);
+            console.log(`${TAG} 🔁 restart`, payload);
             clearCache(roomId);
             if (onRestartEvent) {
-              onRestartEvent();
+              onRestartEvent(payload && typeof payload === 'object' ? payload : {});
             }
             break;
 

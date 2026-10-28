@@ -10,10 +10,10 @@ export function formatGs(value: number | undefined | null): string {
   })}`;
 }
 
-/** Moeda de exibição. Provisório: definida pelo tema (Paraguay → guarani). Quando
- * o SSE passar a enviar a moeda, basta chamar setMoneyCurrency com o valor dele —
- * todas as telas usam formatBrl/formatMoney e mudam juntas. */
-export type MoneyCurrency = 'BRL' | 'PYG';
+/** Moeda de exibição: `defaultCoin` do tema recebido no PIN ou, sem ele, a do
+ * perfil do tema (Paraguay → guarani). Todas as telas usam formatBrl/formatMoney
+ * e mudam juntas. Código ISO (BRL, PYG, USD...). */
+export type MoneyCurrency = 'BRL' | 'PYG' | (string & {});
 let moneyCurrency: MoneyCurrency = 'BRL';
 
 export function setMoneyCurrency(c: MoneyCurrency): void {
@@ -30,6 +30,13 @@ export function formatMoney(value: number | undefined | null): string {
   const n = Number(value ?? 0);
   if (moneyCurrency === 'PYG') {
     return `₲ ${Math.round(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
+  }
+  if (moneyCurrency !== 'BRL') {
+    try {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: moneyCurrency }).format(n);
+    } catch {
+      // código desconhecido: cai no real
+    }
   }
   return `R$ ${n.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,

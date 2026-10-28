@@ -11,6 +11,7 @@ import { useCountUp } from '../../hooks/useCountUp';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import goldTheme from './GoldTheme.module.css';
 import styles from './RoundWinnersGold.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 // Arte de cada faixa (assets do tema).
 const ART: Record<RoundCategoryKey, string> = {
@@ -19,7 +20,6 @@ const ART: Record<RoundCategoryKey, string> = {
   bingo: '/themes/tema-ouro/sm/icons/coroa.png',
 };
 
-const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LINHA', line2: '2ª LINHA', bingo: 'BINGO' };
 const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
 const PER_PAGE = 4;
 const MIN_PAGE_MS = 5000;
@@ -39,6 +39,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   delay,
   jackpotAmount,
 }) => {
+  const t = useT();
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
@@ -53,7 +54,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
       </div>
       {w.coupon && (
         <span className={styles.coupon} style={{ fontSize: sz.coupon }}>
-          CUPOM {w.coupon}
+          {t('winner.coupon', { c: w.coupon })}
         </span>
       )}
       <div className={styles.valueCapsule}>
@@ -66,7 +67,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
           </span>
         </div>
       </div>
-      {w.jackpot && <span className={styles.jackpotTag}>+ ACUMULADO{jackpotAmount ? ` ${jackpotAmount}` : ''}</span>}
+      {w.jackpot && <span className={styles.jackpotTag}>{t('winner.plusJackpot')}{jackpotAmount ? ` ${jackpotAmount}` : ''}</span>}
     </div>
   );
 };
@@ -77,6 +78,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   jackpotAmount,
   totalDurationMs,
 }) => {
+  const t = useT();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -106,14 +108,14 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   return (
     <div className={`${styles.column} ${TONE[category.key]}`} style={{ '--d-col': `${dCol}ms`, '--d-title': `${dTitle}ms` } as React.CSSProperties}>
       <div className={styles.titleCapsule}>
-        <span className={styles.title}>{TITLES[category.key]}</span>
+        <span className={styles.title}>{t(`prize.${category.key}`)}</span>
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
       <img className={`${styles.coins} ${isSplit ? styles.coinsSmall : ''}`} src={ART[category.key]} alt="" draggable={false} />
       {isSplit && (
         <div className={styles.splitBand}>
           <span>
-            PRÊMIO DIVIDIDO • <span className={styles.splitCount}>{total} GANHADORES</span>
+            {t('round.splitPrize')} • <span className={styles.splitCount}>{t('round.nWinners', { n: total })}</span>
           </span>
           {pages > 1 && (
             <span className={styles.pagePill}>
@@ -126,8 +128,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
       {total === 0 ? (
         <div className={styles.empty}>
           <span className={styles.emptyStar}>★</span>
-          <span>NENHUM GANHADOR</span>
-          <span>NESTA FAIXA</span>
+          <span>{t('round.noWinner')}</span>
+          <span>{t('round.inTier')}</span>
         </div>
       ) : (
         <div key={page} className={`${styles.cards} ${mode >= 3 ? styles.cardsTop : ''}`}>
@@ -135,7 +137,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
             <RoundCard
               key={w.id}
               w={w}
-              label={isSplit ? `GANHADOR ${start + j + 1}/${total}` : '★ GANHADOR CONTEMPLADO ★'}
+              label={isSplit ? t('winner.nOfTotal', { i: start + j + 1, n: total }) : `★ ${t('winner.contemplated')} ★`}
               mode={mode}
               delay={firstShow ? dTitle + 350 + j * 160 : 80 + j * 120}
               jackpotAmount={jackpotAmount}
@@ -155,8 +157,10 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
   jackpotAmount,
   totalDurationMs,
   onClose,
-}) => (
-  <div className={`${goldTheme.vars} ${styles.root}`} role="dialog" aria-label="Ganhadores da rodada">
+}) => {
+  const t = useT();
+  return (
+  <div className={`${goldTheme.vars} ${styles.root}`} role="dialog" aria-label={t('round.aria')}>
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
@@ -164,11 +168,11 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>
-            <span className={goldTheme.goldText}>GANHADORES DA RODADA</span>
+            <span className={goldTheme.goldText}>{t('round.title')}</span>
             <span>🏆</span>
           </div>
           <span className={styles.headerSub}>
-            SORTEIO {drawNumber} • {dateStr} às {timeStr}
+            {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
           </span>
         </div>
         <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar">
@@ -182,9 +186,10 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
         ))}
       </div>
 
-      <footer className={styles.footer}>BINGO SHOW • RESULTADOS DA RODADA</footer>
+      <footer className={styles.footer}>{t('round.footer', { brand: 'BINGO SHOW' })}</footer>
     </div>
   </div>
-);
+  );
+};
 
 export default RoundWinnersGold;

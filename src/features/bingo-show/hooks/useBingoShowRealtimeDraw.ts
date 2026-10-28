@@ -4,6 +4,7 @@ import { useGameSocket, type MyTicket, type WinnerEvent } from '@/contexts/SSECo
 import { CouponItem, TicketCardItem, getBallLetter } from '../mocks/drawMock';
 import { PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { formatBrl, formatDrawDate, formatDrawTime } from '../utils/format';
+import { useT } from '@/contexts/TvConfigContext';
 
 function extractCartelaGrids(raw: unknown): number[][][] {
   let value: unknown = raw;
@@ -86,6 +87,7 @@ export interface BingoShowRealtimeDraw {
 export type PrizeStatusType = 'EM DISPUTA' | 'PRÓXIMO' | 'ACUMULADO' | 'PREMIADO';
 
 export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
+  const t = useT();
   const {
     connected,
     currentBall,
@@ -163,10 +165,10 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
           : tp.ticketId
           ? tp.ticketId.slice(-4)
           : '----',
-      donor: tp.playerName || 'Jogador',
+      donor: tp.playerName || t('common.player'),
       missing: tp.missingNumbers || [],
     }));
-  }, [topPlayers]);
+  }, [topPlayers, t]);
 
   const tickets = useMemo(() => flattenMyTickets(myTickets), [myTickets]);
 
@@ -222,8 +224,8 @@ export function useBingoShowRealtimeDraw(): BingoShowRealtimeDraw {
     dateStr: formatDrawDate(activeDraw?.scheduledAt),
     timeStr: formatDrawTime(activeDraw?.scheduledAt),
     currentTimeStr: `${hh}:${mi}:${ss}`,
-    modalityName: 'BINGO SHOW TRADICIONAL',
-    slogan: 'TRANSMISSÃO AO VIVO',
+    modalityName: t('draw.modality'),
+    slogan: t('draw.liveBroadcast'),
     coupons,
     tickets,
     winners,

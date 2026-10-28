@@ -21,6 +21,7 @@ import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import gold from '../components/gold/GoldTheme.module.css';
 import styles from './BingoShowLobbyScreenGold.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 const ASSET = '/themes/tema-ouro';
 const DRAW_PAGE_SIZE = 5;
@@ -33,6 +34,7 @@ function moneySize(value: string, sizes: [number, number, number]): number {
 }
 
 const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
+  const t = useT();
   const pages = useMemo(() => {
     const out: NextDrawItem[][] = [];
     for (let i = 0; i < draws.length; i += DRAW_PAGE_SIZE) out.push(draws.slice(i, i + DRAW_PAGE_SIZE));
@@ -51,7 +53,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
 
   const list = pages[page] ?? [];
   if (list.length === 0) {
-    return <div className={styles.drawsEmpty}>AGUARDANDO PRÓXIMOS SORTEIOS</div>;
+    return <div className={styles.drawsEmpty}>{t('lobby.waitingDraws')}</div>;
   }
 
   return (
@@ -70,7 +72,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
                 <span className={`${gold.goldText} ${styles.drawNumber}`}>{d.number}</span>
                 {d.isNext && (
                   <span className={styles.nextTag}>
-                    <span className={gold.jadeDot} /> PRÓXIMO
+                    <span className={gold.jadeDot} /> {t('lobby.nextTag')}
                   </span>
                 )}
                 <span className={styles.drawTime}>{d.time}</span>
@@ -78,9 +80,9 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
               <div className={styles.drawPrizes}>
                 {(
                   [
-                    ['1ª LINHA', d.line1Prize],
-                    ['2ª LINHA', d.line2Prize],
-                    ['BINGO', d.bingoPrize],
+                    [t('prize.line1'), d.line1Prize],
+                    [t('prize.line2'), d.line2Prize],
+                    [t('prize.bingo'), d.bingoPrize],
                   ] as const
                 ).map(([label, value]) => (
                   <div key={label} className={styles.drawPrize}>
@@ -128,6 +130,7 @@ const PrizeCard: React.FC<{ label: string; value: string; img: string; imgW: num
 
 export const BingoShowLobbyScreenGold: React.FC = () => {
   const mock = useBingoShowRealtimeLobby();
+  const t = useT();
 
   const countdown = useMemo(() => {
     const total = Math.max(0, mock.countdownSeconds || 0);
@@ -143,19 +146,19 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
 
           <div className={styles.infoGroup}>
             <div className={styles.info}>
-              <span className={`${gold.lacquer} ${styles.infoTag}`}>PRÓXIMO SORTEIO</span>
+              <span className={`${gold.lacquer} ${styles.infoTag}`}>{t('lobby.nextDraw')}</span>
               <span className={`${gold.goldText} ${styles.infoValue}`}>{mock.drawNumberShort}</span>
             </div>
             <span className={styles.infoSep} />
             <div className={styles.info}>
-              <span className={`${gold.lacquer} ${styles.infoTag}`}>DATA</span>
+              <span className={`${gold.lacquer} ${styles.infoTag}`}>{t('lobby.date')}</span>
               <span className={styles.infoValueCream} suppressHydrationWarning>
                 {mock.currentDate}
               </span>
             </div>
             <span className={styles.infoSep} />
             <div className={styles.info}>
-              <span className={`${gold.lacquer} ${styles.infoTag}`}>HORA</span>
+              <span className={`${gold.lacquer} ${styles.infoTag}`}>{t('lobby.time')}</span>
               <span className={styles.infoValueCream} suppressHydrationWarning>
                 {mock.currentTime}
               </span>
@@ -165,14 +168,14 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           <div className={styles.headerJackpot}>
             <Image className={`${styles.headerBag} ${gold.bagAlive}`} style={{ '--bag-delay': '1.5s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={120} height={102} sizes="120px" />
             <div className={styles.headerJackpotText}>
-              <span className={styles.headerJackpotLabel}>ACUMULADO ESPECIAL</span>
+              <span className={styles.headerJackpotLabel}>{t('lobby.specialJackpot')}</span>
               <span className={`${gold.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [40, 34, 28]) }}>
                 {mock.accumulatedPrize}
               </span>
             </div>
             {mock.hasTriggerBallLimit && (
-              <div className={styles.limitBadge} title="Acumulado sai até esta bola">
-                <span className={styles.limitLabel}>ATÉ A BOLA</span>
+              <div className={styles.limitBadge} title={t('lobby.untilBallHint')}>
+                <span className={styles.limitLabel}>{t('lobby.untilBall')}</span>
                 <span className={`${gold.goldText} ${styles.limitValue}`}>{mock.triggerBallLimit}</span>
               </div>
             )}
@@ -185,7 +188,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           <section className={`${gold.panel} ${styles.left}`}>
             <div className={styles.sectionTitle}>
               <Image src={`${ASSET}/icons/pata.png`} alt="" width={30} height={25} sizes="30px" />
-              <span className={gold.goldText}>PRÓXIMOS SORTEIOS</span>
+              <span className={gold.goldText}>{t('lobby.nextDraws')}</span>
               <Image src={`${ASSET}/icons/pata.png`} alt="" width={30} height={25} sizes="30px" />
             </div>
             <div className={gold.divider} />
@@ -196,7 +199,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           <section className={`${gold.panel} ${gold.panelHot} ${styles.center}`}>
             <div className={styles.centerTitles}>
               <span className={`${gold.goldText} ${styles.drawTitle}`}>{mock.drawNumber}</span>
-              <span className={styles.startsIn}>O SORTEIO COMEÇA EM</span>
+              <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
             </div>
 
             <div className={styles.stage}>
@@ -215,7 +218,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
 
             <div className={`${gold.lacquer} ${styles.jackpotBand}`}>
               <Image className={styles.bandArt} src={`${ASSET}/decorative/pilha-moedas.png`} alt="" width={120} height={88} sizes="120px" />
-              <span className={styles.bandLabel}>ACUMULADO</span>
+              <span className={styles.bandLabel}>{t('prize.jackpot')}</span>
               <span className={`${gold.goldValue} ${styles.bandValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [62, 52, 44]) }}>
                 {mock.accumulatedPrize}
               </span>
@@ -225,9 +228,9 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
 
           {/* Prêmios do próximo sorteio */}
           <section className={styles.right}>
-            <PrizeCard label="1ª LINHA" value={mock.line1Prize} img={`${ASSET}/decorative/pilha-moedas.png`} imgW={150} imgH={110} delay={150} />
-            <PrizeCard label="2ª LINHA" value={mock.line2Prize} img={`${ASSET}/decorative/dinheiro-moedas.png`} imgW={176} imgH={103} delay={300} />
-            <PrizeCard label="BINGO" value={mock.bingoPrize} img={`${ASSET}/icons/coroa.png`} imgW={140} imgH={115} hot delay={450} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} img={`${ASSET}/decorative/pilha-moedas.png`} imgW={150} imgH={110} delay={150} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} img={`${ASSET}/decorative/dinheiro-moedas.png`} imgW={176} imgH={103} delay={300} />
+            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} img={`${ASSET}/icons/coroa.png`} imgW={140} imgH={115} hot delay={450} />
           </section>
         </main>
 

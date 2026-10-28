@@ -22,6 +22,7 @@ import { useFitText } from '../hooks/useFitText';
 import { useCountUp } from '../hooks/useCountUp';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowWinnerPresentationBlue.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 export type WinnerPresentationKind = 'line1' | 'line2' | 'bingo' | 'jackpot';
 
@@ -90,6 +91,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
   cardNumbers,
   paintedRows = [],
 }) => {
+  const t = useT();
   const name = useFitText(displayName, 92, 52);
   // Tamanho calculado sobre o valor FINAL (numa cópia invisível), então a fonte
   // não muda enquanto o número sobe.
@@ -155,7 +157,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
         <div className={styles.winner} data-fit-box>
           <div className={styles.winnerTitle}>
             <span className={`${goldStyles.goldIcon} ${styles.titleStar}`}>★</span>
-            <span className={goldStyles.goldMetalTextCompact}>GANHADOR CONTEMPLADO</span>
+            <span className={goldStyles.goldMetalTextCompact}>{t('winner.contemplated')}</span>
             <span className={`${goldStyles.goldIcon} ${styles.titleStar}`}>★</span>
           </div>
 
@@ -171,7 +173,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
 
           {couponText && (
             <div className={styles.coupon}>
-              <span className={goldStyles.goldMetalTextCompact}>CUPOM {couponText}</span>
+              <span className={goldStyles.goldMetalTextCompact}>{t('winner.coupon', { c: couponText })}</span>
             </div>
           )}
 
@@ -203,7 +205,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
 
           {kind === 'jackpot' && jackpotAmount && (
             <div className={styles.jackpotTag}>
-              <span className={styles.jackpotLabel}>+ ACUMULADO</span>
+              <span className={styles.jackpotLabel}>{t('winner.plusJackpot')}</span>
               <span className={styles.jackpotValue}>{jackpotAmount}</span>
             </div>
           )}
@@ -215,7 +217,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
             <span className={styles.cardFlash} style={{ '--flash-delay': `${lastWinDelay + 700}ms` } as React.CSSProperties} />
             <div className={styles.cardTitle}>
               <span className={goldStyles.goldIcon}>★</span>
-              <span className={goldStyles.goldMetalTextCompact}>CARTELA CONTEMPLADA</span>
+              <span className={goldStyles.goldMetalTextCompact}>{t('winner.card')}</span>
               <span className={goldStyles.goldIcon}>★</span>
             </div>
             <div className={styles.bingoHead}>

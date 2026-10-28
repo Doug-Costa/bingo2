@@ -10,6 +10,7 @@ import { useFitText } from '../../hooks/useFitText';
 import { useCountUp } from '../../hooks/useCountUp';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import { useEsSkin } from '../esSkin';
+import { useT } from '@/contexts/TvConfigContext';
 
 // Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i): mesmas classes.
 const PER_PAGE = 4;
@@ -30,6 +31,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   delay,
   jackpotAmount,
 }) => {
+  const t = useT();
   const { css: { theme: pyTheme, round: styles } } = useEsSkin();
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
@@ -45,7 +47,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
       </div>
       {w.coupon && (
         <span className={styles.coupon} style={{ fontSize: sz.coupon }}>
-          CUPÓN {w.coupon}
+          {t('winner.coupon', { c: w.coupon })}
         </span>
       )}
       <div className={styles.valueCapsule}>
@@ -58,7 +60,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
           </span>
         </div>
       </div>
-      {w.jackpot && <span className={styles.jackpotTag}>+ ACUMULADO{jackpotAmount ? ` ${jackpotAmount}` : ''}</span>}
+      {w.jackpot && <span className={styles.jackpotTag}>{t('winner.plusJackpot')}{jackpotAmount ? ` ${jackpotAmount}` : ''}</span>}
     </div>
   );
 };
@@ -69,9 +71,10 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   jackpotAmount,
   totalDurationMs,
 }) => {
+  const t = useT();
   const skin = useEsSkin();
   const styles = skin.css.round;
-  const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LÍNEA', line2: '2ª LÍNEA', bingo: skin.text.bingoLabel };
+  const TITLES: Record<RoundCategoryKey, string> = { line1: t('prize.line1'), line2: t('prize.line2'), bingo: skin.text.bingoLabel ?? t('prize.bingo') };
   const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
@@ -109,7 +112,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
       {isSplit && (
         <div className={styles.splitBand}>
           <span>
-            PREMIO DIVIDIDO • <span className={styles.splitCount}>{total} GANADORES</span>
+            {t('round.splitPrize')} • <span className={styles.splitCount}>{t('round.nWinners', { n: total })}</span>
           </span>
           {pages > 1 && (
             <span className={styles.pagePill}>
@@ -122,8 +125,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
       {total === 0 ? (
         <div className={styles.empty}>
           <span className={styles.emptyStar}>★</span>
-          <span>SIN GANADORES</span>
-          <span>EN ESTA CATEGORÍA</span>
+          <span>{t('round.noWinner')}</span>
+          <span>{t('round.inTier')}</span>
         </div>
       ) : (
         <div key={page} className={`${styles.cards} ${mode >= 3 ? styles.cardsTop : ''}`}>
@@ -131,7 +134,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
             <RoundCard
               key={w.id}
               w={w}
-              label={isSplit ? `GANADOR ${start + j + 1}/${total}` : '★ GANADOR PREMIADO ★'}
+              label={isSplit ? t('winner.nOfTotal', { i: start + j + 1, n: total }) : `★ ${t('winner.contemplated')} ★`}
               mode={mode}
               delay={firstShow ? dTitle + 350 + j * 160 : 80 + j * 120}
               jackpotAmount={jackpotAmount}
@@ -152,6 +155,7 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   totalDurationMs,
   onClose,
 }) => {
+  const t = useT();
   const skin = useEsSkin();
   const { theme: pyTheme, round: styles } = skin.css;
   const titleIcon = skin.art.roundTitleIcon ? (
@@ -161,7 +165,7 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
     <span>🏆</span>
   );
   return (
-  <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label="Ganhadores da rodada">
+  <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label={t('round.aria')}>
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
@@ -169,11 +173,11 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             {titleIcon}
-            <span className={pyTheme.goldText}>GANADORES DE LA RONDA</span>
+            <span className={pyTheme.goldText}>{t('round.title')}</span>
             {titleIcon}
           </div>
           <span className={styles.headerSub}>
-            SORTEO {drawNumber} • {dateStr} a las {timeStr}
+            {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
           </span>
         </div>
         <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar">
@@ -187,7 +191,7 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
         ))}
       </div>
 
-      <footer className={styles.footer}>{skin.text.roundFooter}</footer>
+      <footer className={styles.footer}>{t('round.footer', { brand: skin.text.roundBrand })}</footer>
     </div>
   </div>
   );

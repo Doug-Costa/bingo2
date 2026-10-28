@@ -4,6 +4,7 @@ import { BingoShowIcon } from './BingoShowIcon';
 import { BingoShowAssets } from '../assets';
 import { BingoShowColors } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useT } from '@/contexts/TvConfigContext';
 import goldTheme from './gold/GoldTheme.module.css';
 import { getEsSkin } from './esSkin';
 
@@ -14,7 +15,6 @@ export interface BingoShowTicketsGridProps {
 }
 
 // Rótulos de cartela idênticos à imagem de referência
-const TICKET_LABELS = ['CARTELA 01', 'CARTELA 02', 'CARTELA 03', 'CARTELA 04'];
 
 /** Quantos números da cartela ainda NÃO saíram */
 function countMissing(ticket: TicketCardItem, drawnSet: Set<number>): number {
@@ -35,6 +35,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
   style,
 }) => {
   const { themeId, theme, isBlue } = useAppTheme();
+  const t = useT();
   // tema-ouro ("Fortuna"): cartelas preto-quente com filete de ouro, acertos em ouro.
   const isGold = themeId === 'tema-ouro';
   // Família es-PY: textos em espanhol, acerto em vermelho. Paraguay: cartela
@@ -98,7 +99,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
             textTransform: 'uppercase',
           }}
         >
-          {isParaguay ? 'MIS CARTONES' : 'MINHAS CARTELAS'}
+          {t('draw.myCards')}
         </span>
         <img
           src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
@@ -155,7 +156,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
                   textTransform: 'uppercase',
                 }}
               >
-                {isParaguay ? `CARTÓN ${String(idx + 1).padStart(2, '0')}` : TICKET_LABELS[idx] ?? `CARTELA ${String(idx + 1).padStart(2, '0')}`}
+                {t('draw.cardN', { n: String(idx + 1).padStart(2, '0') })}
               </span>
             </div>
 

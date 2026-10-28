@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { BingoShowBall, getBallColorName } from './BingoShowBall';
 import { BingoShowAssets } from '../assets';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useT } from '@/contexts/TvConfigContext';
 import goldStyles from './goldMetalText.module.css';
 import blueGrid from './BingoShowDrawnBallsBlue.module.css';
 import ouroGrid from './BingoShowDrawnBallsOuro.module.css';
@@ -25,6 +26,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   style,
 }) => {
   const { themeId, theme } = useAppTheme();
+  const t = useT();
   const drawnSet = useMemo(() => new Set(drawnBalls), [drawnBalls]);
   const latestBall = drawnBalls.length > 0 ? drawnBalls[drawnBalls.length - 1] : undefined;
 
@@ -41,7 +43,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         <div className={pyHistory.title}>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
           <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src={es.art.ornament} alt="" draggable={false} />
-          <span className={pyTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
+          <span className={pyTheme.goldText}>{t('draw.lastDrawn')}</span>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
           <img className={`${pyTheme.art} ${pyHistory.titleNanduti}`} src={es.art.ornament} alt="" draggable={false} />
         </div>
@@ -67,7 +69,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         <div className={goldHistory.title}>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
           <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
-          <span className={goldTheme.goldText}>ÚLTIMOS NÚMEROS SORTEADOS</span>
+          <span className={goldTheme.goldText}>{t('draw.lastDrawn')}</span>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
           <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
         </div>
@@ -145,7 +147,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
             ...(isBlueTheme || isOuro ? {} : { color: '#FFCF12', textShadow: `0 0 14px rgba(255, 207, 18, 0.7)` }),
           }}
         >
-          ÚLTIMOS NÚMEROS SORTEADOS
+          {t('draw.lastDrawn')}
         </span>
         <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>

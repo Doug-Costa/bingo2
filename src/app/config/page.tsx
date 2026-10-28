@@ -54,7 +54,7 @@ export default function ConfigPage() {
               </div>
 
               {/* Componente de PIN com mensagens e erro de PIN incorreto */}
-              <PinVerificationScreen onSuccess={(_roomId) => router.push('/tv')} />
+              <PinVerificationScreen />
             </div>
           </TvSafeArea>
         </BingoShowAmbientBackground>

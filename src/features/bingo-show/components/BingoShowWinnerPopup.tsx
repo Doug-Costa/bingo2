@@ -48,6 +48,8 @@ import { RoundWinnersParaguay } from './paraguay/RoundWinnersParaguay';
 import { getEsSkin } from './esSkin';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { setFinishHoldExtraMs } from '../finishHold';
+import { useT } from '@/contexts/TvConfigContext';
+import type { TFunction } from 'i18next';
 import { useCountUp } from '../hooks/useCountUp';
 import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
@@ -100,24 +102,19 @@ function formatCouponDisplay(winner: Pick<WinnerEvent, 'ticketId' | 'incremental
 
 // Normalização estrita de tipo de vencedor (line1, line2, bingo, jackpot -> bingo)
 
-/** Selo do prêmio em espanhol (família es-PY; a Loteria'i nomeia o 3º prêmio). */
-function getPrizeDisplayEs(type?: string, skinId?: string): string {
+/** Selo do prêmio no idioma da TV. A Loteria'i nomeia o 3º prêmio com a marca e
+ * usa "1ª/2ª linha" e ordinais próprios. */
+function getPrizeDisplay(type: string | undefined, t: TFunction, skinId?: string) {
   const norm = normalizeWinnerType(type) || 'bingo';
+  const n = norm === 'line1' ? 1 : norm === 'line2' ? 2 : 3;
   if (skinId === 'loteriai') {
-    if (norm === 'line1') return '1er PREMIO • 1ª LÍNEA';
-    if (norm === 'line2') return '2° PREMIO • 2ª LÍNEA';
-    return "3er PREMIO • LOTERIA'I";
+    const order = t(`prize.order${n}Lt`);
+    const title = n === 3 ? "LOTERIA'I" : t(`prize.line${n}`);
+    return { order, title, full: `${order} • ${title}` };
   }
-  if (norm === 'line1') return '1° PREMIO • 1 LÍNEA';
-  if (norm === 'line2') return '2° PREMIO • 2 LÍNEAS';
-  return '3° PREMIO • BINGO';
-}
-
-function getPrizeDisplay(type?: string) {
-  const norm = normalizeWinnerType(type) || 'bingo';
-  if (norm === 'line1') return { order: '1º PRÊMIO', title: '1 LINHA', full: '1º PRÊMIO • 1 LINHA' };
-  if (norm === 'line2') return { order: '2º PRÊMIO', title: '2 LINHAS', full: '2º PRÊMIO • 2 LINHAS' };
-  return { order: '3º PRÊMIO', title: 'BINGO', full: '3º PRÊMIO • BINGO' };
+  const order = t(`prize.order${n}`);
+  const title = n === 1 ? t('prize.oneLine') : n === 2 ? t('prize.twoLines') : t('prize.bingo');
+  return { order, title, full: `${order} • ${title}` };
 }
 
 function normalizeWinnerType(type?: string): 'line1' | 'line2' | 'bingo' | null {
@@ -425,14 +422,14 @@ const PaintedCartelaGrid: React.FC<{
 };
 
 // Valor Monetário Exclusivo do Backend (sem usar o prêmio total da faixa em SPLIT se prizeAmount não existir)
-function getWinnerPrizeDisplay(winner: WinnerEvent, isSplit: boolean, defaultPrizeStr: string): string {
+function getWinnerPrizeDisplay(winner: WinnerEvent, isSplit: boolean, defaultPrizeStr: string, t: TFunction): string {
   const hasValidPrize =
     winner.prizeAmount !== undefined && typeof winner.prizeAmount === 'number' && winner.prizeAmount > 0;
-  return hasValidPrize ? formatBrl(winner.prizeAmount!) : isSplit ? 'VALOR NÃO INFORMADO' : defaultPrizeStr;
+  return hasValidPrize ? formatBrl(winner.prizeAmount!) : isSplit ? t('winner.valueMissing') : defaultPrizeStr;
 }
 
-function getWinnerDisplayName(winner: WinnerEvent): string {
-  return winner.playerName && winner.playerName.trim() !== '' ? winner.playerName : 'NOME NÃO INFORMADO';
+function getWinnerDisplayName(winner: WinnerEvent, t: TFunction): string {
+  return winner.playerName && winner.playerName.trim() !== '' ? winner.playerName : t('winner.nameMissing');
 }
 
 // Componente do Card do Ganhador Adaptativo (Hero, Médio ou Compacto para Grid)
@@ -499,6 +496,7 @@ const WinnerCard: React.FC<{
   cartelaLayout = 'side',
   frameFit = 'fill',
 }) => {
+  const t = useT();
   const sz = CARD_SIZES[sizeVariant];
   const formattedTicket = formatCouponDisplay(winner);
   const hasRealNumbers = Array.isArray(winner.numbers) && winner.numbers.length > 0;
@@ -507,11 +505,11 @@ const WinnerCard: React.FC<{
   const isCompactFrame = frameFit === 'compact';
   const isJackpot = winner.jackpotWon === true;
 
-  const prizeDisplayValue = getWinnerPrizeDisplay(winner, isSplit, defaultPrizeStr);
+  const prizeDisplayValue = getWinnerPrizeDisplay(winner, isSplit, defaultPrizeStr, t);
   // Contagem de R$ 0,00 até o valor (0,3s após o card aparecer, dura 1,8s).
   const prizeCounting = useCountUp(prizeDisplayValue, 300, 1800);
 
-  const displayName = getWinnerDisplayName(winner);
+  const displayName = getWinnerDisplayName(winner, t);
 
   return (
     <BingoShowTopWinnersFrame
@@ -578,7 +576,7 @@ const WinnerCard: React.FC<{
                 textTransform: 'uppercase',
               }}
             >
-              {isSplit ? `GANHADOR ${splitIndex + 1}/${totalSplitCount}` : 'GANHADOR CONTEMPLADO'}
+              {isSplit ? t('winner.nOfTotal', { i: splitIndex + 1, n: totalSplitCount }) : t('winner.contemplated')}
             </span>
           </div>
 
@@ -610,7 +608,7 @@ const WinnerCard: React.FC<{
                 letterSpacing: 1,
               }}
             >
-              CUPOM {formattedTicket}
+              {t('winner.coupon', { c: formattedTicket })}
             </span>
           )}
         </div>
@@ -618,7 +616,7 @@ const WinnerCard: React.FC<{
         {/* VALOR INDIVIDUAL DO GANHADOR */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 12 }}>
           <span style={{ fontSize: sz.prizeLabel, fontWeight: 700, color: 'rgba(255, 255, 255, 0.6)', letterSpacing: 1, textTransform: 'uppercase', display: 'block' }}>
-            {isSplit ? 'PRÊMIO INDIVIDUAL' : 'PRÊMIO DO GANHADOR'}
+            {isSplit ? t('winner.individualPrize') : t('winner.prize')}
           </span>
           <span
             style={{
@@ -651,7 +649,7 @@ const WinnerCard: React.FC<{
               }}
             >
               <span style={{ fontSize: compact ? 10 : 14, fontWeight: 900, color: '#FFD700', letterSpacing: 1 }}>
-                💎 JACKPOT CONQUISTADO!
+                {t('winner.jackpotWon')}
               </span>
               {jackpotAmountGlobal && (
                 <span style={{ fontSize: compact ? 12 : 18, fontWeight: 900, color: '#FFFFFF', textShadow: '0 0 10px #FFD700' }}>
@@ -690,7 +688,7 @@ const WinnerCard: React.FC<{
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexShrink: 0 }}>
                 <BingoShowIcon name="star" size={sz.cartela - 4} color="#FFDE38" transparentBg />
                 <span style={{ fontSize: sz.cartela, fontWeight: 900, color: '#FFDE38', letterSpacing: 1, textTransform: 'uppercase' }}>
-                  CARTELA CONTEMPLADA
+                  {t('winner.card')}
                 </span>
                 <BingoShowIcon name="star" size={sz.cartela - 4} color="#FFDE38" transparentBg />
               </div>
@@ -726,7 +724,7 @@ const WinnerCard: React.FC<{
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
               <BingoShowIcon name="star" size={sz.cartela - 4} color="#FFDE38" transparentBg />
               <span style={{ fontSize: sz.cartela, fontWeight: 900, color: '#FFDE38', letterSpacing: 1, textTransform: 'uppercase' }}>
-                CARTELA CONTEMPLADA
+                {t('winner.card')}
               </span>
               <BingoShowIcon name="star" size={sz.cartela - 4} color="#FFDE38" transparentBg />
             </div>
@@ -773,6 +771,7 @@ const CategoryWinnerBlock: React.FC<{
   jackpotAmountGlobal,
   totalDurationMs,
 }) => {
+  const t = useT();
   // Paginação uniforme: 2 ganhadores por página em qualquer categoria (1ª linha, 2ª
   // linha ou BINGO) — as 3 colunas agora têm o mesmo espaço, então não faz mais
   // sentido o BINGO paginar diferente (era 4/página quando tinha 58% da largura).
@@ -887,7 +886,7 @@ const CategoryWinnerBlock: React.FC<{
                 textShadow: categoryKey === 'bingo' ? `0 0 16px ${themeColor}aa` : undefined,
               }}
             >
-              {hasJackpotInCategory ? `💎 ${getPrizeDisplay(categoryKey).title} + JACKPOT` : getPrizeDisplay(categoryKey).title}
+              {hasJackpotInCategory ? `💎 ${getPrizeDisplay(categoryKey, t).title} + ${t('winner.jackpotTag')}` : getPrizeDisplay(categoryKey, t).title}
             </span>
           </div>
           {isSplit && (
@@ -938,7 +937,7 @@ const CategoryWinnerBlock: React.FC<{
                   textTransform: 'uppercase',
                 }}
               >
-                NENHUM GANHADOR NESTA FAIXA
+                {t('round.noWinnerTier')}
               </span>
             </div>
           ) : (
@@ -1012,6 +1011,7 @@ const DefaultWinnerGroup: React.FC<{
   drawnNumbers: number[];
   jackpotAmountGlobal?: string;
 }> = ({ group, normType, themeColor, currentPrizeText, drawnNumbers, jackpotAmountGlobal }) => {
+  const t = useT();
   const pages = Math.max(1, Math.ceil(group.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -1057,9 +1057,9 @@ const DefaultWinnerGroup: React.FC<{
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            <BingoShowBadge label={getPrizeDisplay(normType).full} variant={normType === 'line1' ? 'gold' : 'cyan'} style={{ padding: '10px 32px', fontSize: 26 }} />
+            <BingoShowBadge label={getPrizeDisplay(normType, t).full} variant={normType === 'line1' ? 'gold' : 'cyan'} style={{ padding: '10px 32px', fontSize: 26 }} />
             <span style={{ fontSize: 24, fontWeight: 900, color: themeColor, letterSpacing: 2 }}>
-              {group.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
+              {t('winner.split', { n: group.length })}{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
             </span>
           </div>
           <div
@@ -1114,6 +1114,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   isLive = true,
 }) => {
   const { isBlue, themeId } = useAppTheme();
+  const t = useT();
   // Bingo Show (Ouro & Espaço): popup próprio (1 ou vários ganhadores).
   const isOuro = themeId === 'bingo-show';
   // tema-ouro ("Fortuna"): popup e resumo próprios, mesmos dados.
@@ -1379,9 +1380,9 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       const toView = (list: WinnerEvent[], defaultPrizeStr: string) =>
         list.map((w, idx) => ({
           id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
-          name: getWinnerDisplayName(w),
+          name: getWinnerDisplayName(w, t),
           coupon: formatCouponDisplay(w),
-          prize: getWinnerPrizeDisplay(w, list.length > 1, defaultPrizeStr),
+          prize: getWinnerPrizeDisplay(w, list.length > 1, defaultPrizeStr, t),
           jackpot: w.jackpotWon === true,
         }));
       const categories: RoundCategoryView[] = [
@@ -1477,10 +1478,10 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
                     textShadow: '0 0 16px #FF9100, 0 2px 4px rgba(0,0,0,0.8)',
                   }}
                 >
-                  🏆 GANHADORES DA RODADA DO BINGO SHOW 🏆
+                  🏆 {t('round.titleBrand', { brand: 'BINGO SHOW' })} 🏆
                 </span>
                 <span style={{ fontSize: 15, fontWeight: 800, color: BingoShowColors.cyanNeon, letterSpacing: 2, marginTop: 2 }}>
-                  SORTEIO {drawNumber} • {dateStr} às {timeStr}
+                  {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
                 </span>
               </div>
 
@@ -1527,7 +1528,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
           >
             <div style={{ minHeight: 0, height: '100%', minWidth: 0, overflow: 'hidden' }}>
               <CategoryWinnerBlock
-                title={getPrizeDisplay('line1').title}
+                title={getPrizeDisplay('line1', t).title}
                 categoryKey="line1"
                 winnerList={line1Winners}
                 themeColor={BingoShowColors.primary}
@@ -1541,7 +1542,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
 
             <div style={{ minHeight: 0, height: '100%', minWidth: 0, overflow: 'hidden' }}>
               <CategoryWinnerBlock
-                title={getPrizeDisplay('line2').title}
+                title={getPrizeDisplay('line2', t).title}
                 categoryKey="line2"
                 winnerList={line2Winners}
                 themeColor={BingoShowColors.cyanNeon}
@@ -1555,7 +1556,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
 
             <div style={{ minHeight: 0, height: '100%', minWidth: 0, overflow: 'hidden' }}>
               <CategoryWinnerBlock
-                title={getPrizeDisplay('bingo').title}
+                title={getPrizeDisplay('bingo', t).title}
                 categoryKey="bingo"
                 winnerList={bingoWinners}
                 themeColor={BingoShowColors.greenSuccess}
@@ -1575,7 +1576,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
             contentStyle={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}
           >
             <span style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255, 255, 255, 0.7)', letterSpacing: 2, textTransform: 'uppercase' }}>
-              BINGO SHOW • RESULTADOS DA RODADA
+              {t('round.footer', { brand: 'BINGO SHOW' })}
             </span>
           </BingoShowBannerFrame>
         </div>
@@ -1600,14 +1601,14 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       <Popup
         isBingo={normType === 'bingo'}
         key={`${drawNumber}-${normType}-${winnerKey(singleWinner)}`}
-        sealText={isParaguay ? getPrizeDisplayEs(normType, esSkin?.id) : getPrizeDisplay(normType).full}
+        sealText={getPrizeDisplay(normType, t, esSkin?.id).full}
         winners={group.map((w, idx) => {
           const hasCard = Array.isArray(w.numbers) && w.numbers.length > 0;
           return {
             id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
-            name: getWinnerDisplayName(w),
+            name: getWinnerDisplayName(w, t),
             coupon: formatCouponDisplay(w),
-            prize: getWinnerPrizeDisplay(w, group.length > 1, currentPrizeText),
+            prize: getWinnerPrizeDisplay(w, group.length > 1, currentPrizeText, t),
             jackpot: w.jackpotWon === true,
             cardNumbers: hasCard ? w.numbers : undefined,
             paintedRows: hasCard
@@ -1629,14 +1630,14 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         <BingoShowWinnerGroupBlue
           key={groupKey}
           kind={normType === 'bingo' && group.some((w) => w.jackpotWon === true) ? 'jackpot' : normType}
-          sealText={getPrizeDisplay(normType).full}
+          sealText={getPrizeDisplay(normType, t).full}
           winners={group.map((w, idx) => {
             const hasCard = Array.isArray(w.numbers) && w.numbers.length > 0;
             return {
               id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
-              name: getWinnerDisplayName(w),
+              name: getWinnerDisplayName(w, t),
               coupon: formatCouponDisplay(w),
-              prize: getWinnerPrizeDisplay(w, true, currentPrizeText),
+              prize: getWinnerPrizeDisplay(w, true, currentPrizeText, t),
               jackpot: w.jackpotWon === true,
               cardNumbers: hasCard ? w.numbers : undefined,
               paintedRows: hasCard
@@ -1680,11 +1681,11 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       <BingoShowWinnerPresentationBlue
         key={`${drawNumber}-${winnerKey(singleWinner)}`}
         kind={normType === 'bingo' && singleWinner.jackpotWon === true ? 'jackpot' : normType}
-        sealText={getPrizeDisplay(normType).full}
-        displayName={getWinnerDisplayName(singleWinner)}
+        sealText={getPrizeDisplay(normType, t).full}
+        displayName={getWinnerDisplayName(singleWinner, t)}
         couponText={formatCouponDisplay(singleWinner)}
-        prizeLabel="PRÊMIO DO GANHADOR"
-        prizeValue={getWinnerPrizeDisplay(singleWinner, false, currentPrizeText)}
+        prizeLabel={t('winner.prize')}
+        prizeValue={getWinnerPrizeDisplay(singleWinner, false, currentPrizeText, t)}
         jackpotAmount={jackpotAmountGlobal}
         cardNumbers={hasCard ? singleWinner.numbers : undefined}
         paintedRows={paintedRows}
@@ -1732,14 +1733,14 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
               // "BINGO" bem maior embaixo, em vez do badge de linha única dos outros tipos.
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 <span style={{ fontSize: 28, fontWeight: 900, color: themeColor, letterSpacing: 3, textTransform: 'uppercase' }}>
-                  {getPrizeDisplay(normType).order}
+                  {getPrizeDisplay(normType, t).order}
                 </span>
                 <span style={{ fontSize: 80, fontWeight: 900, color: themeColor, letterSpacing: 2, textTransform: 'uppercase', textShadow: `0 0 22px ${themeColor}aa` }}>
-                  {getPrizeDisplay(normType).title}
+                  {getPrizeDisplay(normType, t).title}
                 </span>
               </div>
             ) : (
-              <BingoShowBadge label={getPrizeDisplay(normType).full} variant={normType === 'line1' ? 'gold' : 'cyan'} style={{ padding: '14px 38px', fontSize: 28 }} />
+              <BingoShowBadge label={getPrizeDisplay(normType, t).full} variant={normType === 'line1' ? 'gold' : 'cyan'} style={{ padding: '14px 38px', fontSize: 28 }} />
             )}
           </div>
 

@@ -23,6 +23,7 @@ import goldStyles from './goldMetalText.module.css';
 import P from './BingoShowWinnerPresentationBlue.module.css';
 import styles from './BingoShowWinnerGroupBlue.module.css';
 import type { WinnerPresentationKind } from './BingoShowWinnerPresentationBlue';
+import { useT } from '@/contexts/TvConfigContext';
 
 export const GROUP_PAGE_SIZE = 6;
 
@@ -59,6 +60,7 @@ const SIZES: Record<Density, { name: [number, number]; value: [number, number]; 
 const CARD_STAGGER = 180;
 
 const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density }> = ({ w, index, density }) => {
+  const t = useT();
   const sz = SIZES[density];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
@@ -88,8 +90,8 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
             {w.name}
           </span>
         </div>
-        {w.coupon && <span className={styles.coupon}>CUPOM {w.coupon}</span>}
-        <span className={styles.prizeLabel}>PRÊMIO DO GANHADOR</span>
+        {w.coupon && <span className={styles.coupon}>{t('winner.coupon', { c: w.coupon })}</span>}
+        <span className={styles.prizeLabel}>{t('winner.prize')}</span>
         <div className={styles.valueBox}>
           {/* Cópia invisível com o valor final: fonte fixa enquanto conta. */}
           <span ref={value.ref} aria-hidden="true" className={styles.value} style={{ position: 'absolute', visibility: 'hidden', fontSize: value.size }}>
@@ -99,7 +101,7 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
             {counting}
           </span>
         </div>
-        {w.jackpot && <span className={styles.jackpotTag}>+ ACUMULADO</span>}
+        {w.jackpot && <span className={styles.jackpotTag}>{t('winner.plusJackpot')}</span>}
       </div>
 
       {hasCard && (
@@ -142,6 +144,7 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
 };
 
 export const BingoShowWinnerGroupBlue: React.FC<BingoShowWinnerGroupBlueProps> = ({ kind, sealText, winners }) => {
+  const t = useT();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -165,7 +168,7 @@ export const BingoShowWinnerGroupBlue: React.FC<BingoShowWinnerGroupBlueProps> =
         <div className={styles.subtitle}>
           <span className={goldStyles.goldIcon}>★</span>
           <span className={goldStyles.goldMetalTextCompact}>
-            {winners.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
+            {t('winner.split', { n: winners.length })}{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
           </span>
           <span className={goldStyles.goldIcon}>★</span>
         </div>

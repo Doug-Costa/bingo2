@@ -3,6 +3,7 @@ import { BingoShowAssets } from '../assets';
 import { BingoShowIcon, type BingoShowIconName } from './BingoShowIcon';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useT } from '@/contexts/TvConfigContext';
 import goldStyles from './goldMetalText.module.css';
 import blueStyles from './BingoShowPrizeStatusBlue.module.css';
 import ouroStyles from './BingoShowPrizeStatusOuro.module.css';
@@ -91,9 +92,10 @@ const PrizeRow: React.FC<{
   bgAsset: string;
 }> = ({ label, value, status, bgAsset }) => {
   const { theme, isBlue, themeId } = useAppTheme();
+  const t = useT();
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
-  const statusText = isActive ? 'EM DISPUTA' : isCompleted ? 'CONCLUÍDO' : 'AGUARDANDO';
+  const statusText = t(isActive ? 'status.active' : isCompleted ? 'status.done' : 'status.waiting');
   const opacity = isActive ? 1 : 0.55;
   const valueTick = useChangeTick(value);
 
@@ -335,7 +337,8 @@ const GoldPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowSta
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const valueTick = useChangeTick(value);
-  const statusText = isActive ? 'EM DISPUTA' : isCompleted ? 'CONCLUÍDO' : 'AGUARDANDO';
+  const t = useT();
+  const statusText = t(isActive ? 'status.active' : isCompleted ? 'status.done' : 'status.waiting');
   return (
     <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
       <div
@@ -400,37 +403,40 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   dateStr = '',
   timeStr = '',
   style,
-}) => (
+}) => {
+  const t = useT();
+  return (
   <div className={`${goldTheme.vars} ${goldPrize.column}`} style={style}>
     <div className={`${goldTheme.panel} ${goldPrize.jackpot} ${jackpotActive ? '' : goldPrize.jackpotOff}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
       <img className={`${goldPrize.bag} ${goldTheme.bagAlive}`} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.png`} alt="" />
       <div className={goldPrize.jackpotText}>
-        <span className={goldPrize.jackpotLabel}>ACUMULADO</span>
+        <span className={goldPrize.jackpotLabel}>{t('prize.jackpot')}</span>
         <BlueMoney value={accumulatedAmount} role="jackpot" className={goldTheme.goldValue} />
       </div>
       {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
         <div className={goldPrize.limitBadge}>
-          <span className={goldPrize.limitLabel}>ATÉ A BOLA</span>
+          <span className={goldPrize.limitLabel}>{t('lobby.untilBall')}</span>
           <span className={`${goldTheme.goldText} ${goldPrize.limitValue}`}>{triggerBallLimit}</span>
         </div>
       )}
     </div>
 
     <div className={goldPrize.rows}>
-      <GoldPrizeRow label="1 LINHA" value={line1Amount} status={line1Status} />
-      <GoldPrizeRow label="2 LINHAS" value={line2Amount} status={line2Status} />
-      <GoldPrizeRow label="BINGO" value={bingoAmount} status={bingoStatus} />
+      <GoldPrizeRow label={t('prize.oneLine')} value={line1Amount} status={line1Status} />
+      <GoldPrizeRow label={t('prize.twoLines')} value={line2Amount} status={line2Status} />
+      <GoldPrizeRow label={t('prize.bingo')} value={bingoAmount} status={bingoStatus} />
     </div>
 
     <div className={goldPrize.meta}>
-      <GoldMetaCard icon={`${GOLD_ASSET}/icons/pata.png`} label="SORTEIO" value={drawNumber} />
-      <GoldMetaCard icon={`${GOLD_ASSET}/decorative/pilha-moedas.png`} label="DOAÇÃO" value={donationAmount} />
-      <GoldMetaCard mark="◆" label="DATA" value={dateStr} />
-      <GoldMetaCard icon={`${GOLD_ASSET}/icons/ampulheta.png`} label="HORA" value={timeStr} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/pata.png`} label={t('lobby.drawWord')} value={drawNumber} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/decorative/pilha-moedas.png`} label={t('meta.donation')} value={donationAmount} />
+      <GoldMetaCard mark="◆" label={t('lobby.date')} value={dateStr} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/ampulheta.png`} label={t('lobby.time')} value={timeStr} />
     </div>
   </div>
-);
+  );
+};
 
 /** Família es-PY: uma faixa de prêmio (mesmos dados/estados; textos em espanhol).
  * Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i). */
@@ -439,7 +445,8 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const valueTick = useChangeTick(value);
-  const statusText = isActive ? 'EN DISPUTA' : isCompleted ? 'CONCLUIDO' : 'ESPERANDO';
+  const t = useT();
+  const statusText = t(isActive ? 'status.active' : isCompleted ? 'status.done' : 'status.waiting');
   return (
     <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
       <div
@@ -502,6 +509,7 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   style,
 }) => {
   const skin = useEsSkin();
+  const t = useT();
   const { theme: pyTheme, prize: pyPrize } = skin.css;
   return (
   <div className={`${pyTheme.vars} ${pyPrize.column}`} style={style}>
@@ -509,28 +517,28 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
       <img className={`${pyTheme.art} ${pyPrize.bag}`} src={skin.art.jackpot} alt="" draggable={false} />
       <div className={pyPrize.jackpotText}>
-        <span className={pyPrize.jackpotLabel}>ACUMULADO</span>
+        <span className={pyPrize.jackpotLabel}>{t('prize.jackpot')}</span>
         <BlueMoney value={accumulatedAmount} role="jackpot" className={pyTheme.goldValue} />
       </div>
       {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
         <div className={pyPrize.limitBadge}>
-          <span className={pyPrize.limitLabel}>HASTA LA BOLA</span>
+          <span className={pyPrize.limitLabel}>{t('lobby.untilBall')}</span>
           <span className={`${pyTheme.goldText} ${pyPrize.limitValue}`}>{triggerBallLimit}</span>
         </div>
       )}
     </div>
 
     <div className={pyPrize.rows}>
-      <ParaguayPrizeRow label="PREMIO 1" value={line1Amount} status={line1Status} />
-      <ParaguayPrizeRow label="PREMIO 2" value={line2Amount} status={line2Status} />
-      <ParaguayPrizeRow label="PREMIO 3" value={bingoAmount} status={bingoStatus} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 1 })} value={line1Amount} status={line1Status} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 2 })} value={line2Amount} status={line2Status} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 3 })} value={bingoAmount} status={bingoStatus} />
     </div>
 
     <div className={pyPrize.meta}>
-      <ParaguayMetaCard icon={skin.art.meta.draw} label="SORTEO" value={drawNumber} />
-      <ParaguayMetaCard icon={skin.art.meta.donation} label="DONACIÓN" value={donationAmount} />
-      <ParaguayMetaCard icon={skin.art.meta.date} label="FECHA" value={dateStr} />
-      <ParaguayMetaCard icon={skin.art.meta.time} label="HORA" value={timeStr} />
+      <ParaguayMetaCard icon={skin.art.meta.draw} label={t('lobby.drawWord')} value={drawNumber} />
+      <ParaguayMetaCard icon={skin.art.meta.donation} label={t('meta.donation')} value={donationAmount} />
+      <ParaguayMetaCard icon={skin.art.meta.date} label={t('lobby.date')} value={dateStr} />
+      <ParaguayMetaCard icon={skin.art.meta.time} label={t('lobby.time')} value={timeStr} />
     </div>
   </div>
   );
@@ -553,6 +561,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   style,
 }) => {
   const { theme, isBlue, themeId } = useAppTheme();
+  const t = useT();
   const isOuro = themeId === 'bingo-show';
   const isGold = themeId === 'tema-ouro';
   const isParaguay = getEsSkin(themeId) !== null;
@@ -560,9 +569,9 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
   const secondaryColor = theme.secondary || BingoShowColors.cyanNeon;
 
   const prizes = [
-    { label: isBlue ? 'PRÊMIO 1' : '1 LINHA', value: line1Amount, status: line1Status, asset: BingoShowAssets.cards.prize },
-    { label: isBlue ? 'PRÊMIO 2' : '2 LINHAS', value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
-    { label: isBlue ? 'PRÊMIO 3' : 'BINGO', value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? t('prize.n', { n: 1 }) : t('prize.oneLine'), value: line1Amount, status: line1Status, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? t('prize.n', { n: 2 }) : t('prize.twoLines'), value: line2Amount, status: line2Status, asset: BingoShowAssets.cards.prize },
+    { label: isBlue ? t('prize.n', { n: 3 }) : t('prize.bingo'), value: bingoAmount, status: bingoStatus, asset: BingoShowAssets.cards.prize },
   ];
 
   // Bingo Show Paraguay: painel próprio, mesmos props/dados.
@@ -668,7 +677,7 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
         {/* ACCUMULATED AMOUNT */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 0, paddingLeft: 4, paddingRight: 4 }}>
           <span style={{ fontSize: 20, fontWeight: 900, color: secondaryColor, letterSpacing: 2, textTransform: 'uppercase' }}>
-            ACUMULADO
+            {t('prize.jackpot')}
           </span>
           {isBlue || isOuro ? (
             <BlueMoney value={accumulatedAmount} role="jackpot" className={goldStyles.goldValueActive} />
@@ -725,12 +734,12 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
       {/* 3. METADATA 2X2 GRID (SORTEIO, DOAÇÃO, DATA, HORA) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-          <MetaCard icon="ticket" label="SORTEIO" value={drawNumber} accent={META_ACCENTS.sorteio} />
-          <MetaCard icon="star" label="DOAÇÃO" value={donationAmount} accent={META_ACCENTS.doacao} monetary />
+          <MetaCard icon="ticket" label={t('lobby.drawWord')} value={drawNumber} accent={META_ACCENTS.sorteio} />
+          <MetaCard icon="star" label={t('meta.donation')} value={donationAmount} accent={META_ACCENTS.doacao} monetary />
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-          <MetaCard icon="calendar" label="DATA" value={dateStr} accent={META_ACCENTS.data} />
-          <MetaCard icon="clock" label="HORA" value={timeStr} accent={META_ACCENTS.hora} />
+          <MetaCard icon="calendar" label={t('lobby.date')} value={dateStr} accent={META_ACCENTS.data} />
+          <MetaCard icon="clock" label={t('lobby.time')} value={timeStr} accent={META_ACCENTS.hora} />
         </div>
       </div>
     </div>

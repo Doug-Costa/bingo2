@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { resolvePin, pingServer } from '@/services/api';
-import { buildBaseUrl, getDefaultIp, getDefaultPort, saveCredentials, getCredentials } from '@/storage/credentials';
+import { buildBaseUrl, getDefaultIp, getDefaultPort, getCredentials } from '@/storage/credentials';
+import { applyResolvedSession, reloadTv } from '@/services/tvSession';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { ThemeSelector } from '@/components/theme';
+import { useT } from '@/contexts/TvConfigContext';
  
 export type PinStatus = 'idle' | 'validating' | 'error' | 'success';
 
@@ -15,8 +16,8 @@ export interface PinVerificationScreenProps {
 }
 
 export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerificationScreenProps) {
-  const router = useRouter();
   const { themeId, theme, isBlue } = useAppTheme();
+  const t = useT();
 
 
   const [pin, setPin] = useState(initialPin);
@@ -74,8 +75,8 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
 
       if (!pinValue) {
         setStatus('error');
-        setErrorTitle('PIN NÃO INFORMADO');
-        setErrorMessage('Por favor, informe o PIN do telão.');
+        setErrorTitle(t('pin.missingTitle'));
+        setErrorMessage(t('pin.missingMessage'));
         setIsServerUnreachable(false);
         triggerShake();
         inputRef.current?.focus();
@@ -97,33 +98,26 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
         setStatus('success');
         setResolvedRoom({
           roomId: data.roomId,
-          roomName: data.roomName || 'Sala ao Vivo',
+          roomName: data.roomName || t('pin.liveRoom'),
         });
 
-        saveCredentials({
-          ip: cleanIp,
-          port: cleanPort,
-          pin: pinValue,
-          roomId: data.roomId,
-          roomName: data.roomName || '',
-          theme: {
-            ...(data.theme || {}),
-            name: themeId,
-            type: themeId,
-          },
-        });
+        // Tema, idioma, moeda e promoções vêm do backend (cascata operador →
+        // sala → padrão). PIN de demonstração mantém o tema escolhido na tela.
+        const isDemo = pinValue === '1234' || pinValue === 'demo';
+        applyResolvedSession(
+          { ip: cleanIp, port: cleanPort, pin: pinValue },
+          isDemo ? { ...data, theme: { ...(data.theme || {}), name: themeId, type: themeId } } : data,
+        );
 
-        // Aguarda 1s para o usuário visualizar a confirmação de sucesso
+        // Aguarda 1s para o usuário visualizar a confirmação de sucesso e
+        // recarrega a página para o boot aplicar a configuração nova.
         setTimeout(() => {
-          if (onSuccess) {
-            onSuccess(data.roomId);
-          } else {
-            router.push('/tv');
-          }
+          onSuccess?.(data.roomId);
+          reloadTv('/tv');
         }, 1100);
       } catch (err: unknown) {
         setStatus('error');
-        const rawMsg = err instanceof Error ? err.message : 'Falha na validação do PIN.';
+        const rawMsg = err instanceof Error ? err.message : t('pin.validationFailed');
         
         // Distingue erro de servidor offline / timeout vs PIN incorreto
         if (
@@ -133,12 +127,12 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
           rawMsg.includes('522') ||
           rawMsg.includes('Cloudflare')
         ) {
-          setErrorTitle('SERVIDOR SEM RESPOSTA');
+          setErrorTitle(t('pin.serverDownTitle'));
           setErrorMessage(rawMsg);
           setIsServerUnreachable(true);
           setShowServerConfig(true); // Abre as configurações de servidor para o usuário verificar a URL
         } else {
-          setErrorTitle('PIN INCORRETO');
+          setErrorTitle(t('pin.wrongTitle'));
           setErrorMessage(rawMsg);
           setIsServerUnreachable(false);
         }
@@ -147,7 +141,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
         inputRef.current?.focus();
       }
     },
-    [pin, serverIp, serverPort, themeId, router, onSuccess, triggerShake]
+    [pin, serverIp, serverPort, themeId, onSuccess, triggerShake, t]
   );
 
   const handleKeyPress = (num: string) => {
@@ -258,7 +252,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               }}
             />
             <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', letterSpacing: 1 }}>
-              AUTENTICAÇÃO DO TELÃO
+              {t('pin.badge')}
             </span>
           </div>
           <h2
@@ -270,10 +264,10 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               letterSpacing: 0.5,
             }}
           >
-            DIGITE O PIN DO TELÃO
+            {t('pin.title')}
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: 'rgba(255, 255, 255, 0.65)' }}>
-            Informe o código de 4 a 6 dígitos para sintonizar a sala de sorteio ao vivo.
+            {t('pin.subtitle')}
           </p>
         </div>
 
@@ -409,10 +403,10 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                   textTransform: 'uppercase',
                 }}
               >
-                {errorTitle || 'PIN INCORRETO'}
+                {errorTitle || t('pin.wrongTitle')}
               </div>
               <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.85)', marginTop: 2, lineHeight: 1.4 }}>
-                {errorMessage || 'O código informado não existe ou expirou no servidor.'}
+                {errorMessage || t('pin.wrongMessage')}
               </div>
             </div>
             <button
@@ -429,7 +423,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                 cursor: 'pointer',
               }}
             >
-              LIMPAR
+              {t('pin.clear')}
             </button>
           </div>
         )}
@@ -467,10 +461,10 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 900, color: '#34D399', textTransform: 'uppercase' }}>
-                PIN CONFIRMADO COM SUCESSO!
+                {t('pin.confirmed')}
               </div>
               <div style={{ fontSize: 12, color: '#FFFFFF', marginTop: 2 }}>
-                Sintonizando: <strong>{resolvedRoom.roomName}</strong> (#{resolvedRoom.roomId})
+                {t('pin.tuning')}: <strong>{resolvedRoom.roomName}</strong> (#{resolvedRoom.roomId})
               </div>
             </div>
           </div>
@@ -530,7 +524,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               opacity: pin.length === 0 ? 0.4 : 1,
             }}
           >
-            LIMPAR
+            {t('pin.clear')}
           </button>
 
           <button
@@ -609,12 +603,12 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                   animation: 'bs-spin 700ms linear infinite',
                 }}
               />
-              VALIDANDO PIN NO SERVIDOR...
+              {t('pin.validating')}
             </>
           ) : status === 'success' ? (
-            'CONECTADO COM SUCESSO!'
+            t('pin.connected')
           ) : (
-            'CONFIRMAR E CONECTAR TELÃO'
+            t('pin.submit')
           )}
         </button>
 
@@ -638,7 +632,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF' }}>
-                ⚙️ ENDEREÇO DO SERVIDOR (IP / DOMÍNIO)
+                ⚙️ {t('pin.serverAddress')}
               </span>
               <span
                 style={{
@@ -654,7 +648,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               </span>
             </div>
             <span style={{ fontSize: 12, color: cyanColor, fontWeight: 700 }}>
-              {showServerConfig ? '▲ Ocultar' : '▼ Alterar'}
+              {showServerConfig ? `▲ ${t('pin.hide')}` : `▼ ${t('pin.change')}`}
             </span>
           </div>
 
@@ -674,7 +668,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               <div style={{ display: 'flex', gap: 10 }}>
                 <div style={{ flex: 3 }}>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 4 }}>
-                    IP / URL DO BACKEND
+                    {t('pin.backendUrl')}
                   </label>
                   <input
                     type="text"
@@ -695,7 +689,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 4 }}>
-                    PORTA (OPCIONAL)
+                    {t('pin.port')}
                   </label>
                   <input
                     type="text"
@@ -732,7 +726,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                     cursor: pingStatus?.testing ? 'default' : 'pointer',
                   }}
                 >
-                  {pingStatus?.testing ? 'Testando Servidor...' : '🔌 Testar Conexão com Servidor'}
+                  {pingStatus?.testing ? t('pin.testing') : `🔌 ${t('pin.testConnection')}`}
                 </button>
 
                 {pingStatus && !pingStatus.testing && (
@@ -767,7 +761,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
             }}
           >
             <span style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF' }}>
-              ESCOLHA O TEMA DO TELÃO:
+              {t('pin.chooseTheme')}
             </span>
             <button
               type="button"
@@ -782,7 +776,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
                 textDecoration: 'underline',
               }}
             >
-              Usar PIN de Teste (1234)
+              {t('pin.demo')}
             </button>
           </div>
           <ThemeSelector variant="cards" />

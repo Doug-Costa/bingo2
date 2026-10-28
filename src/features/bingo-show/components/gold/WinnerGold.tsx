@@ -14,6 +14,7 @@ import { GROUP_PAGE_SIZE, type GroupWinnerView } from '../BingoShowWinnerGroupBl
 import goldStyles from '../goldMetalText.module.css';
 import goldTheme from './GoldTheme.module.css';
 import styles from './WinnerGold.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 export interface WinnerGoldProps {
   sealText: string;
@@ -55,6 +56,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   isBingo,
   style,
 }) => {
+  const t = useT();
   const sz = SIZES[density];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
@@ -77,7 +79,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
     <div className={styles.card} style={{ '--enter': `${enter}ms`, ...style } as React.CSSProperties}>
       {total > 1 && (
         <span className={styles.badge}>
-          GANHADOR {index + 1}/{total}
+          {t('winner.nOfTotal', { i: index + 1, n: total })}
         </span>
       )}
 
@@ -85,7 +87,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         {total === 1 && (
           <div className={styles.soloTitle}>
             <span className={goldStyles.goldIcon}>★</span>
-            <span className={goldTheme.goldText}>GANHADOR CONTEMPLADO</span>
+            <span className={goldTheme.goldText}>{t('winner.contemplated')}</span>
             <span className={goldStyles.goldIcon}>★</span>
           </div>
         )}
@@ -96,11 +98,11 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         </div>
         {w.coupon && (
           <span className={styles.coupon} style={{ fontSize: sz.coupon }}>
-            CUPOM {w.coupon}
+            {t('winner.coupon', { c: w.coupon })}
           </span>
         )}
         <span className={styles.prizeLabel} style={{ fontSize: sz.label }}>
-          {total > 1 ? 'PRÊMIO INDIVIDUAL' : 'PRÊMIO DO GANHADOR'}
+          {total > 1 ? t('winner.individualPrize') : t('winner.prize')}
         </span>
         <div className={styles.valueCapsule}>
           <div className={styles.valueBox} data-fit-box>
@@ -113,7 +115,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
             </span>
           </div>
         </div>
-        {w.jackpot && <span className={styles.jackpotTag}>+ ACUMULADO</span>}
+        {w.jackpot && <span className={styles.jackpotTag}>{t('winner.plusJackpot')}</span>}
         {total === 1 &&
           (isBingo ? (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
@@ -181,6 +183,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
 };
 
 export const WinnerGold: React.FC<WinnerGoldProps> = ({ sealText, winners, isBingo = false }) => {
+  const t = useT();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -231,7 +234,7 @@ export const WinnerGold: React.FC<WinnerGoldProps> = ({ sealText, winners, isBin
             <div className={styles.subtitle}>
               <span className={goldStyles.goldIcon}>★</span>
               <span className={goldTheme.goldText}>
-                {winners.length} GANHADORES • PRÊMIO DIVIDIDO{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
+                {t('winner.split', { n: winners.length })}{pages > 1 ? ` • ${page + 1}/${pages}` : ''}
               </span>
               <span className={goldStyles.goldIcon}>★</span>
             </div>

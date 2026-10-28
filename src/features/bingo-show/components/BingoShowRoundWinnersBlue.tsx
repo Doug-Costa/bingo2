@@ -26,6 +26,7 @@ import { useFitText } from '../hooks/useFitText';
 import { useCountUp } from '../hooks/useCountUp';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowRoundWinnersBlue.module.css';
+import { useT } from '@/contexts/TvConfigContext';
 
 export type RoundCategoryKey = 'line1' | 'line2' | 'bingo';
 
@@ -53,7 +54,6 @@ export interface BingoShowRoundWinnersBlueProps {
   onClose: () => void;
 }
 
-const TITLES: Record<RoundCategoryKey, string> = { line1: '1ª LINHA', line2: '2ª LINHA', bingo: 'BINGO' };
 const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
 const PER_PAGE = 4;
 const MIN_PAGE_MS = 5000;
@@ -101,6 +101,7 @@ const RoundCard: React.FC<{
   jackpotAmount?: string;
   delays: { card: number; value: number; flash: number };
 }> = ({ winner, indexLabel, isSplit, mode, jackpotAmount, delays }) => {
+  const t = useT();
   const m = MODE[mode];
   const name = useFitText(winner.name, m.name[0], m.name[1], 'ellipsis');
   // Tamanho sobre o valor FINAL (cópia invisível); a contagem de R$ 0,00 até o
@@ -132,13 +133,13 @@ const RoundCard: React.FC<{
           </span>
         </div>
       </div>
-      {winner.coupon && <span className={styles.coupon}>CUPOM {winner.coupon}</span>}
+      {winner.coupon && <span className={styles.coupon}>{t('winner.coupon', { c: winner.coupon })}</span>}
       {mode <= 2 && (
         <span className={styles.cardDivider}>
           <span className={goldStyles.goldIcon}>★</span>
         </span>
       )}
-      <span className={styles.prizeLabel}>{isSplit ? 'PRÊMIO INDIVIDUAL' : 'PRÊMIO DO GANHADOR'}</span>
+      <span className={styles.prizeLabel}>{isSplit ? t('winner.individualPrize') : t('winner.prize')}</span>
       <div className={styles.fitBox} data-fit-box>
         <span
           ref={value.ref}
@@ -157,7 +158,7 @@ const RoundCard: React.FC<{
       {winner.jackpot && jackpotAmount && (
         <span className={styles.jackpotTag}>
           <img className={styles.jackpotStar} src={BingoShowAssets.jackpot.star} alt="" draggable={false} />
-          + ACUMULADO {jackpotAmount}
+          {t('winner.plusJackpot')} {jackpotAmount}
         </span>
       )}
     </div>
@@ -170,6 +171,7 @@ const Podium: React.FC<{
   jackpotAmount?: string;
   totalDurationMs: number;
 }> = ({ category, index, jackpotAmount, totalDurationMs }) => {
+  const t = useT();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -235,7 +237,7 @@ const Podium: React.FC<{
             {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.png" alt="" draggable={false} />}
             <div className={styles.titleCapsule}>
               <div className={styles.headingGlow}>
-                <span className={styles.heading}>{TITLES[category.key]}</span>
+                <span className={styles.heading}>{t(`prize.${category.key}`)}</span>
               </div>
             </div>
             {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.png" alt="" draggable={false} />}
@@ -245,7 +247,7 @@ const Podium: React.FC<{
             <div className={styles.splitBand} style={{ '--shine-delay': `${2000 + index * 100 + 200}ms` } as React.CSSProperties}>
               <span className={styles.splitBolt}>⚡</span>
               <span>
-                PRÊMIO DIVIDIDO • <span className={styles.splitCount}>{total} GANHADORES</span>
+                {t('round.splitPrize')} • <span className={styles.splitCount}>{t('round.nWinners', { n: total })}</span>
               </span>
               {pages > 1 && (
                 <span className={styles.pagePill}>
@@ -258,8 +260,8 @@ const Podium: React.FC<{
 
         {total === 0 ? (
           <div className={styles.empty} style={{ '--d-card': `${1100 + index * 120}ms` } as React.CSSProperties}>
-            <span>NENHUM GANHADOR</span>
-            <span>NESTA CATEGORIA</span>
+            <span>{t('round.noWinner')}</span>
+            <span>{t('round.inCategory')}</span>
           </div>
         ) : (
           <div key={page} className={`${styles.cards} ${styles[`mode${mode}`]}`}>
@@ -271,7 +273,7 @@ const Podium: React.FC<{
                 <RoundCard
                   key={w.id}
                   winner={w}
-                  indexLabel={isSplit ? `GANHADOR ${start + j + 1}/${total}` : 'GANHADOR CONTEMPLADO'}
+                  indexLabel={isSplit ? t('winner.nOfTotal', { i: start + j + 1, n: total }) : t('winner.contemplated')}
                   isSplit={isSplit}
                   mode={mode}
                   jackpotAmount={jackpotAmount}
@@ -306,8 +308,10 @@ export const BingoShowRoundWinnersBlue: React.FC<BingoShowRoundWinnersBlueProps>
   jackpotAmount,
   totalDurationMs,
   onClose,
-}) => (
-  <div className={styles.root} role="dialog" aria-label="Ganhadores da rodada">
+}) => {
+  const t = useT();
+  return (
+  <div className={styles.root} role="dialog" aria-label={t('round.aria')}>
     <div className={styles.vignette} />
     {CONFETTI.map((p, i) => (
       <span
@@ -332,11 +336,11 @@ export const BingoShowRoundWinnersBlue: React.FC<BingoShowRoundWinnersBlueProps>
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>
-            <span className={goldStyles.goldMetalText}>GANHADORES DA RODADA DO BINGO SHOW</span>
+            <span className={goldStyles.goldMetalText}>{t('round.titleBrand', { brand: 'BINGO SHOW' })}</span>
             <span>🏆</span>
           </div>
           <span className={styles.headerSub}>
-            SORTEIO {drawNumber} • {dateStr} às {timeStr}
+            {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
           </span>
         </div>
         <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar">
@@ -350,9 +354,10 @@ export const BingoShowRoundWinnersBlue: React.FC<BingoShowRoundWinnersBlueProps>
         ))}
       </div>
 
-      <footer className={styles.footer}>BINGO SHOW • RESULTADOS DA RODADA</footer>
+      <footer className={styles.footer}>{t('round.footer', { brand: 'BINGO SHOW' })}</footer>
     </div>
   </div>
-);
+  );
+};
 
 export default BingoShowRoundWinnersBlue;

@@ -195,6 +195,7 @@ const CrescentBall: React.FC<{
 };
 
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useT } from '@/contexts/TvConfigContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import blueStyles from './DrawStageBlue.module.css';
 import { BlueHandoffOverlay, BlueRecentColumn, useBlueBallHandoff } from './DrawStageBlueHandoff';
@@ -477,7 +478,7 @@ const OuroRecentColumn: React.FC<{ balls: number[] }> = ({ balls }) => (
 );
 
 export const DrawStage: React.FC<DrawStageProps> = ({
-  title = 'NÚMERO SORTEADO',
+  title: titleProp,
   currentNumber,
   nextBalls = [],
   sequenceNumber,
@@ -485,6 +486,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   style,
 }) => {
   const { theme, isBlue, themeId } = useAppTheme();
+  const t = useT();
+  const title = titleProp ?? t('draw.drawnNumber');
   // Tema Bingo Show (Ouro & Espaço): moldura 9-slice + palco com assets do tema.
   const isOuro = themeId === 'bingo-show';
   // Tema `tema-ouro` ("Fortuna"): painel de ouro do tema + bola de ouro em CSS.
@@ -589,11 +592,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 últimas sorteadas), não as próximas — rótulo corrigido só no Blue. */}
             {isBlue || isOuro || isGold || isParaguay ? (
               <>
-                ÚLTIMOS<br />NÚMEROS
+                {t('draw.lastNumbersL1')}<br />{t('draw.numbersL2')}
               </>
             ) : (
               <>
-                PRÓXIMOS<br />NÚMEROS
+                {t('draw.nextNumbersL1')}<br />{t('draw.numbersL2')}
               </>
             )}
           </span>
@@ -875,7 +878,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               <span className={sc.seqBallNumber}>{drawnCount}</span>
             </div>
             <span className={`${isParaguay ? pyTheme.goldText : goldStyles.goldMetalTextCompact} ${sc.seqValue}`}>
-              BOLA {drawnCount}/{TOTAL_BALLS}
+              {t('draw.ballCount', { n: drawnCount, total: TOTAL_BALLS })}
             </span>
           </div>
         ) : isGold ? (
@@ -884,7 +887,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               {drawnCount}
             </div>
             <span className={`${goldTheme.goldText} ${goldStage.seqValue}`}>
-              BOLA {drawnCount}/{TOTAL_BALLS}
+              {t('draw.ballCount', { n: drawnCount, total: TOTAL_BALLS })}
             </span>
           </div>
         ) : (
@@ -895,7 +898,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
               <span className={ouroStyles.seqBallNumber}>{drawnCount}</span>
             </div>
             <span className={`${goldStyles.goldMetalTextCompact} ${ouroStyles.seqValue}`}>
-              BOLA {drawnCount}/{TOTAL_BALLS}
+              {t('draw.ballCount', { n: drawnCount, total: TOTAL_BALLS })}
             </span>
           </div>
         )}

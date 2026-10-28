@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { formatCountdown } from '../utils/countdown';
+import { useT } from '@/contexts/TvConfigContext';
 import { BingoShowColors, BingoShowSpacing, BingoShowRadius, BingoShowTypography } from '../design-system';
 
 export interface BingoShowCountdownProps {
@@ -12,11 +13,13 @@ export interface BingoShowCountdownProps {
 
 export const BingoShowCountdown: React.FC<BingoShowCountdownProps> = ({
   seconds,
-  label = 'PRÓXIMO SORTEIO',
+  label: labelProp,
   style,
   showTimerFrame = true,
   timerTextStyle,
 }) => {
+  const t = useT();
+  const label = labelProp ?? t('lobby.nextDraw');
   const formattedTime = useMemo(() => {
     return formatCountdown(seconds);
   }, [seconds]);
