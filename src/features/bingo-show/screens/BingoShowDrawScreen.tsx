@@ -290,7 +290,7 @@ export const BingoShowDrawScreen: React.FC = () => {
           </div>
           {hasTickets ? (
             <div style={{ flex: 45, minHeight: 0 }}>
-              <BingoShowTicketsGrid tickets={mock.tickets} drawnBalls={mock.drawnBalls} />
+              <BingoShowTicketsGrid tickets={mock.tickets} drawnBalls={mock.drawnBalls} latestBall={mock.currentBall} />
             </div>
           ) : null}
         </div>

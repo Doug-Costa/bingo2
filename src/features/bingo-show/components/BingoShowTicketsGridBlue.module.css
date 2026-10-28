@@ -1,0 +1,300 @@
+/* BingoShowTicketsGridBlue.module.css — quadro "MINHAS CARTELAS" da tela de
+ * sorteio, SOMENTE tema Blue. Mesmo visual do quadro de cupons logo acima
+ * (cards azul-marinho, régua de borda por quantos faltam, selo "QUASE!").
+ * O número sorteado vira a esfera do tema na cor da faixa (paleta de
+ * DrawStageBlue.module.css, igual ao histórico de bolas).
+ * Mesmos nomes de classe do módulo Ouro (o TSX é o mesmo, só troca o módulo).
+ */
+
+.root {
+  --cell-font: 22px;
+  --label-font: 15px;
+
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+  animation: gridEnter 520ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+
+/* 3–4 cartelas: números e rótulos menores. */
+.small {
+  --cell-font: 17px;
+  --label-font: 13px;
+}
+
+/* 2 cartelas lado a lado: células mais altas que largas — a bola segue a
+ * largura da célula (senão passa das bordas). */
+.portrait .ball {
+  width: 92%;
+  height: auto;
+}
+
+/* ─── Cabeçalho ─────────────────────────────────────────────────────────── */
+
+.header {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 6px;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00c8ff, #2c77ff, transparent);
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.45);
+}
+
+.title {
+  font-size: 22px;
+  letter-spacing: 2px;
+}
+
+.ornament {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* ─── Grade de cartelas ─────────────────────────────────────────────────── */
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 8px 8px;
+  box-sizing: border-box;
+  border-radius: 13px;
+
+  background: linear-gradient(
+    100deg,
+    rgba(8, 25, 61, 0.96) 0%,
+    rgba(15, 43, 87, 0.96) 52%,
+    rgba(5, 20, 54, 0.98) 100%
+  );
+  border: 1px solid rgba(65, 174, 255, 0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -12px 24px rgba(0, 0, 0, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+/* 2 faltando — borda azul-dourada moderada (mesma régua dos cupons). */
+.cardNear {
+  border-color: rgba(214, 190, 92, 0.55);
+}
+
+/* 1 faltando — borda dourada + brilho discreto. */
+.cardCritical {
+  border-color: rgba(255, 201, 40, 0.95);
+  box-shadow:
+    0 0 0 1px rgba(255, 201, 40, 0.55),
+    inset 0 0 18px rgba(255, 190, 30, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.22),
+    0 0 12px rgba(255, 190, 30, 0.42);
+}
+
+/* Selo centrado na borda de cima: não cobre o rótulo nem o "FALTAM N". */
+.almostBadge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffe46b 0%, #f7c928 55%, #d99a06 100%);
+  border: 1px solid #fff2a3;
+  box-shadow: 0 0 8px rgba(255, 190, 30, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #2a1600;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.cardHead {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.cardLabel {
+  padding: 1px 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffe46b 0%, #f7c928 55%, #d99a06 100%);
+  border: 1px solid #fff2a3;
+  color: #2a1600;
+  font-size: var(--label-font);
+  font-weight: 900;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.cardMissing {
+  color: #8fd9ff;
+  font-size: var(--label-font);
+  font-weight: 800;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ─── Números (3×5) ─────────────────────────────────────────────────────── */
+
+.cells {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cell {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  font-size: var(--cell-font);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #dbe8ff;
+  background: rgba(3, 12, 34, 0.55);
+  border: 1px solid rgba(65, 174, 255, 0.22);
+}
+
+/* Sorteado — a célula vira a esfera colorida da faixa do número. */
+.hit {
+  background: transparent;
+  border-color: transparent;
+}
+
+.ball {
+  height: 96%;
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+
+  color: var(--ink, #ffffff);
+  background: radial-gradient(
+    circle at 32% 26%,
+    var(--hi) 0%,
+    var(--mid) 30%,
+    var(--low) 64%,
+    var(--deep) 100%
+  );
+  border: 2px solid var(--glow);
+  box-shadow:
+    inset 3px 4px 6px rgba(255, 255, 255, 0.3),
+    inset -4px -5px 7px rgba(0, 0, 20, 0.45),
+    0 0 6px var(--glow);
+  text-shadow: var(--ink-shadow, 0 2px 2px rgba(0, 0, 0, 0.72));
+}
+
+.ball_blue {
+  composes: color_blue from './DrawStageBlue.module.css';
+  --glow: #4aa8ff;
+}
+
+.ball_red {
+  composes: color_red from './DrawStageBlue.module.css';
+  --glow: #ff4d42;
+}
+
+.ball_green {
+  composes: color_green from './DrawStageBlue.module.css';
+  --glow: #3fe066;
+}
+
+.ball_yellow {
+  composes: color_yellow from './DrawStageBlue.module.css';
+  --glow: #ffd23a;
+}
+
+.ball_purple {
+  composes: color_purple from './DrawStageBlue.module.css';
+  --glow: #c16bff;
+}
+
+/* Número que acabou de sair — anel dourado + pop (uma vez, quando a classe entra). */
+.ballLatest {
+  outline: 3px solid #ffd23f;
+  outline-offset: 1px;
+  box-shadow: 0 0 14px rgba(255, 210, 60, 0.85);
+  animation: ballPop 520ms cubic-bezier(0.2, 0.9, 0.3, 1.35) both;
+}
+
+/* ─── Banner ────────────────────────────────────────────────────────────── */
+
+.banner {
+  flex: none;
+  display: flex;
+  justify-content: center;
+}
+
+.banner img {
+  max-height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 207, 18, 0.5));
+}
+
+/* ─── Animações ─────────────────────────────────────────────────────────── */
+
+/* Entrada do quadro quando a compra ativa as cartelas (o quadro monta nessa hora). */
+@keyframes gridEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ballPop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .ballLatest {
+    animation: none;
+  }
+}

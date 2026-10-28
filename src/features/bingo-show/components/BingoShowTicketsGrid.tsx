@@ -7,12 +7,113 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { useT } from '@/contexts/TvConfigContext';
 import goldTheme from './gold/GoldTheme.module.css';
 import { getEsSkin } from './esSkin';
+import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
+import goldStyles from './goldMetalText.module.css';
+import blueGrid from './BingoShowTicketsGridBlue.module.css';
+import ouroGrid from './BingoShowTicketsGridOuro.module.css';
+import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowTicketsGridProps {
   tickets: TicketCardItem[];
   drawnBalls?: number[];
+  /** Último número sorteado — ganha anel dourado e um pop na cartela (Blue/Ouro). */
+  latestBall?: number | null;
   style?: React.CSSProperties;
 }
+
+type CardGridCss = typeof blueGrid;
+
+/** Faixa de cor do número (mesma regra das bolas do histórico). */
+function ballBand(n: number): 'blue' | 'red' | 'green' | 'yellow' | 'purple' {
+  return n <= 18 ? 'blue' : n <= 36 ? 'red' : n <= 54 ? 'green' : n <= 72 ? 'yellow' : 'purple';
+}
+
+/**
+ * Blue e Bingo Show (Ouro & Espaço): cartelas no visual do quadro de cupons —
+ * mesma moldura, cards azul-marinho, régua de borda por quantos faltam e o
+ * número sorteado como bola do tema na cor da faixa. Só troca o módulo CSS
+ * (e, no Ouro, a bola 3D via `ballImage`).
+ */
+const CardTicketsGrid: React.FC<{
+  tickets: TicketCardItem[];
+  drawnSet: Set<number>;
+  latestBall?: number | null;
+  css: CardGridCss;
+  ballImage?: (_n: number) => string;
+  style?: React.CSSProperties;
+}> = ({ tickets, drawnSet, latestBall, css, ballImage, style }) => {
+  const t = useT();
+  const count = tickets.length;
+
+  return (
+    <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
+      <div className={`${css.root} ${count > 2 ? css.small : ''} ${count === 2 ? css.portrait : ''}`}>
+        <div className={css.header}>
+          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.png" alt="" />
+          <span className={`${goldStyles.goldMetalText} ${css.title}`}>{t('draw.myCards')}</span>
+          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.png" alt="" />
+        </div>
+
+        <div className={css.grid} style={{ gridTemplateRows: count <= 2 ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>
+          {tickets.map((ticket, idx) => {
+            const missing = countMissing(ticket, drawnSet);
+            const tier = missing === 1 ? css.cardCritical : missing === 2 ? css.cardNear : '';
+            return (
+              <div
+                key={ticket.id || idx}
+                className={`${css.card} ${tier}`}
+                style={{ gridColumn: count === 1 ? '1 / -1' : count === 3 && idx === 2 ? '2 / span 2' : 'span 2' }}
+              >
+                {missing === 1 && <span className={css.almostBadge}>{t('coupons.almost')}</span>}
+                <div className={css.cardHead}>
+                  <span className={css.cardLabel}>{t('draw.cardN', { n: String(idx + 1).padStart(2, '0') })}</span>
+                  <span className={css.cardMissing}>
+                    {t('coupons.missing')} {missing}
+                  </span>
+                </div>
+                <div className={css.cells}>
+                  {(ticket.numbers || []).flatMap((row, rIdx) =>
+                    (row || []).map((num, cIdx) => {
+                      const label = String(num).padStart(2, '0');
+                      if (!drawnSet.has(num)) {
+                        return (
+                          <div key={`${rIdx}-${cIdx}`} className={css.cell}>
+                            {label}
+                          </div>
+                        );
+                      }
+                      const band = (css as Record<string, string>)[`ball_${ballBand(num)}`] ?? '';
+                      return (
+                        <div key={`${rIdx}-${cIdx}`} className={`${css.cell} ${css.hit}`}>
+                          <span
+                            className={`${css.ball} ${band} ${num === latestBall ? css.ballLatest : ''}`}
+                            style={ballImage ? ({ '--ball-img': `url(${ballImage(num)})` } as React.CSSProperties) : undefined}
+                          >
+                            {label}
+                          </span>
+                        </div>
+                      );
+                    }),
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={css.banner}>
+          <img
+            src="/themes/bingo-show-blue/banner-luck.png"
+            alt="Aqui é Sorte! Todo dia!"
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = 'none';
+            }}
+          />
+        </div>
+      </div>
+    </BingoShowTopWinnersFrame>
+  );
+};
 
 // Rótulos de cartela idênticos à imagem de referência
 
@@ -32,6 +133,7 @@ function countMissing(ticket: TicketCardItem, drawnSet: Set<number>): number {
 export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
   tickets,
   drawnBalls = [],
+  latestBall,
   style,
 }) => {
   const { themeId, theme, isBlue } = useAppTheme();
@@ -57,6 +159,20 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
 
   if (!tickets || tickets.length === 0) {
     return null;
+  }
+
+  // Blue e Bingo Show (Ouro & Espaço): visual do quadro de cupons do tema.
+  if (isBlue || themeId === 'bingo-show') {
+    return (
+      <CardTicketsGrid
+        tickets={displayTickets}
+        drawnSet={drawnSet}
+        latestBall={latestBall}
+        css={isBlue ? blueGrid : ouroGrid}
+        ballImage={isBlue ? undefined : ouroBallAsset}
+        style={style}
+      />
+    );
   }
 
   // Fonte das células/rótulo pelo tamanho da cartela na grade.
