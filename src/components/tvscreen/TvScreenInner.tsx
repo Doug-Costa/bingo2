@@ -541,8 +541,8 @@ function TvHeader({
   onLogout: () => void;
   soundOn?: boolean;
   onToggleSound?: () => void;
-  lang?: 'pt' | 'es' | 'en';
-  onSelectLang?: (_l: 'pt' | 'es' | 'en') => void;
+  lang?: 'pt' | 'es';
+  onSelectLang?: (_l: 'pt' | 'es') => void;
 }) {
   const [now, setNow] = useState(() => new Date());
 
@@ -628,7 +628,7 @@ function TvHeader({
 
         {onSelectLang && (
           <div style={{ display: 'flex', flexDirection: 'row', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', padding: 2, gap: 2 }}>
-            {(['pt', 'es', 'en'] as const).map((l) => (
+            {(['pt', 'es'] as const).map((l) => (
               <TvFocusable key={l} theme={theme} onPress={() => onSelectLang(l)} style={{ paddingLeft: 8, paddingRight: 8, paddingTop: 4, paddingBottom: 4, borderRadius: 8, backgroundColor: lang === l ? theme.primary : 'transparent' }}>
                 <ThemeText theme={theme} variant="labelSmall" color={lang === l ? 'textOnGold' : 'textMuted'} textStyle={{ fontWeight: 900 }}>
                   {l.toUpperCase()}
@@ -812,7 +812,7 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
   // Áudio (services/audioService) não migrado ainda — só o estado visual do
   // toggle é mantido no header (ver nota no topo do arquivo).
   const [soundOn, setSoundOn] = useState(true);
-  const [lang, setLang] = useState<'pt' | 'es' | 'en'>('pt');
+  const [lang, setLang] = useState<'pt' | 'es'>('pt');
 
   const [announcingWinner, setAnnouncingWinner] = useState<WinnerEvent | null>(null);
   const announcedRef = useRef<string | null>(null);

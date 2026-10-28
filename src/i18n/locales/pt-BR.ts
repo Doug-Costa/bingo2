@@ -157,5 +157,5 @@ const ptBR = {
 export default ptBR;
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> };
-/** Formato que `es` e `en` precisam cumprir (mesmas chaves do pt-BR). */
+/** Formato que `es` precisa cumprir (mesmas chaves do pt-BR). */
 export type Dictionary = Widen<typeof ptBR>;

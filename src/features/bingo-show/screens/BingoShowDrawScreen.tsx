@@ -72,7 +72,7 @@ export const BingoShowDrawScreen: React.FC = () => {
   // Temas com o título em ouro próprio (classe do tema) e acentos dourados.
   const warm = isGold || isParaguay;
   const [soundOn, setSoundOn] = useState(true);
-  // Voz pelo idioma da TV (espanhol → /audio/es; português e inglês → pt-br).
+  // Voz do PIN (theme.sound) ou, sem ela, pelo idioma da TV (es → /audio/es; pt → pt-br).
   const { voice } = useTvConfig();
   const t = useT();
 

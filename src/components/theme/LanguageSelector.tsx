@@ -4,10 +4,10 @@ import React from 'react';
 import { useTvConfig } from '@/contexts/TvConfigContext';
 import { TV_LANGUAGES, type TvLanguage } from '@/storage/tvConfig';
 
-const LABELS: Record<TvLanguage, string> = { 'pt-BR': 'PT', es: 'ES', en: 'EN' };
+const LABELS: Record<TvLanguage, string> = { 'pt-BR': 'PT', es: 'ES' };
 
 /**
- * Troca manual de idioma da TV (PT/ES/EN). Some quando o backend manda
+ * Troca manual de idioma da TV (PT/ES). Some quando o backend manda
  * `theme.enableLanguageSelector: false`. A escolha vale até o próximo
  * login/restart, que volta ao idioma do backend.
  */
@@ -18,7 +18,7 @@ export function LanguageSelector({ style }: { style?: React.CSSProperties }) {
   return (
     <div
       role="group"
-      aria-label="Idioma / Language"
+      aria-label="Idioma"
       style={{
         display: 'inline-flex',
         gap: 2,

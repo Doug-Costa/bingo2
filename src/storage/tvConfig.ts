@@ -11,11 +11,12 @@
  * gravam a configuração nova e recarregam a página.
  */
 import type { Promotion } from '@/contexts/SSEContext';
+import type { VoiceLang } from '@/features/bingo-show/hooks/useBingoAudio';
 
 const KEY_TV_CONFIG = 'tv_config';
 
-export type TvLanguage = 'pt-BR' | 'es' | 'en';
-export const TV_LANGUAGES: TvLanguage[] = ['pt-BR', 'es', 'en'];
+export type TvLanguage = 'pt-BR' | 'es';
+export const TV_LANGUAGES: TvLanguage[] = ['pt-BR', 'es'];
 
 export interface TvThemeConfig {
   name?: string;
@@ -123,15 +124,27 @@ export function clearTvConfig(): void {
   }
 }
 
-/** "pt", "pt-BR", "es-PY", "en-US"... → idioma suportado; null se vazio/desconhecido. */
+/** "pt", "pt-BR", "es-PY"... → idioma suportado; null se vazio/desconhecido. */
 export function normalizeLanguage(raw: unknown): TvLanguage | null {
   if (typeof raw !== 'string') return null;
   const v = raw.trim().toLowerCase();
   if (!v) return null;
   if (v.startsWith('pt')) return 'pt-BR';
   if (v.startsWith('es')) return 'es';
-  if (v.startsWith('en')) return 'en';
   return null;
+}
+
+/** `theme.sound` do PIN ("pt", "pt-br", "es", "es-PY"...) → voz; null se vazio/desconhecido. */
+export function normalizeVoice(raw: unknown): VoiceLang | null {
+  const lang = normalizeLanguage(raw);
+  if (lang === 'es') return 'es';
+  if (lang === 'pt-BR') return 'pt';
+  return null;
+}
+
+/** Moeda padrão de cada idioma (quando o PIN não manda `defaultCoin`). */
+export function currencyForLanguage(lang: TvLanguage): 'BRL' | 'PYG' {
+  return lang === 'es' ? 'PYG' : 'BRL';
 }
 
 /** "brl", "R$", "PYG", "gs"... → código ISO em maiúsculas; null se vazio. */

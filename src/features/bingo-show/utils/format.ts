@@ -24,12 +24,12 @@ export function getMoneyCurrency(): MoneyCurrency {
   return moneyCurrency;
 }
 
-/** Valor formatado na moeda atual: "R$ 1.250,00" ou "₲ 1.250" (guarani sem centavos).
+/** Valor formatado na moeda atual: "R$ 1.250,00" ou "Gs. 1.250" (guarani sem centavos).
  * O número é o mesmo que chega do backend — sem conversão. */
 export function formatMoney(value: number | undefined | null): string {
   const n = Number(value ?? 0);
   if (moneyCurrency === 'PYG') {
-    return `₲ ${Math.round(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
+    return `Gs. ${Math.round(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
   }
   if (moneyCurrency !== 'BRL') {
     try {

@@ -5,11 +5,12 @@
  * moeda, promoções e o resto do payload do resolve), já resolvida contra os
  * padrões do tema ativo.
  *
- * Ordem de decisão:
- *   idioma: seleção manual na TV → theme.defaultLanguage do backend → padrão do
+ * Ordem de decisão (tudo vem do PIN; o padrão do tema só cobre campo ausente):
+ *   idioma: seleção manual na TV → theme.defaultLanguage do PIN → padrão do
  *           tema (Paraguay/Loteria'i = espanhol, demais = português)
- *   moeda:  theme.defaultCoin do backend → padrão do tema (PYG/BRL)
- *   voz:    espanhol → /audio/es; português e inglês → /audio/pt-br
+ *   moeda:  theme.defaultCoin do PIN → idioma do PIN (es = PYG, pt = BRL).
+ *           A seleção manual não troca a moeda: o valor não é convertido.
+ *   voz:    theme.sound do PIN → idioma ativo (es → /audio/es; pt → /audio/pt-br)
  *
  * Fica DENTRO do ThemeProvider (precisa do themeId para os padrões).
  */
@@ -22,9 +23,11 @@ import type { Promotion } from '@/contexts/SSEContext';
 import type { TFunction } from 'i18next';
 import { i18n } from '@/i18n';
 import {
+  currencyForLanguage,
   getTvConfig,
   normalizeCurrency,
   normalizeLanguage,
+  normalizeVoice,
   type TvConfig,
   type TvLanguage,
   type TvThemeConfig,
@@ -95,10 +98,11 @@ export function TvConfigProvider({ children }: { children: React.ReactNode }) {
   const remoteTheme = config?.theme ?? null;
   const profile = getThemeProfile(themeId);
 
-  const language: TvLanguage =
-    manualLanguage ?? normalizeLanguage(remoteTheme?.defaultLanguage) ?? normalizeLanguage(profile.locale) ?? 'pt-BR';
-  const currency: MoneyCurrency = normalizeCurrency(remoteTheme?.defaultCoin) ?? profile.currency;
-  const voice: VoiceLang = language === 'es' ? 'es' : 'pt';
+  const pinLanguage: TvLanguage =
+    normalizeLanguage(remoteTheme?.defaultLanguage) ?? normalizeLanguage(profile.locale) ?? 'pt-BR';
+  const language: TvLanguage = manualLanguage ?? pinLanguage;
+  const currency: MoneyCurrency = normalizeCurrency(remoteTheme?.defaultCoin) ?? currencyForLanguage(pinLanguage);
+  const voice: VoiceLang = normalizeVoice(remoteTheme?.sound) ?? (language === 'es' ? 'es' : 'pt');
 
   // Definida no render, antes dos filhos formatarem valores.
   setMoneyCurrency(currency);
