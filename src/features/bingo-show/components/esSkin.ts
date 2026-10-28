@@ -86,7 +86,6 @@ export const PARAGUAY_SKIN: EsSkin = {
   css: { theme: pyTheme, stage: pyStage, history: pyHistory, prize: pyPrize, coupons: pyCoupons, winner: pyWinner, round: pyRound },
   art: {
     logo: `${PY}/logos/logo-loteriai.png`,
-    logoSecondary: `${PY}/logos/logo-bingo-show-paraguay.png`,
     ornament: `${PY}/decorative/nanduti.png`,
     globe: `${PY}/decorative/globo.png`,
     stageCompanion: `${PY}/decorative/guampa-terere.png`,

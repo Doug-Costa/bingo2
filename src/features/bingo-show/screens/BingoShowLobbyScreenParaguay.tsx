@@ -155,8 +155,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={`${py.panel} ${py.sweep} ${styles.header}`} style={{ '--sweep-delay': '2s' } as React.CSSProperties}>
           <div className={styles.brand}>
-            <Image className={`${py.art} ${styles.logoMain}`} src={`${A}/logos/logo-loteriai.png`} alt="Loteria'i" width={136} height={126} sizes="136px" priority />
-            <Image className={`${py.art} ${styles.logoSecondary}`} src={`${A}/logos/logo-bingo-show-paraguay.png`} alt="Bingo Show Paraguay" width={236} height={91} sizes="236px" priority />
+            <Image className={`${py.art} ${styles.logoMain}`} src={`${A}/logos/logo-loteriai.png`} alt="Loteria'i" width={150} height={139} sizes="150px" priority />
           </div>
 
           <div className={styles.infoGroup}>
@@ -209,19 +208,19 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
 
           <section className={`${py.panel} ${styles.center}`}>
             <div className={styles.centerTitles}>
-              <span className={`${py.goldText} ${styles.drawTitle}`}>{drawTitle}</span>
+              {/* Cuia de tereré como enfeite ao lado do título (fora do fluxo: o
+                  título continua centrado no painel). */}
+              <span className={styles.titleRow}>
+                <span className={`${py.goldText} ${styles.drawTitle}`}>{drawTitle}</span>
+                <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={70} height={105} sizes="70px" />
+              </span>
               <span className={styles.startsIn}>EL SORTEO COMIENZA EN</span>
             </div>
 
             <div className={styles.stage}>
               <span className={styles.stageNanduti} />
-              {/* Lado esquerdo: cuia de tereré ao pé da ampulheta — juntas têm quase a
-                  largura do globo, então os dois lados se espelham com o contador no centro. */}
-              <div className={styles.stageLeft}>
-                <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={70} height={105} sizes="70px" />
-                <div className={styles.hourglassWrap}>
-                  <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={120} height={189} sizes="120px" />
-                </div>
+              <div className={styles.hourglassWrap}>
+                <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={132} height={208} sizes="132px" />
               </div>
               <div className={styles.timerFrame}>
                 <span key={countdown} className={`${py.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
