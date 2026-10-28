@@ -215,8 +215,13 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
 
             <div className={styles.stage}>
               <span className={styles.stageNanduti} />
-              <div className={styles.hourglassWrap}>
-                <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={120} height={189} sizes="120px" />
+              {/* Lado esquerdo: cuia de tereré ao pé da ampulheta — juntas têm quase a
+                  largura do globo, então os dois lados se espelham com o contador no centro. */}
+              <div className={styles.stageLeft}>
+                <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={70} height={105} sizes="70px" />
+                <div className={styles.hourglassWrap}>
+                  <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={120} height={189} sizes="120px" />
+                </div>
               </div>
               <div className={styles.timerFrame}>
                 <span key={countdown} className={`${py.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
@@ -226,7 +231,6 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
               <div className={`${styles.globeWrap} ${near ? styles.globeNear : ''}`}>
                 <Image className={`${py.art} ${styles.globe}`} src={`${A}/decorative/globo.png`} alt="" width={210} height={195} sizes="210px" />
               </div>
-              <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={70} height={105} sizes="70px" />
             </div>
 
             <div className={`${py.panel} ${py.panelRed} ${py.sweep} ${styles.jackpotBand}`} style={{ '--sweep-delay': '7s' } as React.CSSProperties}>

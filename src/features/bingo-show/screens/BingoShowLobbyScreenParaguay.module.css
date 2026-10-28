@@ -361,11 +361,21 @@
   min-height: 0;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 70px 0 10px; /* reserva o canto da guampa */
-  display: flex;
+  /* Simetria: colunas laterais de mesma largura → contador no centro exato do
+   * painel (alinhado ao título e ao ñandutí); ampulheta+cuia à esquerda e globo à
+   * direita encostam no contador com o mesmo vão. */
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  gap: 22px;
+  column-gap: 22px;
+}
+
+.stageLeft {
+  justify-self: end;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px; /* cuia 70 + 8 + ampulheta 112 = 190 = largura do globo */
 }
 
 /* Ñandutí atrás do contador: rotação perceptível e escala pulsando suave. */
@@ -388,7 +398,8 @@
 }
 
 .hourglass {
-  width: 104px;
+  display: block;
+  width: 112px;
   height: auto;
   filter: drop-shadow(0 10px 14px rgba(0, 3, 12, 0.6));
   transform-origin: 50% 70%;
@@ -419,7 +430,7 @@
 
 .globeWrap {
   position: relative;
-  flex: none;
+  justify-self: start;
   animation: paraguayGlobeFloat 5s ease-in-out infinite alternate;
 }
 
@@ -431,17 +442,17 @@
 }
 
 .globe {
+  display: block;
   width: 190px;
   height: auto;
   filter: drop-shadow(0 12px 16px rgba(0, 3, 12, 0.6)) drop-shadow(0 0 16px rgba(47, 111, 214, 0.3));
 }
 
 .guampa {
-  position: absolute;
-  right: 4px;
-  bottom: 0;
+  flex: none;
   width: 70px;
   height: auto;
+  margin-bottom: 2px;
   filter: drop-shadow(0 6px 8px rgba(0, 3, 12, 0.6));
 }
 
