@@ -35,7 +35,7 @@ import { clearCredentials, type ThemeConfig } from '@/storage/credentials';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { alphaColor, getThemeKey, resolveTheme, type ThemeTokens } from '@/theme/themes';
 import { useGameSocket, type DrawSSE, type JackpotInfo, type MyTicket, type TopWinnerRealtime, type WinnerEvent } from '@/contexts/SSEContext';
-import { ThemeBackground, ThemeBadge, ThemeCard, ThemeDivider, ThemeLogo, ThemePanel, ThemeSelector, ThemeText, TvFocusable } from '../theme';
+import { ThemeBackground, ThemeBadge, ThemeCard, ThemeDivider, ThemeLogo, ThemePanel, ThemeText, TvFocusable } from '../theme';
 
 import Icon from '../Icon';
 import AnimatedActiveBall from './AnimatedActiveBall';
@@ -45,6 +45,7 @@ import TopPlayers from './TopPlayers';
 import WinnerModal from './WinnerModal';
 import MyTicketsPanel from './MyTicketsPanel';
 import PostDrawCycle from './PostDrawCycle';
+import { useTvConfig } from '@/contexts/TvConfigContext';
 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -616,10 +617,8 @@ function TvHeader({
         </div>
       </div>
 
-      {/* Direita: Tema, Som, Idioma, Logout */}
+      {/* Direita: Som, Idioma, Logout */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <ThemeSelector variant="compact" />
-
         {onToggleSound && (
           <TvFocusable theme={theme} onPress={onToggleSound} style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 6, paddingBottom: 6, borderRadius: 10, border: `1px solid ${soundOn ? theme.success : theme.borderMuted}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name={soundOn ? 'volume-on' : 'volume-off'} size={16} color={soundOn ? theme.success : theme.textMuted} />
@@ -812,6 +811,8 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
   // Áudio (services/audioService) não migrado ainda — só o estado visual do
   // toggle é mantido no header (ver nota no topo do arquivo).
   const [soundOn, setSoundOn] = useState(true);
+  // theme.enableSound: false (painel) → botão de som some.
+  const { soundEnabled } = useTvConfig();
   const [lang, setLang] = useState<'pt' | 'es'>('pt');
 
   const [announcingWinner, setAnnouncingWinner] = useState<WinnerEvent | null>(null);
@@ -852,7 +853,7 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
           isInProgress={drawActive}
           onLogout={handleLogout}
           soundOn={soundOn}
-          onToggleSound={() => setSoundOn((s) => !s)}
+          onToggleSound={soundEnabled ? () => setSoundOn((s) => !s) : undefined}
           lang={lang}
           onSelectLang={(l) => setLang(l)}
         />

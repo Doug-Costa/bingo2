@@ -45,6 +45,8 @@ export interface TvConfigContextValue {
   language: TvLanguage;
   currency: MoneyCurrency;
   voice: VoiceLang;
+  /** theme.enableSound do painel (ausente → ligado). false desliga todo o som. */
+  soundEnabled: boolean;
   /** Troca manual de idioma (persistida até o próximo login/restart). */
   setLanguage: (_lang: TvLanguage) => void;
 }
@@ -56,6 +58,7 @@ const TvConfigContext = createContext<TvConfigContextValue>({
   language: 'pt-BR',
   currency: 'BRL',
   voice: 'pt',
+  soundEnabled: true,
   setLanguage: () => {},
 });
 
@@ -103,6 +106,7 @@ export function TvConfigProvider({ children }: { children: React.ReactNode }) {
   const language: TvLanguage = manualLanguage ?? pinLanguage;
   const currency: MoneyCurrency = normalizeCurrency(remoteTheme?.defaultCoin) ?? currencyForLanguage(pinLanguage);
   const voice: VoiceLang = normalizeVoice(remoteTheme?.sound) ?? (language === 'es' ? 'es' : 'pt');
+  const soundEnabled = remoteTheme?.enableSound !== false;
 
   // Definida no render, antes dos filhos formatarem valores.
   setMoneyCurrency(currency);
@@ -119,9 +123,10 @@ export function TvConfigProvider({ children }: { children: React.ReactNode }) {
       language,
       currency,
       voice,
+      soundEnabled,
       setLanguage,
     }),
-    [config, remoteTheme, language, currency, voice, setLanguage],
+    [config, remoteTheme, language, currency, voice, soundEnabled, setLanguage],
   );
 
   return <TvConfigContext.Provider value={value}>{children}</TvConfigContext.Provider>;

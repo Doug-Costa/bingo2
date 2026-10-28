@@ -23,7 +23,6 @@ const DEFAULT_CREDENTIALS: SavedCredentials = {
  * Inicializa imediatamente com as credenciais (salvas ou padrão) para garantir
  * que NUNCA fique em tela em branco ou presa no carregamento.
  */
-import { ThemeSelector } from '@/components/theme';
 import { LanguageSelector } from '@/components/theme/LanguageSelector';
 
 export default function TvPage() {
@@ -67,7 +66,7 @@ export default function TvPage() {
 
   return (
     <TvViewport>
-      {/* Seletor Rápido de Temas no Canto Superior (Ícone + Dropdown) */}
+      {/* Seletor de idioma no canto superior (tema vem do PIN, sem seletor) */}
       <div
         style={{
           position: 'fixed',
@@ -83,7 +82,6 @@ export default function TvPage() {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <LanguageSelector />
-          <ThemeSelector variant="dropdown" align="right" />
         </div>
       </div>
 

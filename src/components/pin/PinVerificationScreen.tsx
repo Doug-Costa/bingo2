@@ -5,7 +5,6 @@ import { resolvePin, pingServer } from '@/services/api';
 import { buildBaseUrl, getDefaultIp, getDefaultPort, getCredentials } from '@/storage/credentials';
 import { applyResolvedSession, reloadTv } from '@/services/tvSession';
 import { useAppTheme } from '@/contexts/ThemeContext';
-import { ThemeSelector } from '@/components/theme';
 import { useT } from '@/contexts/TvConfigContext';
  
 export type PinStatus = 'idle' | 'validating' | 'error' | 'success';
@@ -745,7 +744,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
           )}
         </div>
 
-        {/* Seção de Seleção de Temas */}
+        {/* Rodapé: link de demonstração (tema vem do PIN, sem seletor) */}
         <div
           style={{
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -756,13 +755,9 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: 12,
+              justifyContent: 'flex-end',
             }}
           >
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF' }}>
-              {t('pin.chooseTheme')}
-            </span>
             <button
               type="button"
               onClick={handleDemoPin}
@@ -779,7 +774,6 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               {t('pin.demo')}
             </button>
           </div>
-          <ThemeSelector variant="cards" />
         </div>
       </div>
     </div>

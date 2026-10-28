@@ -56,8 +56,6 @@ function toPrizeRowStatus(status: PrizeStatusType): PrizeRowStatus {
   return 'pending';
 }
 
-import { ThemeSelector } from '@/components/theme';
-
 export const BingoShowDrawScreen: React.FC = () => {
   const mock = useBingoShowRealtimeDraw();
   const { isBlue, themeId } = useAppTheme();
@@ -73,12 +71,13 @@ export const BingoShowDrawScreen: React.FC = () => {
   const warm = isGold || isParaguay;
   const [soundOn, setSoundOn] = useState(true);
   // Voz do PIN (theme.sound) ou, sem ela, pelo idioma da TV (es → /audio/es; pt → pt-br).
-  const { voice } = useTvConfig();
+  // theme.enableSound: false (painel) → sem som e sem botão de som.
+  const { voice, soundEnabled } = useTvConfig();
   const t = useT();
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
   // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
-  useBingoAudio(soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, voice);
+  useBingoAudio(soundEnabled && soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, voice);
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
@@ -185,10 +184,8 @@ export const BingoShowDrawScreen: React.FC = () => {
           </span>
         </div>
 
-        {/* RIGHT: THEME SELECTOR + DATE/TIME PILL + SOUND */}
+        {/* RIGHT: DATE/TIME PILL + SOUND */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, minWidth: 220, justifyContent: 'flex-end' }}>
-          <ThemeSelector variant="dropdown" align="left" />
-
           {/* Integrated Date & Time pill [📅 28/07/2026 | 15:40:25] */}
           <div
             style={{
@@ -211,6 +208,7 @@ export const BingoShowDrawScreen: React.FC = () => {
           </div>
 
           {/* Sound button — Circular Blue Speaker */}
+          {soundEnabled && (
           <div
             onClick={() => setSoundOn((prev) => !prev)}
             style={{
@@ -237,6 +235,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               transparentBg
             />
           </div>
+          )}
         </div>
       </div>
 
