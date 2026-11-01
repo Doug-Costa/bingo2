@@ -176,7 +176,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={styles.header}>
-          <Image className={`${lt.art} ${styles.logo}`} src={`${A}/sm/logos/logo-loteriai.png`} alt="Loteria'i" width={220} height={204} sizes="220px" priority />
+          <Image className={`${lt.art} ${styles.logo}`} src={`${A}/logos/logo-loteriai-md.png`} alt="Loteria'i" width={520} height={483} sizes="190px" priority />
 
           <div className={styles.infoGroup}>
             <div className={styles.info} style={{ '--d': '120ms' } as React.CSSProperties}>

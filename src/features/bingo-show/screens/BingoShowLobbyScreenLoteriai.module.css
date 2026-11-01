@@ -35,9 +35,11 @@
 }
 
 .logo {
+  /* Maior e subindo para o espaço livre ao lado da guirlanda (sem corte). */
   flex: none;
-  width: 150px;
+  width: 184px;
   height: auto;
+  margin: -62px -6px -14px 0;
   filter: drop-shadow(0 5px 8px rgba(104, 57, 0, 0.35));
   animation:
     loteriaiLogoIn 850ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
