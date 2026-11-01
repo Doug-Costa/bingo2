@@ -104,16 +104,17 @@ export const BingoShowDrawScreen: React.FC = () => {
           paddingLeft: 8,
           paddingRight: 8,
           paddingBottom: 8,
-          // Loteria'i: espaço para o selo da faixa da bandeira acima do título.
-          paddingTop: es?.id === 'loteriai' ? 16 : undefined,
-          height: 68,
+          // Loteria'i: cabeçalho um pouco mais alto, com a faixa da bandeira
+          // inteira ACIMA do título (sem passar por trás das letras).
+          paddingTop: es?.id === 'loteriai' ? 30 : undefined,
+          height: es?.id === 'loteriai' ? 96 : 68,
           boxSizing: 'border-box',
           width: '100%',
           position: 'relative',
         }}
       >
         {/* Loteria'i: faixa da bandeira com o selo, acima do título. */}
-        {es?.id === 'loteriai' && <TopFlagBand style={{ position: 'absolute', top: 0, left: 120, right: 120, height: 30, zIndex: 0 }} />}
+        {es?.id === 'loteriai' && <TopFlagBand style={{ position: 'absolute', top: 0, left: 200, right: 200, height: 34, zIndex: 0 }} />}
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220, gap: 6 }}>
           {es && (
