@@ -362,19 +362,28 @@
   animation: loteriaiRise 700ms cubic-bezier(0.2, 0.8, 0.3, 1) 60ms both;
 }
 
-/* Brilho solar atrás do palco (estático; só a opacidade respira). */
-.centerRays {
+
+/* Ñandutí atrás do contador: dourado sutil, gira devagar (mesmo tratamento do
+ * anel interno do palco do sorteio). Fica atrás do contador, sem cortar. */
+.timerWrap {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+
+.timerLace {
   position: absolute;
   left: 50%;
-  top: 46%;
-  width: 1100px;
-  height: 1100px;
-  margin: -550px 0 0 -550px;
-  background: repeating-conic-gradient(from 0deg, rgba(255, 210, 60, 0.22) 0deg 7deg, transparent 7deg 18deg);
-  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 60%);
-  mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  top: 50%;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  filter: sepia(1) saturate(2.2) hue-rotate(-12deg);
+  opacity: 0.3;
   pointer-events: none;
-  animation: loteriaiBreathe 8s ease-in-out infinite alternate;
+  animation: loteriaiLaceSpin 60s linear infinite;
 }
 
 .centerTitles {
@@ -639,10 +648,26 @@
   --tone-c: #9f1021;
 }
 
-.tone_green {
-  --tone-a: #3cc35a;
-  --tone-b: #24a83f;
-  --tone-c: #0c7428;
+/* Branco da bandeira: faixa perolada com texto azul-marinho. */
+.tone_white {
+  --tone-a: #ffffff;
+  --tone-b: #fbf8ef;
+  --tone-c: #e9e1cc;
+}
+
+.tone_white .prizeLabel {
+  color: var(--lt-blue-dark, #072c68);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.tone_white .prizeSpark {
+  filter: drop-shadow(0 0 2px rgba(7, 44, 104, 0.6));
+}
+
+.tone_blue {
+  --tone-a: #2f6fd6;
+  --tone-b: #0648a8;
+  --tone-c: #072c68;
 }
 
 /* Reflexo diagonal sincronizado com o destaque do card. */
@@ -791,6 +816,11 @@
   filter: drop-shadow(1px 0 0 #8a1010) drop-shadow(-1px 0 0 #8a1010) drop-shadow(0 2px 0 #fff2a6) drop-shadow(0 3px 0 #a65c00);
 }
 
+.sloganWhite {
+  color: #ffffff;
+  filter: drop-shadow(1.5px 0 0 #072c68) drop-shadow(-1.5px 0 0 #072c68) drop-shadow(0 1.5px 0 #072c68) drop-shadow(0 -1.5px 0 #072c68) drop-shadow(0 3px 0 #a65c00);
+}
+
 .sloganBlue {
   color: #0648a8;
   filter: drop-shadow(1px 0 0 #072c68) drop-shadow(-1px 0 0 #072c68) drop-shadow(0 2px 0 #ffffff) drop-shadow(0 3px 0 #a65c00);
@@ -848,6 +878,11 @@
 @keyframes loteriaiBreathe {
   from { opacity: 0.65; }
   to { opacity: 1; }
+}
+
+@keyframes loteriaiLaceSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Contador: respira de leve; a geometria do layout não muda (só transform). */
@@ -909,7 +944,7 @@
   .left,
   .drawCard,
   .center,
-  .centerRays,
+  .timerLace,
   .drawTitle,
   .hourglassWrap,
   .glassGlint,

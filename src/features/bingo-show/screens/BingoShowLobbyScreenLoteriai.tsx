@@ -124,7 +124,8 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
   );
 };
 
-type CardTone = 'blue' | 'red' | 'green';
+/** Ordem da bandeira paraguaia: vermelho → branco → azul. */
+type CardTone = 'red' | 'white' | 'blue';
 
 /** Card de prêmio: cabeçalho colorido + valor. `slot` encadeia o destaque
  * (1ª linha → 2ª linha → prêmio principal → pausa), um card por vez. */
@@ -223,7 +224,6 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           </section>
 
           <section className={`${lt.panel} ${styles.center}`}>
-            <span className={styles.centerRays} />
             <div className={styles.centerTitles}>
               <span className={`${lt.titleText} ${styles.drawTitle}`}>{drawTitle}</span>
               <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
@@ -234,10 +234,14 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
                 <Image className={`${lt.art} ${styles.hourglass}`} src={`${A}/sm/icons/ampulheta.png`} alt="" width={160} height={276} sizes="160px" />
                 <span className={styles.glassGlint} />
               </div>
-              <div className={`${lt.shimmer} ${styles.timerFrame} ${final ? styles.timerFinal : ''}`}>
-                <span key={countdown.length} className={`${lt.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
-                  {countdown}
-                </span>
+              <div className={styles.timerWrap}>
+                {/* Ñandutí dourado girando devagar atrás do contador (o mesmo da bola no sorteio). */}
+                <span className={styles.timerLace} aria-hidden="true" />
+                <div className={`${lt.shimmer} ${styles.timerFrame} ${final ? styles.timerFinal : ''}`}>
+                  <span key={countdown.length} className={`${lt.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
+                    {countdown}
+                  </span>
+                </div>
               </div>
               <div className={`${styles.globeWrap} ${near ? styles.globeNear : ''}`}>
                 <Image className={`${lt.art} ${styles.globe}`} src={`${A}/sm/decorative/globo-sorteio.png`} alt="" width={250} height={230} sizes="250px" />
@@ -264,9 +268,9 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           </section>
 
           <section className={styles.right}>
-            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="blue" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
-            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={1} />
-            <PrizeCard label="LOTERIA'I" value={mock.bingoPrize} tone="green" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={2} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="white" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={1} />
+            <PrizeCard label="LOTERIA'I" value={mock.bingoPrize} tone="blue" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={2} />
           </section>
         </main>
 
@@ -276,8 +280,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           {isSlogan ? (
             <span className={styles.footerSlogan}>
-              <span className={styles.sloganRed}>{t('lobby.luck1')}</span> <span className={styles.sloganBlue}>{t('lobby.luck2')}</span>{' '}
-              <span className={styles.sloganRed}>{t('lobby.luck3')}</span>
+              <span className={styles.sloganRed}>{t('lobby.luck1')}</span> <span className={styles.sloganWhite}>{t('lobby.luck2')}</span>{' '}
+              <span className={styles.sloganBlue}>{t('lobby.luck3')}</span>
             </span>
           ) : (
             <span className={styles.footerText}>{mock.promotionalMessage}</span>
