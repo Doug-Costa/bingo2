@@ -7,7 +7,7 @@
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  padding: 58px 20px 14px;
+  padding: 74px 20px 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -21,22 +21,12 @@
   position: relative;
   z-index: 1;
   flex: none;
-  height: 104px;
+  height: 96px;
   display: flex;
   align-items: center;
   gap: 22px;
   padding: 0 4px;
   animation: loteriaiDropIn 650ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-
-/* Faixa da bandeira no topo (selo no centro). */
-.topGarland {
-  position: absolute;
-  top: 0;
-  left: 330px;
-  width: calc(100% - 660px);
-  height: 60px;
-  z-index: 0;
 }
 
 .headerLine {

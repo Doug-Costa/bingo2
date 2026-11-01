@@ -731,16 +731,7 @@
 
 /* Espaço no topo para a faixa da bandeira. */
 .layout {
-  inset: 60px 44px 22px;
-}
-
-.topGarland {
-  position: absolute;
-  top: 0;
-  left: 330px;
-  right: 330px;
-  height: 60px;
-  z-index: 1;
+  inset: 76px 44px 22px;
 }
 
 /* Título azul-marinho com contorno de ouro. */

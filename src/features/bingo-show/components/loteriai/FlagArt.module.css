@@ -1,4 +1,4 @@
-/* Faixa do topo: listras esticam, selo mantém a proporção. */
+/* Faixa ondulada da base: estica na largura. */
 .band {
   display: flex;
   align-items: stretch;
@@ -14,9 +14,14 @@
   user-select: none;
 }
 
-.seal {
-  flex: none;
-  height: 100%;
+/* Guirlanda do topo: imagem inteira na proporção original, centralizada. */
+.garland {
+  position: absolute;
+  left: 50%;
   width: auto;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
   user-select: none;
+  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
 }

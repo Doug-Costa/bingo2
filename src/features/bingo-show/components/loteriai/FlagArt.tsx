@@ -1,8 +1,9 @@
 /**
  * FlagArt.tsx — faixas da bandeira paraguaia do tema `loteriai` (arte em PNG).
  *
- * A faixa do topo (guirlanda com selo) vem em três peças: os lados esticam na
- * largura disponível e o selo do centro mantém a proporção.
+ * A faixa do topo (guirlanda com o brasão) é uma imagem inteira, sempre na
+ * proporção original (nunca esticada): a altura define o tamanho e ela fica
+ * centralizada.
  * As pontas (dos lados das faixas vermelhas) e as asas (cantos do rodapé)
  * são imagens inteiras.
  */
@@ -18,16 +19,19 @@ export const FLAG_ART = {
   cornerRight: `${D}/asa-dir.png`,
 };
 
-/** Faixa do topo com o selo no centro. `className`/`style` posicionam e definem a altura. */
-export function TopFlagBand({ className, style }: { className?: string; style?: React.CSSProperties }) {
+/** Guirlanda do topo com o brasão, centralizada. `height` define o tamanho
+ * (largura = altura × 7,82, a proporção do asset). */
+export function TopFlagBand({ height, top = 0, style }: { height: number; top?: number; style?: React.CSSProperties }) {
   return (
-    <div className={`${styles.band} ${className ?? ''}`} style={style} aria-hidden="true">
-      {/* eslint-disable @next/next/no-img-element -- peças estáticas do tema */}
-      <img className={styles.stripes} src={`${D}/guirlanda-esq.png`} alt="" draggable={false} />
-      <img className={styles.seal} src={`${D}/guirlanda-selo.png`} alt="" draggable={false} />
-      <img className={styles.stripes} src={`${D}/guirlanda-dir.png`} alt="" draggable={false} />
-      {/* eslint-enable @next/next/no-img-element */}
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element -- arte estática do tema
+    <img
+      className={styles.garland}
+      src={`${D}/guirlanda.png`}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      style={{ top, height, ...style }}
+    />
   );
 }
 

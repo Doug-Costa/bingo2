@@ -173,7 +173,7 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label={t('round.aria')}>
     {isLt && (
       <>
-        <TopFlagBand className={styles.topGarland} />
+        <TopFlagBand height={76} top={-2} style={{ zIndex: 1 }} />
         <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.cornerWave} ${styles.cornerWaveL}`} />
         <FlagImage src={FLAG_ART.cornerRight} className={`${styles.cornerWave} ${styles.cornerWaveR}`} />
       </>
