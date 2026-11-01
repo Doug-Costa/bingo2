@@ -736,25 +736,11 @@
 
 .topGarland {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
   width: 100%;
-  height: 40px;
+  height: 46px;
   z-index: 1;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
-}
-
-.topRosette {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 52px;
-  height: 52px;
-  margin-left: -26px;
-  z-index: 2;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 3px rgba(104, 57, 0, 0.4));
 }
 
 /* Título azul-marinho com contorno de ouro. */
@@ -792,39 +778,37 @@
 
 .subTail {
   flex: none;
-  width: 96px;
-  height: 40px;
+  height: 42px;
+  width: auto;
+  user-select: none;
   filter: drop-shadow(0 2px 2px rgba(104, 57, 0, 0.3));
 }
 
 .subTailL {
-  margin-right: -10px;
-  transform: scaleX(-1) rotate(-6deg);
+  margin-right: -18px;
 }
 
 .subTailR {
-  margin-left: -10px;
-  transform: rotate(-6deg);
+  margin-left: -18px;
 }
 
 /* Faixas da bandeira subindo dos cantos de baixo. */
 .cornerWave {
   position: absolute;
-  bottom: -14px;
-  width: 380px;
-  height: 84px;
+  bottom: 0;
+  height: 120px;
+  width: auto;
   z-index: 1;
   pointer-events: none;
+  user-select: none;
 }
 
 .cornerWaveL {
-  left: -30px;
-  transform: rotate(-7deg);
+  left: 0;
 }
 
 .cornerWaveR {
-  right: -30px;
-  transform: scaleX(-1) rotate(-7deg);
+  right: 0;
 }
 
 /* Colunas: luz suave na cor da faixa + ñandutí girando atrás do ícone. */

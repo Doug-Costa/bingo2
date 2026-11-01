@@ -20,7 +20,7 @@ import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import lt from '../components/loteriai/LoteriaiTheme.module.css';
 import styles from './BingoShowLobbyScreenLoteriai.module.css';
-import { BANNER_TAIL, CORNER_WAVE, FlagRosette, FlagWave, TOP_GARLAND } from '../components/loteriai/FlagRibbon';
+import { FLAG_ART, FlagImage, TopFlagBand } from '../components/loteriai/FlagArt';
 import { useT } from '@/contexts/TvConfigContext';
 
 const A = '/themes/loteriai';
@@ -172,8 +172,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
     <BingoShowAmbientBackground>
       <div className={`${lt.vars} ${styles.screen}`} data-theme="loteriai">
         {/* Faixa da bandeira no topo, com a roseta no centro. */}
-        <FlagWave id="lt-top" className={styles.topGarland} opts={TOP_GARLAND} />
-        <FlagRosette className={styles.topRosette} />
+        <TopFlagBand className={styles.topGarland} />
 
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={styles.header}>
@@ -234,9 +233,9 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
               <span className={`${styles.drawTitle} ${styles.drawTitleNavy}`}>{drawTitle}</span>
               {/* Faixa vermelha com as pontas da bandeira saindo dos lados. */}
               <div className={styles.startsBanner}>
-                <FlagWave id="lt-tail-l" className={`${styles.bannerTail} ${styles.bannerTailL}`} opts={BANNER_TAIL} />
+                <FlagImage src={FLAG_ART.tailLeft} className={`${styles.bannerTail} ${styles.bannerTailL}`} />
                 <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
-                <FlagWave id="lt-tail-r" className={`${styles.bannerTail} ${styles.bannerTailR}`} opts={BANNER_TAIL} />
+                <FlagImage src={FLAG_ART.tailRight} className={`${styles.bannerTail} ${styles.bannerTailR}`} />
               </div>
             </div>
 
@@ -287,7 +286,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
         {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
         <footer className={styles.footer}>
-          <FlagWave id="lt-corner-l" className={`${styles.footerWave} ${styles.footerWaveL}`} opts={CORNER_WAVE} />
+          <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.footerWave} ${styles.footerWaveL}`} />
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           {isSlogan ? (
             <span className={styles.footerSlogan}>
@@ -298,7 +297,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             <span className={styles.footerText}>{mock.promotionalMessage}</span>
           )}
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
-          <FlagWave id="lt-corner-r" className={`${styles.footerWave} ${styles.footerWaveR}`} opts={CORNER_WAVE} />
+          <FlagImage src={FLAG_ART.cornerRight} className={`${styles.footerWave} ${styles.footerWaveR}`} />
         </footer>
       </div>
     </BingoShowAmbientBackground>

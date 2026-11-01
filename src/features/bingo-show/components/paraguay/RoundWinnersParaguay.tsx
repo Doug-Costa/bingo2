@@ -11,7 +11,7 @@ import { useCountUp } from '../../hooks/useCountUp';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import { useEsSkin } from '../esSkin';
 import { useT } from '@/contexts/TvConfigContext';
-import { BANNER_TAIL, CORNER_WAVE, FlagRosette, FlagWave, TOP_GARLAND } from '../loteriai/FlagRibbon';
+import { FLAG_ART, FlagImage, TopFlagBand } from '../loteriai/FlagArt';
 
 // Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i): mesmas classes.
 const PER_PAGE = 4;
@@ -173,10 +173,9 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label={t('round.aria')}>
     {isLt && (
       <>
-        <FlagWave id="lt-round-top" className={styles.topGarland} opts={TOP_GARLAND} />
-        <FlagRosette className={styles.topRosette} />
-        <FlagWave id="lt-round-cl" className={`${styles.cornerWave} ${styles.cornerWaveL}`} opts={CORNER_WAVE} />
-        <FlagWave id="lt-round-cr" className={`${styles.cornerWave} ${styles.cornerWaveR}`} opts={CORNER_WAVE} />
+        <TopFlagBand className={styles.topGarland} />
+        <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.cornerWave} ${styles.cornerWaveL}`} />
+        <FlagImage src={FLAG_ART.cornerRight} className={`${styles.cornerWave} ${styles.cornerWaveR}`} />
       </>
     )}
     <div className={styles.layout}>
@@ -191,9 +190,9 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
           </div>
           {isLt ? (
             <div className={styles.subBanner}>
-              <FlagWave id="lt-round-tl" className={`${styles.subTail} ${styles.subTailL}`} opts={BANNER_TAIL} />
+              <FlagImage src={FLAG_ART.tailLeft} className={`${styles.subTail} ${styles.subTailL}`} />
               <span className={styles.headerSub}>{t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}</span>
-              <FlagWave id="lt-round-tr" className={`${styles.subTail} ${styles.subTailR}`} opts={BANNER_TAIL} />
+              <FlagImage src={FLAG_ART.tailRight} className={`${styles.subTail} ${styles.subTailR}`} />
             </div>
           ) : (
             <span className={styles.headerSub}>

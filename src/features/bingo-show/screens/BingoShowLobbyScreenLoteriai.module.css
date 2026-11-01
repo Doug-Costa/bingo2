@@ -29,28 +29,14 @@
   animation: loteriaiDropIn 650ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
 
-/* Faixa da bandeira ondulando no topo da tela + roseta no centro. */
+/* Faixa da bandeira no topo (selo no centro). */
 .topGarland {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 150px;
   width: calc(100% - 140px);
-  height: 40px;
-  z-index: 0;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
-}
-
-.topRosette {
-  position: absolute;
-  top: 0;
-  left: calc(50% + 80px);
-  width: 52px;
   height: 52px;
-  margin-left: -26px;
-  z-index: 2;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 3px rgba(104, 57, 0, 0.4));
+  z-index: 0;
 }
 
 .headerLine {
@@ -500,19 +486,18 @@
 .bannerTail {
   position: relative;
   flex: none;
-  width: 150px;
-  height: 60px;
+  height: 62px;
+  width: auto;
+  user-select: none;
   filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
 }
 
 .bannerTailL {
-  margin-right: -14px;
-  transform: scaleX(-1) rotate(-6deg);
+  margin-right: -26px;
 }
 
 .bannerTailR {
-  margin-left: -14px;
-  transform: rotate(-6deg);
+  margin-left: -26px;
 }
 
 .stage {
@@ -878,7 +863,8 @@
     linear-gradient(180deg, #fff6cc 0%, #ffe48a 100%) padding-box,
     var(--lt-gold-border) border-box;
   box-shadow: 0 8px 18px var(--lt-shadow);
-  overflow: hidden;
+  /* As asas da bandeira saem um pouco para fora do rodapé. */
+  overflow: visible;
   animation: loteriaiRise 650ms ease-out 300ms both;
 }
 
@@ -886,20 +872,19 @@
 /* Faixas da bandeira subindo dos cantos do rodapé. */
 .footerWave {
   position: absolute;
-  bottom: -18px;
-  width: 360px;
-  height: 80px;
+  bottom: -6px;
+  height: 124px;
+  width: auto;
   pointer-events: none;
+  user-select: none;
 }
 
 .footerWaveL {
-  left: -30px;
-  transform: rotate(-7deg);
+  left: -8px;
 }
 
 .footerWaveR {
-  right: -30px;
-  transform: scaleX(-1) rotate(-7deg);
+  right: -8px;
 }
 
 .footerClover {

@@ -1,0 +1,22 @@
+/* Faixa do topo: listras esticam, selo mantém a proporção. */
+.band {
+  display: flex;
+  align-items: stretch;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
+}
+
+.stripes {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+}
+
+.seal {
+  flex: none;
+  height: 100%;
+  width: auto;
+  user-select: none;
+}
