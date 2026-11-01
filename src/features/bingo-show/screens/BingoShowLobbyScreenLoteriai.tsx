@@ -20,6 +20,7 @@ import { formatCountdown } from '../utils/countdown';
 import type { NextDrawItem } from '../mocks/lobbyMock';
 import lt from '../components/loteriai/LoteriaiTheme.module.css';
 import styles from './BingoShowLobbyScreenLoteriai.module.css';
+import { BANNER_TAIL, CORNER_WAVE, FlagRosette, FlagWave, TOP_GARLAND } from '../components/loteriai/FlagRibbon';
 import { useT } from '@/contexts/TvConfigContext';
 
 const A = '/themes/loteriai';
@@ -117,7 +118,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
       {pages.length > 1 && (
         <div className={styles.dots}>
           {pages.map((_, i) => (
-            <span key={i} className={`${styles.dot} ${i === page ? styles.dotOn : ''}`} />
+            <span key={i} className={`${styles.dot} ${styles[`dot_${i % 3}`]} ${i === page ? styles.dotOn : ''}`} />
           ))}
         </div>
       )}
@@ -170,6 +171,10 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
   return (
     <BingoShowAmbientBackground>
       <div className={`${lt.vars} ${styles.screen}`} data-theme="loteriai">
+        {/* Faixa da bandeira no topo, com a roseta no centro. */}
+        <FlagWave id="lt-top" className={styles.topGarland} opts={TOP_GARLAND} />
+        <FlagRosette className={styles.topRosette} />
+
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={styles.header}>
           <Image className={`${lt.art} ${styles.logo}`} src={`${A}/sm/logos/logo-loteriai.png`} alt="Loteria'i" width={220} height={204} sizes="220px" priority />
@@ -203,7 +208,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             </div>
           </div>
 
-          <div className={`${lt.panel} ${lt.panelRed} ${styles.headerJackpot}`} style={{ '--d': '440ms' } as React.CSSProperties}>
+          <div className={`${lt.panel} ${lt.panelBlue} ${styles.headerJackpot}`} style={{ '--d': '440ms' } as React.CSSProperties}>
             <div className={styles.headerJackpotText}>
               <span className={styles.headerJackpotLabel}>{t('lobby.grandPrize')}</span>
               <span key={mock.accumulatedPrize} className={`${lt.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [46, 40, 32]) }}>
@@ -226,8 +231,13 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <section className={`${lt.panel} ${styles.center}`}>
             <div className={styles.centerTitles}>
-              <span className={`${lt.titleText} ${styles.drawTitle}`}>{drawTitle}</span>
-              <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
+              <span className={`${styles.drawTitle} ${styles.drawTitleNavy}`}>{drawTitle}</span>
+              {/* Faixa vermelha com as pontas da bandeira saindo dos lados. */}
+              <div className={styles.startsBanner}>
+                <FlagWave id="lt-tail-l" className={`${styles.bannerTail} ${styles.bannerTailL}`} opts={BANNER_TAIL} />
+                <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
+                <FlagWave id="lt-tail-r" className={`${styles.bannerTail} ${styles.bannerTailR}`} opts={BANNER_TAIL} />
+              </div>
             </div>
 
             <div className={styles.stage}>
@@ -277,7 +287,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
         {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
         <footer className={styles.footer}>
-          <span className={styles.footerRibbonL} />
+          <FlagWave id="lt-corner-l" className={`${styles.footerWave} ${styles.footerWaveL}`} opts={CORNER_WAVE} />
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           {isSlogan ? (
             <span className={styles.footerSlogan}>
@@ -288,7 +298,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
             <span className={styles.footerText}>{mock.promotionalMessage}</span>
           )}
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
-          <span className={styles.footerRibbonR} />
+          <FlagWave id="lt-corner-r" className={`${styles.footerWave} ${styles.footerWaveR}`} opts={CORNER_WAVE} />
         </footer>
       </div>
     </BingoShowAmbientBackground>

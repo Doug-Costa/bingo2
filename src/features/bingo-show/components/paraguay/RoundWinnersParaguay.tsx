@@ -11,6 +11,7 @@ import { useCountUp } from '../../hooks/useCountUp';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import { useEsSkin } from '../esSkin';
 import { useT } from '@/contexts/TvConfigContext';
+import { BANNER_TAIL, CORNER_WAVE, FlagRosette, FlagWave, TOP_GARLAND } from '../loteriai/FlagRibbon';
 
 // Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i): mesmas classes.
 const PER_PAGE = 4;
@@ -104,6 +105,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
 
   return (
     <div className={`${styles.column} ${TONE[category.key]}`} style={{ '--d-col': `${dCol}ms`, '--d-title': `${dTitle}ms` } as React.CSSProperties}>
+      {/* Loteria'i: ñandutí dourado girando devagar atrás do ícone da faixa. */}
+      {skin.id === 'loteriai' && <span className={styles.colLace} aria-hidden="true" />}
       <div className={styles.titleCapsule}>
         <span className={styles.title}>{TITLES[category.key]}</span>
       </div>
@@ -158,6 +161,8 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   const t = useT();
   const skin = useEsSkin();
   const { theme: pyTheme, round: styles } = skin.css;
+  // Loteria'i: faixas da bandeira (topo, subtítulo e cantos do rodapé).
+  const isLt = skin.id === 'loteriai';
   const titleIcon = skin.art.roundTitleIcon ? (
     // eslint-disable-next-line @next/next/no-img-element -- asset estático do tema
     <img className={styles.titleIcon} src={skin.art.roundTitleIcon} alt="" draggable={false} />
@@ -166,6 +171,14 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
   );
   return (
   <div className={`${pyTheme.vars} ${styles.root}`} role="dialog" aria-label={t('round.aria')}>
+    {isLt && (
+      <>
+        <FlagWave id="lt-round-top" className={styles.topGarland} opts={TOP_GARLAND} />
+        <FlagRosette className={styles.topRosette} />
+        <FlagWave id="lt-round-cl" className={`${styles.cornerWave} ${styles.cornerWaveL}`} opts={CORNER_WAVE} />
+        <FlagWave id="lt-round-cr" className={`${styles.cornerWave} ${styles.cornerWaveR}`} opts={CORNER_WAVE} />
+      </>
+    )}
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
@@ -173,12 +186,20 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             {titleIcon}
-            <span className={pyTheme.goldText}>{t('round.title')}</span>
+            <span className={isLt ? styles.titleNavy : pyTheme.goldText}>{t('round.title')}</span>
             {titleIcon}
           </div>
-          <span className={styles.headerSub}>
-            {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
-          </span>
+          {isLt ? (
+            <div className={styles.subBanner}>
+              <FlagWave id="lt-round-tl" className={`${styles.subTail} ${styles.subTailL}`} opts={BANNER_TAIL} />
+              <span className={styles.headerSub}>{t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}</span>
+              <FlagWave id="lt-round-tr" className={`${styles.subTail} ${styles.subTailR}`} opts={BANNER_TAIL} />
+            </div>
+          ) : (
+            <span className={styles.headerSub}>
+              {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
+            </span>
+          )}
         </div>
         <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar">
           ✕
