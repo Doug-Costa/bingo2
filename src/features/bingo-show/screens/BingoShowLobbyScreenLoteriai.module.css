@@ -7,7 +7,7 @@
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  padding: 34px 20px 14px;
+  padding: 58px 20px 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -21,7 +21,7 @@
   position: relative;
   z-index: 1;
   flex: none;
-  height: 116px;
+  height: 104px;
   display: flex;
   align-items: center;
   gap: 22px;
@@ -32,10 +32,10 @@
 /* Faixa da bandeira no topo (selo no centro). */
 .topGarland {
   position: absolute;
-  top: 2px;
-  left: 150px;
-  width: calc(100% - 140px);
-  height: 52px;
+  top: 0;
+  left: 330px;
+  width: calc(100% - 660px);
+  height: 60px;
   z-index: 0;
 }
 

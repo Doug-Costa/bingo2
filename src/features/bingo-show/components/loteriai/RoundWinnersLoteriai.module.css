@@ -731,15 +731,15 @@
 
 /* Espaço no topo para a faixa da bandeira. */
 .layout {
-  inset: 46px 44px 22px;
+  inset: 60px 44px 22px;
 }
 
 .topGarland {
   position: absolute;
-  top: 2px;
-  left: 0;
-  width: 100%;
-  height: 46px;
+  top: 0;
+  left: 330px;
+  right: 330px;
+  height: 60px;
   z-index: 1;
 }
 

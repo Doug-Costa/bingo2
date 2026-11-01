@@ -1093,18 +1093,18 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  height: 40px;
+  bottom: 2px;
+  height: 56px;
   z-index: 0;
 }
 
 /* Espaço na base do painel para a faixa ficar abaixo da linha "BOLA X/90". */
 .stageArt {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .seqRow {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .seqRow,
