@@ -96,13 +96,14 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
               <div className={styles.drawPrizes}>
                 {(
                   [
-                    [t('prize.line1'), d.line1Prize],
-                    [t('prize.line2'), d.line2Prize],
-                    ["LOTERIA'I", d.bingoPrize],
+                    [t('prize.line1'), d.line1Prize, 'red'],
+                    [t('prize.line2'), d.line2Prize, 'white'],
+                    ["LOTERIA'I", d.bingoPrize, 'blue'],
                   ] as const
-                ).map(([label, value]) => (
+                ).map(([label, value, tone]) => (
                   <div key={label} className={styles.drawPrize}>
-                    <span className={styles.drawPrizeLabel}>{label}</span>
+                    {/* Etiqueta na cor do prêmio (mesma ordem da bandeira dos cards da direita). */}
+                    <span className={`${styles.drawPrizeLabel} ${styles[`drawTone_${tone}`]}`}>{label}</span>
                     <span className={styles.drawPrizeValue} style={{ fontSize: valueSize }}>
                       {value}
                     </span>

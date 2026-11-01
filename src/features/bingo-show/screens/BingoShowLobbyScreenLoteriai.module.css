@@ -289,7 +289,7 @@
 
 .drawPrize {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   border-top: 1px solid rgba(217, 138, 0, 0.25);
@@ -297,11 +297,32 @@
 }
 
 .drawPrizeLabel {
-  color: var(--lt-blue-dark);
-  font-size: 18px;
+  flex: none;
+  padding: 3px 10px 2px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 17px;
   font-weight: 900;
   letter-spacing: 0.5px;
   white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 2px rgba(104, 57, 0, 0.25);
+}
+
+/* Cores da bandeira, na ordem dos cards de prêmio da direita. */
+.drawTone_red {
+  background: linear-gradient(180deg, #f03246 0%, #d7192d 60%, #9f1021 100%);
+}
+
+.drawTone_white {
+  color: var(--lt-blue-dark, #072c68);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #ffffff 0%, #f4efe2 100%);
+  border: 1px solid rgba(7, 44, 104, 0.35);
+}
+
+.drawTone_blue {
+  background: linear-gradient(180deg, #2f6fd6 0%, #0648a8 60%, #072c68 100%);
 }
 
 .drawPrizeValue {
@@ -416,10 +437,17 @@
   flex: 1;
   min-height: 0;
   width: 100%;
-  display: flex;
+  /* Colunas laterais iguais: o contador fica exatamente no centro do painel,
+   * por mais que ampulheta e globo tenham larguras diferentes. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  column-gap: 8px;
+}
+
+.stage > .hourglassWrap,
+.stage > .globeWrap {
+  justify-self: center;
 }
 
 .hourglassWrap {
@@ -497,7 +525,7 @@
 
 .globe {
   display: block;
-  width: 250px;
+  width: 214px;
   height: auto;
   filter: drop-shadow(0 8px 10px rgba(104, 57, 0, 0.35));
 }
@@ -533,10 +561,12 @@
   width: 100%;
   height: 150px;
   box-sizing: border-box;
-  display: flex;
+  /* Pote | texto | selo: laterais iguais deixam o texto no centro da faixa. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
-  padding: 0 24px 0 10px;
+  column-gap: 14px;
+  padding: 0 18px 0 10px;
   border-radius: 22px;
   border: 3px solid transparent;
   background:
@@ -548,6 +578,8 @@
 }
 
 .bandPot {
+  grid-column: 1;
+  justify-self: start;
   flex: none;
   width: 156px;
   height: auto;
@@ -556,7 +588,7 @@
 }
 
 .bandText {
-  flex: 1;
+  grid-column: 2;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -583,9 +615,13 @@
 }
 
 .limitBadge {
+  grid-column: 3;
+  justify-self: end;
   flex: none;
   width: 108px;
   height: 108px;
+  box-sizing: border-box;
+  padding-top: 4px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -597,16 +633,19 @@
 }
 
 .limitLabel {
+  /* Quebra em duas linhas dentro do círculo ("HASTA LA / BOLA"). */
+  max-width: 70px;
   color: #fff2a6;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
+  line-height: 1.05;
   letter-spacing: 0.5px;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .limitValue {
   color: #fff;
-  font-size: 46px;
+  font-size: 42px;
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
