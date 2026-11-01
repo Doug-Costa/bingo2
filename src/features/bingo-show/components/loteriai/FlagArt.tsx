@@ -20,7 +20,7 @@ export const FLAG_ART = {
 };
 
 /** Guirlanda do topo com o brasão, centralizada. `height` define o tamanho
- * (largura = altura × 7,82, a proporção do asset). */
+ * (largura = altura × 8,92, a proporção do asset). */
 export function TopFlagBand({ height, top = 0, style }: { height: number; top?: number; style?: React.CSSProperties }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element -- arte estática do tema
