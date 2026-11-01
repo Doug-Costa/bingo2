@@ -8,6 +8,11 @@
  */
 export const WINNER_POPUP_MS = 10000;
 
+/** Pausa entre o último popup de ganhador (normalmente o do bingo) e o resumo
+ * "Ganhadores da Rodada": o painel fica livre um instante, e o resumo ainda
+ * espera a voz do prêmio terminar. */
+export const ROUND_SUMMARY_DELAY_MS = 3000;
+
 /** Tempo mínimo do resumo "Ganhadores da Rodada" na tela. */
 export const ROUND_SUMMARY_MIN_MS = 20000;
 

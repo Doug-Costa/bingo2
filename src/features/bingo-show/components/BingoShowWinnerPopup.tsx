@@ -46,7 +46,8 @@ import { RoundWinnersGold } from './gold/RoundWinnersGold';
 import { WinnerParaguay } from './paraguay/WinnerParaguay';
 import { RoundWinnersParaguay } from './paraguay/RoundWinnersParaguay';
 import { getEsSkin } from './esSkin';
-import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
+import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_DELAY_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
+import { whenAudioIdle } from '../hooks/useBingoAudio';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useT } from '@/contexts/TvConfigContext';
 import type { TFunction } from 'i18next';
@@ -72,6 +73,8 @@ export interface BingoShowWinnerPopupProps {
   drawnNumbers?: number[];
   visibleDurationMs?: number;
   onClose?: () => void;
+  /** Popup de uma faixa acabou de abrir (a voz do prêmio toca nesse momento). */
+  onPrizeShown?: (_type: 'line1' | 'line2' | 'bingo') => void;
   /** `false` enquanto o SSEContext ainda está reconciliando o cache restaurado do F5
    * contra o snapshot autoritativo (`recoveryPhase !== 'live'`). Winners que já vêm
    * nesse momento são restaurados do cache, não eventos novos — não podem reabrir o
@@ -1111,9 +1114,12 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   drawnNumbers = [],
   visibleDurationMs: _visibleDurationMs,
   onClose,
+  onPrizeShown,
   isLive = true,
 }) => {
   const { isBlue, themeId } = useAppTheme();
+  const onPrizeShownRef = useRef(onPrizeShown);
+  onPrizeShownRef.current = onPrizeShown;
   const t = useT();
   // Bingo Show (Ouro & Espaço): popup próprio (1 ou vários ganhadores).
   const isOuro = themeId === 'bingo-show';
@@ -1160,12 +1166,15 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
 
   const hasFinishedForCurrentDrawRef = useRef(false);
   const finalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Espera a voz terminar antes do resumo (cancelável no reset/unmount).
+  const cancelAudioWaitRef = useRef<(() => void) | null>(null);
 
   // Reset por drawNumber para garantir estado limpo na próxima rodada
   useEffect(() => {
     if (finalTimerRef.current) clearTimeout(finalTimerRef.current);
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
+    cancelAudioWaitRef.current?.();
     seenRef.current.clear();
     queueRef.current = [];
     processingRef.current = false;
@@ -1187,6 +1196,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     setActiveGroup(nextGroup);
     setVisible(true);
     shownAtRef.current = Date.now();
+    onPrizeShownRef.current?.(normalizeWinnerType(nextGroup[0]?.type) || 'bingo');
     // Mais de GROUP_PAGE_SIZE ganhadores: uma página a cada WINNER_POPUP_MS.
     const durationMs = groupDurationMs(nextGroup.length);
     activeDurationRef.current = durationMs;
@@ -1195,10 +1205,11 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       setVisible(false);
       nextTimerRef.current = setTimeout(() => {
         processingRef.current = false;
-        // Rodada encerrada e fila vazia: agora sim entra o resumo.
+        // Rodada encerrada e fila vazia: pausa com o painel livre e então o
+        // resumo (openSummary ainda espera a voz do prêmio terminar).
         if (finishingRef.current && queueRef.current.length === 0) {
           finishingRef.current = false;
-          openSummaryRef.current?.();
+          nextTimerRef.current = setTimeout(() => openSummaryRef.current?.(), ROUND_SUMMARY_DELAY_MS - WINNER_POPUP_GAP_MS);
           return;
         }
         processQueue();
@@ -1316,19 +1327,34 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         ? Math.max(0, Math.min(current, current - (Date.now() - shownAtRef.current)))
         : 0;
       const queued = queueRef.current.length;
+      const hasPopups = busy || queued > 0;
       const popupsMs =
         remaining +
         (busy ? WINNER_POPUP_GAP_MS : 0) +
-        queueRef.current.reduce((acc, g) => acc + groupDurationMs(g.length) + WINNER_POPUP_GAP_MS, 0);
+        queueRef.current.reduce((acc, g) => acc + groupDurationMs(g.length) + WINNER_POPUP_GAP_MS, 0) +
+        // Pausa entre o último popup e o resumo.
+        (hasPopups ? ROUND_SUMMARY_DELAY_MS - WINNER_POPUP_GAP_MS : 0);
 
       // A janela cresce na proporção dos popups, mantendo o resumo com no mínimo
       // ROUND_SUMMARY_MIN_MS; o LoopScreen segura a tela esse tempo extra.
       const windowMs = Math.max(FINISH_SCREEN_HOLD_MS, popupsMs + ROUND_SUMMARY_MIN_MS);
-      setFinishHoldExtraMs(windowMs - FINISH_SCREEN_HOLD_MS);
+      const baseExtraMs = windowMs - FINISH_SCREEN_HOLD_MS;
+      setFinishHoldExtraMs(baseExtraMs);
       const summaryDuration = windowMs - popupsMs;
       setSummaryMs(summaryDuration);
+      const expectedOpenAt = Date.now() + popupsMs;
 
+      // Abre o resumo só com a voz em silêncio (nada de locução por cima). Se a
+      // espera atrasar a abertura, a janela do LoopScreen cresce o mesmo tanto
+      // e o resumo mantém o tempo cheio.
       openSummaryRef.current = () => {
+        cancelAudioWaitRef.current?.();
+        cancelAudioWaitRef.current = whenAudioIdle(showSummary);
+      };
+      const showSummary = () => {
+        cancelAudioWaitRef.current = null;
+        const lateMs = Date.now() - expectedOpenAt;
+        if (lateMs > 0) setFinishHoldExtraMs(baseExtraMs + lateMs);
         setVisible(false);
         activeGroupRef.current = null;
         setActiveGroup(null);
@@ -1339,7 +1365,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         }, summaryDuration);
       };
 
-      if (!busy && queued === 0) {
+      if (!hasPopups) {
         openSummaryRef.current();
       } else {
         // A fila segue sozinha (processQueue) e abre o resumo quando esvaziar.
@@ -1354,6 +1380,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       if (finalTimerRef.current) clearTimeout(finalTimerRef.current);
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
       if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
+      cancelAudioWaitRef.current?.();
     };
   }, []);
 

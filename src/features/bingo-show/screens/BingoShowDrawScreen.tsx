@@ -37,7 +37,7 @@ import {
 } from '../components';
 import { DrawStage } from '../components/DrawStage';
 import { useBingoShowRealtimeDraw, type PrizeStatusType } from '../hooks/useBingoShowRealtimeDraw';
-import { useBingoAudio } from '../hooks/useBingoAudio';
+import { useBingoAudio, type PrizeType, type ShownPrize } from '../hooks/useBingoAudio';
 import { type PrizeRowStatus } from '../components/BingoShowPrizeStatusCard';
 import { BingoShowColors, BingoShowSpacing } from '../design-system';
 import goldStyles from '../components/goldMetalText.module.css';
@@ -77,7 +77,10 @@ export const BingoShowDrawScreen: React.FC = () => {
 
   // Hook responsável pela locução (voz) do bingo (Bolas e Prêmios)
   // Fila única de áudio; silêncio enquanto o estado é restaurado (reload/reconexão).
-  useBingoAudio(soundEnabled && soundOn, mock.currentBall, mock.winners, mock.isLive, mock.drawNumber, voice);
+  // A voz do prêmio sai quando o popup da faixa abre (não quando o evento chega).
+  const [shownPrize, setShownPrize] = useState<ShownPrize | null>(null);
+  const handlePrizeShown = React.useCallback((type: PrizeType) => setShownPrize((prev) => ({ type, seq: (prev?.seq ?? 0) + 1 })), []);
+  useBingoAudio(soundEnabled && soundOn, mock.currentBall, shownPrize, mock.isLive, mock.drawNumber, voice);
   const last3Balls = React.useMemo(() => {
     if (!mock.drawnBalls || mock.drawnBalls.length === 0) return [];
     const withoutCurrent = mock.currentBall && mock.drawnBalls[mock.drawnBalls.length - 1] === mock.currentBall
@@ -306,6 +309,7 @@ export const BingoShowDrawScreen: React.FC = () => {
           overlay={
             <BingoShowWinnerPopup
               winners={mock.winners}
+              onPrizeShown={handlePrizeShown}
               isDrawFinished={mock.isDrawFinished}
               drawNumber={mock.drawNumber}
               dateStr={mock.dateStr}

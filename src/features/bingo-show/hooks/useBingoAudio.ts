@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { WinnerEvent } from '../../../contexts/SSEContext';
 
 /**
  * Locução do bingo (voz das bolas e dos prêmios) com UMA fila de áudio:
@@ -9,12 +8,13 @@ import { WinnerEvent } from '../../../contexts/SSEContext';
  *   terminar (antes as vozes tocavam por cima umas das outras).
  * - Voz de bola "mais recente vence": se chegarem várias bolas de uma vez
  *   (reconexão), só a última é falada; bolas antigas ainda não faladas saem da fila.
- * - Voz de prêmio nunca é descartada; cada faixa (1ª linha, 2ª linha, bingo) é
- *   anunciada uma única vez por sorteio, mesmo com vários ganhadores ou com o
- *   draw_finish reconstruindo a lista.
+ * - Voz de prêmio toca quando o POPUP daquela faixa abre (não quando o evento
+ *   chega): se o bingo sai com o popup da 2ª linha ainda no ar, a voz do bingo
+ *   espera o popup dele. Nunca é descartada; cada faixa (1ª linha, 2ª linha,
+ *   bingo) é anunciada uma única vez por sorteio.
  * - Reload/reconexão: enquanto o estado está sendo restaurado (`isLive` false) nada
- *   toca; ao ficar ao vivo, a bola atual e os prêmios já existentes são marcados
- *   como anunciados — a TV não repete o que já tinha falado.
+ *   toca; a bola atual é marcada como falada e prêmios restaurados não abrem
+ *   popup — a TV não repete o que já tinha falado.
  * - Só bolas 1–90 (sem o "0.mp3" inexistente do início da rodada).
  * - Idioma da voz pelo tema: português (padrão) em /audio/pt-br/, Paraguay em
  *   /audio/es/, com os mesmos nomes de arquivo. Arquivo que não existir cai para a
@@ -76,6 +76,23 @@ function enqueue(clip: Clip) {
   playNext();
 }
 
+/** Chama `cb` quando a fila de voz esvaziar (ou após `maxWaitMs`, no máximo). */
+export function whenAudioIdle(cb: () => void, maxWaitMs = 6000): () => void {
+  const startedAt = Date.now();
+  let cancelled = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const check = () => {
+    if (cancelled) return;
+    if ((!playing && queue.length === 0) || Date.now() - startedAt >= maxWaitMs) cb();
+    else timer = setTimeout(check, 150);
+  };
+  check();
+  return () => {
+    cancelled = true;
+    clearTimeout(timer);
+  };
+}
+
 function stopAll() {
   queue = [];
   if (current) {
@@ -85,12 +102,12 @@ function stopAll() {
   playing = false;
 }
 
-function prizeTypeOf(type?: string): 'line1' | 'line2' | 'bingo' | null {
-  const t = String(type || '').toLowerCase();
-  if (t.includes('line1') || t.includes('linha 1')) return 'line1';
-  if (t.includes('line2') || t.includes('linha 2')) return 'line2';
-  if (t.includes('bingo') || t.includes('jackpot')) return 'bingo';
-  return null;
+export type PrizeType = 'line1' | 'line2' | 'bingo';
+
+/** Popup de prêmio que acabou de abrir (`seq` muda a cada abertura). */
+export interface ShownPrize {
+  type: PrizeType;
+  seq: number;
 }
 
 const PRIZE_FILE: Record<'line1' | 'line2' | 'bingo', string> = {
@@ -110,7 +127,7 @@ function voiceClip(kind: Clip['kind'], file: string, lang: VoiceLang): Clip {
 export function useBingoAudio(
   soundOn: boolean,
   currentBall: number | null,
-  winners: WinnerEvent[],
+  shownPrize: ShownPrize | null,
   isLive: boolean = true,
   drawId: string = '',
   lang: VoiceLang = 'pt',
@@ -118,9 +135,7 @@ export function useBingoAudio(
   // O que já está na tela quando o componente monta (ex.: reload, troca de tela)
   // conta como já anunciado — só mudanças a partir daqui são faladas.
   const lastBallRef = useRef<number | null>(currentBall && currentBall > 0 ? currentBall : null);
-  const announcedRef = useRef<Set<string>>(
-    new Set(winners.map((w) => prizeTypeOf(w.type)).filter((t): t is 'line1' | 'line2' | 'bingo' => !!t)),
-  );
+  const announcedRef = useRef<Set<PrizeType>>(new Set());
   const drawRef = useRef(drawId);
 
   // Sorteio novo: zera o que já foi anunciado e descarta sons pendentes.
@@ -153,23 +168,14 @@ export function useBingoAudio(
     enqueue(voiceClip('ball', `${currentBall}.mp3`, lang));
   }, [currentBall, soundOn, isLive, lang]);
 
-  // 2. Voz dos prêmios (uma vez por faixa por sorteio)
+  // 2. Voz do prêmio quando o popup da faixa abre (uma vez por faixa por sorteio)
   useEffect(() => {
-    const types = new Set<'line1' | 'line2' | 'bingo'>();
-    winners.forEach((w) => {
-      const t = prizeTypeOf(w.type);
-      if (t) types.add(t);
-    });
-    if (winners.length === 0) {
-      announcedRef.current = new Set();
-      return;
-    }
-    (['line1', 'line2', 'bingo'] as const).forEach((t) => {
-      if (!types.has(t) || announcedRef.current.has(t)) return;
-      announcedRef.current.add(t);
-      // Restaurando: marca como já anunciado, sem tocar.
-      if (!isLive || !soundOn) return;
-      enqueue(voiceClip('prize', PRIZE_FILE[t], lang));
-    });
-  }, [winners, soundOn, isLive, lang]);
+    if (!shownPrize) return;
+    const t = shownPrize.type;
+    if (announcedRef.current.has(t)) return;
+    announcedRef.current.add(t);
+    if (!isLive || !soundOn) return;
+    enqueue(voiceClip('prize', PRIZE_FILE[t], lang));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shownPrize?.seq]);
 }
