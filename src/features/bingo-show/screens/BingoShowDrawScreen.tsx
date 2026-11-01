@@ -114,15 +114,15 @@ export const BingoShowDrawScreen: React.FC = () => {
         }}
       >
         {/* Loteria'i: faixa da bandeira com o selo, acima do título. */}
-        {es?.id === 'loteriai' && <TopFlagBand height={76} top={-2} />}
+        {es?.id === 'loteriai' && <TopFlagBand height={80} width={1300} top={-2} />}
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220, gap: 6 }}>
           {es && (
             // eslint-disable-next-line @next/next/no-img-element -- marca principal do tema
             <img
-              src={es.art.logo}
+              src={es.id === 'loteriai' ? '/themes/loteriai/logos/logo-loteriai-md.png' : es.art.logo}
               alt="Loteria'i"
-              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 112 : 64, marginTop: es.id === 'loteriai' ? -44 : undefined, objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
+              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 124 : 64, width: 'auto', flexShrink: 0, marginTop: es.id === 'loteriai' ? -50 : undefined, marginLeft: es.id === 'loteriai' ? 10 : undefined, objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
             />
           )}
           {(!es || es.art.logoSecondary) && (

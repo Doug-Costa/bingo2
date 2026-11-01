@@ -1,4 +1,4 @@
-/* Faixa ondulada da base: estica na largura. */
+/* Faixa ondulada: as peças de onda esticam na largura. */
 .band {
   display: flex;
   align-items: stretch;
@@ -14,14 +14,18 @@
   user-select: none;
 }
 
-/* Guirlanda do topo: imagem inteira na proporção original, centralizada. */
+/* Guirlanda do topo: centralizada; posição/tamanho vêm por style. */
 .garland {
   position: absolute;
   left: 50%;
-  width: auto;
   transform: translateX(-50%);
   z-index: 0;
-  pointer-events: none;
+}
+
+/* Brasão: mantém a proporção. */
+.seal {
+  flex: none;
+  height: 100%;
+  width: auto;
   user-select: none;
-  filter: drop-shadow(0 3px 3px rgba(104, 57, 0, 0.3));
 }

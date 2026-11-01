@@ -172,7 +172,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
     <BingoShowAmbientBackground>
       <div className={`${lt.vars} ${styles.screen}`} data-theme="loteriai">
         {/* Faixa da bandeira no topo, com a roseta no centro. */}
-        <TopFlagBand height={76} top={-2} />
+        <TopFlagBand height={80} width={1300} top={-2} />
 
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={styles.header}>
