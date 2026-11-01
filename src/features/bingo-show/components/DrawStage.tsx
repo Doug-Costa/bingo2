@@ -207,6 +207,7 @@ import goldStyles from './goldMetalText.module.css';
 import goldTheme from './gold/GoldTheme.module.css';
 import goldStage from './gold/DrawStageGold.module.css';
 import { getEsSkin, LOTERIAI_SKIN, PARAGUAY_SKIN } from './esSkin';
+import { FlagStripes } from './loteriai/FlagArt';
 
 /** Pontos de luz do anel externo (tema Blue) — posições fixas, geradas uma única
  * vez no carregamento do módulo; giram por serem filhos do anel, sem recriar
@@ -951,6 +952,9 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         className={`${pyTheme.vars} ${pyTheme.panel} ${pyTheme.sweep} ${goldStage.frame}`}
         style={{ position: 'relative', ['--sweep-delay' as string]: '4s', ...style }}
       >
+        {/* Loteria'i: faixa da bandeira atravessando a base do painel, atrás da
+            linha "BOLA X/90" e da arte (ver .seqRow/.stageArt no CSS do tema). */}
+        {es?.id === 'loteriai' && <FlagStripes className={sc.stageRibbon} />}
         {content}
       </div>
     );

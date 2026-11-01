@@ -18,13 +18,25 @@ export const FLAG_ART = {
   cornerRight: `${D}/faixa-bandeira-canto-dir.png`,
 };
 
-/** Faixa do topo com o selo no centro. `className` posiciona e define a altura. */
-export function TopFlagBand({ className }: { className?: string }) {
+/** Faixa do topo com o selo no centro. `className`/`style` posicionam e definem a altura. */
+export function TopFlagBand({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <div className={`${styles.band} ${className ?? ''}`} aria-hidden="true">
+    <div className={`${styles.band} ${className ?? ''}`} style={style} aria-hidden="true">
       {/* eslint-disable @next/next/no-img-element -- peças estáticas do tema */}
       <img className={styles.stripes} src={`${D}/faixa-topo-esq.png`} alt="" draggable={false} />
       <img className={styles.seal} src={`${D}/faixa-topo-selo.png`} alt="" draggable={false} />
+      <img className={styles.stripes} src={`${D}/faixa-topo-dir.png`} alt="" draggable={false} />
+      {/* eslint-enable @next/next/no-img-element */}
+    </div>
+  );
+}
+
+/** Só as listras onduladas (sem selo), para faixas de base. */
+export function FlagStripes({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <div className={`${styles.band} ${className ?? ''}`} style={style} aria-hidden="true">
+      {/* eslint-disable @next/next/no-img-element -- peças estáticas do tema */}
+      <img className={styles.stripes} src={`${D}/faixa-topo-esq.png`} alt="" draggable={false} />
       <img className={styles.stripes} src={`${D}/faixa-topo-dir.png`} alt="" draggable={false} />
       {/* eslint-enable @next/next/no-img-element */}
     </div>

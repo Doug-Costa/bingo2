@@ -45,6 +45,7 @@ import goldTheme from '../components/gold/GoldTheme.module.css';
 import { getEsSkin } from '../components/esSkin';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { useTvConfig, useT } from '@/contexts/TvConfigContext';
+import { TopFlagBand } from '../components/loteriai/FlagArt';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
 // exibição em si (`PrizeStatusType`, ex.: "EM DISPUTA"), não como o enum visual que
@@ -103,11 +104,16 @@ export const BingoShowDrawScreen: React.FC = () => {
           paddingLeft: 8,
           paddingRight: 8,
           paddingBottom: 8,
+          // Loteria'i: espaço para o selo da faixa da bandeira acima do título.
+          paddingTop: es?.id === 'loteriai' ? 16 : undefined,
           height: 68,
           boxSizing: 'border-box',
           width: '100%',
+          position: 'relative',
         }}
       >
+        {/* Loteria'i: faixa da bandeira com o selo, acima do título. */}
+        {es?.id === 'loteriai' && <TopFlagBand style={{ position: 'absolute', top: 0, left: 120, right: 120, height: 30, zIndex: 0 }} />}
         {/* LEFT: 3D LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', minWidth: 220, gap: 6 }}>
           {es && (
@@ -141,7 +147,7 @@ export const BingoShowDrawScreen: React.FC = () => {
         </div>
 
         {/* CENTER: BINGO AO VIVO */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
           {/* Blue: ouro metálico (goldMetalText.module.css) no lugar do amarelo
               chapado — cor/sombra saem do inline e vêm da classe; tamanho,
               fonte e espaçamento continuam os mesmos em todos os temas. */}

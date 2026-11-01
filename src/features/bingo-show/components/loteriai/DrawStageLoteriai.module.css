@@ -1086,3 +1086,20 @@
     display: none;
   }
 }
+
+/* Faixa da bandeira na base do painel; a linha "BOLA X/90" e a arte (moedas e
+ * globo) ficam por cima dela. */
+.stageRibbon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 58px;
+  z-index: 0;
+}
+
+.seqRow,
+.stageArt {
+  position: relative;
+  z-index: 1;
+}
