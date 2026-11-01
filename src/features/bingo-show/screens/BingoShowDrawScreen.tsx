@@ -122,7 +122,7 @@ export const BingoShowDrawScreen: React.FC = () => {
             <img
               src={es.art.logo}
               alt="Loteria'i"
-              style={{ height: es.art.logoSecondary ? 60 : 64, objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
+              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 112 : 64, marginTop: es.id === 'loteriai' ? -44 : undefined, objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
             />
           )}
           {(!es || es.art.logoSecondary) && (
