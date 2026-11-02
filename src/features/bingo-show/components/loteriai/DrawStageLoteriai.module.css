@@ -1093,18 +1093,28 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 2px;
-  height: 56px;
+  bottom: 6px;
+  height: 38px;
   z-index: 0;
 }
 
 /* Espaço na base do painel para a faixa ficar abaixo da linha "BOLA X/90". */
+/* Bola e arte apoiadas na faixa (encostando nela, como na referência). */
 .stageArt {
-  margin-bottom: 40px;
+  margin-bottom: 14px;
 }
 
 .seqRow {
-  margin-bottom: 40px;
+  margin-bottom: 22px;
+}
+
+/* "BOLA X/90" em azul-marinho com filete claro (referência). */
+.seqValue {
+  color: #0b2f7a !important;
+  -webkit-text-fill-color: #0b2f7a !important;
+  background: none !important;
+  font-style: italic;
+  filter: drop-shadow(0 1px 0 #ffffff) drop-shadow(0 2px 2px rgba(104, 57, 0, 0.3)) !important;
 }
 
 .seqRow,
