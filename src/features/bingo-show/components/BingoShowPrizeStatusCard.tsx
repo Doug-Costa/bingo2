@@ -440,8 +440,13 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
 
 /** Família es-PY: uma faixa de prêmio (mesmos dados/estados; textos em espanhol).
  * Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i). */
-const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
-  const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
+const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus; tone: 1 | 2 | 3 }> = ({ label, value, status, tone }) => {
+  const skin = useEsSkin();
+  const { theme: pyTheme, prize: pyPrize } = skin.css;
+  // Loteria'i: cada prêmio tem a cor da bandeira (1 vermelho, 2 branco, 3 azul)
+  // em qualquer estado; o em disputa só cresce e ganha o brilho.
+  const flag = skin.id === 'loteriai';
+  const toneClass = flag ? pyPrize[`tone_${tone}`] ?? '' : '';
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const valueTick = useChangeTick(value);
@@ -450,7 +455,7 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
   return (
     <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
       <div
-        className={`${pyTheme.panel} ${isActive ? pyTheme.panelRed : ''} ${pyPrize.row} ${
+        className={`${pyTheme.panel} ${isActive && !flag ? pyTheme.panelRed : ''} ${pyPrize.row} ${toneClass} ${
           isActive ? pyPrize.rowActive : isCompleted ? pyPrize.rowDone : pyPrize.rowWaiting
         }`}
       >
@@ -469,7 +474,19 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
           <BlueMoney
             value={value}
             role={isActive ? 'active' : 'idle'}
-            className={isActive ? pyTheme.goldValue : isCompleted ? `${pyTheme.goldText} ${pyPrize.valueDone}` : pyPrize.valueWaiting}
+            className={
+              flag
+                ? tone === 1
+                  ? pyTheme.goldValue
+                  : tone === 2
+                  ? pyPrize.valueRed
+                  : pyPrize.valueWhite
+                : isActive
+                ? pyTheme.goldValue
+                : isCompleted
+                ? `${pyTheme.goldText} ${pyPrize.valueDone}`
+                : pyPrize.valueWaiting
+            }
           />
         </div>
       </div>
@@ -529,9 +546,9 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
     </div>
 
     <div className={pyPrize.rows}>
-      <ParaguayPrizeRow label={t('prize.n', { n: 1 })} value={line1Amount} status={line1Status} />
-      <ParaguayPrizeRow label={t('prize.n', { n: 2 })} value={line2Amount} status={line2Status} />
-      <ParaguayPrizeRow label={t('prize.n', { n: 3 })} value={bingoAmount} status={bingoStatus} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 1 })} value={line1Amount} status={line1Status} tone={1} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 2 })} value={line2Amount} status={line2Status} tone={2} />
+      <ParaguayPrizeRow label={t('prize.n', { n: 3 })} value={bingoAmount} status={bingoStatus} tone={3} />
     </div>
 
     <div className={pyPrize.meta}>

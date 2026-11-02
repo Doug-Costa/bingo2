@@ -415,6 +415,100 @@
   color: #08245c;
 }
 
+/* ─── Cores da bandeira por prêmio (1 vermelho, 2 branco, 3 azul) ───────── */
+
+.row.tone_1 {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 140, 120, 0.35) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #e8263a 0%, #c8162b 55%, #9f1021 100%) padding-box,
+    var(--lt-gold-border) border-box !important;
+}
+
+.row.tone_2 {
+  border-width: 3px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 1) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #ffffff 0%, #fbf7ea 60%, #f1e7cc 100%) padding-box,
+    var(--lt-gold-border) border-box !important;
+}
+
+.row.tone_3 {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(120, 170, 255, 0.35) 0%, transparent 70%) padding-box,
+    linear-gradient(180deg, #1d5fc4 0%, #0648a8 55%, #072c68 100%) padding-box,
+    var(--lt-gold-border) border-box !important;
+}
+
+/* Etiquetas: azul no vermelho e no branco; vermelha no azul. */
+.row.tone_1 .tag,
+.row.tone_2 .tag {
+  background:
+    linear-gradient(180deg, #2f6fd6 0%, #0648a8 60%, #072c68 100%) padding-box,
+    var(--lt-gold-border) border-box !important;
+}
+
+.row.tone_3 .tag {
+  background:
+    linear-gradient(180deg, #f03246 0%, #b5121f 100%) padding-box,
+    var(--lt-gold-border) border-box !important;
+}
+
+/* Estado (EN DISPUTA / CONCLUIDO / ESPERANDO) legível sobre cada cor. */
+.row.tone_1 .status,
+.row.tone_3 .status {
+  color: #fff2a6;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.row.tone_2 .status {
+  color: #072c68;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.row.tone_2 .statusDone {
+  color: #0c7428;
+}
+
+/* Cápsula do valor: azul (prêmio 1), creme com moldura de ouro (2), azul-escuro (3). */
+.row.tone_1 .capsule {
+  background:
+    linear-gradient(180deg, #1d5fc4 0%, #0b3f95 55%, #072c68 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: inset 0 0 12px rgba(0, 10, 40, 0.45);
+}
+
+.row.tone_2 .capsule {
+  border-width: 3px;
+  background:
+    linear-gradient(180deg, #fffdf2 0%, #fff1c2 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: inset 0 -3px 8px rgba(217, 138, 0, 0.22), 0 0 0 1px rgba(166, 92, 0, 0.35);
+}
+
+.row.tone_3 .capsule {
+  background:
+    linear-gradient(180deg, #0b3f95 0%, #072c68 55%, #04193f 100%) padding-box,
+    var(--lt-gold-border) border-box;
+  box-shadow: inset 0 0 12px rgba(0, 5, 25, 0.5);
+}
+
+/* Valores: vermelho com contorno escuro (prêmio 2) e branco (prêmio 3). */
+.valueRed {
+  color: #d7192d !important;
+  -webkit-text-fill-color: #d7192d !important;
+  filter:
+    drop-shadow(1px 0 0 #8a1010)
+    drop-shadow(-1px 0 0 #8a1010)
+    drop-shadow(0 2px 0 #fff2a6)
+    drop-shadow(0 3px 0 #a65c00) !important;
+}
+
+.valueWhite {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  filter: drop-shadow(0 2px 1px rgba(0, 10, 40, 0.7)) !important;
+}
+
 @keyframes loteriaiCoinsHop {
   0%, 86%, 100% { transform: none; }
   89% { transform: translateY(-8px) scale(1.04); }
