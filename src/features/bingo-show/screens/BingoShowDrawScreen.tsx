@@ -103,16 +103,17 @@ export const BingoShowDrawScreen: React.FC = () => {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'row',
+          // Loteria'i: logo à direita e data/hora à esquerda (lados trocados).
+          flexDirection: isLt ? 'row-reverse' : 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingLeft: 8,
+          paddingLeft: isLt ? 20 : 8,
           paddingBottom: es?.id === 'loteriai' ? 0 : 8,
           // Loteria'i: cabeçalho um pouco mais alto, com a faixa da bandeira
           // inteira ACIMA do título (sem passar por trás das letras).
           // Loteria'i (sem título): faixa, logo e data centralizados na altura.
           paddingTop: es?.id === 'loteriai' ? 0 : undefined,
-          paddingRight: es?.id === 'loteriai' ? 20 : 8,
+          paddingRight: 8,
           height: es?.id === 'loteriai' ? 128 : 68,
           boxSizing: 'border-box',
           width: '100%',
@@ -129,7 +130,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               src={es.id === 'loteriai' ? '/themes/loteriai/logos/logo-loteriai-md.png' : es.art.logo}
               alt="Loteria'i"
               className={es.id === 'loteriai' ? es.css.theme.logoPulse : undefined}
-              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 126 : 64, width: 'auto', flexShrink: 0, ...(es.id === 'loteriai' ? { position: 'absolute', top: 4, left: 22, zIndex: 2 } : {}), objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
+              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 126 : 64, width: 'auto', flexShrink: 0, ...(es.id === 'loteriai' ? { position: 'absolute', top: 4, right: 22, zIndex: 2 } : {}), objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
             />
           )}
           {(!es || es.art.logoSecondary) && (
@@ -204,7 +205,7 @@ export const BingoShowDrawScreen: React.FC = () => {
         )}
 
         {/* RIGHT: DATE/TIME PILL + SOUND */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, minWidth: 220, justifyContent: 'flex-end', position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, minWidth: 220, justifyContent: isLt ? 'flex-start' : 'flex-end', position: 'relative', zIndex: 2 }}>
           {/* Integrated Date & Time pill [📅 28/07/2026 | 15:40:25] */}
           <div
             style={{
