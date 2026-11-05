@@ -228,8 +228,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <section className={`${lt.panel} ${styles.center}`}>
             <div className={styles.centerTitles}>
-              {/* Só "EL SORTEO COMIENZA EN", grande (sem o "PRÓXIMO SORTEO"). */}
-              <span className={`${styles.drawTitle} ${styles.drawTitleNavy} ${styles.drawTitleStarts}`}>{t('lobby.startsIn')}</span>
+              {/* Só "PRÓXIMO SORTEO", grande (sem a faixa "EL SORTEO COMIENZA EN"). */}
+              <span className={`${styles.drawTitle} ${styles.drawTitleNavy}`}>{t('lobby.nextDraw')}</span>
             </div>
 
             <div className={styles.stage}>
