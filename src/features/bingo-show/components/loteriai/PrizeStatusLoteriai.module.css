@@ -346,13 +346,12 @@
   animation: loteriaiPrizeSweep 6s ease-in-out infinite;
 }
 
-.rowDone {
-  opacity: 0.92;
-  filter: saturate(0.7);
-}
-
+/* Concluído e aguardando com as mesmas cores (etiqueta no mesmo azul); o
+ * estado aparece no texto de status e na cor do valor. */
+.rowDone,
 .rowWaiting {
-  opacity: 0.78;
+  opacity: 1;
+  filter: none;
 }
 
 /* Etiquetas: azul nos cards creme; vermelha (do tema) no card em disputa. */
