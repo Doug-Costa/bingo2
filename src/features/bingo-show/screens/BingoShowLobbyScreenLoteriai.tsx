@@ -99,7 +99,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
                   [
                     [t('prize.line1'), d.line1Prize, 'red'],
                     [t('prize.line2'), d.line2Prize, 'white'],
-                    ["LOTERIA'I", d.bingoPrize, 'blue'],
+                    [t('prize.bingo'), d.bingoPrize, 'blue'],
                   ] as const
                 ).map(([label, value, tone]) => (
                   <div key={label} className={styles.drawPrize}>
@@ -164,7 +164,6 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
   // Últimos segundos (tempo REAL): contador ganha um pouco mais de intensidade.
   const final = secs > 0 && secs <= 10;
   const near = secs > 0 && secs <= 30;
-  const drawTitle = secs > 0 && secs <= 3600 ? t('draw.soon') : t('lobby.nextDraw');
   const drawNumber = mock.drawNumberShort && mock.drawNumberShort !== '#---' ? mock.drawNumberShort.replace(/^#/, '') : '---';
   const isSlogan = !mock.promotionalMessage || mock.promotionalMessage === t('lobby.promoFallback');
 
@@ -230,13 +229,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <section className={`${lt.panel} ${styles.center}`}>
             <div className={styles.centerTitles}>
-              <span className={`${styles.drawTitle} ${styles.drawTitleNavy}`}>{drawTitle}</span>
-              {/* Faixa vermelha com as pontas da bandeira saindo dos lados. */}
-              <div className={styles.startsBanner}>
-                <FlagImage src={FLAG_ART.tailLeft} className={`${styles.bannerTail} ${styles.bannerTailL}`} />
-                <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
-                <FlagImage src={FLAG_ART.tailRight} className={`${styles.bannerTail} ${styles.bannerTailR}`} />
-              </div>
+              {/* Só "EL SORTEO COMIENZA EN", grande (sem o "PRÓXIMO SORTEO"). */}
+              <span className={`${styles.drawTitle} ${styles.drawTitleNavy} ${styles.drawTitleStarts}`}>{t('lobby.startsIn')}</span>
             </div>
 
             <div className={styles.stage}>
@@ -247,6 +241,8 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
               <div className={styles.timerWrap}>
                 {/* Ñandutí dourado girando devagar atrás do contador (o mesmo da bola no sorteio). */}
                 <span className={styles.timerLace} aria-hidden="true" />
+                {/* Últimos 10s: aura vermelha pulsando atrás do contador. */}
+                {final && <span className={styles.timerAura} aria-hidden="true" />}
                 <div className={`${lt.shimmer} ${styles.timerFrame} ${final ? styles.timerFinal : ''}`}>
                   <span key={countdown.length} className={`${lt.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
                     {countdown}
@@ -257,7 +253,6 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
                 <Image className={`${lt.art} ${styles.globe}`} src={`${A}/sm/decorative/globo-sorteio.png`} alt="" width={250} height={230} sizes="250px" />
                 <span className={styles.globeGlint} />
               </div>
-              <Image className={`${lt.art} ${lt.float} ${styles.clover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={70} height={73} sizes="70px" />
             </div>
 
             <div className={`${lt.shimmer} ${styles.jackpotBand}`} style={{ '--shimmer-delay': '3s' } as React.CSSProperties}>
@@ -278,9 +273,10 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           </section>
 
           <section className={styles.right}>
+            {/* Línea = moedas, 2 líneas = pote, lleno = logo da Loteria'i. */}
             <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
-            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="white" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={1} />
-            <PrizeCard label="LOTERIA'I" value={mock.bingoPrize} tone="blue" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={2} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="white" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={1} />
+            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} tone="blue" art={`${A}/sm/logos/logo-loteriai.png`} artW={104} artH={97} slot={2} />
           </section>
         </main>
 
@@ -289,9 +285,10 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
           <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.footerWave} ${styles.footerWaveL}`} />
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           {isSlogan ? (
+            // Jargão da marca, nas cores da bandeira.
             <span className={styles.footerSlogan}>
-              <span className={styles.sloganRed}>{t('lobby.luck1')}</span> <span className={styles.sloganWhite}>{t('lobby.luck2')}</span>{' '}
-              <span className={styles.sloganBlue}>{t('lobby.luck3')}</span>
+              <span className={styles.sloganRed}>¡BUENO,</span> <span className={styles.sloganWhite}>BONITO</span>{' '}
+              <span className={styles.sloganBlue}>Y BARATO!</span>
             </span>
           ) : (
             <span className={styles.footerText}>{mock.promotionalMessage}</span>

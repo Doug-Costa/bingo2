@@ -54,6 +54,8 @@ export interface EsSkin {
     winnerLine: string;
     winnerBingo: string;
     winnerSide: string;
+    /** Arte do card único por faixa (sobrepõe winnerLine/winnerBingo). */
+    winnerByType?: { line1: string; line2: string; bingo: string };
     /** Ícone do título do resumo da rodada (sem: 🏆). */
     roundTitleIcon?: string;
   };
@@ -137,9 +139,11 @@ export const LOTERIAI_SKIN: EsSkin = {
       date: `${LT}/decorative/trevo.png`,
       time: `${LT}/icons/ampulheta.png`,
     },
-    round: { line1: `${LT}/decorative/moedas.png`, line2: `${LT}/decorative/pote-premio.png`, bingo: `${LT}/decorative/trofeu.png` },
-    winnerLine: `${LT}/decorative/trofeu.png`,
-    winnerBingo: `${LT}/decorative/trofeu.png`,
+    // Ícones dos prêmios: línea = moedas, 2 líneas = pote, lleno = logo da marca.
+    round: { line1: `${LT}/decorative/moedas.png`, line2: `${LT}/decorative/pote-premio.png`, bingo: `${LT}/logos/logo-loteriai.png` },
+    winnerLine: `${LT}/decorative/moedas.png`,
+    winnerBingo: `${LT}/logos/logo-loteriai.png`,
+    winnerByType: { line1: `${LT}/decorative/moedas.png`, line2: `${LT}/decorative/pote-premio.png`, bingo: `${LT}/logos/logo-loteriai.png` },
     winnerSide: `${LT}/decorative/trevo.png`,
     roundTitleIcon: `${LT}/decorative/trofeu.png`,
   },
@@ -153,7 +157,8 @@ export const LOTERIAI_SKIN: EsSkin = {
   text: {
     liveBrand: "LOTERIA'I",
     slogan: '¡BUENO, BONITO Y BARATO!',
-    bingoLabel: "LOTERIA'I",
+    // 3º prêmio pelo vocabulário do tema (es-loteriai: "LLENO").
+    bingoLabel: null,
     playerColumnKey: 'coupons.player',
     roundBrand: "LOTERIA'I • ¡BUENO, BONITO Y BARATO!",
   },

@@ -8,10 +8,16 @@
  *
  * Chave nova: adicionar nos dois arquivos de `locales/` — o tipo do `pt-BR`
  * é a referência, então faltar chave em `es` é erro de compilação.
+ *
+ * `es-loteriai`: só as chaves que o tema Loteria'i troca; o resto cai no `es`.
  */
 import { createInstance } from 'i18next';
 import ptBR from './locales/pt-BR';
 import es from './locales/es';
+import esLoteriai from './locales/es-loteriai';
+
+/** Código interno do vocabulário do Loteria'i (não é um idioma de verdade). */
+export const LOTERIAI_ES_LNG = 'es-loteriai';
 
 export const i18n = createInstance();
 
@@ -19,9 +25,10 @@ void i18n.init({
   resources: {
     'pt-BR': { translation: ptBR },
     es: { translation: es },
+    [LOTERIAI_ES_LNG]: { translation: esLoteriai },
   },
   lng: 'pt-BR',
-  fallbackLng: 'pt-BR',
+  fallbackLng: { [LOTERIAI_ES_LNG]: ['es', 'pt-BR'], default: ['pt-BR'] },
   initAsync: false,
   interpolation: { escapeValue: false },
   returnNull: false,

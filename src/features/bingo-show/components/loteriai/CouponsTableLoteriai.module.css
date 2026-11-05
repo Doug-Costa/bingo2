@@ -320,6 +320,44 @@
 
 /* ═══ Overrides do tema Loteria'i ═════════════════════════════════════════ */
 
+/* Jogadores maiores: nome, bolas e números (coluna da boleta mais estreita e o
+ * nome quebra em até 2 linhas em vez de cortar). */
+.table {
+  --cols: 96px minmax(0, 1fr) 222px;
+  --ball: 38px;
+  --ball-font: 18px;
+  --donor-font: 23px;
+}
+
+.full {
+  --cols: 100px minmax(0, 1fr) 270px;
+  --ball: 50px;
+  --ball-font: 23px;
+  --coupon-font: 24px;
+  --donor-font: 29px;
+}
+
+.compact {
+  --cols: 88px minmax(0, 1fr) 190px;
+  --ball: 34px;
+  --ball-font: 16px;
+  --coupon-font: 18px;
+  --donor-font: 21px;
+}
+
+.missing {
+  gap: 5px;
+}
+
+.donor {
+  white-space: normal;
+  line-height: 1.02;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
 /* Fundo mel por baixo das linhas (o painel creme vira a moldura). */
 .table {
   margin: -10px;

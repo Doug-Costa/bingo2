@@ -511,9 +511,14 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   const skin = useEsSkin();
   const t = useT();
   const { theme: pyTheme, prize: pyPrize } = skin.css;
+  // Loteria'i: prêmios pelo nome (línea / 2 líneas / lleno) e pozo em azul.
+  const isLt = skin.id === 'loteriai';
+  const tierLabels = isLt
+    ? [t('prize.line1'), t('prize.line2'), t('prize.bingo')]
+    : [t('prize.n', { n: 1 }), t('prize.n', { n: 2 }), t('prize.n', { n: 3 })];
   return (
   <div className={`${pyTheme.vars} ${pyPrize.column}`} style={style}>
-    <div className={`${pyTheme.panel} ${pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff}`}>
+    <div className={`${pyTheme.panel} ${isLt ? pyTheme.panelBlue : pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
       <img className={`${pyTheme.art} ${pyPrize.bag}`} src={skin.art.jackpot} alt="" draggable={false} />
       <div className={pyPrize.jackpotText}>
@@ -529,9 +534,9 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
     </div>
 
     <div className={pyPrize.rows}>
-      <ParaguayPrizeRow label={t('prize.n', { n: 1 })} value={line1Amount} status={line1Status} />
-      <ParaguayPrizeRow label={t('prize.n', { n: 2 })} value={line2Amount} status={line2Status} />
-      <ParaguayPrizeRow label={t('prize.n', { n: 3 })} value={bingoAmount} status={bingoStatus} />
+      <ParaguayPrizeRow label={tierLabels[0]!} value={line1Amount} status={line1Status} />
+      <ParaguayPrizeRow label={tierLabels[1]!} value={line2Amount} status={line2Status} />
+      <ParaguayPrizeRow label={tierLabels[2]!} value={bingoAmount} status={bingoStatus} />
     </div>
 
     <div className={pyPrize.meta}>

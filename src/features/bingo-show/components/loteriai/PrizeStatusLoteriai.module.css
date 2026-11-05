@@ -294,25 +294,37 @@
   animation: loteriaiCoinsHop 8s ease-in-out 3s infinite;
 }
 
+/* Pozo acumulado em painel azul (panelBlue). */
 .jackpotLabel {
   color: #fff2a6;
-  text-shadow: 0 2px 2px rgba(90, 0, 0, 0.55);
+  text-shadow: 0 2px 2px rgba(0, 16, 60, 0.6);
+}
+
+.bag {
+  filter: drop-shadow(0 6px 8px rgba(0, 16, 60, 0.5));
 }
 
 .limitBadge {
   background:
     radial-gradient(circle at 40% 30%, #f03246 0%, #c8162b 55%, #8f0c1b 100%) padding-box,
     var(--lt-gold-border) border-box;
-  box-shadow: 0 4px 10px rgba(80, 0, 0, 0.45);
+  box-shadow: 0 4px 10px rgba(0, 16, 60, 0.5);
 }
 
+/* "HASTA LA BOLA" em duas linhas para caber dentro do selo redondo. */
 .limitLabel {
   color: #fff2a6;
-  font-size: 9px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  line-height: 1.05;
+  max-width: 66px;
+  text-align: center;
+  white-space: normal;
 }
 
 /* No selo vermelho o número vai em branco (o "título" do tema é vermelho). */
 .limitValue {
+  font-size: 38px;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
   filter: drop-shadow(0 2px 1px rgba(90, 0, 0, 0.6)) !important;

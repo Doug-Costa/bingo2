@@ -181,20 +181,15 @@ export const RoundWinnersParaguay: React.FC<BingoShowRoundWinnersBlueProps> = ({
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-        <img className={styles.logo} src={skin.art.logo} alt="Loteria'i" draggable={false} />
+        <img className={`${styles.logo} ${isLt ? pyTheme.logoPulse : ''}`} src={skin.art.logo} alt="Loteria'i" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             {titleIcon}
             <span className={isLt ? styles.titleNavy : pyTheme.goldText}>{t('round.title')}</span>
             {titleIcon}
           </div>
-          {isLt ? (
-            <div className={styles.subBanner}>
-              <FlagImage src={FLAG_ART.tailLeft} className={`${styles.subTail} ${styles.subTailL}`} />
-              <span className={styles.headerSub}>{t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}</span>
-              <FlagImage src={FLAG_ART.tailRight} className={`${styles.subTail} ${styles.subTailR}`} />
-            </div>
-          ) : (
+          {/* Loteria'i: só o título, sem a faixa vermelha de sorteio/data. */}
+          {isLt ? null : (
             <span className={styles.headerSub}>
               {t('round.drawAt', { draw: drawNumber, date: dateStr, time: timeStr })}
             </span>

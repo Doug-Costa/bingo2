@@ -1108,8 +1108,10 @@
   margin-bottom: 22px;
 }
 
-/* "BOLA X/90" em azul-marinho com filete claro (referência). */
+/* "BOLILLA SORTEADA X/90" em azul-marinho com filete claro (referência). Texto
+ * mais longo que "BOLA X/90": fonte menor para não alargar o painel. */
 .seqValue {
+  font-size: 25px;
   color: #0b2f7a !important;
   -webkit-text-fill-color: #0b2f7a !important;
   background: none !important;

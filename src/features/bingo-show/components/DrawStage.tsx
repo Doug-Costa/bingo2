@@ -540,6 +540,12 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   // Bola atual: bolas já sorteadas nesta rodada (vem do SSE via
   // `sequenceNumber` = drawnBalls.length) contra o total do bingo de 90.
   const drawnCount = Math.max(0, Math.min(TOTAL_BALLS, sequenceNumber ?? 0));
+  // Loteria'i: bola no centro exato do painel, título centrado sobre ela e o rótulo
+  // "ÚLTIMAS BOLILLAS" sobre a coluna (largura da coluna + gap, ver .nextColumn).
+  const isLt = es?.id === 'loteriai';
+  const LT_COLUMN_W = 100;
+  const LT_STAGE_HALF = 186;
+  const STAGE_GAP = 24;
 
   const content = (
     <>
@@ -551,7 +557,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          paddingLeft: 40,
+          paddingLeft: isLt ? 0 : 40,
+          position: 'relative',
         }}
       >
         {/* CENTER TITLE */}
@@ -576,7 +583,16 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         </div>
 
         {/* RIGHT SUB-TITLE */}
-        <div style={{ width: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          style={{
+            width: isLt ? LT_COLUMN_W : 80,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...(isLt ? { position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: `calc(50% + ${LT_STAGE_HALF + STAGE_GAP}px)` } : {}),
+          }}
+        >
           <span
             style={{
               color: es ? es.tone.panelText : '#FFFFFF',
@@ -614,11 +630,14 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           justifyContent: 'center',
           width: '100%',
           position: 'relative',
-          gap: 24,
+          gap: STAGE_GAP,
         }}
       >
         {stagedBall ? (
           <>
+            {/* Loteria'i: espaçador do tamanho da coluna de últimas bolas, para a
+                bola sorteada ficar no centro do painel. */}
+            {isLt && <div aria-hidden="true" style={{ width: LT_COLUMN_W, flex: 'none' }} />}
             {/* Palco Blue em camadas (atmosfera → anel externo → anel interno →
                 reflexos → bola → número). Estilos em DrawStageBlue.module.css.
                 `key={ballKey}` remonta SÓ a bola quando chega uma bola real nova,

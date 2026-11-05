@@ -21,7 +21,7 @@ import { setMoneyCurrency, type MoneyCurrency } from '@/features/bingo-show/util
 import type { VoiceLang } from '@/features/bingo-show/hooks/useBingoAudio';
 import type { Promotion } from '@/contexts/SSEContext';
 import type { TFunction } from 'i18next';
-import { i18n } from '@/i18n';
+import { i18n, LOTERIAI_ES_LNG } from '@/i18n';
 import {
   currencyForLanguage,
   getTvConfig,
@@ -139,5 +139,9 @@ export function useTvConfig() {
 /** Tradutor no idioma ativo da TV: `const t = useT(); t('lobby.nextDraw')`. */
 export function useT(): TFunction {
   const { language } = useContext(TvConfigContext);
-  return useMemo(() => i18n.getFixedT(language), [language]);
+  const { themeId } = useAppTheme();
+  // Loteria'i em espanhol tem vocabulário próprio (bolilla, boleta, pozo...),
+  // que cai no `es` para as chaves que não troca.
+  const lng = language === 'es' && themeId === 'loteriai' ? LOTERIAI_ES_LNG : language;
+  return useMemo(() => i18n.getFixedT(lng), [lng]);
 }

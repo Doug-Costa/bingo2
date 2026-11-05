@@ -122,6 +122,7 @@ export const BingoShowDrawScreen: React.FC = () => {
             <img
               src={es.id === 'loteriai' ? '/themes/loteriai/logos/logo-loteriai-md.png' : es.art.logo}
               alt="Loteria'i"
+              className={es.id === 'loteriai' ? es.css.theme.logoPulse : undefined}
               style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 128 : 64, width: 'auto', flexShrink: 0, ...(es.id === 'loteriai' ? { position: 'absolute', top: 6, left: 18, zIndex: 2 } : {}), objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
             />
           )}
@@ -147,7 +148,8 @@ export const BingoShowDrawScreen: React.FC = () => {
           )}
         </div>
 
-        {/* CENTER: BINGO AO VIVO */}
+        {/* CENTER: BINGO AO VIVO (Loteria'i: só a faixa da bandeira, sem título). */}
+        {es?.id !== 'loteriai' && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
           {/* Blue: ouro metálico (goldMetalText.module.css) no lugar do amarelo
               chapado — cor/sombra saem do inline e vêm da classe; tamanho,
@@ -193,6 +195,7 @@ export const BingoShowDrawScreen: React.FC = () => {
             {es?.text.slogan ?? t('draw.liveSubtitle')}
           </span>
         </div>
+        )}
 
         {/* RIGHT: DATE/TIME PILL + SOUND */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, minWidth: 220, justifyContent: 'flex-end' }}>

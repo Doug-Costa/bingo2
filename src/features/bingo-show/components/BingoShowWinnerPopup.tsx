@@ -105,14 +105,14 @@ function formatCouponDisplay(winner: Pick<WinnerEvent, 'ticketId' | 'incremental
 
 // Normalização estrita de tipo de vencedor (line1, line2, bingo, jackpot -> bingo)
 
-/** Selo do prêmio no idioma da TV. A Loteria'i nomeia o 3º prêmio com a marca e
- * usa "1ª/2ª linha" e ordinais próprios. */
+/** Selo do prêmio no idioma da TV. A Loteria'i usa os nomes próprios dos prêmios
+ * (línea / 2 líneas / lleno — vocabulário `es-loteriai`) e ordinais próprios. */
 function getPrizeDisplay(type: string | undefined, t: TFunction, skinId?: string) {
   const norm = normalizeWinnerType(type) || 'bingo';
   const n = norm === 'line1' ? 1 : norm === 'line2' ? 2 : 3;
   if (skinId === 'loteriai') {
     const order = t(`prize.order${n}Lt`);
-    const title = n === 3 ? "LOTERIA'I" : t(`prize.line${n}`);
+    const title = n === 3 ? t('prize.bingo') : t(`prize.line${n}`);
     return { order, title, full: `${order} • ${title}` };
   }
   const order = t(`prize.order${n}`);
@@ -1627,6 +1627,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     return (
       <Popup
         isBingo={normType === 'bingo'}
+        prizeType={normType}
         key={`${drawNumber}-${normType}-${winnerKey(singleWinner)}`}
         sealText={getPrizeDisplay(normType, t, esSkin?.id).full}
         winners={group.map((w, idx) => {

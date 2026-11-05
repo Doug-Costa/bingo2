@@ -262,6 +262,18 @@
   100% { transform: translateX(1000%) skewX(-18deg); opacity: 0; }
 }
 
+/* Logo da marca pulsando (todas as telas do tema). */
+.logoPulse {
+  animation: loteriaiLogoPulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+@keyframes loteriaiLogoPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35)); }
+  50% { transform: scale(1.07); filter: drop-shadow(0 0 14px rgba(255, 236, 140, 0.95)) drop-shadow(0 3px 6px rgba(104, 57, 0, 0.35)); }
+}
+
 @keyframes loteriaiAmbientFloat {
   from { transform: translateY(0); }
   to { transform: translateY(-3px); }

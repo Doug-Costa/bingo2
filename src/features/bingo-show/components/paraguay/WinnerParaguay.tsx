@@ -22,6 +22,8 @@ export interface WinnerParaguayProps {
   winners: GroupWinnerView[];
   /** Bingo: coroa no card único; linhas: o Maneki-Neko. */
   isBingo?: boolean;
+  /** Faixa do prêmio: escolhe a arte do card único quando a skin tem uma por faixa. */
+  prizeType?: 'line1' | 'line2' | 'bingo';
 }
 
 // Confete tricolor + ouro (CSS), só nas laterais, uma vez (~1,2s após abrir).
@@ -48,13 +50,14 @@ const SIZES: Record<Density, { name: [number, number]; value: [number, number]; 
 
 const CARD_STAGGER = 180;
 
-const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; total: number; density: Density; isBingo: boolean; style?: React.CSSProperties }> = ({
+const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; total: number; density: Density; isBingo: boolean; art: string; style?: React.CSSProperties }> = ({
   w,
   index,
   slot,
   total,
   density,
   isBingo,
+  art,
   style,
 }) => {
   const t = useT();
@@ -122,10 +125,10 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         {total === 1 &&
           (isBingo ? (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloCrown}`} src={skin.art.winnerBingo} alt="" draggable={false} />
+            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloCrown}`} src={art} alt="" draggable={false} />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloLapacho}`} src={skin.art.winnerLine} alt="" draggable={false} />
+            <img className={`${pyTheme.art} ${styles.soloChest} ${styles.soloLapacho}`} src={art} alt="" draggable={false} />
           ))}
       </div>
 
@@ -183,9 +186,10 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   );
 };
 
-export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winners, isBingo = false }) => {
+export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winners, isBingo = false, prizeType }) => {
   const t = useT();
   const skin = useEsSkin();
+  const art = (prizeType && skin.art.winnerByType?.[prizeType]) || (isBingo ? skin.art.winnerBingo : skin.art.winnerLine);
   const { theme: pyTheme, winner: styles } = skin.css;
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
@@ -250,7 +254,7 @@ export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winner
           )}
           <div key={page} className={styles.cards} style={gridStyle}>
             {list.map((w, i) => (
-              <GoldCard key={w.id} w={w} index={page * GROUP_PAGE_SIZE + i} slot={i} total={winners.length} density={density} isBingo={isBingo} style={spanOf(i)} />
+              <GoldCard key={w.id} w={w} index={page * GROUP_PAGE_SIZE + i} slot={i} total={winners.length} density={density} isBingo={isBingo} art={art} style={spanOf(i)} />
             ))}
           </div>
         </div>
