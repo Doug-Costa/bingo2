@@ -354,14 +354,14 @@
   filter: none;
 }
 
-/* Etiquetas: azul nos cards creme; vermelha (do tema) no card em disputa. */
+/* Etiquetas: todas no mesmo vermelho vivo (cards creme e card em disputa). */
 .tag {
   font-size: 22px;
   background:
-    linear-gradient(180deg, #2f6fd6 0%, #0648a8 60%, #072c68 100%) padding-box,
+    linear-gradient(180deg, #f03246 0%, #b5121f 100%) padding-box,
     var(--lt-gold-border) border-box !important;
   color: #ffffff;
-  text-shadow: 0 1px 1px rgba(0, 10, 40, 0.5);
+  text-shadow: 0 1px 1px rgba(90, 0, 0, 0.5);
 }
 
 .rowActive .tag {
