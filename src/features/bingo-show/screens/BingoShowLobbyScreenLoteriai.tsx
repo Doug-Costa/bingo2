@@ -228,8 +228,13 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <section className={`${lt.panel} ${styles.center}`}>
             <div className={styles.centerTitles}>
-              {/* Só "PRÓXIMO SORTEO", grande (sem a faixa "EL SORTEO COMIENZA EN"). */}
-              <span className={`${styles.drawTitle} ${styles.drawTitleNavy}`}>{t('lobby.nextDraw')}</span>
+              {/* Sem "PRÓXIMO SORTEO": a faixa vermelha "EL SORTEO COMIENZA EN" com
+                  as bandeirolas fica grande no lugar dele. */}
+              <div className={`${styles.startsBanner} ${styles.startsBannerBig}`}>
+                <FlagImage src={FLAG_ART.tailLeft} className={`${styles.bannerTail} ${styles.bannerTailL}`} />
+                <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
+                <FlagImage src={FLAG_ART.tailRight} className={`${styles.bannerTail} ${styles.bannerTailR}`} />
+              </div>
             </div>
 
             <div className={styles.stage}>

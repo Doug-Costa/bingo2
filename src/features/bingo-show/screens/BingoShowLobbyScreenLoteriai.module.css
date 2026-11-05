@@ -462,10 +462,31 @@
     drop-shadow(0 6px 6px rgba(104, 57, 0, 0.3));
 }
 
-/* "EL SORTEO COMIENZA EN" grande, no lugar do antigo "PRÓXIMO SORTEO". */
-.drawTitleStarts {
-  font-size: 64px;
-  letter-spacing: 1.5px;
+/* Faixa "EL SORTEO COMIENZA EN" grande, no lugar do antigo "PRÓXIMO SORTEO". */
+.startsBannerBig {
+  margin-top: 10px;
+  animation: loteriaiTitleIn 800ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 200ms both;
+}
+
+.startsBannerBig .startsIn {
+  padding: 12px 56px 10px;
+  font-size: 44px;
+  letter-spacing: 2.5px;
+  border-top-width: 3px;
+  border-bottom-width: 3px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 50%, 100% 100%, 0 100%, 26px 50%);
+}
+
+.startsBannerBig .bannerTail {
+  height: 96px;
+}
+
+.startsBannerBig .bannerTailL {
+  margin-right: -40px;
+}
+
+.startsBannerBig .bannerTailR {
+  margin-left: -40px;
 }
 
 /* Faixa vermelha com pontas da bandeira saindo pelos lados. */
