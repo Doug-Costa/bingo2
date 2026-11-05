@@ -265,7 +265,8 @@
 /* Logo da marca pulsando (todas as telas do tema). */
 .logoPulse {
   animation: loteriaiLogoPulse 2.4s ease-in-out infinite;
-  transform-origin: center;
+  /* Cresce a partir do topo: o pulso nunca empurra a logo para fora da tela. */
+  transform-origin: center top;
   will-change: transform, filter;
 }
 

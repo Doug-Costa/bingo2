@@ -123,7 +123,7 @@ export const BingoShowDrawScreen: React.FC = () => {
               src={es.id === 'loteriai' ? '/themes/loteriai/logos/logo-loteriai-md.png' : es.art.logo}
               alt="Loteria'i"
               className={es.id === 'loteriai' ? es.css.theme.logoPulse : undefined}
-              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 128 : 64, width: 'auto', flexShrink: 0, ...(es.id === 'loteriai' ? { position: 'absolute', top: 6, left: 18, zIndex: 2 } : {}), objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
+              style={{ height: es.art.logoSecondary ? 60 : es.id === 'loteriai' ? 116 : 64, width: 'auto', flexShrink: 0, ...(es.id === 'loteriai' ? { position: 'absolute', top: 16, left: 22, zIndex: 2 } : {}), objectFit: 'contain', filter: es.art.logoSecondary ? 'drop-shadow(0 3px 6px rgba(0, 3, 12, 0.6))' : 'drop-shadow(0 3px 5px rgba(104, 57, 0, 0.35))' }}
             />
           )}
           {(!es || es.art.logoSecondary) && (
