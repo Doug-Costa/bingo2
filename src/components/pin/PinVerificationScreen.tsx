@@ -183,8 +183,13 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
 
   const primaryColor = theme.primary || (isBlue ? '#087FFC' : '#FFDE38');
   const glowColor = theme.primaryGlow || (isBlue ? 'rgba(8, 127, 252, 0.45)' : 'rgba(255, 222, 56, 0.45)');
-  const cyanColor = theme.secondary || (isBlue ? '#17C8FF' : '#00E5FF');
-  const cardBgColor = theme.panelBg || (isBlue ? 'rgba(3, 17, 48, 0.92)' : 'rgba(6, 10, 40, 0.92)');
+  const cyanColor = themeId === 'loteriai' ? '#FFD84A' : theme.secondary || (isBlue ? '#17C8FF' : '#00E5FF');
+  // Loteria'i tem painéis claros (creme): o card do PIN usa azul-marinho para os
+  // textos e contornos brancos continuarem legíveis sobre o fundo amarelo.
+  const cardBgColor =
+    themeId === 'loteriai'
+      ? 'rgba(8, 36, 92, 0.95)'
+      : theme.panelBg || (isBlue ? 'rgba(3, 17, 48, 0.92)' : 'rgba(6, 10, 40, 0.92)');
 
   return (
     <div

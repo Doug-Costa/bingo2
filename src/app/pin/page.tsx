@@ -11,9 +11,14 @@ import { TvSafeArea } from '@/components/tv/TvSafeArea';
 import { BingoShowAmbientBackground } from '@/features/bingo-show/components/BingoShowAmbientBackground';
 import { BingoShowAssets } from '@/features/bingo-show/assets';
 import { PinVerificationScreen } from '@/components/pin/PinVerificationScreen';
+import { useAppTheme } from '@/contexts/ThemeContext';
+import { getEsSkin } from '@/features/bingo-show/components/esSkin';
 
 export default function PinPage() {
   const router = useRouter();
+  // Paraguay / Loteria'i: logo da Loteria'i no lugar do Bingo Show.
+  const { themeId } = useAppTheme();
+  const esSkin = getEsSkin(themeId);
 
   return (
     <TvViewport>
@@ -44,9 +49,9 @@ export default function PinPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={BingoShowAssets.logos.badge}
-                  alt="Bingo Show"
-                  style={{ height: 68, width: 'auto', objectFit: 'contain' }}
+                  src={esSkin ? esSkin.art.logo : BingoShowAssets.logos.badge}
+                  alt={esSkin ? "Loteria'i" : 'Bingo Show'}
+                  style={{ height: esSkin ? 150 : 68, width: 'auto', objectFit: 'contain', filter: esSkin ? 'drop-shadow(0 4px 8px rgba(104, 57, 0, 0.35))' : undefined }}
                 />
               </div>
 
