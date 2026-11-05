@@ -448,7 +448,8 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
   const valueTick = useChangeTick(value);
   const t = useT();
   const statusText = t(isActive ? 'status.active' : isCompleted ? 'status.done' : 'status.waiting');
-  const activePanel = pyTheme.panelRed;
+  // Loteria'i: card em disputa azul; etiqueta e valor continuam vermelhos.
+  const activePanel = skin.id === 'loteriai' ? pyTheme.panelBlue : pyTheme.panelRed;
   return (
     <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
       <div
