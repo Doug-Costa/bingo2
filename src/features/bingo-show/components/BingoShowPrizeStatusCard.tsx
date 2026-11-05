@@ -441,16 +441,19 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
 /** Família es-PY: uma faixa de prêmio (mesmos dados/estados; textos em espanhol).
  * Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i). */
 const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
-  const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
+  const skin = useEsSkin();
+  const { theme: pyTheme, prize: pyPrize } = skin.css;
   const isActive = status === 'active';
   const isCompleted = status === 'completed';
   const valueTick = useChangeTick(value);
   const t = useT();
   const statusText = t(isActive ? 'status.active' : isCompleted ? 'status.done' : 'status.waiting');
+  // Loteria'i: card em disputa azul (etiqueta e cápsula do valor seguem vermelhas).
+  const activePanel = skin.id === 'loteriai' ? pyTheme.panelBlue : pyTheme.panelRed;
   return (
     <div style={{ flex: isActive ? 1.4 : 0.9, width: '100%', minHeight: 0, transition: 'flex 300ms ease' }}>
       <div
-        className={`${pyTheme.panel} ${isActive ? pyTheme.panelRed : ''} ${pyPrize.row} ${
+        className={`${pyTheme.panel} ${isActive ? activePanel : ''} ${pyPrize.row} ${
           isActive ? pyPrize.rowActive : isCompleted ? pyPrize.rowDone : pyPrize.rowWaiting
         }`}
       >
