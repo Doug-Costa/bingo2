@@ -165,7 +165,6 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
   const final = secs > 0 && secs <= 10;
   const near = secs > 0 && secs <= 30;
   const drawNumber = mock.drawNumberShort && mock.drawNumberShort !== '#---' ? mock.drawNumberShort.replace(/^#/, '') : '---';
-  const isSlogan = !mock.promotionalMessage || mock.promotionalMessage === t('lobby.promoFallback');
 
   return (
     <BingoShowAmbientBackground>
@@ -284,15 +283,12 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
         <footer className={styles.footer}>
           <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.footerWave} ${styles.footerWaveL}`} />
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
-          {isSlogan ? (
-            // Jargão da marca, nas cores da bandeira.
-            <span className={styles.footerSlogan}>
-              <span className={styles.sloganRed}>¡BUENO,</span> <span className={styles.sloganWhite}>BONITO</span>{' '}
-              <span className={styles.sloganBlue}>Y BARATO!</span>
-            </span>
-          ) : (
-            <span className={styles.footerText}>{mock.promotionalMessage}</span>
-          )}
+          {/* Sempre o jargão da marca, nas cores da bandeira (a mensagem
+              promocional do servidor não substitui o slogan neste tema). */}
+          <span className={styles.footerSlogan}>
+            <span className={styles.sloganRed}>¡BUENO,</span> <span className={styles.sloganWhite}>BONITO</span>{' '}
+            <span className={styles.sloganBlue}>Y BARATO!</span>
+          </span>
           <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
           <FlagImage src={FLAG_ART.cornerRight} className={`${styles.footerWave} ${styles.footerWaveR}`} />
         </footer>
