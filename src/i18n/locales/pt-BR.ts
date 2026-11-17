@@ -43,7 +43,7 @@ const ptBR = {
     lastBalls1: "ÚLTIMAS",
     lastBalls2: "BOLAS",
     board: "ÚLTIMAS BOLAS SORTEADAS",
-    ballOf: "BOLA SORTEADA {{n}}/{{total}}",
+    ballLabel: "BOLA SORTEADA",
     jackpot1: "PRÊMIO",
     jackpot2: "ACUMULADO",
     untilBall1: "ATÉ A",

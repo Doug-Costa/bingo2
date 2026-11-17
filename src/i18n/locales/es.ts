@@ -45,7 +45,7 @@ const es: Dictionary = {
     lastBalls1: "ÚLTIMAS",
     lastBalls2: "BOLILLAS",
     board: "ÚLTIMAS BOLILLAS SORTEADAS",
-    ballOf: "BOLILLA SORTEADA {{n}}/{{total}}",
+    ballLabel: "BOLILLA SORTEADA",
     jackpot1: "POZO",
     jackpot2: "ACUMULADO",
     untilBall1: "HASTA LA",

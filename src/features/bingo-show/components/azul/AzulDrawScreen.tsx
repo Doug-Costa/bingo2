@@ -185,6 +185,10 @@ const AzulPrizes = React.memo(function AzulPrizes({
 
 const LAST_TONES = [css.gGold, css.gBlue, css.gRed];
 
+// Arco de luzes em volta da bola: 23 luzes de -132° a +132° (aberto embaixo,
+// onde a bola encosta na área da faixa). Posições fixas, calculadas uma vez.
+const LIGHTS = Array.from({ length: 23 }, (_, i) => -132 + i * 12);
+
 const AzulStage = React.memo(function AzulStage({
   currentBall,
   lastBalls,
@@ -221,11 +225,21 @@ const AzulStage = React.memo(function AzulStage({
         ))}
       </div>
 
+      {/* Cartelas e globo nos cantos de baixo, inclinados para a bola. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
       <img className={css.cardsArt} src={`${A}/cartelas.webp`} alt="" />
-      <div className={css.platform} />
       <div className={css.arena}>
+        <div className={css.glow} />
         <div className={css.halo} />
+        <div className={css.lights} aria-hidden="true">
+          {LIGHTS.map((a, i) => (
+            <span
+              key={a}
+              className={`${css.light} ${i % 2 ? css.lightGold : ''}`}
+              style={{ transform: `rotate(${a}deg) translateY(-198px)` }}
+            />
+          ))}
+        </div>
         <div className={css.haloSpin} />
         {/* key: a bola remonta (e faz a entrada) só quando o número muda. */}
         <div key={hasBall ? currentBall : 'none'} className={`${css.bigBall} ${hasBall ? css.ballPop : ''}`}>
@@ -237,11 +251,17 @@ const AzulStage = React.memo(function AzulStage({
       {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
       <img className={css.globeArt} src={`${A}/globo.webp`} alt="" />
 
+      {/* Faixa branca: bola sorteada, rótulo e progresso (ex.: 55 / 90). */}
       <div className={css.countPill}>
-        <span key={count} className={`${css.countBall} ${css.countPop}`}>
-          {count}
+        <span key={hasBall ? currentBall : 'none'} className={`${css.countBall} ${css.countPop}`}>
+          {hasBall ? currentBall : '--'}
         </span>
-        <span className={css.countText}>{t('azul.ballOf', { n: count, total })}</span>
+        <span className={css.countText}>
+          {t('azul.ballLabel')}
+          <span className={css.countProgress}>
+            {count} / {total}
+          </span>
+        </span>
       </div>
     </div>
   );
