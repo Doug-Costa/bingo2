@@ -1,0 +1,110 @@
+/* AzulBackground.module.css — fundo do tema `bingo-show-azul`, só CSS.
+ *
+ * Camadas (de trás para frente), todas estáticas — nenhuma animação contínua:
+ *   .root     gradiente vertical (ciano no topo → azul profundo no rodapé) +
+ *             luz de palco atrás da arena central + brilho no canto inferior;
+ *   .rays     raios largos e suaves saindo do topo (cônico, mascarado);
+ *   .rings    textura quase imperceptível de bolas de bingo em contorno;
+ *   .bokeh    bolinhas desfocadas (gradiente radial, sem `filter: blur`);
+ *   .dots     brilhos pontuais (grade de pontos);
+ *   .veil     véu azul translúcido atrás dos painéis (legibilidade).
+ *
+ * TVs fracas (classes no <html>, ver app/layout.tsx):
+ *   tv-lite  → saem a textura de pontos e as bolinhas desfocadas;
+ *   tv-ultra → ficam só os gradientes da base (sem raios e sem anéis).
+ */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 34% 40% at 50% 40%, rgba(53, 214, 244, 0.55) 0%, rgba(53, 214, 244, 0) 100%),
+    radial-gradient(circle at 50% 12%, rgba(234, 251, 255, 0.55) 0%, rgba(234, 251, 255, 0) 30%),
+    radial-gradient(circle at 10% 88%, rgba(12, 143, 232, 0.44) 0%, rgba(12, 143, 232, 0) 34%),
+    radial-gradient(circle at 92% 84%, rgba(53, 214, 244, 0.22) 0%, rgba(53, 214, 244, 0) 30%),
+    linear-gradient(180deg, #0c8fe8 0%, #0757d6 46%, #06245f 100%);
+}
+
+.rays {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background: repeating-conic-gradient(
+    from -8deg at 50% 4%,
+    rgba(255, 255, 255, 0.35) 0deg 2deg,
+    rgba(255, 255, 255, 0) 2deg 16deg
+  );
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 66%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 66%);
+}
+
+.rings {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image: radial-gradient(
+    circle,
+    rgba(234, 251, 255, 0) 0,
+    rgba(234, 251, 255, 0) 21px,
+    #eafbff 22px,
+    #eafbff 24px,
+    rgba(234, 251, 255, 0) 25px
+  );
+  background-size: 168px 168px;
+  background-position: 40px 30px;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 45%, #000 100%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 45%, #000 100%);
+}
+
+.bokeh {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  border-radius: 50%;
+  opacity: var(--o);
+  background: radial-gradient(circle at 38% 34%, rgba(234, 251, 255, 0.9) 0%, rgba(146, 220, 244, 0.45) 38%, rgba(146, 220, 244, 0) 70%);
+}
+
+.dots {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image: radial-gradient(circle, #eafbff 1px, rgba(234, 251, 255, 0) 1.6px);
+  background-size: 92px 92px;
+}
+
+/* Estrelinhas de brilho fixas (quatro pontas, só gradiente). */
+.sparkle {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  opacity: var(--o);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #fff 50%, rgba(255, 255, 255, 0) 100%) center / 100% 2px no-repeat,
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 50%, rgba(255, 255, 255, 0) 100%) center / 2px 100% no-repeat,
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 22%);
+}
+
+.veil {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 96px;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(6, 36, 95, 0) 0%, rgba(6, 36, 95, 0.12) 60%, rgba(6, 36, 95, 0.22) 100%);
+}
+
+:global(html.tv-lite) .dots,
+:global(html.tv-lite) .bokeh {
+  display: none;
+}
+
+:global(html.tv-ultra) .rays,
+:global(html.tv-ultra) .rings,
+:global(html.tv-ultra) .sparkle {
+  display: none;
+}

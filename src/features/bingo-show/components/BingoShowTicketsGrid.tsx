@@ -11,6 +11,7 @@ import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
 import goldStyles from './goldMetalText.module.css';
 import blueGrid from './BingoShowTicketsGridBlue.module.css';
 import ouroGrid from './BingoShowTicketsGridOuro.module.css';
+import azulGrid from './azul/TicketsGridAzul.module.css';
 import { ouroBallAsset } from '../utils/ouroBall';
 
 export interface BingoShowTicketsGridProps {
@@ -41,12 +42,13 @@ const CardTicketsGrid: React.FC<{
   css: CardGridCss;
   ballImage?: (_n: number) => string;
   style?: React.CSSProperties;
-}> = ({ tickets, drawnSet, latestBall, css, ballImage, style }) => {
+  /** Azul: painel próprio (`css.panel`) no lugar da moldura do Blue. */
+  bare?: boolean;
+}> = ({ tickets, drawnSet, latestBall, css, ballImage, style, bare }) => {
   const t = useT();
   const count = tickets.length;
 
-  return (
-    <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
+  const content = (
       <div className={`${css.root} ${count > 2 ? css.small : ''} ${count === 2 ? css.portrait : ''}`}>
         <div className={css.header}>
           <img className={css.ornament} src="/themes/bingo-show-blue/trevo.webp" alt="" />
@@ -111,7 +113,14 @@ const CardTicketsGrid: React.FC<{
           />
         </div>
       </div>
-    </BingoShowTopWinnersFrame>
+  );
+
+  return bare ? (
+    <div className={css.panel} style={style}>
+      {content}
+    </div>
+  ) : (
+    <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>{content}</BingoShowTopWinnersFrame>
   );
 };
 
@@ -159,6 +168,11 @@ const BingoShowTicketsGridInner: React.FC<BingoShowTicketsGridProps> = ({
 
   if (!tickets || tickets.length === 0) {
     return null;
+  }
+
+  // Bingo Show Azul: cards claros no painel do tema.
+  if (themeId === 'bingo-show-azul') {
+    return <CardTicketsGrid tickets={displayTickets} drawnSet={drawnSet} latestBall={latestBall} css={azulGrid} style={style} bare />;
   }
 
   // Blue e Bingo Show (Ouro & Espaço): visual do quadro de cupons do tema.

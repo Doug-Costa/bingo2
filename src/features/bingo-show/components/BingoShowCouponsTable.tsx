@@ -6,6 +6,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { useT } from '@/contexts/TvConfigContext';
 import blueTable from './BingoShowCouponsTableBlue.module.css';
 import ouroTable from './BingoShowCouponsTableOuro.module.css';
+import azulTable from './azul/CouponsTableAzul.module.css';
 import goldTable from './BingoShowCouponsTableGold.module.css';
 import { getEsSkin } from './esSkin';
 import goldPanel from './gold/GoldTheme.module.css';
@@ -163,6 +164,20 @@ const BingoShowCouponsTableInner: React.FC<BingoShowCouponsTableProps> = ({
     }
     return list.slice(0, VISIBLE_ROWS);
   }, [coupons]);
+
+  // Bingo Show Azul: cards claros no painel do tema; colunas CARTELA / JOGADOR.
+  if (themeId === 'bingo-show-azul') {
+    return (
+      <div style={{ width: '100%', height: '100%', ...style }}>
+        <CardCouponsTable
+          rows={rows}
+          compact={compact}
+          css={azulTable}
+          labels={{ ...labels, coupon: t('azul.card'), donor: t('coupons.player') }}
+        />
+      </div>
+    );
+  }
 
   if (isBlue) {
     return (

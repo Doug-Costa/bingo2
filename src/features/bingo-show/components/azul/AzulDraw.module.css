@@ -1,0 +1,746 @@
+/* AzulDraw.module.css — tela de sorteio do tema `bingo-show-azul` (mockup
+ * "Bingo Show Azul": prêmios à esquerda, palco no centro, quadro das 90 bolas
+ * embaixo, cupons à direita). Palco fixo de 1920×1080 (TvStage escala).
+ *
+ * Feito para a WebView antiga das TVs (Chrome 66): grid com `grid-gap`, sem
+ * `aspect-ratio`/`min()`/blur/backdrop-filter; nenhuma animação contínua.
+ * As únicas animações (entrada da bola) são `transform`/`opacity` e o
+ * html.tv-ultra já as reduz a 1ms (globals.css).
+ */
+
+.screen {
+  --navy: #092f72;
+  --deep: #06245f;
+  --royal: #0757d6;
+  --vivid: #0c8fe8;
+  --cyan: #35d6f4;
+  --ice: #eafbff;
+  --edge: #92dcf4;
+  --gold: #f7c948;
+  --red: #e51d36;
+  --green: #12a150;
+
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 6px 14px 14px;
+  display: grid;
+  grid-template-columns: 488px minmax(0, 1fr) 608px;
+  grid-template-rows: 88px minmax(0, 1fr) 352px;
+  grid-gap: 12px 14px;
+  gap: 12px 14px;
+  font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+  color: var(--navy);
+}
+
+/* ─── Cabeçalho ─────────────────────────────────────────────────────────── */
+
+.header {
+  grid-column: 1 / -1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+}
+
+.headerLeft > * + * {
+  margin-left: 12px;
+}
+
+.datePill {
+  display: flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #ffffff 0%, #e3f3ff 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.28);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.datePill img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.pipe {
+  margin: 0 12px;
+  width: 2px;
+  height: 22px;
+  background: rgba(9, 47, 114, 0.3);
+}
+
+.sound {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 35% 30%, #ff6b7c 0%, var(--red) 45%, #9d0c20 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(6, 36, 95, 0.35);
+}
+
+.soundOff {
+  background: radial-gradient(circle at 35% 30%, #7f9cc6 0%, #3d5b8f 55%, #22375e 100%);
+}
+
+/* Bolhas decorativas do topo (fixas). */
+.bubbles {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 780px;
+  height: 88px;
+  margin-left: -390px;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  font-size: calc(var(--s) * 0.42);
+  font-weight: 900;
+  color: var(--royal);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, rgba(234, 251, 255, 0.85) 40%, rgba(146, 220, 244, 0.55) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 12px rgba(53, 214, 244, 0.55);
+}
+
+.logo {
+  height: 84px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ─── Coluna de prêmios ─────────────────────────────────────────────────── */
+
+.prizes {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.3fr 1fr 1fr 1fr 0.86fr 0.86fr;
+  grid-gap: 10px;
+  gap: 10px;
+}
+
+.jackpot {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px 0 6px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #0d4fc4 0%, #0a3a9c 55%, var(--deep) 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 6px 14px rgba(6, 36, 95, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.trophy {
+  height: 96px;
+  width: auto;
+  margin-right: 6px;
+  flex: none;
+}
+
+.jackpotText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.jackpotLabel {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.jackpotValue {
+  margin-top: 4px;
+  color: var(--gold);
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 0 #7a4b00, 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
+.untilBall {
+  flex: none;
+  margin-left: 8px;
+  width: 98px;
+  height: 98px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 35% 30%, #ff6b7c 0%, var(--red) 50%, #9d0c20 100%);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 3px rgba(229, 29, 54, 0.45), 0 4px 10px rgba(0, 0, 0, 0.35);
+  color: #ffffff;
+  text-align: center;
+  font-weight: 900;
+  line-height: 0.95;
+}
+
+.untilBallSmall {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.untilBallNum {
+  font-size: 40px;
+}
+
+.prizeRow {
+  grid-column: 1 / -1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  grid-gap: 12px;
+  gap: 12px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #dcefff 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.28);
+}
+
+.prizeLabelBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.prizeLabel {
+  display: block;
+  padding: 3px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ff4a5d 0%, var(--red) 60%, #b10f25 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(120, 0, 20, 0.35);
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 1px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.prizeStatus {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.statusDone {
+  color: var(--green);
+}
+
+.prizeValue {
+  height: 70%;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 2px solid rgba(146, 220, 244, 0.9);
+  box-shadow: inset 0 2px 4px rgba(9, 47, 114, 0.12);
+  color: var(--navy);
+  font-size: 36px;
+  font-weight: 900;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Prêmio em disputa: card azul-royal e valor vermelho com texto dourado. */
+.prizeActive {
+  background: linear-gradient(180deg, #0d4fc4 0%, #0a3a9c 60%, var(--deep) 100%);
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(53, 214, 244, 0.35), 0 6px 14px rgba(6, 36, 95, 0.45);
+}
+
+.prizeActive .prizeStatus {
+  color: #ffffff;
+}
+
+.prizeActive .prizeValue {
+  background: linear-gradient(180deg, #ff4a5d 0%, var(--red) 55%, #a50d22 100%);
+  border-color: var(--gold);
+  color: var(--gold);
+  text-shadow: 0 2px 0 #6b0010;
+  box-shadow: 0 2px 6px rgba(120, 0, 20, 0.4);
+}
+
+.tile {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #dcefff 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.25);
+}
+
+.tile img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  margin-right: 10px;
+  flex: none;
+}
+
+.tileText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tileLabel {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.tileValue {
+  margin-top: 3px;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Palco ─────────────────────────────────────────────────────────────── */
+
+.stage {
+  position: relative;
+  min-height: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: radial-gradient(ellipse 60% 62% at 46% 58%, #ffffff 0%, #c9efff 32%, #7fcff6 70%, #3ea6ea 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 6px 16px rgba(6, 36, 95, 0.38), inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+/* Raios suaves atrás da bola (estáticos). */
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  background: repeating-conic-gradient(
+    from 0deg at 46% 52%,
+    rgba(255, 255, 255, 0.9) 0deg 4deg,
+    rgba(255, 255, 255, 0) 4deg 14deg
+  );
+}
+
+.stageTitleRow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.stageTitle {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--navy);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+  margin-right: 140px;
+}
+
+.star {
+  color: var(--red);
+  font-size: 26px;
+  margin: 0 10px;
+}
+
+.lastLabel {
+  position: absolute;
+  right: 18px;
+  top: 10px;
+  padding-left: 16px;
+  border-left: 2px solid rgba(9, 47, 114, 0.25);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--navy);
+}
+
+.lastBalls {
+  position: absolute;
+  right: 44px;
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.lastBalls > * + * {
+  margin-top: 14px;
+}
+
+/* Bola brilhante colorida (últimas bolas). */
+.gball {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  font-size: 36px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.45);
+  background: radial-gradient(circle at 34% 28%, #ffffff 0%, var(--hi) 14%, var(--mid) 52%, var(--low) 100%);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.4);
+}
+
+.gGold {
+  --hi: #fff1a8;
+  --mid: #f7c948;
+  --low: #b9800b;
+  color: var(--navy);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.gBlue {
+  --hi: #7cc4ff;
+  --mid: #0757d6;
+  --low: #04286e;
+}
+
+.gRed {
+  --hi: #ff8a96;
+  --mid: #e51d36;
+  --low: #8e0a1c;
+}
+
+/* Arena: halo de luzes + bola grande + plataforma. */
+.arena {
+  position: absolute;
+  left: 50%;
+  top: 76px;
+  width: 360px;
+  height: 360px;
+  margin-left: -230px;
+  z-index: 1;
+}
+
+.halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 8px dotted rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 10px rgba(53, 214, 244, 0.35), 0 0 34px rgba(53, 214, 244, 0.75), inset 0 0 26px rgba(53, 214, 244, 0.55);
+}
+
+.bigBall {
+  position: absolute;
+  left: 34px;
+  top: 34px;
+  width: 292px;
+  height: 292px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  background: #ffffff;
+  border: 16px solid var(--red);
+  box-shadow: 0 8px 20px rgba(6, 36, 95, 0.45);
+}
+
+/* Anel azul de dentro: borda (e não box-shadow, que o modo ultra leve tira). */
+.bigInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 7px solid var(--royal);
+  background: radial-gradient(circle at 36% 30%, #ffffff 0%, #ffffff 52%, #e3edf8 80%, #c3d3e6 100%);
+}
+
+.bigNumber {
+  font-size: 150px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.ballPop {
+  animation: azulBallPop 460ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+@keyframes azulBallPop {
+  from {
+    transform: scale(0.55);
+    opacity: 0.2;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.platform {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  width: 470px;
+  height: 92px;
+  margin-left: -280px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, #6fdcff 0%, #0c8fe8 38%, #0757d6 70%, #06245f 100%);
+  border-top: 4px solid #eafbff;
+  box-shadow: 0 10px 18px rgba(6, 36, 95, 0.45);
+}
+
+.platform::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 42%;
+  height: 8px;
+  border-radius: 4px;
+  background: radial-gradient(circle, #ffffff 2px, rgba(255, 255, 255, 0) 3px) 0 50% / 22px 8px repeat-x;
+  opacity: 0.9;
+}
+
+.cardsArt {
+  position: absolute;
+  left: 22px;
+  bottom: 96px;
+  width: 196px;
+  height: auto;
+  z-index: 1;
+}
+
+.globeArt {
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
+  width: 168px;
+  height: auto;
+  z-index: 1;
+}
+
+.countPill {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  z-index: 3;
+}
+
+.countBall {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 35% 30%, #ff8a96 0%, var(--red) 50%, #8e0a1c 100%);
+  border: 3px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(6, 36, 95, 0.35);
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 900;
+  position: relative;
+  z-index: 1;
+}
+
+.countText {
+  margin-left: -18px;
+  padding: 10px 26px 10px 32px;
+  border-radius: 0 26px 26px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #e3f3ff 100%);
+  border: 2px solid var(--edge);
+  font-size: 26px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1px;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+/* ─── Quadro das 90 bolas ───────────────────────────────────────────────── */
+
+.board {
+  grid-column: 1 / 3;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 16px 12px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(234, 251, 255, 0.96) 0%, rgba(205, 236, 255, 0.94) 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 6px 16px rgba(6, 36, 95, 0.35);
+}
+
+.boardTitle {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--navy);
+}
+
+.boardStar {
+  color: var(--gold);
+  font-size: 24px;
+  margin: 0 12px;
+  text-shadow: 0 1px 0 #9a6a00;
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+}
+
+.cell {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--navy);
+  background: radial-gradient(circle at 34% 28%, #ffffff 0%, #f4f8fd 40%, #d5e1ee 100%);
+  border: 1px solid rgba(9, 47, 114, 0.18);
+  box-shadow: 0 2px 3px rgba(6, 36, 95, 0.22);
+}
+
+.cellRed {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  background: radial-gradient(circle at 34% 28%, #ffb1b9 0%, #ff4a5d 18%, var(--red) 55%, #8e0a1c 100%);
+  border-color: rgba(142, 10, 28, 0.6);
+}
+
+.cellBlue {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  background: radial-gradient(circle at 34% 28%, #a9d8ff 0%, #2f8cff 18%, var(--royal) 55%, #04286e 100%);
+  border-color: rgba(4, 40, 110, 0.6);
+}
+
+/* Bola branca com anel vermelho e azul (como a bola grande). Anel azul no
+ * gradiente (e não box-shadow, que o modo ultra leve tira). */
+.cellRing {
+  background: radial-gradient(
+    circle,
+    #ffffff 0,
+    #ffffff 16px,
+    #0757d6 16.5px,
+    #0757d6 19px,
+    #ffffff 19.5px
+  );
+  border: 4px solid var(--red);
+}
+
+/* Bola que acabou de sair: anel dourado. */
+.cellCurrent {
+  color: var(--navy);
+  text-shadow: none;
+  background: radial-gradient(circle at 34% 28%, #ffffff 0%, #fff6d1 50%, #f3d77a 100%);
+  border: 4px solid var(--gold);
+  box-shadow: 0 0 0 3px rgba(247, 201, 72, 0.45), 0 0 12px rgba(247, 201, 72, 0.85);
+}
+
+/* ─── Coluna direita (cupons + cartelas) ────────────────────────────────── */
+
+.side {
+  grid-column: 3;
+  grid-row: 2 / 4;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sideCoupons {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.sideCouponsSplit {
+  flex: 55 1 0;
+}
+
+.sideTickets {
+  flex: 45 1 0;
+  min-height: 0;
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ballPop {
+    animation: none;
+  }
+}
+
+/* TV ultra leve: sem os raios do palco (os gradientes ficam). */
+:global(html.tv-ultra) .stage::before {
+  display: none;
+}

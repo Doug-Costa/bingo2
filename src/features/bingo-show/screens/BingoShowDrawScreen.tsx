@@ -50,6 +50,7 @@ import { useTvConfig, useT } from '@/contexts/TvConfigContext';
 import { TopFlagBand } from '../components/loteriai/FlagArt';
 import { LoteriaiHeaderJackpot, LoteriaiHeaderMeta } from '../components/BingoShowPrizeStatusCard';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { AzulDrawScreen } from '../components/azul/AzulDrawScreen';
 
 // O hook (`useBingoShowRealtimeDraw`) expõe o status de cada prêmio como o rótulo de
 // exibição em si (`PrizeStatusType`, ex.: "EM DISPUTA"), não como o enum visual que
@@ -297,7 +298,7 @@ const DrawHeader = React.memo(function DrawHeader({
   );
 });
 
-export const BingoShowDrawScreen: React.FC = () => {
+const ClassicDrawScreen: React.FC = () => {
   const mock = useBingoShowRealtimeDraw();
   const { isBlue, themeId } = useAppTheme();
   // Família es-PY (Paraguay, Loteria'i): o resto do visual do cabeçalho fica no DrawHeader.
@@ -456,6 +457,13 @@ export const BingoShowDrawScreen: React.FC = () => {
     </BingoShowAmbientBackground>
     </Profiler>
   );
+};
+
+/** Bingo Show Azul tem tela de sorteio própria (components/azul/); os demais
+ * temas seguem com a tela clássica acima. */
+export const BingoShowDrawScreen: React.FC = () => {
+  const { isAzul } = useAppTheme();
+  return isAzul ? <AzulDrawScreen /> : <ClassicDrawScreen />;
 };
 
 export default BingoShowDrawScreen;

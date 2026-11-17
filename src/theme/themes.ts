@@ -798,6 +798,28 @@ export const temaLoteriaiTokens: ThemeTokens = {
   colorsExtended: Colors.temaLoteriai,
 };
 
+// ─── Tema Bingo Show Azul (bingo-show-azul) ────────────────────────────────
+// Game show azul luminoso (fundo em CSS, cards claros). Mesma família do Blue
+// (popups e lobby do Blue); a tela de sorteio vive em `components/azul/`.
+export const temaBingoShowAzulTokens: ThemeTokens = {
+  ...temaBingoShowBlueTokens,
+  bgColor: '#0757D6',
+  primary: '#0757D6',
+  secondary: '#35D6F4',
+  accent: '#F7C948',
+  error: '#E51D36',
+  meta: {
+    id: 'bingo-show-azul',
+    name: 'bingo-show-azul',
+    displayName: 'Bingo Show Azul',
+    version: '1.0.0',
+    description: 'Game show azul luminoso: fundo em CSS, cards claros, leve para TVs fracas.',
+    isPremium: true,
+    supportedOrientations: ['landscape'],
+    targetResolution: '1920x1080',
+  },
+};
+
 export interface ThemeOption {
   id: string;
   name: string;
@@ -881,6 +903,20 @@ export const AVAILABLE_THEMES: ThemeOption[] = [
     },
   },
 
+  {
+    id: 'bingo-show-azul',
+    name: 'bingo-show-azul',
+    displayName: 'Bingo Show Azul',
+    description: 'Game show azul luminoso, cards claros e fundo leve em CSS.',
+    badge: 'Novo',
+    previewColors: {
+      primary: '#0757D6',
+      secondary: '#35D6F4',
+      background: '#0C8FE8',
+      accent: '#F7C948',
+    },
+  },
+
 ];
 
 /**
@@ -896,6 +932,9 @@ export function getThemeKey(themeInput?: unknown): string {
     if (norm.includes('paraguay') || norm === 'py') {
       return 'bingo-show-paraguay';
     }
+    if (norm.includes('azul')) {
+      return 'bingo-show-azul';
+    }
     if (norm.includes('blue') || norm === 'tema-blue' || norm === 'bingo-show-blue') {
       return 'bingo-show-blue';
     }
@@ -908,6 +947,7 @@ export function getThemeKey(themeInput?: unknown): string {
     const id = String((themeInput as any).id || (themeInput as any).name || (themeInput as any).type || '').toLowerCase();
     if (id.includes('loteria')) return 'loteriai';
     if (id.includes('paraguay')) return 'bingo-show-paraguay';
+    if (id.includes('azul')) return 'bingo-show-azul';
     if (id.includes('blue') || id === 'tema-blue') return 'bingo-show-blue';
     if (id.includes('ouro') || id.includes('gold') || id === 'tema01' || id === 'tema-ouro') return 'tema-ouro';
   }
@@ -922,6 +962,8 @@ export function resolveTheme(themeInput?: unknown): ThemeTokens {
   switch (key) {
     case 'bingo-show-blue':
       return temaBingoShowBlueTokens;
+    case 'bingo-show-azul':
+      return temaBingoShowAzulTokens;
     case 'tema-ouro':
       return temaOuroTokens;
     case 'bingo-show-paraguay':

@@ -1,0 +1,409 @@
+/**
+ * AzulDrawScreen.tsx — tela de sorteio do tema `bingo-show-azul`.
+ *
+ * Segue o mockup do tema: prêmios à esquerda, palco com a bola grande no
+ * centro, quadro das 90 bolas embaixo e cupons (com as cartelas, quando há) à
+ * direita. Os dados, a voz e os popups são os mesmos da tela clássica
+ * (useBingoShowRealtimeDraw, useBingoAudio, BingoShowWinnerPopup); só a
+ * apresentação é própria.
+ *
+ * `AzulDrawView` só desenha (recebe os dados prontos) — é o que a página
+ * /preview-azul usa com dados de exemplo, sem PIN nem backend.
+ *
+ * TVs fracas: cada bloco é memorizado e só redesenha quando o seu dado muda;
+ * nenhuma animação contínua; a entrada da bola é transform/opacity (o modo
+ * ultra leve a reduz a 1ms). Ver AzulDraw.module.css.
+ */
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { BingoShowTvLayout } from '../../layouts/BingoShowTvLayout';
+import { BingoShowAmbientBackground } from '../BingoShowAmbientBackground';
+import { BingoShowCouponsTable } from '../BingoShowCouponsTable';
+import { BingoShowTicketsGrid } from '../BingoShowTicketsGrid';
+import { BingoShowWinnerPopup } from '../BingoShowWinnerPopup';
+import { BingoShowIcon } from '../BingoShowIcon';
+import { useBingoShowRealtimeDraw, type BingoShowRealtimeDraw, type PrizeStatusType } from '../../hooks/useBingoShowRealtimeDraw';
+import { useBingoAudio, type PrizeType, type ShownPrize } from '../../hooks/useBingoAudio';
+import { useTvConfig, useT } from '@/contexts/TvConfigContext';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import css from './AzulDraw.module.css';
+
+const A = '/themes/bingo-show-azul';
+
+/** Relógio com estado próprio: atualiza só este texto a cada segundo.
+ * Começa vazio e liga após montar (o HTML do servidor não tem a hora da TV). */
+const LiveClock: React.FC = () => {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return <span>{now ? `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}` : '--:--:--'}</span>;
+};
+
+// ─── Cabeçalho ───────────────────────────────────────────────────────────────
+
+const BUBBLES = [
+  { n: 15, x: 150, y: 4, s: 58 },
+  { n: 42, x: 300, y: 0, s: 64 },
+  { n: 63, x: 520, y: 10, s: 58 },
+  { n: 90, x: 680, y: 2, s: 72 },
+];
+
+const AzulHeader = React.memo(function AzulHeader({
+  dateStr,
+  soundEnabled,
+  soundOn,
+  onToggleSound,
+}: {
+  dateStr: string;
+  soundEnabled: boolean;
+  soundOn: boolean;
+  onToggleSound: () => void;
+}) {
+  return (
+    <div className={css.header}>
+      <div className={css.headerLeft}>
+        <div className={css.datePill}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
+          <img src="/themes/bingo-show-blue/calendario.webp" alt="" />
+          <span>{dateStr}</span>
+          <span className={css.pipe} />
+          <LiveClock />
+        </div>
+        {soundEnabled && (
+          <div className={`${css.sound} ${soundOn ? '' : css.soundOff}`} onClick={onToggleSound}>
+            <BingoShowIcon name={soundOn ? 'sound' : 'speaker-off'} size={22} color="#FFFFFF" transparentBg />
+          </div>
+        )}
+      </div>
+
+      <div className={css.bubbles} aria-hidden="true">
+        {BUBBLES.map((b) => (
+          <span key={b.n} className={css.bubble} style={{ left: b.x, top: b.y, '--s': `${b.s}px` } as React.CSSProperties}>
+            {b.n}
+          </span>
+        ))}
+      </div>
+
+      {/* eslint-disable-next-line @next/next/no-img-element -- marca do tema */}
+      <img className={css.logo} src="/themes/bingo-show-blue/logos/logo-main.webp" alt="BINGO SHOW" />
+    </div>
+  );
+});
+
+// ─── Prêmios ────────────────────────────────────────────────────────────────
+
+type RowState = 'active' | 'done' | 'waiting';
+
+function rowState(status: PrizeStatusType): RowState {
+  if (status === 'EM DISPUTA') return 'active';
+  if (status === 'PREMIADO') return 'done';
+  return 'waiting';
+}
+
+const PrizeRow: React.FC<{ label: string; amount: string; state: RowState }> = ({ label, amount, state }) => {
+  const t = useT();
+  return (
+    <div className={`${css.prizeRow} ${state === 'active' ? css.prizeActive : ''}`}>
+      <div className={css.prizeLabelBox}>
+        <span className={css.prizeLabel}>{label}</span>
+        <span className={`${css.prizeStatus} ${state === 'done' ? css.statusDone : ''}`}>
+          {state === 'done' ? `✓ ${t('azul.done')}` : state === 'active' ? t('azul.active') : t('azul.waiting')}
+        </span>
+      </div>
+      <div className={css.prizeValue}>{amount}</div>
+    </div>
+  );
+};
+
+const AzulPrizes = React.memo(function AzulPrizes({
+  accumulatedPrize,
+  triggerBallLimit,
+  jackpotActive,
+  line1Prize,
+  line1Status,
+  line2Prize,
+  line2Status,
+  bingoPrize,
+  bingoStatus,
+  drawNumber,
+  donationAmount,
+  dateStr,
+  timeStr,
+}: Pick<
+  BingoShowRealtimeDraw,
+  | 'accumulatedPrize'
+  | 'triggerBallLimit'
+  | 'jackpotActive'
+  | 'line1Prize'
+  | 'line1Status'
+  | 'line2Prize'
+  | 'line2Status'
+  | 'bingoPrize'
+  | 'bingoStatus'
+  | 'drawNumber'
+  | 'donationAmount'
+  | 'dateStr'
+  | 'timeStr'
+>) {
+  const t = useT();
+  const tiles = [
+    { icon: `${A}/cartelas.webp`, label: t('azul.draw'), value: drawNumber },
+    { icon: '/themes/bingo-show-blue/moedas-pilha.webp', label: t('azul.value'), value: donationAmount },
+    { icon: '/themes/bingo-show-blue/calendario.webp', label: t('azul.date'), value: dateStr },
+    { icon: '/themes/bingo-show-blue/relogio-areia-dourado.webp', label: t('azul.time'), value: timeStr },
+  ];
+  return (
+    <div className={css.prizes}>
+      <div className={css.jackpot}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
+        <img className={css.trophy} src={`${A}/trofeu.webp`} alt="" />
+        <div className={css.jackpotText}>
+          <span className={css.jackpotLabel}>{t('azul.jackpot1')}</span>
+          <span className={css.jackpotLabel}>{t('azul.jackpot2')}</span>
+          <span className={css.jackpotValue}>{accumulatedPrize}</span>
+        </div>
+        {jackpotActive && triggerBallLimit > 0 && (
+          <div className={css.untilBall}>
+            <span className={css.untilBallSmall}>{t('azul.untilBall1')}</span>
+            <span className={css.untilBallSmall}>{t('azul.untilBall2')}</span>
+            <span className={css.untilBallNum}>{triggerBallLimit}</span>
+          </div>
+        )}
+      </div>
+
+      <PrizeRow label={t('azul.line1')} amount={line1Prize} state={rowState(line1Status)} />
+      <PrizeRow label={t('azul.line2')} amount={line2Prize} state={rowState(line2Status)} />
+      <PrizeRow label={t('azul.bingo')} amount={bingoPrize} state={rowState(bingoStatus)} />
+
+      {tiles.map((tile) => (
+        <div key={tile.label} className={css.tile}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
+          <img src={tile.icon} alt="" />
+          <div className={css.tileText}>
+            <span className={css.tileLabel}>{tile.label}</span>
+            <span className={css.tileValue}>{tile.value}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+});
+
+// ─── Palco ──────────────────────────────────────────────────────────────────
+
+const LAST_TONES = [css.gGold, css.gBlue, css.gRed];
+
+const AzulStage = React.memo(function AzulStage({
+  currentBall,
+  lastBalls,
+  count,
+  total,
+}: {
+  currentBall: number;
+  lastBalls: number[];
+  count: number;
+  total: number;
+}) {
+  const t = useT();
+  const hasBall = currentBall > 0;
+  return (
+    <div className={css.stage}>
+      <div className={css.stageTitleRow}>
+        <span className={css.stageTitle}>
+          <span className={css.star}>★</span>
+          {t('azul.drawnBalls')}
+          <span className={css.star}>★</span>
+        </span>
+      </div>
+      <div className={css.lastLabel}>
+        {t('azul.lastBalls1')}
+        <br />
+        {t('azul.lastBalls2')}
+      </div>
+      <div className={css.lastBalls}>
+        {lastBalls.map((n, i) => (
+          <span key={`${i}-${n}`} className={`${css.gball} ${LAST_TONES[i % LAST_TONES.length]}`}>
+            {n}
+          </span>
+        ))}
+      </div>
+
+      {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
+      <img className={css.cardsArt} src={`${A}/cartelas.webp`} alt="" />
+      <div className={css.platform} />
+      <div className={css.arena}>
+        <div className={css.halo} />
+        {/* key: a bola remonta (e faz a entrada) só quando o número muda. */}
+        <div key={hasBall ? currentBall : 'none'} className={`${css.bigBall} ${hasBall ? css.ballPop : ''}`}>
+          <div className={css.bigInner}>
+            <span className={css.bigNumber}>{hasBall ? currentBall : '--'}</span>
+          </div>
+        </div>
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
+      <img className={css.globeArt} src={`${A}/globo.webp`} alt="" />
+
+      <div className={css.countPill}>
+        <span className={css.countBall}>{count}</span>
+        <span className={css.countText}>{t('azul.ballOf', { n: count, total })}</span>
+      </div>
+    </div>
+  );
+});
+
+// ─── Quadro das 90 bolas ────────────────────────────────────────────────────
+
+const NUMBERS = Array.from({ length: 90 }, (_, i) => i + 1);
+
+/** Cor da bola sorteada pela linha do quadro (como no mockup). */
+function drawnTone(n: number): string {
+  const row = Math.floor((n - 1) / 18);
+  return (row === 2 ? css.cellBlue : row % 3 === 1 ? css.cellRing : css.cellRed) ?? '';
+}
+
+const AzulBoard = React.memo(
+  function AzulBoard({ drawnBalls, currentBall }: { drawnBalls: number[]; currentBall: number }) {
+    const t = useT();
+    const drawn = new Set(drawnBalls);
+    return (
+      <div className={css.board}>
+        <div className={css.boardTitle}>
+          <span className={css.boardStar}>★</span>
+          {t('azul.board')}
+          <span className={css.boardStar}>★</span>
+        </div>
+        <div className={css.grid}>
+          {NUMBERS.map((n) => {
+            const tone = n === currentBall ? css.cellCurrent : drawn.has(n) ? drawnTone(n) : '';
+            return (
+              <span key={n} className={`${css.cell} ${tone}`}>
+                {n}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    );
+  },
+  // A lista chega nova a cada evento: só redesenha quando muda de verdade.
+  (a, b) => a.currentBall === b.currentBall && a.drawnBalls.length === b.drawnBalls.length && a.drawnBalls[a.drawnBalls.length - 1] === b.drawnBalls[b.drawnBalls.length - 1],
+);
+
+// ─── Tela ───────────────────────────────────────────────────────────────────
+
+export type AzulDrawData = Pick<
+  BingoShowRealtimeDraw,
+  | 'drawNumber'
+  | 'donationAmount'
+  | 'currentBall'
+  | 'drawnBalls'
+  | 'totalBalls'
+  | 'accumulatedPrize'
+  | 'triggerBallLimit'
+  | 'jackpotActive'
+  | 'line1Prize'
+  | 'line1Status'
+  | 'line2Prize'
+  | 'line2Status'
+  | 'bingoPrize'
+  | 'bingoStatus'
+  | 'dateStr'
+  | 'timeStr'
+  | 'coupons'
+  | 'tickets'
+>;
+
+export interface AzulDrawViewProps {
+  data: AzulDrawData;
+  soundEnabled: boolean;
+  soundOn: boolean;
+  onToggleSound: () => void;
+}
+
+export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, soundOn, onToggleSound }) => {
+  const lastBalls = React.useMemo(() => {
+    const list = data.drawnBalls;
+    const withoutCurrent = data.currentBall && list[list.length - 1] === data.currentBall ? list.slice(0, -1) : list;
+    return withoutCurrent.slice(-3).reverse();
+  }, [data.drawnBalls, data.currentBall]);
+  const hasTickets = data.tickets.length > 0;
+
+  return (
+    <div className={css.screen}>
+      <AzulHeader dateStr={data.dateStr} soundEnabled={soundEnabled} soundOn={soundOn} onToggleSound={onToggleSound} />
+      <AzulPrizes
+        accumulatedPrize={data.accumulatedPrize}
+        triggerBallLimit={data.triggerBallLimit}
+        jackpotActive={data.jackpotActive}
+        line1Prize={data.line1Prize}
+        line1Status={data.line1Status}
+        line2Prize={data.line2Prize}
+        line2Status={data.line2Status}
+        bingoPrize={data.bingoPrize}
+        bingoStatus={data.bingoStatus}
+        drawNumber={data.drawNumber}
+        donationAmount={data.donationAmount}
+        dateStr={data.dateStr}
+        timeStr={data.timeStr}
+      />
+      <AzulStage currentBall={data.currentBall} lastBalls={lastBalls} count={data.drawnBalls.length} total={data.totalBalls} />
+      <div className={css.side}>
+        <div className={`${css.sideCoupons} ${hasTickets ? css.sideCouponsSplit : ''}`}>
+          <BingoShowCouponsTable coupons={data.coupons} compact={hasTickets} />
+        </div>
+        {hasTickets && (
+          <div className={css.sideTickets}>
+            <BingoShowTicketsGrid tickets={data.tickets} drawnBalls={data.drawnBalls} latestBall={data.currentBall} />
+          </div>
+        )}
+      </div>
+      <AzulBoard drawnBalls={data.drawnBalls} currentBall={data.currentBall} />
+    </div>
+  );
+};
+
+export const AzulDrawScreen: React.FC = () => {
+  const mock = useBingoShowRealtimeDraw();
+  const { voice, soundEnabled } = useTvConfig();
+  const [soundOn, setSoundOn] = useState(true);
+  const toggleSound = React.useCallback(() => setSoundOn((prev) => !prev), []);
+
+  // Mesma voz da tela clássica; sai quando a bola termina de entrar no palco.
+  const [shownPrize, setShownPrize] = useState<ShownPrize | null>(null);
+  const handlePrizeShown = React.useCallback((type: PrizeType) => setShownPrize((prev) => ({ type, seq: (prev?.seq ?? 0) + 1 })), []);
+  const reducedMotion = usePrefersReducedMotion();
+  useBingoAudio(soundEnabled && soundOn, mock.currentBall, shownPrize, mock.isLive, mock.drawNumber, voice, reducedMotion ? 150 : 500);
+
+  return (
+    <BingoShowAmbientBackground brightness="light">
+      <BingoShowTvLayout
+        mainFlex={1}
+        style={{ padding: 0 }}
+        fullBody={<AzulDrawView data={mock} soundEnabled={soundEnabled} soundOn={soundOn} onToggleSound={toggleSound} />}
+        overlay={
+          <BingoShowWinnerPopup
+            winners={mock.winners}
+            onPrizeShown={handlePrizeShown}
+            isDrawFinished={mock.isDrawFinished}
+            drawNumber={mock.drawNumber}
+            dateStr={mock.dateStr}
+            timeStr={mock.timeStr}
+            line1Prize={mock.line1Prize}
+            line2Prize={mock.line2Prize}
+            bingoPrize={mock.bingoPrize}
+            jackpotAmount={mock.accumulatedPrize}
+            drawnNumbers={mock.drawnBalls}
+            isLive={mock.isLive}
+          />
+        }
+      />
+    </BingoShowAmbientBackground>
+  );
+};
+
+export default AzulDrawScreen;

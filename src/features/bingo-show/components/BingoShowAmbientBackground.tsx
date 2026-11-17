@@ -7,6 +7,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 import { GoldBackground } from './gold/GoldBackground';
 import { ParaguayBackground } from './paraguay/ParaguayBackground';
 import { LoteriaiBackground } from './loteriai/LoteriaiBackground';
+import { AzulBackground } from './azul/AzulBackground';
 
 
 interface ParticleSpec {
@@ -106,6 +107,16 @@ export function BingoShowAmbientBackground({
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#06152D', overflow: 'hidden' }}>
         <ParaguayBackground />
+        <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
+      </div>
+    );
+  }
+
+  // Tema Bingo Show Azul: fundo de game show só em CSS (gradientes, raios, brilhos).
+  if (themeId === 'bingo-show-azul') {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#0757D6', overflow: 'hidden' }}>
+        <AzulBackground />
         <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>{children}</div>
       </div>
     );

@@ -11,7 +11,10 @@ export interface ThemeContextValue {
   theme: ThemeTokens;
   setThemeId: (_id: string) => void;
   availableThemes: ThemeOption[];
+  /** Família Blue: `bingo-show-blue` e `bingo-show-azul` (popups e lobby do Blue). */
   isBlue: boolean;
+  /** Tema Bingo Show Azul (tela de sorteio própria em components/azul/). */
+  isAzul: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
@@ -20,6 +23,7 @@ const ThemeContext = createContext<ThemeContextValue>({
   setThemeId: () => {},
   availableThemes: AVAILABLE_THEMES,
   isBlue: false,
+  isAzul: false,
 });
 
 function readStoredThemeId(): string | null {
@@ -95,7 +99,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       theme: activeTheme,
       setThemeId,
       availableThemes: AVAILABLE_THEMES,
-      isBlue: themeId === 'bingo-show-blue',
+      isBlue: themeId === 'bingo-show-blue' || themeId === 'bingo-show-azul',
+      isAzul: themeId === 'bingo-show-azul',
     }),
     [themeId, activeTheme, setThemeId]
   );
