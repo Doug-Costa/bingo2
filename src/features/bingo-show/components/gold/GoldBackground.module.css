@@ -109,3 +109,10 @@
     display: none;
   }
 }
+
+/* TV fraca: fundo parado. */
+:global(html.tv-lite) .halo,
+:global(html.tv-lite) .sweep,
+:global(html.tv-lite) .particle {
+  animation: none;
+}

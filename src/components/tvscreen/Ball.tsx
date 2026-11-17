@@ -16,7 +16,7 @@
  * `logAssetLoad` (logger de diagnóstico só de dev) não portado — não afeta
  * dado/visual real.
  */
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { resolveTheme, type ThemeTokens } from '@/theme/themes';
 import { resolveBallAsset, type BallVisualState } from '../theme/resolveBallAsset';
 import { combineStyles } from '../theme/utils';
@@ -157,7 +157,7 @@ export function Ball({
           }}
         />
 
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '6%', paddingRight: '6%' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '6%', paddingRight: '6%' }}>
           <span
             style={{
               fontWeight: 900,
@@ -202,4 +202,4 @@ export function Ball({
   );
 }
 
-export default Ball;
+export default memo(Ball);

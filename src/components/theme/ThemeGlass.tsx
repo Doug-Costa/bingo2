@@ -17,7 +17,7 @@ export interface ThemeGlassProps extends ThemeComponentProps {
   useTexture?: boolean;
 }
 
-const absoluteFill: CSSProperties = { position: 'absolute', inset: 0 };
+const absoluteFill: CSSProperties = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 };
 
 export function ThemeGlass({
   theme,

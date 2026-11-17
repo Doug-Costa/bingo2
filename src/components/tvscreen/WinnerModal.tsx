@@ -14,6 +14,7 @@
  * Duração de exibição (8s) continua controlada externamente por quem
  * passa/limpa a prop `winner` — não alterado.
  */
+import { memo } from 'react';
 import { TV_STAGE_WIDTH } from '@/components/tv/TvStageContext';
 import type { WinnerEvent } from '@/contexts/SSEContext';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
@@ -76,7 +77,7 @@ const WINNER_VISUAL: Record<WinnerVisualType, WinnerVisualConfig> = {
 };
 
 // Mesmo agrupamento de cor da `WINNER_VISUAL.accentColor` acima, mas apontando
-// pros assets reais do tema (`border-neon-gold/blue.png`, `border-winner.png`)
+// pros assets reais do tema (`border-neon-gold/blue.webp`, `border-winner.webp`)
 // em vez de cor CSS pura — os mesmos assets já usados em `AnimatedActiveBall`/`ThemePanel`.
 function themeAssetVariant(type: WinnerVisualType): 'gold' | 'blue' | 'winner' {
   if (type === 'line2') return 'blue';
@@ -103,7 +104,7 @@ export function WinnerModal({ winner, drawnNumbers, theme }: WinnerModalProps) {
     <div
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0, right: 0, bottom: 0, left: 0,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -156,7 +157,7 @@ export function WinnerModal({ winner, drawnNumbers, theme }: WinnerModalProps) {
           <div
             style={{
               position: 'absolute',
-              inset: 0,
+              top: 0, right: 0, bottom: 0, left: 0,
               borderRadius: 40,
               backgroundColor: alphaColor(accent, '08'),
               animation: 'bs-glow-pulse 2000ms ease-in-out infinite',
@@ -274,4 +275,4 @@ export function WinnerModal({ winner, drawnNumbers, theme }: WinnerModalProps) {
   );
 }
 
-export default WinnerModal;
+export default memo(WinnerModal);

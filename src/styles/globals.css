@@ -483,3 +483,70 @@ button {
     transform: translateY(calc(var(--drift) * -1px)) scale(1.2);
   }
 }
+
+/* Modo leve (Android TV): loops decorativos rodam uma vez e param, e nada reserva
+ * camada de GPU sem necessidade. A chegada da bola e os popups continuam animados. */
+html.tv-lite *:not(.tv-keep-anim),
+html.tv-lite *::before,
+html.tv-lite *::after {
+  animation-iteration-count: 1 !important;
+  will-change: auto !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html.tv-lite .tv-no-anim {
+  animation: none !important;
+}
+
+/* Ultra leve (TV muito fraca): toda animação e transição pula direto para o quadro
+ * final — tabela de cupons (flash de sombra em cada linha), bolinhas, cartões de
+ * prêmio, popups. 1ms em vez de `none` para manter o estado final e o animationend.
+ * A entrada curta da bola (180ms) tem regra mais específica e continua. */
+html.tv-ultra *:not(.tv-keep-anim),
+html.tv-ultra *::before,
+html.tv-ultra *::after {
+  animation-duration: 1ms !important;
+  animation-delay: 0s !important;
+  transition-duration: 1ms !important;
+  transition-delay: 0s !important;
+}
+
+/* Ultra leve: sem sombras (box-shadow/text-shadow). Numa TV barata quem desenha é o
+ * processador, e cada sombra desfocada é recalculada a cada redesenho — a bola tinha
+ * sombras de até 44px. Filtros ficam (alguns dão cor: sépia do Loteria'i, cinza dos
+ * prêmios); os desfoques da bola saem no módulo do palco. */
+html.tv-ultra *,
+html.tv-ultra *::before,
+html.tv-ultra *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* TVs sem `gap` em flexbox (html.no-flexgap, ver layout.tsx): o gap vira margem
+ * entre os filhos. Camada com posição absoluta/fixa inline não é item do flex e
+ * não leva esse espaço. */
+html.no-flexgap [style][style][style*="position: absolute"]:not([style*="margin"]),
+html.no-flexgap [style][style][style*="position: fixed"]:not([style*="margin"]) {
+  margin-left: 0;
+  margin-top: 0;
+}
+
+/* TV (modo leve): o flash do top de ganhadores animava box-shadow — a TV redesenha
+ * a sombra de cada linha a cada quadro, e na bola as 10 linhas piscam juntas. Aqui
+ * a sombra fica parada e só a opacidade anima (feita pela GPU, sem redesenhar). */
+html.tv-lite [class*='CouponsTable'][class*='_flash__'] {
+  box-shadow:
+    0 0 0 2px rgba(255, 217, 90, 0.95),
+    0 0 14px rgba(255, 179, 0, 0.65) !important;
+  animation-name: tv-flash-fade !important;
+}
+
+@keyframes tv-flash-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

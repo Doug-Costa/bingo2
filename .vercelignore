@@ -1,0 +1,4 @@
+android-tv/
+./node_modules/*
+./.git/*
+.next/

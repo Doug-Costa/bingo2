@@ -16,3 +16,16 @@ export const GOLD_METAL_INLINE: React.CSSProperties = {
   textShadow: 'none',
   filter: 'drop-shadow(0 2px 0 #713600) drop-shadow(0 4px 1px rgba(25, 9, 0, 0.66)) drop-shadow(0 0 4px rgba(255, 199, 34, 0.45))',
 };
+
+/**
+ * Ouro SÓLIDO (home do Bingo Show): cor chapada + sombra escura para leitura na TV.
+ * Substitui o gradiente metálico, que ficava listrado/ilegível.
+ */
+export const GOLD_SOLID_INLINE: React.CSSProperties = {
+  color: '#FFD84A',
+  WebkitTextFillColor: '#FFD84A',
+  backgroundImage: 'none',
+  WebkitTextStroke: '0',
+  filter: 'none',
+  textShadow: '0 2px 0 #6b3500, 0 3px 6px rgba(0, 0, 0, 0.7)',
+};

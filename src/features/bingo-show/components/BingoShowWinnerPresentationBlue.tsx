@@ -19,7 +19,8 @@
 import React from 'react';
 import { BingoShowAssets } from '../assets';
 import { useFitText } from '../hooks/useFitText';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
+import { useDeferredMount } from '../hooks/useDeferredMount';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowWinnerPresentationBlue.module.css';
 import { useT } from '@/contexts/TvConfigContext';
@@ -98,8 +99,9 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
   const prize = useFitText(prizeValue, 118, 64);
   // Contagem de R$ 0,00 até o valor: começa quando o valor entra (1,05s) e dura
   // 1,9s — termina por volta de 3s, bem dentro dos 10s do popup.
-  const prizeCounting = useCountUp(prizeValue, 1050, 1900);
 
+  // TV: casa da cartela montada no quadro seguinte ao da abertura (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const hasCard = Array.isArray(cardNumbers) && cardNumbers.length > 0;
   const winRows = new Set(paintedRows);
   const isFullCard = hasCard && winRows.size >= cardNumbers!.length;
@@ -193,7 +195,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
               </span>
               <div className={styles.prizeGlow} style={{ maxWidth: '100%' }}>
                 <span className={styles.prizeValue} style={{ fontSize: prize.size, display: 'block' }} aria-label={prizeValue}>
-                  {prizeCounting}
+                  <CountUpText text={prizeValue} delayMs={1050} durationMs={1900} />
                 </span>
               </div>
             </div>
@@ -228,7 +230,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
               ))}
             </div>
             <div className={styles.grid} style={{ gridTemplateRows: `repeat(${cardNumbers!.length}, 1fr)` }}>
-              {cardNumbers!.flatMap((row, r) =>
+              {contentReady && cardNumbers!.flatMap((row, r) =>
                 row.map((num, c) => {
                   const order = winOrder.get(`${r}-${c}`);
                   const isWin = order !== undefined && num > 0;
@@ -252,7 +254,7 @@ export const BingoShowWinnerPresentationBlue: React.FC<BingoShowWinnerPresentati
                 }),
               )}
               {/* Feixe dourado sobre cada linha vencedora, depois que ela acende. */}
-              {cardNumbers!.map((row, r) => {
+              {contentReady && cardNumbers!.map((row, r) => {
                 if (!winRows.has(r)) return null;
                 const lastInRow = winOrder.get(`${r}-${row.length - 1}`) ?? 0;
                 return (

@@ -142,7 +142,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
       <div className={`${gold.vars} ${styles.screen}`}>
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={`${gold.panel} ${styles.header}`}>
-          <Image className={styles.logo} src={`${ASSET}/logos/logo-bingo-show.png`} alt="Bingo Show" width={290} height={104} sizes="290px" priority />
+          <Image className={styles.logo} src={`${ASSET}/logos/logo-bingo-show.webp`} alt="Bingo Show" width={290} height={104} sizes="290px" priority />
 
           <div className={styles.infoGroup}>
             <div className={styles.info}>
@@ -166,7 +166,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           </div>
 
           <div className={styles.headerJackpot}>
-            <Image className={`${styles.headerBag} ${gold.bagAlive}`} style={{ '--bag-delay': '1.5s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={120} height={102} sizes="120px" />
+            <Image className={`${styles.headerBag} ${gold.bagAlive}`} style={{ '--bag-delay': '1.5s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.webp`} alt="" width={120} height={102} sizes="120px" />
             <div className={styles.headerJackpotText}>
               <span className={styles.headerJackpotLabel}>{t('lobby.specialJackpot')}</span>
               <span className={`${gold.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [40, 34, 28]) }}>
@@ -187,9 +187,9 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
           {/* Próximos sorteios */}
           <section className={`${gold.panel} ${styles.left}`}>
             <div className={styles.sectionTitle}>
-              <Image src={`${ASSET}/icons/pata.png`} alt="" width={30} height={25} sizes="30px" />
+              <Image src={`${ASSET}/icons/pata.webp`} alt="" width={30} height={25} sizes="30px" />
               <span className={gold.goldText}>{t('lobby.nextDraws')}</span>
-              <Image src={`${ASSET}/icons/pata.png`} alt="" width={30} height={25} sizes="30px" />
+              <Image src={`${ASSET}/icons/pata.webp`} alt="" width={30} height={25} sizes="30px" />
             </div>
             <div className={gold.divider} />
             <NextDraws draws={mock.nextDraws} />
@@ -204,7 +204,7 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
 
             <div className={styles.stage}>
               <span className={styles.stageGlow} />
-              <Image className={styles.hourglass} src={`${ASSET}/icons/ampulheta.png`} alt="" width={124} height={188} sizes="124px" />
+              <Image className={styles.hourglass} src={`${ASSET}/icons/ampulheta.webp`} alt="" width={124} height={188} sizes="124px" />
               <div className={styles.timerFrame}>
                 <span className={`${gold.goldValue} ${styles.timer}`} style={{ fontSize: countdown.length > 5 ? 92 : undefined }} suppressHydrationWarning>
                   {countdown}
@@ -217,28 +217,28 @@ export const BingoShowLobbyScreenGold: React.FC = () => {
             </div>
 
             <div className={`${gold.lacquer} ${styles.jackpotBand}`}>
-              <Image className={styles.bandArt} src={`${ASSET}/decorative/pilha-moedas.png`} alt="" width={120} height={88} sizes="120px" />
+              <Image className={styles.bandArt} src={`${ASSET}/decorative/pilha-moedas.webp`} alt="" width={120} height={88} sizes="120px" />
               <span className={styles.bandLabel}>{t('prize.jackpot')}</span>
               <span className={`${gold.goldValue} ${styles.bandValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [62, 52, 44]) }}>
                 {mock.accumulatedPrize}
               </span>
-              <Image className={`${styles.bandArt} ${gold.bagAlive}`} style={{ '--bag-delay': '6s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.png`} alt="" width={104} height={88} sizes="104px" />
+              <Image className={`${styles.bandArt} ${gold.bagAlive}`} style={{ '--bag-delay': '6s' } as React.CSSProperties} src={`${ASSET}/decorative/saco-moedas-pata.webp`} alt="" width={104} height={88} sizes="104px" />
             </div>
           </section>
 
           {/* Prêmios do próximo sorteio */}
           <section className={styles.right}>
-            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} img={`${ASSET}/decorative/pilha-moedas.png`} imgW={150} imgH={110} delay={150} />
-            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} img={`${ASSET}/decorative/dinheiro-moedas.png`} imgW={176} imgH={103} delay={300} />
-            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} img={`${ASSET}/icons/coroa.png`} imgW={140} imgH={115} hot delay={450} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} img={`${ASSET}/decorative/pilha-moedas.webp`} imgW={150} imgH={110} delay={150} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} img={`${ASSET}/decorative/dinheiro-moedas.webp`} imgW={176} imgH={103} delay={300} />
+            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} img={`${ASSET}/icons/coroa.webp`} imgW={140} imgH={115} hot delay={450} />
           </section>
         </main>
 
         {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
         <footer className={`${gold.lacquer} ${styles.footer}`}>
-          <Image src={`${ASSET}/icons/pata.png`} alt="" width={44} height={36} sizes="44px" />
+          <Image src={`${ASSET}/icons/pata.webp`} alt="" width={44} height={36} sizes="44px" />
           <span className={styles.footerText}>{mock.promotionalMessage}</span>
-          <Image src={`${ASSET}/icons/pata.png`} alt="" width={44} height={36} sizes="44px" />
+          <Image src={`${ASSET}/icons/pata.webp`} alt="" width={44} height={36} sizes="44px" />
         </footer>
       </div>
     </BingoShowAmbientBackground>

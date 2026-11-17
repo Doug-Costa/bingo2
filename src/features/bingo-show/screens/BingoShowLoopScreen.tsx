@@ -15,6 +15,8 @@ import { BingoShowDrawScreen } from './BingoShowDrawScreen';
 import { FINISH_SCREEN_HOLD_MS } from '../timing';
 import { useFinishHoldExtraMs } from '../finishHold';
 import { BingoShowPromoModal } from '../components/BingoShowPromoModal';
+import { preloadVoices } from '../hooks/useBingoAudio';
+import { useTvConfig } from '@/contexts/TvConfigContext';
 
 export const BingoShowLoopScreen: React.FC = () => {
   const { drawActive, lastDrawEvent } = useGameSocket();
@@ -27,6 +29,12 @@ export const BingoShowLoopScreen: React.FC = () => {
   // depois, o timer é refeito com o tempo que ainda falta.
   const extraMs = useFinishHoldExtraMs();
   const finishedAtRef = useRef<number | null>(null);
+
+  // Vozes prontas desde o lobby: na 1ª bola já tocam sem depender da rede.
+  const { voice, soundEnabled } = useTvConfig();
+  useEffect(() => {
+    if (soundEnabled) void preloadVoices(voice);
+  }, [voice, soundEnabled]);
 
   useEffect(() => {
     if (lastDrawEvent !== 'draw_finished') {

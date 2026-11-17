@@ -19,52 +19,109 @@ import { useEffect, useRef } from 'react';
  * - Idioma da voz pelo tema: português (padrão) em /audio/pt-br/, Paraguay em
  *   /audio/es/, com os mesmos nomes de arquivo. Arquivo que não existir cai para a
  *   voz antiga em /audio/pt/ e fica marcado para não ser tentado de novo.
+ * - Sincronia: a voz da bola espera `voiceDelayMs` (tempo do voo da bola na tela) e
+ *   sai quando a bola pousa. As vozes ficam em memória, então tocam sem depender da
+ *   rede; a que ainda não carregou toca direto da URL.
  */
 
-type Clip = { kind: 'ball' | 'prize'; src: string; fallback?: string };
+type Clip = { kind: 'ball' | 'prize'; src: string; fallback?: string; notBefore?: number };
 export type VoiceLang = 'pt' | 'es';
 
 const MAX_SOUND_MS = 6000; // proteção caso 'ended' nunca dispare
+/** Ultra leve: pouso da bola — 1000ms na coreografia original (ballFlightPath, 76%
+ * de 1320ms); 450ms na entrada simples (html.tv-noanim → ultraBallIn). */
+const ultraBallLandMs = () => (document.documentElement.classList.contains('tv-noanim') ? 450 : 1000);
 
 let queue: Clip[] = [];
 let playing = false;
-let current: HTMLAudioElement | null = null;
+// Um único player: criar um por bola faz a TV preparar o decodificador toda vez.
+let player: HTMLAudioElement | null = null;
+let endCurrent: (() => void) | null = null;
+let waitTimer: ReturnType<typeof setTimeout> | undefined;
 const missing = new Set<string>(); // arquivos que não existem (não tentar de novo)
+const voiceBlobs = new Map<string, string>(); // URL do arquivo → blob: em memória
+let blobsUsable = true; // WebView antigo pode não tocar blob:; aí usa a URL
+let preloadRun = 0;
+let stallHooked = false;
+/** Contexto da voz, atualizado pelo hook (para o anúncio direto do SSE). */
+let voiceCtx: { enabled: boolean; lang: VoiceLang } = { enabled: false, lang: 'pt' };
+/** Bola já anunciada pelo SSE (bola nativa); o hook não repete quando o estado chega. */
+let preAnnounced: number | null = null;
+
+/** Bola nativa: agenda a voz para o pouso, contado a partir de agora (o voo
+ * começa na hora no Android). */
+export function announceBallNow(n: number): void {
+  preAnnounced = n;
+  if (!voiceCtx.enabled) return;
+  const land = document.documentElement.classList.contains('tv-noanim') ? 450 : 1000;
+  enqueue({ ...voiceClip('ball', `${n}.mp3`, voiceCtx.lang), notBefore: Date.now() + land });
+}
 
 function playNext() {
-  if (playing) return;
-  let clip = queue.shift();
-  if (!clip) return;
-  if (missing.has(clip.src) && clip.fallback) clip = { ...clip, src: clip.fallback, fallback: undefined };
+  if (playing || waitTimer !== undefined) return;
+  const head = queue[0];
+  if (!head) return;
+  const wait = (head.notBefore ?? 0) - Date.now();
+  if (wait > 0) {
+    waitTimer = setTimeout(() => {
+      waitTimer = undefined;
+      playNext();
+    }, wait);
+    return;
+  }
+  queue.shift();
+  const clip = missing.has(head.src) && head.fallback ? { ...head, src: head.fallback, fallback: undefined } : head;
   playing = true;
-  const thisClip = clip;
-  const audio = new Audio(clip.src);
-  current = audio;
-  audio.volume = 1.0;
+  const audio = player ?? (player = new Audio());
+  if (!stallHooked) {
+    stallHooked = true;
+    // 'waiting' no meio da fala = a voz parou esperando dados/CPU (engasgo).
+    audio.addEventListener('waiting', () => {
+      if (!audio.currentTime) return;
+      const perf = (window.__tvPerf ??= {});
+      perf.voiceStalls = (perf.voiceStalls ?? 0) + 1;
+    });
+  }
+  const blob = blobsUsable ? voiceBlobs.get(clip.src) : undefined;
   let done = false;
   const finish = () => {
     if (done) return;
     done = true;
     clearTimeout(guard);
-    if (current === audio) current = null;
+    audio.removeEventListener('ended', finish);
+    audio.removeEventListener('error', fail);
+    endCurrent = null;
     playing = false;
     playNext();
   };
-  const guard = setTimeout(finish, MAX_SOUND_MS);
-  audio.addEventListener('ended', finish, { once: true });
-  // Arquivo inexistente/ilegível: marca e toca a versão alternativa (português).
+  // Arquivo inexistente/ilegível: tenta pela URL e depois a versão alternativa (português).
   const fail = () => {
     if (done) return;
-    if (thisClip.fallback) {
-      missing.add(thisClip.src);
-      queue.unshift({ ...thisClip, src: thisClip.fallback, fallback: undefined });
+    if (blob) {
+      blobsUsable = false;
+      queue.unshift(clip);
+    } else if (clip.fallback) {
+      missing.add(clip.src);
+      queue.unshift({ ...clip, src: clip.fallback, fallback: undefined });
     }
     finish();
   };
-  audio.addEventListener('error', fail, { once: true });
+  const guard = setTimeout(finish, MAX_SOUND_MS); // proteção caso 'ended' nunca dispare
+  endCurrent = finish;
+  audio.addEventListener('ended', finish);
+  audio.addEventListener('error', fail);
+  // Painel de desempenho: quanto a voz atrasou para sair e se engasgou no meio.
+  const due = head.notBefore ?? Date.now();
+  const onPlaying = () => {
+    audio.removeEventListener('playing', onPlaying);
+    const perf = (window.__tvPerf ??= {});
+    perf.voiceLagMs = Math.max(0, Date.now() - due);
+  };
+  audio.addEventListener('playing', onPlaying);
+  audio.src = blob ?? clip.src;
   audio.play().catch((e) => {
     if (e?.name === 'NotSupportedError') return fail();
-    console.log('[AUDIO] reprodução bloqueada:', thisClip.src, e?.name || e);
+    console.log('[AUDIO] reprodução bloqueada:', clip.src, e?.name || e);
     finish();
   });
 }
@@ -73,7 +130,34 @@ function enqueue(clip: Clip) {
   // Bola nova substitui bolas ainda não faladas (só a mais recente importa).
   if (clip.kind === 'ball') queue = queue.filter((c) => c.kind !== 'ball');
   queue.push(clip);
+  // O início da fila pode ter mudado: recalcula a espera.
+  clearTimeout(waitTimer);
+  waitTimer = undefined;
   playNext();
+}
+
+async function loadVoice(src: string): Promise<boolean> {
+  if (voiceBlobs.has(src)) return true;
+  const res = await fetch(src);
+  if (!res.ok) return false;
+  voiceBlobs.set(src, URL.createObjectURL(await res.blob()));
+  return true;
+}
+
+/** Carrega as vozes do idioma, uma por vez, para não disputar a rede com o sorteio. */
+export async function preloadVoices(lang: VoiceLang) {
+  const run = ++preloadRun;
+  const files = [...Array.from({ length: 90 }, (_, i) => `${i + 1}.mp3`), ...Object.values(PRIZE_FILE)];
+  for (const file of files) {
+    if (run !== preloadRun) return;
+    const { src, fallback } = voiceClip('ball', file, lang);
+    try {
+      if (!missing.has(src) && !(await loadVoice(src))) missing.add(src);
+      if (missing.has(src) && fallback) await loadVoice(fallback);
+    } catch {
+      // Rede instável: esta voz toca direto da URL.
+    }
+  }
 }
 
 /** Chama `cb` quando a fila de voz esvaziar (ou após `maxWaitMs`, no máximo). */
@@ -95,11 +179,10 @@ export function whenAudioIdle(cb: () => void, maxWaitMs = 6000): () => void {
 
 function stopAll() {
   queue = [];
-  if (current) {
-    current.pause();
-    current = null;
-  }
-  playing = false;
+  clearTimeout(waitTimer);
+  waitTimer = undefined;
+  player?.pause();
+  endCurrent?.();
 }
 
 export type PrizeType = 'line1' | 'line2' | 'bingo';
@@ -131,6 +214,7 @@ export function useBingoAudio(
   isLive: boolean = true,
   drawId: string = '',
   lang: VoiceLang = 'pt',
+  voiceDelayMs: number = 0,
 ) {
   // O que já está na tela quando o componente monta (ex.: reload, troca de tela)
   // conta como já anunciado — só mudanças a partir daqui são faladas.
@@ -154,6 +238,10 @@ export function useBingoAudio(
   }, [soundOn]);
   useEffect(() => () => stopAll(), []);
 
+  useEffect(() => {
+    voiceCtx = { enabled: soundOn && isLive, lang };
+  }, [soundOn, isLive, lang]);
+
   // 1. Voz da bola
   useEffect(() => {
     const valid = typeof currentBall === 'number' && currentBall >= 1 && currentBall <= 90;
@@ -163,10 +251,25 @@ export function useBingoAudio(
     }
     if (currentBall === lastBallRef.current) return;
     lastBallRef.current = currentBall;
+    // Já anunciada pelo SSE (bola nativa): não repete.
+    if (preAnnounced === currentBall) {
+      preAnnounced = null;
+      return;
+    }
     // Restaurando (reload/reconexão): registra sem falar.
     if (!isLive || !soundOn) return;
-    enqueue(voiceClip('ball', `${currentBall}.mp3`, lang));
-  }, [currentBall, soundOn, isLive, lang]);
+    const clip = voiceClip('ball', `${currentBall}.mp3`, lang);
+    const rootCls = document.documentElement.classList;
+    if ((rootCls.contains('tv-ultra') || rootCls.contains('tv-native-ball')) && typeof requestAnimationFrame === 'function') {
+      // TV fraca: conta o pouso a partir do 1º quadro já desenhado com a bola (o 2º
+      // quadro só começa depois dele), não do evento — assim a voz nunca chega antes.
+      let raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => enqueue({ ...clip, notBefore: Date.now() + ultraBallLandMs() }));
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+    enqueue({ ...clip, notBefore: Date.now() + voiceDelayMs });
+  }, [currentBall, soundOn, isLive, lang, voiceDelayMs]);
 
   // 2. Voz do prêmio quando o popup da faixa abre (uma vez por faixa por sorteio)
   useEffect(() => {

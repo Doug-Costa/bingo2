@@ -25,7 +25,7 @@ export interface ThemeBackgroundProps extends ThemeComponentProps {
 
 const absoluteFill: CSSProperties = {
   position: 'absolute',
-  inset: 0,
+  top: 0, right: 0, bottom: 0, left: 0,
   width: '100%',
   height: '100%',
 };
@@ -93,7 +93,7 @@ export function ThemeBackground({
       data-testid={testID}
       aria-label={accessibilityLabel}
     >
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: bgColor }} />
+      <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: bgColor }} />
 
       {/* Camada 1: Imagem de Fundo PNG */}
       {bgImageSource && (

@@ -1,6 +1,6 @@
 /**
  * BingoShowFooterBlueFrame.tsx — moldura 9-slice usando o asset `footerblue-*`
- * (`assets/cards/9slice/footerblue-*.png`, mesmo formato de 13 peças do
+ * (`assets/cards/9slice/footerblue-*.webp`, mesmo formato de 13 peças do
  * `framesBannerBlue`), pedido explícito do usuário para montar o card do popup de
  * ganhador ("tem um card que vc pode montar ele e renderir e redimencionar isso").
  * Segue exatamente o padrão de `BingoShowBannerFrame.tsx`.

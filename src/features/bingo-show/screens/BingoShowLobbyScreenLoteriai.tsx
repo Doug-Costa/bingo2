@@ -13,7 +13,8 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
+import { computeCountdownSeconds, useBingoShowRealtimeLobby } from '../hooks/useBingoShowRealtimeLobby';
+import { useGameSocket } from '@/contexts/SSEContext';
 import { BingoShowAmbientBackground } from '../components/BingoShowAmbientBackground';
 import { moneyLengthTier } from '../utils/moneyLength';
 import { formatCountdown } from '../utils/countdown';
@@ -74,7 +75,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
   if (list.length === 0) {
     return (
       <div className={styles.drawsEmpty}>
-        <Image className={`${lt.art} ${styles.emptyArt}`} src={`${A}/sm/decorative/ferradura.png`} alt="" width={140} height={137} sizes="140px" />
+        <Image className={`${lt.art} ${styles.emptyArt}`} src={`${A}/sm/decorative/ferradura.webp`} alt="" width={140} height={137} sizes="140px" />
         <span>{t('lobby.waitingDraws')}</span>
       </div>
     );
@@ -154,16 +155,68 @@ const PrizeCard: React.FC<{ label: string; value: string; tone: CardTone; art: s
   </div>
 );
 
-export const BingoShowLobbyScreenLoteriai: React.FC = () => {
-  const mock = useBingoShowRealtimeLobby();
-  const t = useT();
-  const secs = Math.max(0, mock.countdownSeconds || 0);
+/** Data/hora do cabeçalho com relógio próprio: só este texto atualiza (antes o
+ * lobby inteiro era redesenhado a cada segundo — travadinha na TV fraca). */
+const LiveClock: React.FC<{ part: 'date' | 'time' }> = ({ part }) => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), part === 'time' ? 1000 : 30000);
+    return () => clearInterval(id);
+  }, [part]);
+  const p = (n: number) => String(n).padStart(2, '0');
+  return (
+    <>
+      {part === 'time'
+        ? `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`
+        : `${p(now.getDate())}/${p(now.getMonth() + 1)}/${now.getFullYear()}`}
+    </>
+  );
+};
+
+/** Ampulheta + contador + globo com relógio próprio: só esta parte redesenha a
+ * cada segundo. */
+const CountdownStage: React.FC = () => {
+  const { nextDraws, drawClosingSeconds } = useGameSocket();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const secs = computeCountdownSeconds(nextDraws[0], drawClosingSeconds, now);
   const countdown = formatCountdown(secs);
   // Contador com hora (H:MM:SS) é mais largo: fonte menor para caber no palco.
   const timerSize = countdown.length > 5 ? 112 : 150;
   // Últimos segundos (tempo REAL): contador ganha um pouco mais de intensidade.
   const final = secs > 0 && secs <= 10;
   const near = secs > 0 && secs <= 30;
+  return (
+    <div className={styles.stage}>
+      <div className={styles.hourglassWrap}>
+        <Image className={`${lt.art} ${styles.hourglass}`} src={`${A}/sm/icons/ampulheta.webp`} alt="" width={160} height={276} sizes="160px" />
+        <span className={styles.glassGlint} />
+      </div>
+      <div className={styles.timerWrap}>
+        {/* Ñandutí dourado girando devagar atrás do contador (o mesmo da bola no sorteio). */}
+        <span className={styles.timerLace} aria-hidden="true" />
+        {/* Últimos 10s: aura vermelha pulsando atrás do contador. */}
+        {final && <span className={styles.timerAura} aria-hidden="true" />}
+        <div className={`${lt.shimmer} ${styles.timerFrame} ${final ? styles.timerFinal : ''}`}>
+          <span key={countdown.length} className={`${lt.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
+            {countdown}
+          </span>
+        </div>
+      </div>
+      <div className={`${styles.globeWrap} ${near ? styles.globeNear : ''}`}>
+        <Image className={`${lt.art} ${styles.globe}`} src={`${A}/sm/decorative/globo-sorteio.webp`} alt="" width={250} height={230} sizes="250px" />
+        <span className={styles.globeGlint} />
+      </div>
+    </div>
+  );
+};
+
+export const BingoShowLobbyScreenLoteriai: React.FC = () => {
+  const mock = useBingoShowRealtimeLobby({ tick: false });
+  const t = useT();
   const drawNumber = mock.drawNumberShort && mock.drawNumberShort !== '#---' ? mock.drawNumberShort.replace(/^#/, '') : '---';
 
   return (
@@ -174,7 +227,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={styles.header}>
-          <Image className={`${lt.art} ${styles.logo}`} src={`${A}/logos/logo-loteriai-md.png`} alt="Loteria'i" width={520} height={483} sizes="190px" priority />
+          <Image className={`${lt.art} ${styles.logo}`} src={`${A}/logos/logo-loteriai-md.webp`} alt="Loteria'i" width={520} height={483} sizes="190px" priority />
 
           <div className={styles.infoGroup}>
             <div className={styles.info} style={{ '--d': '120ms' } as React.CSSProperties}>
@@ -186,20 +239,20 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
               <span className={styles.infoBall}>{drawNumber}</span>
             </div>
             <div className={styles.info} style={{ '--d': '220ms' } as React.CSSProperties}>
-              <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={44} height={46} sizes="44px" />
+              <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/decorative/trevo.webp`} alt="" width={44} height={46} sizes="44px" />
               <span className={styles.infoText}>
                 <span className={styles.infoLabel}>{t('lobby.date')}</span>
                 <span className={styles.infoValue} suppressHydrationWarning>
-                  {mock.currentDate}
+                  <LiveClock part="date" />
                 </span>
               </span>
             </div>
             <div className={styles.info} style={{ '--d': '320ms' } as React.CSSProperties}>
-              <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/icons/ampulheta.png`} alt="" width={30} height={52} sizes="30px" />
+              <Image className={`${lt.art} ${styles.infoIcon}`} src={`${A}/sm/icons/ampulheta.webp`} alt="" width={30} height={52} sizes="30px" />
               <span className={styles.infoText}>
                 <span className={styles.infoLabel}>{t('lobby.time')}</span>
                 <span className={styles.infoValue} suppressHydrationWarning>
-                  {mock.currentTime}
+                  <LiveClock part="time" />
                 </span>
               </span>
             </div>
@@ -212,7 +265,7 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
                 {mock.accumulatedPrize}
               </span>
             </div>
-            <Image className={`${lt.art} ${styles.headerCoins}`} src={`${A}/sm/decorative/moedas.png`} alt="" width={130} height={81} sizes="130px" />
+            <Image className={`${lt.art} ${styles.headerCoins}`} src={`${A}/sm/decorative/moedas.webp`} alt="" width={130} height={81} sizes="130px" />
           </div>
         </header>
         <span className={`${lt.tricolorLine} ${styles.headerLine}`} />
@@ -237,30 +290,10 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
               </div>
             </div>
 
-            <div className={styles.stage}>
-              <div className={styles.hourglassWrap}>
-                <Image className={`${lt.art} ${styles.hourglass}`} src={`${A}/sm/icons/ampulheta.png`} alt="" width={160} height={276} sizes="160px" />
-                <span className={styles.glassGlint} />
-              </div>
-              <div className={styles.timerWrap}>
-                {/* Ñandutí dourado girando devagar atrás do contador (o mesmo da bola no sorteio). */}
-                <span className={styles.timerLace} aria-hidden="true" />
-                {/* Últimos 10s: aura vermelha pulsando atrás do contador. */}
-                {final && <span className={styles.timerAura} aria-hidden="true" />}
-                <div className={`${lt.shimmer} ${styles.timerFrame} ${final ? styles.timerFinal : ''}`}>
-                  <span key={countdown.length} className={`${lt.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
-                    {countdown}
-                  </span>
-                </div>
-              </div>
-              <div className={`${styles.globeWrap} ${near ? styles.globeNear : ''}`}>
-                <Image className={`${lt.art} ${styles.globe}`} src={`${A}/sm/decorative/globo-sorteio.png`} alt="" width={250} height={230} sizes="250px" />
-                <span className={styles.globeGlint} />
-              </div>
-            </div>
+            <CountdownStage />
 
             <div className={`${lt.shimmer} ${styles.jackpotBand}`} style={{ '--shimmer-delay': '3s' } as React.CSSProperties}>
-              <Image className={`${lt.art} ${styles.bandPot}`} src={`${A}/sm/decorative/pote-premio.png`} alt="" width={160} height={136} sizes="160px" />
+              <Image className={`${lt.art} ${styles.bandPot}`} src={`${A}/sm/decorative/pote-premio.webp`} alt="" width={160} height={136} sizes="160px" />
               <div className={styles.bandText}>
                 <span className={styles.bandLabel}>{t('lobby.grandPrizeJackpot')}</span>
                 <span key={mock.accumulatedPrize} className={styles.bandValue} style={{ fontSize: moneySize(mock.accumulatedPrize, [76, 64, 54]) }}>
@@ -278,23 +311,23 @@ export const BingoShowLobbyScreenLoteriai: React.FC = () => {
 
           <section className={styles.right}>
             {/* Línea = moedas, 2 líneas = pote, lleno = logo da Loteria'i. */}
-            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="red" art={`${A}/sm/decorative/moedas.png`} artW={120} artH={75} slot={0} />
-            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="white" art={`${A}/sm/decorative/pote-premio.png`} artW={104} artH={88} slot={1} />
-            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} tone="blue" art={`${A}/sm/logos/logo-loteriai.png`} artW={104} artH={97} slot={2} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="red" art={`${A}/sm/decorative/moedas.webp`} artW={120} artH={75} slot={0} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="white" art={`${A}/sm/decorative/pote-premio.webp`} artW={104} artH={88} slot={1} />
+            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} tone="blue" art={`${A}/sm/logos/logo-loteriai.webp`} artW={104} artH={97} slot={2} />
           </section>
         </main>
 
         {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
         <footer className={styles.footer}>
           <FlagImage src={FLAG_ART.cornerLeft} className={`${styles.footerWave} ${styles.footerWaveL}`} />
-          <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
+          <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.webp`} alt="" width={50} height={52} sizes="50px" />
           {/* Sempre o jargão da marca, nas cores da bandeira (a mensagem
               promocional do servidor não substitui o slogan neste tema). */}
           <span className={styles.footerSlogan}>
             <span className={styles.sloganRed}>¡BUENO,</span> <span className={styles.sloganWhite}>BONITO</span>{' '}
             <span className={styles.sloganBlue}>Y BARATO!</span>
           </span>
-          <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.png`} alt="" width={50} height={52} sizes="50px" />
+          <Image className={`${lt.art} ${styles.footerClover}`} src={`${A}/sm/decorative/trevo.webp`} alt="" width={50} height={52} sizes="50px" />
           <FlagImage src={FLAG_ART.cornerRight} className={`${styles.footerWave} ${styles.footerWaveR}`} />
         </footer>
       </div>

@@ -24,7 +24,7 @@ export function ThemeLogo({
 }: ThemeLogoProps) {
   const [hasError, setHasError] = useState(false);
 
-  let logoSrc = tokens?.assets.logos.main || "/themes/bingo-show/logos/logo-main.png";
+  let logoSrc = tokens?.assets.logos.main || "/themes/bingo-show/logos/logo-main.webp";
   if (variant === "blue" && tokens?.assets.logos.blueSvg) logoSrc = tokens.assets.logos.blueSvg;
   if (variant === "gold" && tokens?.assets.logos.goldSvg) logoSrc = tokens.assets.logos.goldSvg;
   if (variant === "glow" && tokens?.assets.logos.glow) logoSrc = tokens.assets.logos.glow;

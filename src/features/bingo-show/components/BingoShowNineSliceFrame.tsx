@@ -1,6 +1,7 @@
 import React from 'react';
 import { BingoShowSpacing } from '../design-system';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useLowPerfDevice } from '@/hooks/useLowPerfDevice';
 
 export interface BingoShowNineSliceFrameSpec {
   cornerTL: string;
@@ -43,6 +44,7 @@ export const BingoShowNineSliceFrame: React.FC<BingoShowNineSliceFrameProps> = (
   children,
 }) => {
   const { themeId, theme } = useAppTheme();
+  const lowPerf = useLowPerfDevice();
   const padVal = BingoShowSpacing[padding] ?? 8;
   const c = displayCorner;
 
@@ -64,8 +66,7 @@ export const BingoShowNineSliceFrame: React.FC<BingoShowNineSliceFrameProps> = (
           border: `2px solid ${borderColor}`,
           borderRadius: 20,
           boxShadow: `0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px ${glowColor}`,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          ...(lowPerf ? {} : { backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }),
           overflow: 'hidden',
           ...style,
         }}
@@ -99,12 +100,12 @@ export const BingoShowNineSliceFrame: React.FC<BingoShowNineSliceFrameProps> = (
       }}
     >
       {/* 9-SLICE BACKGROUND LAYER */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+      <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none', zIndex: 0 }}>
         {/* CENTER */}
         <div
           style={{
             position: 'absolute',
-            inset: `${c}px`,
+            top: `${c}px`, right: `${c}px`, bottom: `${c}px`, left: `${c}px`,
             backgroundImage: `url(${frames.center})`,
             backgroundSize: '100% 100%',
           }}

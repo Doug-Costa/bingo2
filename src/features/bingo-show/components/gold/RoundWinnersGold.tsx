@@ -7,7 +7,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
-import { useCountUp } from '../../hooks/useCountUp';
+import { CountUpText } from '../../hooks/useCountUp';
+import { useDeferredMount } from '../../hooks/useDeferredMount';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import goldTheme from './GoldTheme.module.css';
 import styles from './RoundWinnersGold.module.css';
@@ -15,9 +16,9 @@ import { useT } from '@/contexts/TvConfigContext';
 
 // Arte de cada faixa (assets do tema).
 const ART: Record<RoundCategoryKey, string> = {
-  line1: '/themes/tema-ouro/sm/decorative/pilha-moedas.png',
-  line2: '/themes/tema-ouro/sm/decorative/dinheiro-moedas.png',
-  bingo: '/themes/tema-ouro/sm/icons/coroa.png',
+  line1: '/themes/tema-ouro/sm/decorative/pilha-moedas.webp',
+  line2: '/themes/tema-ouro/sm/decorative/dinheiro-moedas.webp',
+  bingo: '/themes/tema-ouro/sm/icons/coroa.webp',
 };
 
 const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
@@ -43,7 +44,6 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
-  const counting = useCountUp(w.prize, delay + 400, 1600);
   return (
     <div className={styles.card} style={{ '--d-card': `${delay}ms` } as React.CSSProperties}>
       <span className={styles.cardLabel}>{label}</span>
@@ -63,7 +63,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
             {w.prize}
           </span>
           <span className={`${styles.value} ${goldTheme.goldValue}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-            {counting}
+            <CountUpText text={w.prize} delayMs={delay + 400} durationMs={1600} />
           </span>
         </div>
       </div>
@@ -79,6 +79,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   totalDurationMs,
 }) => {
   const t = useT();
+  // TV: colunas primeiro, cards no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -133,7 +135,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
         </div>
       ) : (
         <div key={page} className={`${styles.cards} ${mode >= 3 ? styles.cardsTop : ''}`}>
-          {list.map((w, j) => (
+          {contentReady && list.map((w, j) => (
             <RoundCard
               key={w.id}
               w={w}
@@ -164,7 +166,7 @@ export const RoundWinnersGold: React.FC<BingoShowRoundWinnersBlueProps> = ({
     <div className={styles.layout}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element -- asset estático do tema */}
-        <img className={styles.logo} src="/themes/tema-ouro/sm/logos/logo-bingo-show.png" alt="Bingo Show" draggable={false} />
+        <img className={styles.logo} src="/themes/tema-ouro/sm/logos/logo-bingo-show.webp" alt="Bingo Show" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>

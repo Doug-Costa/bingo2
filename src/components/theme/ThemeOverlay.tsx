@@ -68,8 +68,8 @@ export function ThemeOverlay({
 
   const overlayStyle = combineStyles<CSSProperties>(
     fullscreen
-      ? { position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }
-      : { position: 'absolute', inset: 0 },
+      ? { position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+      : { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
     {
       backgroundColor: bgColor,
       opacity: finalOpacity,
@@ -86,7 +86,7 @@ export function ThemeOverlay({
         <img
           src={effectImage}
           alt=""
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25 }}
         />
       )}
       {children}

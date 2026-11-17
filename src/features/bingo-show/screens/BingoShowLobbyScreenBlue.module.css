@@ -278,7 +278,7 @@
 
 /* =============================================================================
    2.1 SEÇÃO INFERIOR (banner navy vazio previsto pelo projeto, mesmo asset
-   ja usado pelo tema Default para esta area: panel-footer.png)
+   ja usado pelo tema Default para esta area: panel-footer.webp)
    ============================================================================= */
 /* Coloracao apenas: altura travada em 163.8px (valor medido do layout
    anterior, quando a altura vinha da proporcao intrinseca do asset
@@ -598,7 +598,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: url('/themes/bingo-show-blue/backgrounds/blue-radial-rays.png') center 54% / cover no-repeat;
+  background: url('/themes/bingo-show-blue/backgrounds/blue-radial-rays.webp') center 54% / cover no-repeat;
   opacity: 0.5;
   mix-blend-mode: screen;
 }
@@ -740,7 +740,7 @@
 }
 
 .decoHourglass {
-  /* Novo asset dourado/azul (relogio-areia-dourado.png) tem proporcao
+  /* Novo asset dourado/azul (relogio-areia-dourado.webp) tem proporcao
      intrinseca diferente da ampulheta anterior (210x299, bbox opaco
      177x245) - largura recalculada a partir da altura para nao esticar. */
   width: 159px;
@@ -756,6 +756,10 @@
   object-fit: contain;
   filter: drop-shadow(0 0 22px rgba(0, 213, 255, 0.7));
   animation: floatRight 4s ease-in-out infinite alternate;
+}
+
+:global(html.tv-lite) .decoGlobeGif {
+  filter: none;
 }
 
 .clockDigits {
@@ -1120,7 +1124,10 @@
   position: absolute;
   top: 14px;
   right: 10px;
-  width: clamp(128px, 34%, 168px);
+  /* = clamp(128px, 34%, 168px), que o Chrome 66 das TVs não entende */
+  width: 34%;
+  min-width: 128px;
+  max-width: 168px;
   height: auto;
   object-fit: contain;
   z-index: 4;

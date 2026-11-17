@@ -25,7 +25,7 @@
   position: absolute;
   inset: 0;
   border: 30px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 30px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.webp') 170 fill / 30px stretch;
   pointer-events: none;
 }
 
@@ -127,7 +127,7 @@
   inset: 0;
   border: 14px solid transparent;
   /* aro a ~110px da borda do PNG → ~9px aqui: nunca cruza o número */
-  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 170 fill / 14px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.webp') 170 fill / 14px stretch;
   pointer-events: none;
 }
 

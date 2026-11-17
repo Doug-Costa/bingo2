@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useLowPerfDevice } from "@/hooks/useLowPerfDevice";
 import type { ThemeTokens } from "../types";
 
 interface ThemeBackgroundProps {
@@ -23,6 +24,7 @@ export function ThemeBackground({
   const bgImage = tokens?.assets.backgrounds[variant] || tokens?.assets.backgrounds.main;
   const bgPage = tokens?.colors.bgPage || "#020617";
   const isDark = (tokens?.mode || "dark") === "dark";
+  const lowPerf = useLowPerfDevice();
 
   return (
     <div
@@ -44,9 +46,9 @@ export function ThemeBackground({
           className="theme-background-overlay"
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0, right: 0, bottom: 0, left: 0,
             backgroundColor: isDark ? "rgba(2, 6, 23, 0.75)" : "rgba(248, 250, 252, 0.65)",
-            backdropFilter: "blur(4px)",
+            ...(lowPerf ? {} : { backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }),
             pointerEvents: "none",
             zIndex: 0,
           }}

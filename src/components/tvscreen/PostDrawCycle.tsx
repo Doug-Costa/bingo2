@@ -8,7 +8,7 @@
  */
 'use client';
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import type { WinnerEvent } from '@/contexts/SSEContext';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
 import { ThemeBorder, ThemeCard } from '../theme';
@@ -34,7 +34,7 @@ function winnerTypeAccent(t: string, theme: ThemeTokens) {
 }
 
 // Mesmo agrupamento de cor do `winnerTypeAccent` acima, mas apontando pros
-// assets reais do tema (`border-neon-gold/blue.png`, `border-winner.png`) —
+// assets reais do tema (`border-neon-gold/blue.webp`, `border-winner.webp`) —
 // os mesmos já usados no `WinnerModal` e em `AnimatedActiveBall`/`ThemePanel`.
 function winnerTypeThemeVariant(t: string): 'gold' | 'blue' | 'winner' {
   return t === 'line1' ? 'gold' : t === 'line2' ? 'blue' : 'winner';
@@ -210,4 +210,4 @@ export function PostDrawCycle({ theme, winners, drawnNumbers, onDone }: PostDraw
   );
 }
 
-export default PostDrawCycle;
+export default memo(PostDrawCycle);

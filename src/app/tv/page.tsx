@@ -31,6 +31,11 @@ export default function TvPage() {
     return getCredentials() || DEFAULT_CREDENTIALS;
   });
 
+  // Só desenha a tela depois de montar no cliente: o servidor não sabe o tema da TV,
+  // e o HTML pré-renderizado fazia toda TV baixar as imagens do lobby do tema padrão.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   useEffect(() => {
     const creds = getCredentials();
     if (creds) {
@@ -87,7 +92,7 @@ export default function TvPage() {
 
 
       <TvStage>
-        <TvScreenApp credentials={credentials} onLogout={() => router.replace('/config')} />
+        {mounted && <TvScreenApp credentials={credentials} onLogout={() => router.replace('/config')} />}
       </TvStage>
     </TvViewport>
   );

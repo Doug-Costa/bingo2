@@ -27,6 +27,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLowPerfDevice } from '@/hooks/useLowPerfDevice';
 import { WinnerEvent } from '@/contexts/SSEContext';
 import { BingoShowAssets } from '../assets';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
@@ -51,7 +52,7 @@ import { whenAudioIdle } from '../hooks/useBingoAudio';
 import { setFinishHoldExtraMs } from '../finishHold';
 import { useT } from '@/contexts/TvConfigContext';
 import type { TFunction } from 'i18next';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
 import { BingoShowRoundWinnersBlue, type RoundCategoryView } from './BingoShowRoundWinnersBlue';
 
 export interface TopPlayerItem {
@@ -510,7 +511,6 @@ const WinnerCard: React.FC<{
 
   const prizeDisplayValue = getWinnerPrizeDisplay(winner, isSplit, defaultPrizeStr, t);
   // Contagem de R$ 0,00 até o valor (0,3s após o card aparecer, dura 1,8s).
-  const prizeCounting = useCountUp(prizeDisplayValue, 300, 1800);
 
   const displayName = getWinnerDisplayName(winner, t);
 
@@ -633,7 +633,7 @@ const WinnerCard: React.FC<{
               lineHeight: 1.1,
             }}
           >
-            {prizeCounting}
+            <CountUpText text={prizeDisplayValue} delayMs={300} durationMs={1800} />
           </span>
 
           {/* CELEBRAÇÃO DE JACKPOT GANHO (VALOR SEMENTICAMENTE SEPARADO) */}
@@ -1015,6 +1015,7 @@ const DefaultWinnerGroup: React.FC<{
   jackpotAmountGlobal?: string;
 }> = ({ group, normType, themeColor, currentPrizeText, drawnNumbers, jackpotAmountGlobal }) => {
   const t = useT();
+  const lowPerf = useLowPerfDevice();
   const pages = Math.max(1, Math.ceil(group.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -1030,10 +1031,10 @@ const DefaultWinnerGroup: React.FC<{
     <div
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0, right: 0, bottom: 0, left: 0,
         zIndex: 9999,
         backgroundColor: 'rgba(0, 4, 20, 0.85)',
-        backdropFilter: 'blur(10px)',
+        ...(lowPerf ? {} : { backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1041,7 +1042,7 @@ const DefaultWinnerGroup: React.FC<{
         boxSizing: 'border-box',
       }}
     >
-      <img src={BingoShowAssets.particles.confetti} alt="Confetes" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, pointerEvents: 'none' }} />
+      <img src={BingoShowAssets.particles.confetti} alt="Confetes" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, pointerEvents: 'none' }} />
       <BingoShowGlowHalo color={themeColor} bleed={28} intensity={0.75} style={{ zIndex: 2, width: '94%', height: '90%' }}>
         <div
           style={{
@@ -1100,7 +1101,7 @@ const DefaultWinnerGroup: React.FC<{
   );
 };
 
-export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
+const BingoShowWinnerPopupInner: React.FC<BingoShowWinnerPopupProps> = ({
   winners,
   topPlayers: _topPlayers = [],
   isDrawFinished = false,
@@ -1118,6 +1119,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
   isLive = true,
 }) => {
   const { isBlue, themeId } = useAppTheme();
+  const lowPerf = useLowPerfDevice();
   const onPrizeShownRef = useRef(onPrizeShown);
   onPrizeShownRef.current = onPrizeShown;
   const t = useT();
@@ -1442,10 +1444,10 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
       <div
         style={{
           position: 'fixed',
-          inset: 0,
+          top: 0, right: 0, bottom: 0, left: 0,
           zIndex: 9999,
           backgroundColor: 'rgba(0, 4, 20, 0.95)',
-          backdropFilter: 'blur(12px)',
+          ...(lowPerf ? {} : { backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1457,12 +1459,12 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         <img
           src={BingoShowAssets.particles.confetti}
           alt="Confetes"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85, pointerEvents: 'none', zIndex: 1 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85, pointerEvents: 'none', zIndex: 1 }}
         />
         <img
           src={BingoShowAssets.particles.gold}
           alt="Brilho Ouro"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65, pointerEvents: 'none', animation: 'bs-pulse 2s ease-in-out infinite', zIndex: 1 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65, pointerEvents: 'none', animation: 'bs-pulse 2s ease-in-out infinite', zIndex: 1 }}
         />
 
         {/* CONTAINER MÁXIMO DA TV (98VW / 95VH / 1800PX) */}
@@ -1725,10 +1727,10 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     <div
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0, right: 0, bottom: 0, left: 0,
         zIndex: 9999,
         backgroundColor: 'rgba(0, 4, 20, 0.85)',
-        backdropFilter: 'blur(10px)',
+        ...(lowPerf ? {} : { backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1736,7 +1738,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
         boxSizing: 'border-box',
       }}
     >
-      <img src={BingoShowAssets.particles.confetti} alt="Confetes" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, pointerEvents: 'none' }} />
+      <img src={BingoShowAssets.particles.confetti} alt="Confetes" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, pointerEvents: 'none' }} />
 
       <BingoShowGlowHalo color={themeColor} bleed={28} intensity={0.75} style={{ zIndex: 2, width: '88%', height: '72%' }}>
         <div
@@ -1791,5 +1793,7 @@ export const BingoShowWinnerPopup: React.FC<BingoShowWinnerPopupProps> = ({
     </div>
   );
 };
+
+export const BingoShowWinnerPopup = React.memo(BingoShowWinnerPopupInner);
 
 export default BingoShowWinnerPopup;

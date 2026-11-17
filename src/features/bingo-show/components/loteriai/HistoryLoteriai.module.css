@@ -136,3 +136,14 @@
     animation: none;
   }
 }
+
+/* Modo leve: animar `filter` refaz o desenho a cada quadro; fica só o movimento. */
+:global(html.tv-lite) .latest {
+  animation-name: loteriaiBallLatestLite;
+}
+
+@keyframes loteriaiBallLatestLite {
+  0% { transform: scale(0.5) rotate(-40deg); }
+  60% { transform: scale(1.22) rotate(6deg); }
+  100% { transform: none; }
+}

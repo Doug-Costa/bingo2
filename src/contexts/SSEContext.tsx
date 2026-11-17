@@ -29,10 +29,13 @@
  * configurável) — sempre fechamos a conexão no erro e reagendamos nós
  * mesmos, igual ao XHR original.
  */
+import { markBall } from '@/lib/perfTrace';
+import { nativeBallHoldMs, nativeBallNow } from '@/lib/nativeBall';
 import React, {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useCallback,
@@ -73,6 +76,7 @@ function cacheKey(roomId: string): string {
 }
 
 function readCache(roomId: string): CachedDrawState | null {
+  if (pendingCache) flushPendingCache();
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(cacheKey(roomId));
@@ -88,6 +92,55 @@ function readCache(roomId: string): CachedDrawState | null {
     return null;
   }
 }
+
+// A gravação da bola é adiada para depois do voo: localStorage é síncrono e, em TV
+// com armazenamento lento, travaria a animação. Qualquer outra leitura ou gravação
+// grava antes o que estiver pendente, então a ordem não muda.
+const CACHE_DEFER_MS = 1500;
+let pendingCache: { roomId: string; patch: Partial<CachedDrawState> } | null = null;
+let pendingCacheTimer: ReturnType<typeof setTimeout> | undefined;
+
+function flushPendingCache(): void {
+  clearTimeout(pendingCacheTimer);
+  pendingCacheTimer = undefined;
+  const pending = pendingCache;
+  pendingCache = null;
+  if (pending) writeCache(pending.roomId, pending.patch);
+}
+
+/** TV ultra leve: a tabela de cupons chega junto com a bola (1ms depois); adia o
+ * redesenho dela para a bola aparecer sozinha no quadro. Mesma espera para todos,
+ * então a ordem das atualizações não muda. */
+const ULTRA_TABLE_DEFER_MS = 350;
+let afterBallQueue: (() => void)[] = [];
+let afterBallTimer: ReturnType<typeof setTimeout> | undefined;
+function afterBall(fn: () => void): void {
+  // TV (leve/ultra): o top de ganhadores entra num passo separado, depois da bola e
+  // do histórico — as duas atualizações juntas travavam a tela de uma vez só. Vários
+  // `top_winners` da mesma bola entram juntos (um redesenho, não um por evento).
+  if (typeof document !== 'undefined' && document.documentElement.classList.contains('tv-lite')) {
+    afterBallQueue.push(fn);
+    if (afterBallTimer === undefined) {
+      afterBallTimer = setTimeout(() => {
+        const q = afterBallQueue;
+        afterBallQueue = [];
+        afterBallTimer = undefined;
+        for (const f of q) f();
+      }, ULTRA_TABLE_DEFER_MS);
+    }
+  } else {
+    fn();
+  }
+}
+
+function writeCacheSoon(roomId: string, patch: Partial<CachedDrawState>): void {
+  if (typeof window === 'undefined' || !roomId) return;
+  if (pendingCache && pendingCache.roomId !== roomId) flushPendingCache();
+  pendingCache = { roomId, patch: { ...pendingCache?.patch, ...patch } };
+  if (pendingCacheTimer === undefined) pendingCacheTimer = setTimeout(flushPendingCache, CACHE_DEFER_MS);
+}
+
+if (typeof window !== 'undefined') window.addEventListener('pagehide', flushPendingCache);
 
 function writeCache(roomId: string, patch: Partial<CachedDrawState>): void {
   if (typeof window === 'undefined' || !roomId) return;
@@ -116,6 +169,11 @@ function writeCache(roomId: string, patch: Partial<CachedDrawState>): void {
 
 function clearCache(roomId: string): void {
   if (typeof window === 'undefined' || !roomId) return;
+  if (pendingCache?.roomId === roomId) {
+    clearTimeout(pendingCacheTimer);
+    pendingCacheTimer = undefined;
+    pendingCache = null;
+  }
   try {
     localStorage.removeItem(cacheKey(roomId));
     console.log('[CACHE] 🗑️ Cache limpo para room:', roomId);
@@ -607,9 +665,6 @@ interface SSEContextValue {
   thisDraw: ThisDrawInfo | null;
   drawClosingSeconds: number | null;
   recoveryPhase: RecoveryPhase;
-  debugUrl: string;
-  debugLastEvent: string;
-  debugEventCount: number;
 }
 
 const SSEContext = createContext<SSEContextValue>({
@@ -632,9 +687,6 @@ const SSEContext = createContext<SSEContextValue>({
   thisDraw: null,
   drawClosingSeconds: null,
   recoveryPhase: 'live',
-  debugUrl: '',
-  debugLastEvent: '',
-  debugEventCount: 0,
 });
 
 export interface TvRestartInfo {
@@ -697,9 +749,6 @@ export function GameSocketProvider({
   const [hotDraws, setHotDraws] = useState<DrawSSE[]>([]);
   const [jackpotInfo, setJackpotInfo] = useState<JackpotInfo | null>(null);
   const [hadDrawInSession, setHadDrawInSession] = useState(false);
-  const [debugUrl, setDebugUrl] = useState('');
-  const [debugLastEvent, setDebugLastEvent] = useState('');
-  const [debugEventCount, setDebugEventCount] = useState(0);
 
   const esRef = useRef<EventSource | null>(null);
   const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -788,10 +837,6 @@ export function GameSocketProvider({
       }
 
       eventCountRef.current += 1;
-      setDebugEventCount(eventCountRef.current);
-      setDebugLastEvent(`${eventType} #${eventCountRef.current}`);
-
-      const timeStr = new Date().toLocaleTimeString();
 
       try {
         const parsed = JSON.parse(rawData);
@@ -799,7 +844,7 @@ export function GameSocketProvider({
 
         // Log visual em destaque colorido no console do navegador (DevTools)
         console.log(
-          `%c[SSE EVENTO] %c[${eventType.toUpperCase()}] #${eventCountRef.current} %c@ ${timeStr}`,
+          `%c[SSE EVENTO] %c[${eventType.toUpperCase()}] #${eventCountRef.current}`,
           'background: #00E5FF; color: #000000; font-weight: 900; padding: 3px 8px; border-radius: 4px;',
           'background: #FFDE38; color: #000000; font-weight: 900; padding: 3px 8px; border-radius: 4px;',
           'color: #00FF88; font-weight: 800;',
@@ -1132,6 +1177,7 @@ export function GameSocketProvider({
           }
 
           case 'new_ball': {
+            markBall();
             const ball = payload?.number ?? payload?.ball ?? payload?.value;
             console.log(`${TAG} 🎱 NEW_BALL: ${ball}`);
             if (ball !== undefined) {
@@ -1142,7 +1188,7 @@ export function GameSocketProvider({
               
               setDrawnNumbers(nextDrawnNumbers);
               
-              writeCache(roomId, {
+              writeCacheSoon(roomId, {
                 currentBall: ball,
                 drawnNumbers: nextDrawnNumbers,
                 drawId: lastSeenDrawIdRef.current,
@@ -1151,9 +1197,8 @@ export function GameSocketProvider({
               console.log(`[CACHE-RECOVERY-AUDIT] NEW_BALL ${ball} | drawnNumbers.length=${nextDrawnNumbers.length}`);
             }
             if (Array.isArray(payload?.topPlayers)) {
-              setTopPlayers(
-                payload.topPlayers.map((tp: any) => normalizeTopWinner(tp)),
-              );
+              const tps = payload.topPlayers.map((tp: any) => normalizeTopWinner(tp));
+              afterBall(() => setTopPlayers(tps));
             }
             if (payload?.topStage) {
               setTopStage(payload.topStage);
@@ -1170,10 +1215,12 @@ export function GameSocketProvider({
 
             if (twData?.targetPrize !== undefined) {
               const normalized = normalizeTopWinner(twData);
-              setTopPlayers(prev => {
-                const next = prev.filter(p => p.ticketId !== normalized.ticketId);
-                return [...next, normalized];
-              });
+              afterBall(() =>
+                setTopPlayers(prev => {
+                  const next = prev.filter(p => p.ticketId !== normalized.ticketId);
+                  return [...next, normalized];
+                }),
+              );
               console.log(
                 `${TAG} 🏆 top_winners (novo) ticket=${normalized.ticketId} target=${normalized.targetPrize} left=${normalized.minNumbersLeft}`,
               );
@@ -1193,7 +1240,8 @@ export function GameSocketProvider({
             }
             const items = twData?.items ?? twData?.topWinners;
             if (Array.isArray(items)) {
-              setTopPlayers(items.map((tp: any) => normalizeTopWinner(tp)));
+              const tps = items.map((tp: any) => normalizeTopWinner(tp));
+              afterBall(() => setTopPlayers(tps));
               console.log(`${TAG} 🏆 top_winners (antigo) count=${items.length}`);
             }
             break;
@@ -1538,6 +1586,55 @@ export function GameSocketProvider({
     [onRestartEvent],
   );
 
+  const heldRef = useRef<{ due: number; eventType: string; rawData: string }[]>([]);
+  const heldTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const flushHeld = useCallback(() => {
+    heldTimerRef.current = undefined;
+    const now = Date.now() + 120; // vencendo nos próximos 120ms entram junto
+    const q = heldRef.current;
+    let i = 0;
+    while (i < q.length && q[i]!.due <= now) i++;
+    const ready = q.splice(0, i);
+    for (const e of ready) dispatch(e.eventType, e.rawData);
+    if (q.length) heldTimerRef.current = setTimeout(flushHeld, Math.max(0, q[0]!.due - Date.now()));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
+
+  // ── gate ─────────────────────────────────────────────────────────────────
+  // Bola nativa (APK): a bola nova vai para o Android NA HORA (voo + voz) e todos
+  // os eventos da página são processados NATIVE_HOLD_MS depois, na mesma ordem
+  // (mesma espera para todos). Assim o trabalho da página acontece com a bola já
+  // pousada. Sem bola nativa: processa na hora, como sempre.
+  const gate = useCallback(
+    (eventType: string, rawData: string) => {
+      const hold = nativeBallHoldMs();
+      if (hold <= 0) {
+        dispatch(eventType, rawData);
+        return;
+      }
+      try {
+        const parsed = JSON.parse(rawData);
+        const type = eventType === 'message' ? parsed?.event || parsed?.type || '' : eventType;
+        if (type === 'new_ball') {
+          const p = parsed?.data ?? parsed;
+          const ball = Number(p?.number ?? p?.ball ?? p?.value);
+          if (ball >= 1 && ball <= 90) nativeBallNow(ball);
+        }
+      } catch {
+        // payload ilegível: o dispatch trata
+      }
+      // Todos os eventos que vencem juntos (a bola e os de prêmio/top que chegaram
+      // com ela) são processados numa tarefa só: o React desenha a tela UMA vez.
+      // Antes era um setTimeout por evento — um redesenho completo para cada um,
+      // e com bolas a cada ~4s a TV fraca ficava para trás (contagem atrasada).
+      heldRef.current.push({ due: Date.now() + hold, eventType, rawData });
+      if (heldTimerRef.current === undefined) heldTimerRef.current = setTimeout(flushHeld, hold);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch],
+  );
+
+
   // ── scheduleRetry ────────────────────────────────────────────────────────
   // eslint-disable-next-line no-unused-vars
   const scheduleRetry = useCallback(() => {
@@ -1648,7 +1745,6 @@ export function GameSocketProvider({
     }
 
     const url = buildUrl();
-    setDebugUrl(url);
 
     console.log(`${TAG} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`${TAG} 🔌 EventSource CONECTANDO → "${url}"`);
@@ -1671,7 +1767,7 @@ export function GameSocketProvider({
         if (unmountedRef.current || !event.data) {
           return;
         }
-        dispatch('message', event.data);
+        gate('message', event.data);
       };
 
       for (const eventType of KNOWN_EVENT_TYPES) {
@@ -1679,7 +1775,7 @@ export function GameSocketProvider({
           if (unmountedRef.current || !event.data) {
             return;
           }
-          dispatch(eventType, event.data);
+          gate(eventType, event.data);
         });
       }
 
@@ -1736,9 +1832,9 @@ export function GameSocketProvider({
     );
   }, [nextDraws.length, jackpotInfo]);
 
-  return (
-    <SSEContext.Provider
-      value={{
+  // Valor estável: os consumidores só redesenham quando um destes campos muda.
+  const contextValue = useMemo(
+    () => ({
         connected,
         drawnNumbers: drawnNumbersState,
         currentBall,
@@ -1758,11 +1854,32 @@ export function GameSocketProvider({
         thisDraw,
         drawClosingSeconds,
         recoveryPhase,
-        debugUrl,
-        debugLastEvent,
-        debugEventCount,
-      }}
-    >
+    }),
+    [
+      connected,
+      drawnNumbersState,
+      currentBall,
+      topPlayers,
+      topStage,
+      jackpotAmount,
+      triggerBallLimit,
+      lastDrawEvent,
+      winners,
+      myTickets,
+      promotions,
+      drawActive,
+      nextDraws,
+      hotDraws,
+      jackpotInfo,
+      hadDrawInSession,
+      thisDraw,
+      drawClosingSeconds,
+      recoveryPhase,
+    ],
+  );
+
+  return (
+    <SSEContext.Provider value={contextValue}>
       {children}
     </SSEContext.Provider>
   );

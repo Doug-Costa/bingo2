@@ -454,3 +454,61 @@
     animation: none;
   }
 }
+
+/* Pozo acumulado no cabeçalho da tela do sorteio (canto superior direito). */
+.headerJackpot {
+  /* 3. Mesma largura da tabela de jogadores (coluna da direita). */
+  width: 602px;
+  height: 108px;
+  padding: 0 12px 0 6px;
+}
+
+.headerJackpot .bag {
+  width: 116px;
+  margin: -10px 0 -6px -4px;
+}
+
+.headerJackpot .limitBadge {
+  width: 86px;
+  height: 86px;
+}
+
+/* Dados do sorteio em linha no cabeçalho (Loteria'i). */
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Termina na mesma linha da borda direita do card da bola (ajustado na tela). */
+  width: var(--lt-header-meta-w, 1100px);
+}
+
+/* 2. Cards do cabeçalho maiores e mais largos (preenchem até o pozo). */
+.headerMeta .metaCard {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: 92px;
+  gap: 14px;
+  padding: 0 18px;
+}
+
+.headerMeta .metaIcon {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.headerMeta .metaLabel {
+  font-size: 16px;
+}
+
+.headerMeta .metaValue {
+  font-size: 25px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.headerMeta .metaText {
+  min-width: 0;
+  flex: 1;
+}

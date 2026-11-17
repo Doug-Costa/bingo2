@@ -103,7 +103,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         <div className={styles.headerLeft}>
           <div className={styles.logoWrapper}>
             <Image
-              src="/themes/bingo-show-blue/logos/logo-main.png"
+              src="/themes/bingo-show-blue/logos/logo-main.webp"
               alt="Bingo Show Logo"
               width={160}
               height={60}
@@ -123,7 +123,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <div className={`${styles.pill} ${styles.pillDate}`}>
               <span className={styles.pillLabelRow}>
                 <Image
-                  src="/themes/bingo-show/assets/icons/calendario.png"
+                  src="/themes/bingo-show/assets/icons/calendario.webp"
                   alt="Calendário 3D"
                   width={16}
                   height={16}
@@ -138,7 +138,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
             <div className={`${styles.pill} ${styles.pillTime}`}>
               <span className={styles.pillLabelRow}>
                 <Image
-                  src="/themes/bingo-show/assets/icons/relogio.png"
+                  src="/themes/bingo-show/assets/icons/relogio.webp"
                   alt="Relógio 3D"
                   width={16}
                   height={16}
@@ -155,7 +155,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         <div className={styles.headerRight}>
           <div className={styles.specialJackpotBox}>
             <Image
-              src="/themes/bingo-show/assets/icons/bau-ouro.png"
+              src="/themes/bingo-show/assets/icons/bau-ouro.webp"
               alt="Baú de Ouro 3D"
               width={146}
               height={116}
@@ -169,7 +169,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
 
             <div className={`${styles.starBadge} ${styles.starBadgeFloating}`}>
               <Image
-                src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
+                src="/bingoshow-v2/jackpot/4x/jackpot-star.webp"
                 alt="Estrela Limite de Bola"
                 width={108}
                 height={108}
@@ -257,7 +257,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           <div className={styles.emptyDrawsContainer}>
             <div className={styles.emptyDrawsIconWrapper}>
               <Image
-                src="/themes/bingo-show/assets/icons/relogio.png"
+                src="/themes/bingo-show/assets/icons/relogio.webp"
                 alt="Aguardando sorteios"
                 width={36}
                 height={36}
@@ -332,7 +332,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {/* Slot Esquerdo: Ampulheta 3D */}
           <div className={styles.clockSideSlot}>
             <Image
-              src="/themes/bingo-show-blue/relogio-areia-dourado.png"
+              src="/themes/bingo-show-blue/relogio-areia-dourado.webp"
               alt="Ampulheta 3D"
               width={159}
               height={226}
@@ -349,7 +349,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
           {/* Slot Direito: Globo de Bingo Animado GIF (Tamanho Grande de Destaque) */}
           <div className={styles.clockSideSlot}>
             <Image
-              src="/themes/bingo-show-blue/globo-bingo.gif"
+              src="/themes/bingo-show-blue/globo-bingo.webp"
               alt="Globo de Bingo Animado 3D"
               width={250}
               height={250}
@@ -363,7 +363,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
         {/* Acumulado — agora vive dentro do painel central (mesma borda/glow) */}
         <div className={styles.centerAccumulatedBanner}>
           <Image
-            src="/themes/bingo-show/assets/icons/bau-ouro.png"
+            src="/themes/bingo-show/assets/icons/bau-ouro.webp"
             alt="Baú Acumulado 3D"
             width={200}
             height={124}
@@ -383,7 +383,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
 
           <div className={styles.centerAccumulatedStarBadge}>
             <Image
-              src="/bingoshow-v2/jackpot/4x/jackpot-star.png"
+              src="/bingoshow-v2/jackpot/4x/jackpot-star.webp"
               alt="Estrela Limite"
               width={140}
               height={140}
@@ -411,7 +411,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               {t('prize.line1')}
             </div>
             <Image
-              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              src="/themes/bingo-show/assets/icons/moedas-pilha.webp"
               alt=""
               aria-hidden="true"
               width={170}
@@ -431,7 +431,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               {t('prize.line2')}
             </div>
             <Image
-              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              src="/themes/bingo-show/assets/icons/moedas-pilha.webp"
               alt=""
               aria-hidden="true"
               width={170}
@@ -451,7 +451,7 @@ export const BingoShowLobbyScreenBlue: React.FC = () => {
               {t('prize.bingo')}
             </div>
             <Image
-              src="/themes/bingo-show/assets/icons/moedas-pilha.png"
+              src="/themes/bingo-show/assets/icons/moedas-pilha.webp"
               alt=""
               aria-hidden="true"
               width={170}

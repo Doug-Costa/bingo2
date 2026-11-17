@@ -91,6 +91,14 @@
   animation: neonSweep 5200ms linear 1200ms infinite;
 }
 
+/* Chrome 66 (TVs antigas) não tem aspect-ratio: quadrado pela largura. */
+@supports not (aspect-ratio: 1) {
+  .neonSweep {
+    height: 0;
+    padding-bottom: 150%;
+  }
+}
+
 .neonGlow {
   position: absolute;
   inset: -1px;

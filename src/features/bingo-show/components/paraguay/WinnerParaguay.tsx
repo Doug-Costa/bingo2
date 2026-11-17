@@ -10,7 +10,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
-import { useCountUp } from '../../hooks/useCountUp';
+import { CountUpText } from '../../hooks/useCountUp';
+import { useDeferredMount } from '../../hooks/useDeferredMount';
 import { WINNER_POPUP_MS } from '../../timing';
 import { GROUP_PAGE_SIZE, type GroupWinnerView } from '../BingoShowWinnerGroupBlue';
 import goldStyles from '../goldMetalText.module.css';
@@ -67,7 +68,6 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
   const enter = 650 + slot * CARD_STAGGER;
-  const counting = useCountUp(w.prize, enter + 450, 1700);
 
   const hasCard = Array.isArray(w.cardNumbers) && w.cardNumbers.length > 0;
   const winRows = new Set(w.paintedRows);
@@ -117,7 +117,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
               {w.prize}
             </span>
             <span className={`${styles.value} ${pyTheme.goldValue}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-              {counting}
+              <CountUpText text={w.prize} delayMs={enter + 450} durationMs={1700} />
             </span>
           </div>
         </div>
@@ -191,6 +191,8 @@ export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winner
   const skin = useEsSkin();
   const art = (prizeType && skin.art.winnerByType?.[prizeType]) || (isBingo ? skin.art.winnerBingo : skin.art.winnerLine);
   const { theme: pyTheme, winner: styles } = skin.css;
+  // TV: casca primeiro, cards no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -253,7 +255,7 @@ export const WinnerParaguay: React.FC<WinnerParaguayProps> = ({ sealText, winner
             </div>
           )}
           <div key={page} className={styles.cards} style={gridStyle}>
-            {list.map((w, i) => (
+            {contentReady && list.map((w, i) => (
               <GoldCard key={w.id} w={w} index={page * GROUP_PAGE_SIZE + i} slot={i} total={winners.length} density={density} isBingo={isBingo} art={art} style={spanOf(i)} />
             ))}
           </div>

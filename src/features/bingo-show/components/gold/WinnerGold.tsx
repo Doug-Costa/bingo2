@@ -8,7 +8,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
-import { useCountUp } from '../../hooks/useCountUp';
+import { CountUpText } from '../../hooks/useCountUp';
+import { useDeferredMount } from '../../hooks/useDeferredMount';
 import { WINNER_POPUP_MS } from '../../timing';
 import { GROUP_PAGE_SIZE, type GroupWinnerView } from '../BingoShowWinnerGroupBlue';
 import goldStyles from '../goldMetalText.module.css';
@@ -61,7 +62,6 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
   const enter = 650 + slot * CARD_STAGGER;
-  const counting = useCountUp(w.prize, enter + 450, 1700);
 
   const hasCard = Array.isArray(w.cardNumbers) && w.cardNumbers.length > 0;
   const winRows = new Set(w.paintedRows);
@@ -111,7 +111,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
               {w.prize}
             </span>
             <span className={`${styles.value} ${goldTheme.goldValue}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-              {counting}
+              <CountUpText text={w.prize} delayMs={enter + 450} durationMs={1700} />
             </span>
           </div>
         </div>
@@ -119,7 +119,7 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
         {total === 1 &&
           (isBingo ? (
             // eslint-disable-next-line @next/next/no-img-element -- asset do tema
-            <img className={`${styles.soloChest} ${styles.soloCrown}`} src="/themes/tema-ouro/sm/icons/coroa.png" alt="" draggable={false} />
+            <img className={`${styles.soloChest} ${styles.soloCrown}`} src="/themes/tema-ouro/sm/icons/coroa.webp" alt="" draggable={false} />
           ) : (
             <div className={styles.soloArtFrame}>
               {/* eslint-disable-next-line @next/next/no-img-element -- GIF animado do tema */}
@@ -184,6 +184,8 @@ const GoldCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
 
 export const WinnerGold: React.FC<WinnerGoldProps> = ({ sealText, winners, isBingo = false }) => {
   const t = useT();
+  // TV: casca primeiro, conteúdo pesado no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -240,7 +242,7 @@ export const WinnerGold: React.FC<WinnerGoldProps> = ({ sealText, winners, isBin
             </div>
           )}
           <div key={page} className={styles.cards} style={gridStyle}>
-            {list.map((w, i) => (
+            {contentReady && list.map((w, i) => (
               <GoldCard key={w.id} w={w} index={page * GROUP_PAGE_SIZE + i} slot={i} total={winners.length} density={density} isBingo={isBingo} style={spanOf(i)} />
             ))}
           </div>

@@ -23,7 +23,8 @@
 import React, { useEffect, useState } from 'react';
 import { BingoShowAssets } from '../assets';
 import { useFitText } from '../hooks/useFitText';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
+import { useDeferredMount } from '../hooks/useDeferredMount';
 import goldStyles from './goldMetalText.module.css';
 import styles from './BingoShowRoundWinnersBlue.module.css';
 import { useT } from '@/contexts/TvConfigContext';
@@ -107,7 +108,6 @@ const RoundCard: React.FC<{
   // Tamanho sobre o valor FINAL (cópia invisível); a contagem de R$ 0,00 até o
   // valor começa quando o valor aparece no card e dura 1,6s.
   const value = useFitText(winner.prize, m.value[0], m.value[1], 'ellipsis');
-  const prizeCounting = useCountUp(winner.prize, delays.value, 1600);
 
   return (
     <div
@@ -151,7 +151,7 @@ const RoundCard: React.FC<{
         </span>
         <div className={styles.valueGlow}>
           <span className={styles.value} style={{ fontSize: value.size }} aria-label={winner.prize}>
-            {prizeCounting}
+            <CountUpText text={winner.prize} delayMs={delays.value} durationMs={1600} />
           </span>
         </div>
       </div>
@@ -172,6 +172,8 @@ const Podium: React.FC<{
   totalDurationMs: number;
 }> = ({ category, index, jackpotAmount, totalDurationMs }) => {
   const t = useT();
+  // TV: colunas primeiro, cards no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -234,13 +236,13 @@ const Podium: React.FC<{
         <div className={styles.titleArea}>
           <div className={styles.titleRow}>
             <span className={styles.ornament} />
-            {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.png" alt="" draggable={false} />}
+            {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.webp" alt="" draggable={false} />}
             <div className={styles.titleCapsule}>
               <div className={styles.headingGlow}>
                 <span className={styles.heading}>{t(`prize.${category.key}`)}</span>
               </div>
             </div>
-            {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.png" alt="" draggable={false} />}
+            {category.key === 'bingo' && <img className={styles.clover} src="/themes/bingo-show-blue/trevo.webp" alt="" draggable={false} />}
             <span className={`${styles.ornament} ${styles.ornamentRight}`} />
           </div>
           {isSplit && (
@@ -265,7 +267,7 @@ const Podium: React.FC<{
           </div>
         ) : (
           <div key={page} className={`${styles.cards} ${styles[`mode${mode}`]}`}>
-            {pageWinners.map((w, j) => {
+            {contentReady && pageWinners.map((w, j) => {
               const card = firstShow ? 1100 + index * 120 + j * 180 : 80 + j * 120;
               const value = firstShow ? Math.max(card + 400, 1500 + index * 150 + j * 180) : card + 300;
               const flash = firstShow ? 2200 + index * 150 + j * 200 : card + 500;
@@ -332,7 +334,7 @@ export const BingoShowRoundWinnersBlue: React.FC<BingoShowRoundWinnersBlueProps>
 
     <div className={styles.layout}>
       <header className={styles.header}>
-        <img className={styles.logo} src="/themes/bingo-show-blue/logos/logo-main.png" alt="Bingo Show" draggable={false} />
+        <img className={styles.logo} src="/themes/bingo-show-blue/logos/logo-main.webp" alt="Bingo Show" draggable={false} />
         <div className={styles.headerCenter}>
           <div className={styles.headerTitle}>
             <span>🏆</span>

@@ -29,7 +29,7 @@
  */
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TvSafeArea } from '@/components/tv/TvSafeArea';
 import { clearCredentials, type ThemeConfig } from '@/storage/credentials';
 import { useAppTheme } from '@/contexts/ThemeContext';
@@ -133,7 +133,7 @@ function JackpotTag({ amount, theme }: { amount: number; theme: ThemeTokens }) {
 }
 
 // ─── Lobby — Countdown + prizes + próximas rodadas ─────────────────────────────
-function LobbyView({
+const LobbyView = memo(function LobbyView({
   theme,
   nextDraw,
   countdown,
@@ -329,10 +329,10 @@ function LobbyView({
       </ThemePanel>
     </div>
   );
-}
+});
 
 // ─── Em jogo ────────────────────────────────────────────────────────────────
-function InGameView({
+const InGameView = memo(function InGameView({
   theme,
   themeName,
   drawnNumbers,
@@ -496,13 +496,14 @@ function InGameView({
       </div>
     </div>
   );
-}
+});
 
 // ─── Loading ───────────────────────────────────────────────────────────────────
-function LoadingView({ theme }: { theme: ThemeTokens }) {
+const LoadingView = memo(function LoadingView({ theme }: { theme: ThemeTokens }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
       <div
+        className="tv-keep-anim"
         style={{
           width: 48,
           height: 48,
@@ -517,10 +518,10 @@ function LoadingView({ theme }: { theme: ThemeTokens }) {
       </ThemeText>
     </div>
   );
-}
+});
 
 // ─── Header ───────────────────────────────────────────────────────────────────
-function TvHeader({
+const TvHeader = memo(function TvHeader({
   theme,
   t,
   connected,
@@ -643,7 +644,7 @@ function TvHeader({
       </div>
     </ThemePanel>
   );
-}
+});
 
 // ─── Componente principal (consome o contexto SSE) ─────────────────────────────
 export interface TvScreenInnerProps {
@@ -836,10 +837,16 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
     onLogout();
   }, [onLogout]);
 
+  // Referência estável: sem isto, `TvHeader` (memoizado) re-renderiza a
+  // cada tick do relógio/countdown só porque esta prop virava uma função nova.
+  const handleToggleSound = useCallback(() => setSoundOn((s) => !s), []);
+  const handleSelectLang = useCallback((l: 'pt' | 'es') => setLang(l), []);
+  const handlePostDrawDone = useCallback(() => setPostDrawCycle(false), []);
+
   const loadingScreen = !drawActive && !postDrawCycle && !connected && nextDraws.length === 0;
 
   return (
-    <ThemeBackground theme={theme} variant={drawActive ? 'main' : 'dark'} style={{ position: 'absolute', inset: 0 }}>
+    <ThemeBackground theme={theme} variant={drawActive ? 'main' : 'dark'} style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}>
       <TvSafeArea style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <TvHeader
@@ -853,9 +860,9 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
           isInProgress={drawActive}
           onLogout={handleLogout}
           soundOn={soundOn}
-          onToggleSound={soundEnabled ? () => setSoundOn((s) => !s) : undefined}
+          onToggleSound={soundEnabled ? handleToggleSound : undefined}
           lang={lang}
-          onSelectLang={(l) => setLang(l)}
+          onSelectLang={handleSelectLang}
         />
 
         {/* Main content — drawActive tem prioridade absoluta */}
@@ -876,7 +883,7 @@ export function TvScreenInner({ themeConfig, onLogout }: TvScreenInnerProps) {
         ) : loadingScreen ? (
           <LoadingView theme={theme} />
         ) : postDrawCycle ? (
-          <PostDrawCycle theme={theme} winners={winners} drawnNumbers={drawnNumbers} onDone={() => setPostDrawCycle(false)} />
+          <PostDrawCycle theme={theme} winners={winners} drawnNumbers={drawnNumbers} onDone={handlePostDrawDone} />
         ) : (
           <LobbyView theme={theme} nextDraw={nextDraw} countdown={countdown} upcomingDraws={upcomingDraws} jackpotAmount={jackpotAmount} jackpotInfo={jackpotInfo} triggerBallLimit={triggerBallLimit} />
         )}

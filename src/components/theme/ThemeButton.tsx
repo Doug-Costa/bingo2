@@ -179,6 +179,7 @@ export function ThemeButton({
       {loading ? (
         <span
           aria-hidden
+          className="tv-keep-anim"
           style={{
             width: 16,
             height: 16,

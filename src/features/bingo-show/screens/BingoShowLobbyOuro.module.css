@@ -3,9 +3,7 @@
  * Imperial / Cyber Neon / Safira PUB, então tudo aqui entra atrás de
  * `themeId === 'bingo-show'` no TSX.
  *
- * Valores no ouro metálico do tema (a mesma receita de goldMetalText.module.css:
- * faixas abruptas, contorno fino e relevo por drop-shadow) — em todos os cards,
- * como no Blue. */
+ * Valores em ouro sólido em todos os cards (cor chapada + sombra escura). */
 
 .money {
   display: block;
@@ -15,34 +13,16 @@
   letter-spacing: 0.3px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
 }
 
+/* Cor sólida (antes: gradiente metálico recortado no texto, ilegível na TV). */
 .gold,
 .cyan,
 .green {
-  background-image: linear-gradient(
-    180deg,
-    #6f3e00 0%,
-    #b97808 8%,
-    #fff4b8 18%,
-    #ffd76a 25%,
-    #d9a514 42%,
-    #fff0a0 51%,
-    #b97808 59%,
-    #f5c542 73%,
-    #fff4b8 82%,
-    #a86200 92%,
-    #5c3100 100%
-  );
-  -webkit-text-stroke: 1px rgba(100, 47, 0, 0.72);
-  filter:
-    drop-shadow(0 2px 0 #713600)
-    drop-shadow(0 4px 1px rgba(25, 9, 0, 0.66))
-    drop-shadow(0 0 4px rgba(255, 199, 34, 0.45));
+  color: #FFD84A;
+  text-shadow:
+    0 2px 0 #6b3500,
+    0 3px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* Ícone PNG do tema ao lado de DATA/HORA no header. */
@@ -67,5 +47,120 @@
 @media (prefers-reduced-motion: reduce) {
   .accumulatedPop {
     animation: none;
+  }
+}
+
+/* ── Ajustes de posição ──────────────────────────────────────────────────── */
+
+/* Valores dos cards 1ª linha / 2ª linha / bingo: um pouco mais para cima. */
+.prizeValueUp {
+  position: relative;
+  top: -8px;
+}
+
+/* ── Animações dos cards da home ─────────────────────────────────────────────
+ * Só transform/opacity (a GPU anima sem redesenhar — importante nas TVs).
+ * Atraso de cada card em `--d` (inline). Os loops levam `tv-keep-anim` para
+ * continuar no modo leve; no ultra leve e com `tv-noanim` param de vez. */
+
+/* Entrada: cada card sobe e aparece, em sequência. */
+.cardEnter {
+  animation: cardEnter 700ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Entrada da esquerda (lista de próximos sorteios a cada troca de página). */
+.rowEnter {
+  animation: rowEnter 450ms ease-out both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes rowEnter {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Brilho que atravessa o card de tempos em tempos. */
+.shine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  z-index: 3;
+  pointer-events: none;
+  background-image: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 246, 200, 0.32) 50%,
+    rgba(255, 255, 255, 0.05) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-120%);
+  animation: shine 6s ease-in-out infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes shine {
+  0% { transform: translateX(-120%); }
+  22% { transform: translateX(260%); }
+  100% { transform: translateX(260%); }
+}
+
+/* Moedas flutuando devagar. */
+.coinFloat {
+  animation: coinFloat 2.8s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes coinFloat {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(-9px) rotate(-3deg); }
+}
+
+/* Valor do prêmio "respira" de leve. */
+.valuePulse {
+  animation: valuePulse 4s ease-in-out infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes valuePulse {
+  0%, 70%, 100% { transform: scale(1); }
+  80% { transform: scale(1.06); }
+  90% { transform: scale(0.99); }
+}
+
+:global(html.tv-ultra) .shine,
+:global(html.tv-ultra) .coinFloat,
+:global(html.tv-ultra) .valuePulse,
+:global(html.tv-noanim) .shine,
+:global(html.tv-noanim) .coinFloat,
+:global(html.tv-noanim) .valuePulse,
+:global(html.tv-noanim) .cardEnter,
+:global(html.tv-noanim) .rowEnter {
+  animation: none !important;
+}
+
+:global(html.tv-ultra) .shine,
+:global(html.tv-noanim) .shine {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine,
+  .coinFloat,
+  .valuePulse,
+  .cardEnter,
+  .rowEnter {
+    animation: none;
+  }
+  .shine {
+    display: none;
   }
 }

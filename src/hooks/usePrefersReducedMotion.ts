@@ -16,13 +16,23 @@ export function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mql.matches);
+    if (typeof window === 'undefined') return;
+    const root = document.documentElement;
+    const mql = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    // TV fraca (html.tv-ultra, ligado pelo PerfMonitor): mesmo caminho do movimento
+    // reduzido — bola aparece sem voo, sem passagem medida no DOM, voz quase imediata.
+    const check = () =>
+      Boolean(mql?.matches) || root.classList.contains('tv-ultra') || root.classList.contains('tv-native-ball');
+    setReduced(check());
 
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
+    const handler = () => setReduced(check());
+    mql?.addEventListener?.('change', handler);
+    const mo = typeof MutationObserver === 'function' ? new MutationObserver(handler) : null;
+    mo?.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => {
+      mql?.removeEventListener?.('change', handler);
+      mo?.disconnect();
+    };
   }, []);
 
   return reduced;

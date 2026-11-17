@@ -9,7 +9,7 @@
  * Nenhuma regra de normalização de `ticket.numbers` (1D/2D/string JSON) ou
  * cálculo de `missingCounts`/`bestMissing`/`closestTicketId` alterada.
  */
-import { useMemo, type CSSProperties } from 'react';
+import { memo, useMemo, type CSSProperties } from 'react';
 import type { MyTicket, TopWinnerRealtime } from '@/contexts/SSEContext';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
 import Icon from '../Icon';
@@ -280,4 +280,4 @@ export function MyTicketsPanel({ tickets, drawnNumbers, currentBall, topPlayers,
   );
 }
 
-export default MyTicketsPanel;
+export default memo(MyTicketsPanel);

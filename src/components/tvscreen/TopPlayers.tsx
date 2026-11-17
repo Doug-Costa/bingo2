@@ -4,6 +4,7 @@
  * ordenação/cor/label alterada (a ordenação em si já chega pronta de quem
  * chama, igual ao RN).
  */
+import { memo } from 'react';
 import type { TopWinnerRealtime } from '@/contexts/SSEContext';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
 import Icon, { type IconName } from '../Icon';
@@ -264,4 +265,4 @@ export function TopPlayers({ players, theme }: TopPlayersProps) {
   );
 }
 
-export default TopPlayers;
+export default memo(TopPlayers);

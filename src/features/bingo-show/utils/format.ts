@@ -2,12 +2,26 @@
  * format.ts — Helpers de formatação para dados REAIS (SSE) do Bingo Show V2.
  */
 
+/** Formatadores pt-BR guardados por nº de casas decimais. `toLocaleString` com
+ * opções cria um Intl.NumberFormat novo a CADA chamada (caro, mais ainda na
+ * WebView antiga da TV) — e os valores são formatados a cada bola e a cada passo
+ * da contagem do popup. Aqui cada formatador é criado uma vez. */
+const ptNumberFormats = new Map<string, Intl.NumberFormat>();
+export function formatNumberPt(n: number, minDecimals: number, maxDecimals = minDecimals): string {
+  const key = `${minDecimals}:${maxDecimals}`;
+  let f = ptNumberFormats.get(key);
+  if (!f) {
+    f = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: minDecimals, maximumFractionDigits: maxDecimals });
+    ptNumberFormats.set(key, f);
+  }
+  return f.format(n);
+}
+
+const currencyFormats = new Map<string, Intl.NumberFormat | null>();
+
 export function formatGs(value: number | undefined | null): string {
   const n = Number(value ?? 0);
-  return `GS. ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `GS. ${formatNumberPt(n, 2)}`;
 }
 
 /** Moeda de exibição: `defaultCoin` do tema recebido no PIN ou, sem ele, a do
@@ -29,19 +43,21 @@ export function getMoneyCurrency(): MoneyCurrency {
 export function formatMoney(value: number | undefined | null): string {
   const n = Number(value ?? 0);
   if (moneyCurrency === 'PYG') {
-    return `Gs. ${Math.round(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
+    return `Gs. ${formatNumberPt(Math.round(n), 0)}`;
   }
   if (moneyCurrency !== 'BRL') {
-    try {
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: moneyCurrency }).format(n);
-    } catch {
-      // código desconhecido: cai no real
+    let f = currencyFormats.get(moneyCurrency);
+    if (f === undefined) {
+      try {
+        f = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: moneyCurrency });
+      } catch {
+        f = null; // código desconhecido: cai no real
+      }
+      currencyFormats.set(moneyCurrency, f);
     }
+    if (f) return f.format(n);
   }
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `R$ ${formatNumberPt(n, 2)}`;
 }
 
 /** Mantido pelo nome histórico: formata na moeda atual (ver formatMoney). */

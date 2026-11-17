@@ -12,10 +12,10 @@ import styles from './FlagArt.module.css';
 const D = '/themes/loteriai/sm/decorative';
 
 export const FLAG_ART = {
-  tailLeft: `${D}/faixa-ponta-esq.png`,
-  tailRight: `${D}/faixa-ponta-dir.png`,
-  cornerLeft: `${D}/asa-esq.png`,
-  cornerRight: `${D}/asa-dir.png`,
+  tailLeft: `${D}/faixa-ponta-esq.webp`,
+  tailRight: `${D}/faixa-ponta-dir.webp`,
+  cornerLeft: `${D}/asa-esq.webp`,
+  cornerRight: `${D}/asa-dir.webp`,
 };
 
 /** Guirlanda do topo com o brasão, centralizada. O brasão mantém a proporção
@@ -24,9 +24,9 @@ export function TopFlagBand({ height, width, top = 0, style }: { height: number;
   return (
     <div className={`${styles.band} ${styles.garland}`} style={{ top, height, width, ...style }} aria-hidden="true">
       {/* eslint-disable @next/next/no-img-element -- peças estáticas do tema */}
-      <img className={styles.stripes} src={`${D}/guirlanda-esq.png`} alt="" draggable={false} />
-      <img className={styles.seal} src={`${D}/guirlanda-selo.png`} alt="" draggable={false} />
-      <img className={styles.stripes} src={`${D}/guirlanda-dir.png`} alt="" draggable={false} />
+      <img className={styles.stripes} src={`${D}/guirlanda-esq.webp`} alt="" draggable={false} />
+      <img className={styles.seal} src={`${D}/guirlanda-selo.webp`} alt="" draggable={false} />
+      <img className={styles.stripes} src={`${D}/guirlanda-dir.webp`} alt="" draggable={false} />
       {/* eslint-enable @next/next/no-img-element */}
     </div>
   );
@@ -37,7 +37,7 @@ export function FlagStripes({ className, style }: { className?: string; style?: 
   return (
     <div className={`${styles.band} ${className ?? ''}`} style={style} aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element -- arte estática do tema */}
-      <img className={styles.stripes} src={`${D}/faixa-onda.png`} alt="" draggable={false} />
+      <img className={styles.stripes} src={`${D}/faixa-onda.webp`} alt="" draggable={false} />
     </div>
   );
 }

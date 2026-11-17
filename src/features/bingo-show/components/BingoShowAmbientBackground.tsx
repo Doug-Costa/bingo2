@@ -41,12 +41,13 @@ function AmbientParticle({ spec, isBlue }: { spec: ParticleSpec; isBlue?: boolea
   const baseSource = spec.source === 'stars' ? BingoShowAssets.particles.stars : BingoShowAssets.particles.sparkles;
   const source = isBlue
     ? spec.source === 'stars'
-      ? '/themes/bingo-show-blue/particles/particle-stars.png'
-      : '/themes/bingo-show-blue/particles/particle-sparkles.png'
+      ? '/themes/bingo-show-blue/particles/particle-stars.webp'
+      : '/themes/bingo-show-blue/particles/particle-sparkles.webp'
     : baseSource;
 
   return (
     <img
+      className="tv-no-anim"
       src={source}
       alt=""
       style={
@@ -67,6 +68,15 @@ function AmbientParticle({ spec, isBlue }: { spec: ParticleSpec; isBlue?: boolea
     />
   );
 }
+
+// Elemento fixo: a tela redesenha a cada bola, e as partículas nunca mudam.
+const PARTICLE_LAYER = (
+  <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none' }}>
+    {PARTICLES.map((p) => (
+      <AmbientParticle key={p.id} spec={p} />
+    ))}
+  </div>
+);
 
 export interface BingoShowAmbientBackgroundProps {
   children?: ReactNode;
@@ -123,13 +133,13 @@ export function BingoShowAmbientBackground({
   const isLight = brightness === 'light';
   const spaceSource = isBlue
     ? backdrop === 'blue'
-      ? '/themes/bingo-show-blue/backgrounds/bg-blue-gradient.png'
-      : '/themes/bingo-show-blue/backgrounds/bg-space.png'
+      ? '/themes/bingo-show-blue/backgrounds/bg-blue-gradient.webp'
+      : '/themes/bingo-show-blue/backgrounds/bg-space.webp'
     : backdrop === 'blue'
     ? BingoShowAssets.backgrounds.bgBlueGradient
     : BingoShowAssets.backgrounds.bgSpace;
 
-  const glowSource = isBlue ? '/themes/bingo-show-blue/backgrounds/bg-glow.png' : BingoShowAssets.backgrounds.bgGlow;
+  const glowSource = isBlue ? '/themes/bingo-show-blue/backgrounds/bg-glow.webp' : BingoShowAssets.backgrounds.bgGlow;
 
   const vt = isLight ? 0.22 : 0.45;
   const vb = isLight ? 0.35 : 0.65;
@@ -148,9 +158,10 @@ export function BingoShowAmbientBackground({
     <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: bgBaseColor, overflow: 'hidden' }}>
       {/* CAMADA 1: Fundo com deriva Ken Burns */}
       <div
+        className="tv-no-anim"
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 0, right: 0, bottom: 0, left: 0,
           backgroundImage: `url(${spaceSource})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -160,9 +171,10 @@ export function BingoShowAmbientBackground({
 
       {/* CAMADA 2: Glow respirando */}
       <div
+        className="tv-no-anim"
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 0, right: 0, bottom: 0, left: 0,
           backgroundImage: `url(${glowSource})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -202,13 +214,7 @@ export function BingoShowAmbientBackground({
 
 
       {/* CAMADA 3: Partículas cintilantes e Confete */}
-      {particles && (
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          {PARTICLES.map((p) => (
-            <AmbientParticle key={p.id} spec={p} />
-          ))}
-        </div>
-      )}
+      {particles && PARTICLE_LAYER}
 
       {confetti && (
         <img
@@ -216,7 +222,7 @@ export function BingoShowAmbientBackground({
           alt="Confetes"
           style={{
             position: 'absolute',
-            inset: 0,
+            top: 0, right: 0, bottom: 0, left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',

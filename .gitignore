@@ -26,5 +26,14 @@ next-env.d.ts
 .vercel
 .env*
 
+# app Android TV
+/android-tv/keystore/
+/android-tv/deploy.env
+/android-tv/local.properties
+/android-tv/.gradle/
+/android-tv/build/
+/android-tv/app/build/
+*.apk
+
 # graphify (grafo local do projeto)
 graphify-out/

@@ -69,11 +69,11 @@ const MONEY_SIZES: Record<'active' | 'idle' | 'jackpot', Record<MoneyLengthTier,
  * faixa de comprimento e reduzida (até 70%) só se ainda não couber na área
  * reservada — nunca quebra, corta ou rola. Aceita qualquer string já formatada
  * (hoje "R$ 150,00"; no futuro algo como "₲ 12.500.000"). */
-const BlueMoney: React.FC<{ value: string; role: 'active' | 'idle' | 'jackpot'; className?: string }> = ({
+const BlueMoney = React.memo<{ value: string; role: 'active' | 'idle' | 'jackpot'; className?: string }>(function BlueMoney({
   value,
   role,
   className,
-}) => {
+}) {
   const max = MONEY_SIZES[role][moneyLengthTier(value)];
   const fit = useFitText(value, max, Math.round(max * 0.7), 'ellipsis', true);
   return (
@@ -83,7 +83,7 @@ const BlueMoney: React.FC<{ value: string; role: 'active' | 'idle' | 'jackpot'; 
       </span>
     </span>
   );
-};
+});
 
 const PrizeRow: React.FC<{
   label: string;
@@ -247,14 +247,14 @@ const PrizeRow: React.FC<{
 };
 
 const META_ICONS_PNG: Record<string, string> = {
-  ticket: '/themes/bingo-show-blue/trevo.png',
-  star: '/themes/bingo-show-blue/coracao.png',
-  calendar: '/themes/bingo-show-blue/calendario.png',
-  clock: '/themes/bingo-show-blue/relogio.png',
-  sorteio: '/themes/bingo-show-blue/trevo.png',
-  doacao: '/themes/bingo-show-blue/coracao.png',
-  data: '/themes/bingo-show-blue/calendario.png',
-  hora: '/themes/bingo-show-blue/relogio.png',
+  ticket: '/themes/bingo-show-blue/trevo.webp',
+  star: '/themes/bingo-show-blue/coracao.webp',
+  calendar: '/themes/bingo-show-blue/calendario.webp',
+  clock: '/themes/bingo-show-blue/relogio.webp',
+  sorteio: '/themes/bingo-show-blue/trevo.webp',
+  doacao: '/themes/bingo-show-blue/coracao.webp',
+  data: '/themes/bingo-show-blue/calendario.webp',
+  hora: '/themes/bingo-show-blue/relogio.webp',
 };
 
 const MetaCard: React.FC<{
@@ -409,7 +409,7 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   <div className={`${goldTheme.vars} ${goldPrize.column}`} style={style}>
     <div className={`${goldTheme.panel} ${goldPrize.jackpot} ${jackpotActive ? '' : goldPrize.jackpotOff}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={`${goldPrize.bag} ${goldTheme.bagAlive}`} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.png`} alt="" />
+      <img className={`${goldPrize.bag} ${goldTheme.bagAlive}`} src={`${GOLD_ASSET}/decorative/saco-moedas-pata.webp`} alt="" />
       <div className={goldPrize.jackpotText}>
         <span className={goldPrize.jackpotLabel}>{t('prize.jackpot')}</span>
         <BlueMoney value={accumulatedAmount} role="jackpot" className={goldTheme.goldValue} />
@@ -429,10 +429,10 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
     </div>
 
     <div className={goldPrize.meta}>
-      <GoldMetaCard icon={`${GOLD_ASSET}/icons/pata.png`} label={t('lobby.drawWord')} value={drawNumber} />
-      <GoldMetaCard icon={`${GOLD_ASSET}/decorative/pilha-moedas.png`} label={t('meta.donation')} value={donationAmount} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/pata.webp`} label={t('lobby.drawWord')} value={drawNumber} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/decorative/pilha-moedas.webp`} label={t('meta.donation')} value={donationAmount} />
       <GoldMetaCard mark="◆" label={t('lobby.date')} value={dateStr} />
-      <GoldMetaCard icon={`${GOLD_ASSET}/icons/ampulheta.png`} label={t('lobby.time')} value={timeStr} />
+      <GoldMetaCard icon={`${GOLD_ASSET}/icons/ampulheta.webp`} label={t('lobby.time')} value={timeStr} />
     </div>
   </div>
   );
@@ -440,7 +440,7 @@ const GoldPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
 
 /** Família es-PY: uma faixa de prêmio (mesmos dados/estados; textos em espanhol).
  * Módulos e assets vêm da skin do tema (Paraguay ou Loteria'i). */
-const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRowStatus }> = ({ label, value, status }) => {
+const ParaguayPrizeRow = React.memo<{ label: string; value: string; status: PrizeRowStatus }>(function ParaguayPrizeRow({ label, value, status }) {
   const skin = useEsSkin();
   const { theme: pyTheme, prize: pyPrize } = skin.css;
   const isActive = status === 'active';
@@ -478,9 +478,9 @@ const ParaguayPrizeRow: React.FC<{ label: string; value: string; status: PrizeRo
       </div>
     </div>
   );
-};
+});
 
-const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }> = ({ icon, label, value }) => {
+const ParaguayMetaCard = React.memo<{ icon: string; label: string; value: string }>(function ParaguayMetaCard({ icon, label, value }) {
   const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
   return (
   <div className={`${pyTheme.panel} ${pyPrize.metaCard}`}>
@@ -492,9 +492,75 @@ const ParaguayMetaCard: React.FC<{ icon: string; label: string; value: string }>
     </div>
   </div>
   );
-};
+});
 
-/** Paraguay: o painel inteiro (acumulado + 3 prêmios + dados), com os mesmos props. */
+/** Família es-PY: card do pozo acumulado (no Loteria'i ele fica no cabeçalho). */
+const EsJackpotCard = React.memo<{
+  accumulatedAmount: string;
+  triggerBallLimit?: number;
+  jackpotActive: boolean;
+  className?: string;
+}>(function EsJackpotCard({ accumulatedAmount, triggerBallLimit, jackpotActive, className = '' }) {
+  const skin = useEsSkin();
+  const t = useT();
+  const { theme: pyTheme, prize: pyPrize } = skin.css;
+  const isLt = skin.id === 'loteriai';
+  return (
+    <div className={`${pyTheme.panel} ${isLt ? pyTheme.panelBlue : pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff} ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
+      <img className={`${pyTheme.art} ${pyPrize.bag}`} src={skin.art.jackpot} alt="" draggable={false} />
+      <div className={pyPrize.jackpotText}>
+        <span className={pyPrize.jackpotLabel}>{t('prize.jackpot')}</span>
+        <BlueMoney value={accumulatedAmount} role="jackpot" className={pyTheme.goldValue} />
+      </div>
+      {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
+        <div className={pyPrize.limitBadge}>
+          <span className={pyPrize.limitLabel}>{t('lobby.untilBall')}</span>
+          <span className={`${pyTheme.goldText} ${pyPrize.limitValue}`}>{triggerBallLimit}</span>
+        </div>
+      )}
+    </div>
+  );
+});
+
+/** Loteria'i: pozo acumulado no canto superior direito da tela do sorteio. */
+export const LoteriaiHeaderJackpot = React.memo<{
+  accumulatedAmount: string;
+  triggerBallLimit?: number;
+  jackpotActive: boolean;
+  style?: React.CSSProperties;
+}>(function LoteriaiHeaderJackpot({ style, ...props }) {
+  const { theme: pyTheme, prize: pyPrize } = useEsSkin().css;
+  return (
+    <div className={pyTheme.vars} style={style}>
+      <EsJackpotCard {...props} className={pyPrize.headerJackpot ?? ''} />
+    </div>
+  );
+});
+
+/** Loteria'i: sorteo / valor / fecha / hora em linha no cabeçalho do sorteio. */
+export const LoteriaiHeaderMeta = React.memo<{ drawNumber: string; donationAmount: string; dateStr: string; timeStr: string }>(function LoteriaiHeaderMeta({
+  drawNumber,
+  donationAmount,
+  dateStr,
+  timeStr,
+}) {
+  const skin = useEsSkin();
+  const t = useT();
+  const { theme: pyTheme, prize: pyPrize } = skin.css;
+  return (
+    <div className={`${pyTheme.vars} ${pyPrize.headerMeta ?? ''}`}>
+      <ParaguayMetaCard icon={skin.art.meta.draw} label={t('lobby.drawWord')} value={drawNumber} />
+      <ParaguayMetaCard icon={skin.art.meta.donation} label={t('meta.donation')} value={donationAmount} />
+      <ParaguayMetaCard icon={skin.art.meta.date} label={t('lobby.date')} value={dateStr} />
+      <ParaguayMetaCard icon={skin.art.meta.time} label={t('lobby.time')} value={timeStr} />
+    </div>
+  );
+});
+
+/** Paraguay: o painel inteiro (acumulado + 3 prêmios + dados), com os mesmos props.
+ * Loteria'i: o pozo e os dados (sorteo/valor/fecha/hora, em linha) vão para o
+ * cabeçalho; a coluna fica só com os 3 prêmios. */
 const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
   triggerBallLimit,
@@ -519,22 +585,17 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
   const tierLabels = isLt
     ? [t('prize.line1'), t('prize.line2'), t('prize.bingo')]
     : [t('prize.n', { n: 1 }), t('prize.n', { n: 2 }), t('prize.n', { n: 3 })];
+  const meta = (
+    <div className={pyPrize.meta}>
+      <ParaguayMetaCard icon={skin.art.meta.draw} label={t('lobby.drawWord')} value={drawNumber} />
+      <ParaguayMetaCard icon={skin.art.meta.donation} label={t('meta.donation')} value={donationAmount} />
+      <ParaguayMetaCard icon={skin.art.meta.date} label={t('lobby.date')} value={dateStr} />
+      <ParaguayMetaCard icon={skin.art.meta.time} label={t('lobby.time')} value={timeStr} />
+    </div>
+  );
   return (
   <div className={`${pyTheme.vars} ${pyPrize.column}`} style={style}>
-    <div className={`${pyTheme.panel} ${isLt ? pyTheme.panelBlue : pyTheme.panelRed} ${pyTheme.sweep} ${pyPrize.jackpot} ${jackpotActive ? '' : pyPrize.jackpotOff}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-      <img className={`${pyTheme.art} ${pyPrize.bag}`} src={skin.art.jackpot} alt="" draggable={false} />
-      <div className={pyPrize.jackpotText}>
-        <span className={pyPrize.jackpotLabel}>{t('prize.jackpot')}</span>
-        <BlueMoney value={accumulatedAmount} role="jackpot" className={pyTheme.goldValue} />
-      </div>
-      {typeof triggerBallLimit === 'number' && triggerBallLimit > 0 && (
-        <div className={pyPrize.limitBadge}>
-          <span className={pyPrize.limitLabel}>{t('lobby.untilBall')}</span>
-          <span className={`${pyTheme.goldText} ${pyPrize.limitValue}`}>{triggerBallLimit}</span>
-        </div>
-      )}
-    </div>
+    {!isLt && <EsJackpotCard accumulatedAmount={accumulatedAmount} triggerBallLimit={triggerBallLimit} jackpotActive={jackpotActive} />}
 
     <div className={pyPrize.rows}>
       <ParaguayPrizeRow label={tierLabels[0]!} value={line1Amount} status={line1Status} />
@@ -542,17 +603,12 @@ const ParaguayPrizeStatus: React.FC<BingoShowPrizeStatusCardProps> = ({
       <ParaguayPrizeRow label={tierLabels[2]!} value={bingoAmount} status={bingoStatus} />
     </div>
 
-    <div className={pyPrize.meta}>
-      <ParaguayMetaCard icon={skin.art.meta.draw} label={t('lobby.drawWord')} value={drawNumber} />
-      <ParaguayMetaCard icon={skin.art.meta.donation} label={t('meta.donation')} value={donationAmount} />
-      <ParaguayMetaCard icon={skin.art.meta.date} label={t('lobby.date')} value={dateStr} />
-      <ParaguayMetaCard icon={skin.art.meta.time} label={t('lobby.time')} value={timeStr} />
-    </div>
+    {!isLt && meta}
   </div>
   );
 };
 
-export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> = ({
+const BingoShowPrizeStatusCardInner: React.FC<BingoShowPrizeStatusCardProps> = ({
   accumulatedAmount = 'GS. 0',
   triggerBallLimit,
   jackpotActive = false,
@@ -753,6 +809,8 @@ export const BingoShowPrizeStatusCard: React.FC<BingoShowPrizeStatusCardProps> =
     </div>
   );
 };
+
+export const BingoShowPrizeStatusCard = React.memo(BingoShowPrizeStatusCardInner);
 
 export default BingoShowPrizeStatusCard;
 

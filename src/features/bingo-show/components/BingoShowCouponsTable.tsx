@@ -34,7 +34,9 @@ const VISIBLE_ROWS = 10;
  * A proximidade vem do tamanho de `missing` — a lista de números que ainda faltam
  * enviada pelo backend (`missingNumbers`) — só quando o registro tem dados e a
  * lista não está vazia; sem isso, nenhuma marca é exibida. */
-const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string; almostText: string }> = ({
+const NO_FRESH: ReadonlySet<number> = new Set();
+
+const CardCouponRowInner: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: (n: number) => string; almostText: string }> = ({
   row,
   css: blueTable,
   ballImage,
@@ -46,23 +48,29 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
   const signature = missing.join(',');
 
   // Flash + entrada das bolas novas SÓ quando os números deste registro mudam
-  // por SSE (não na 1ª renderização, não em re-renders do relógio).
-  const [update, setUpdate] = React.useState<{ n: number; fresh: Set<number> }>({ n: 0, fresh: new Set() });
-  const prevRef = React.useRef<number[] | null>(null);
-  React.useEffect(() => {
-    const prev = prevRef.current;
-    prevRef.current = missing;
-    if (prev === null || !hasData || prev.join(',') === signature) return;
-    setUpdate((u) => ({ n: u.n + 1, fresh: new Set(missing.filter((v) => !prev.includes(v))) }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature, hasData]);
+  // por SSE (não na 1ª renderização, não em re-renders do relógio). Calculado já
+  // nesta renderização, comparando com a anterior: antes um efeito gravava o
+  // estado depois de desenhar e a linha desenhava DUAS vezes a cada bola (as 10
+  // linhas juntas — um redesenho inteiro da tabela a mais por bola na TV).
+  // Repetir a renderização (StrictMode) não conta de novo: a assinatura já bate.
+  const prevRef = React.useRef<{ sig: string; missing: number[] } | null>(null);
+  const updateRef = React.useRef<{ n: number; fresh: ReadonlySet<number> }>({ n: 0, fresh: NO_FRESH });
+  const prev = prevRef.current;
+  if (prev && prev.sig !== signature) {
+    if (hasData) updateRef.current = { n: updateRef.current.n + 1, fresh: new Set(missing.filter((v) => !prev.missing.includes(v))) };
+  }
+  prevRef.current = { sig: signature, missing };
+  const update = updateRef.current;
+  // Ultra leve: animações duram 1ms (ninguém vê o flash nem a entrada da bola),
+  // mas cada uma ainda montava um elemento e recalculava estilo. Sem elas.
+  const animate = typeof document === 'undefined' || !document.documentElement.classList.contains('tv-ultra');
 
   const tier =
     missingCount === 1 ? blueTable.cardCritical : missingCount === 2 ? blueTable.cardNear : '';
 
   return (
     <div className={`${blueTable.card} ${tier} ${hasData ? '' : blueTable.cardEmpty}`}>
-      {update.n > 0 && <span key={update.n} className={blueTable.flash} />}
+      {animate && update.n > 0 && <span key={update.n} className={blueTable.flash} />}
       {missingCount === 1 && <span className={blueTable.almostBadge}>{almostText}</span>}
 
       <span className={`${blueTable.coupon} ${hasData ? '' : blueTable.placeholderText}`}>{row.coupon}</span>
@@ -74,7 +82,7 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
           return val !== undefined ? (
             <div
               key={`n${val}`}
-              className={`${blueTable.ball} ${blueTable.ballActive} ${update.fresh.has(val) ? blueTable.ballEnter : ''}`}
+              className={`${blueTable.ball} ${blueTable.ballActive} ${animate && update.fresh.has(val) ? blueTable.ballEnter : ''}`}
               style={ballImage ? ({ '--ball-img': `url(${ballImage(val)})` } as React.CSSProperties) : undefined}
             >
               {val}
@@ -87,6 +95,19 @@ const CardCouponRow: React.FC<{ row: CouponItem; css: CardTableCss; ballImage?: 
     </div>
   );
 };
+
+/** A lista chega nova a cada bola (objetos novos), mas a maioria das linhas não
+ * muda: só redesenha a linha cujo cupom, nome ou números faltantes mudaram. */
+const CardCouponRow = React.memo(
+  CardCouponRowInner,
+  (a, b) =>
+    a.css === b.css &&
+    a.ballImage === b.ballImage &&
+    a.almostText === b.almostText &&
+    a.row.coupon === b.row.coupon &&
+    a.row.donor === b.row.donor &&
+    (a.row.missing || []).join(',') === (b.row.missing || []).join(','),
+);
 
 const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: CardTableCss; ballImage?: (n: number) => string; labels: TableLabels }> = ({
   rows,
@@ -118,7 +139,7 @@ const CardCouponsTable: React.FC<{ rows: CouponItem[]; compact: boolean; css: Ca
   );
 };
 
-export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
+const BingoShowCouponsTableInner: React.FC<BingoShowCouponsTableProps> = ({
   coupons,
   style,
   compact = false,
@@ -305,5 +326,7 @@ export const BingoShowCouponsTable: React.FC<BingoShowCouponsTableProps> = ({
     </BingoShowTopWinnersFrame>
   );
 };
+
+export const BingoShowCouponsTable = React.memo(BingoShowCouponsTableInner);
 
 export default BingoShowCouponsTable;

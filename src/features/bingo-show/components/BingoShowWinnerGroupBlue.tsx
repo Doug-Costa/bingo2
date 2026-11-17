@@ -17,7 +17,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../hooks/useFitText';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
+import { useDeferredMount } from '../hooks/useDeferredMount';
 import { WINNER_POPUP_MS } from '../timing';
 import goldStyles from './goldMetalText.module.css';
 import P from './BingoShowWinnerPresentationBlue.module.css';
@@ -65,7 +66,6 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
   const enter = 700 + index * CARD_STAGGER;
-  const counting = useCountUp(w.prize, enter + 450, 1700);
 
   const hasCard = Array.isArray(w.cardNumbers) && w.cardNumbers.length > 0;
   const winRows = new Set(w.paintedRows);
@@ -98,7 +98,7 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
             {w.prize}
           </span>
           <span className={styles.value} style={{ fontSize: value.size }} aria-label={w.prize}>
-            {counting}
+            <CountUpText text={w.prize} delayMs={enter + 450} durationMs={1700} />
           </span>
         </div>
         {w.jackpot && <span className={styles.jackpotTag}>{t('winner.plusJackpot')}</span>}
@@ -145,6 +145,8 @@ const GroupCard: React.FC<{ w: GroupWinnerView; index: number; density: Density 
 
 export const BingoShowWinnerGroupBlue: React.FC<BingoShowWinnerGroupBlueProps> = ({ kind, sealText, winners }) => {
   const t = useT();
+  // TV: casca primeiro, conteúdo pesado no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -177,7 +179,7 @@ export const BingoShowWinnerGroupBlue: React.FC<BingoShowWinnerGroupBlueProps> =
           className={styles.cards}
           style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gridTemplateRows: density === 'row' ? '1fr' : '1fr 1fr' }}
         >
-          {pageWinners.map((w, i) => (
+          {contentReady && pageWinners.map((w, i) => (
             <GroupCard key={w.id} w={w} index={i} density={density} />
           ))}
         </div>

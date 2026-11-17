@@ -825,3 +825,63 @@
     display: none;
   }
 }
+
+/* ─── TV (html.tv-lite): cartela sem micro-animações por casa ────────────
+ * Cada casa animava sozinha (entrada, acender, borda, cor do número, ✓) em
+ * sequência: dezenas de camadas de GPU criadas e destruídas quadro a quadro, e
+ * na TV fraca cada uma força redesenho — era a travada ao abrir o card. Aqui as
+ * casas entram junto com o card; a casa vencedora ainda acende em sequência, só
+ * por opacidade (feita pela GPU); borda, cor e ✓ trocam de uma vez no mesmo
+ * instante. O brilho que varre a linha sai. */
+:global(html.tv-lite) .cell {
+  animation: none;
+}
+
+:global(html.tv-lite) .cellWin {
+  animation: winBorder 1ms linear var(--win-delay) both;
+}
+
+:global(html.tv-lite) .cellWin .cellNum,
+:global(html.tv-lite) .check {
+  animation-duration: 1ms;
+  animation-timing-function: linear;
+}
+
+:global(html.tv-lite) .cellGold {
+  animation: tvGoldFade 300ms ease-out var(--win-delay) both;
+}
+
+:global(html.tv-lite) .beam::after {
+  animation: none;
+  display: none;
+}
+
+@keyframes tvGoldFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* TV (html.tv-lite): o anel de flash animava box-shadow (redesenho a cada
+ * quadro); aqui a sombra fica parada e só a opacidade anima. */
+:global(html.tv-lite) .frameFlash,
+:global(html.tv-lite) .cardFlash {
+  box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.95), 0 0 28px rgba(255, 200, 40, 0.75);
+  animation-name: tvFlashFade;
+}
+
+@keyframes tvFlashFade {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* TV (html.tv-lite): o reflexo do prêmio (background-position no texto) e o
+ * acender do cabeçalho B-I-N-G-O (filter + box-shadow) redesenhavam a cada
+ * quadro — o valor só entra, o cabeçalho só aparece. */
+:global(html.tv-lite) .prizeValue {
+  animation: prizePop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 1050ms both;
+}
+
+:global(html.tv-lite) .headCell {
+  animation: fadeIn 300ms ease-out 1100ms both;
+}

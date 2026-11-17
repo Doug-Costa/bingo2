@@ -424,7 +424,7 @@
   width: 520px;
   height: 520px;
   margin: -260px 0 0 -260px;
-  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  background: url('/themes/loteriai/sm/decorative/nanduti.webp') center / contain no-repeat;
   /* Mais nítido e presente (antes quase sumia no creme do painel). */
   filter: sepia(1) saturate(3) hue-rotate(-14deg) brightness(0.78) contrast(1.35)
     drop-shadow(0 0 1px rgba(150, 80, 0, 0.6));
@@ -1128,4 +1128,103 @@
   .prizeCard::after {
     display: none;
   }
+}
+
+/* ─── TV Android (modo leve/ultra): animações do lobby de volta ──────────────
+ * O modo leve desligava TODA animação da página (por causa da bola do sorteio).
+ * O lobby não tem bola: aqui voltam as animações que só mexem em movimento/
+ * transparência (a GPU compõe sem redesenhar). Ficam de fora a pulsação da logo
+ * (filtro) e a do contador final (sombra). Regras mais específicas que as do
+ * modo leve/ultra em globals.css. */
+:global(html.tv-lite) .screen .header {
+  animation: loteriaiDropIn 650ms cubic-bezier(0.2, 0.8, 0.3, 1) both !important;
+}
+:global(html.tv-lite) .screen .logo {
+  animation: loteriaiLogoIn 850ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both !important;
+}
+:global(html.tv-lite) .screen .info {
+  animation: loteriaiDropIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both !important;
+}
+:global(html.tv-lite) .screen .headerJackpot {
+  animation: loteriaiDropIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both !important;
+}
+:global(html.tv-lite) .screen .headerJackpotValue {
+  animation: loteriaiValueIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both !important;
+}
+:global(html.tv-lite) .screen .left {
+  animation: loteriaiSlideRight 650ms cubic-bezier(0.2, 0.8, 0.3, 1) 150ms both !important;
+}
+:global(html.tv-lite) .screen .drawCard {
+  animation: loteriaiCardIn 520ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(250ms + var(--i) * 110ms) both !important;
+}
+:global(html.tv-lite) .screen .center {
+  animation: loteriaiRise 700ms cubic-bezier(0.2, 0.8, 0.3, 1) 60ms both !important;
+}
+:global(html.tv-lite) .screen .timerLace {
+  animation: loteriaiLaceSpin 60s linear infinite !important;
+}
+:global(html.tv-lite) .screen .drawTitle {
+  animation: loteriaiTitleIn 800ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 200ms both !important;
+}
+:global(html.tv-lite) .screen .startsBannerBig {
+  animation: loteriaiTitleIn 800ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 200ms both !important;
+}
+:global(html.tv-lite) .screen .hourglassWrap {
+  animation: loteriaiHourglassIn 900ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 350ms both !important;
+}
+:global(html.tv-lite) .screen .glassGlint {
+  animation: loteriaiGlint 7s ease-in-out 2s infinite !important;
+}
+:global(html.tv-lite) .screen .timerFrame {
+  animation: loteriaiCountdownBreath 2.6s ease-in-out infinite !important;
+}
+:global(html.tv-lite) .screen .timerAura {
+  animation: loteriaiAuraPulse 1s ease-in-out infinite !important;
+}
+:global(html.tv-lite) .screen .globeWrap {
+  animation: loteriaiGlobeIn 1100ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both !important;
+}
+:global(html.tv-lite) .screen .globeNear .globe {
+  animation: loteriaiGlobeShake 1.6s ease-in-out infinite !important;
+}
+:global(html.tv-lite) .screen .globeGlint {
+  animation: loteriaiGlint 9s ease-in-out 5s infinite !important;
+}
+:global(html.tv-lite) .screen .jackpotBand {
+  animation: loteriaiRise 650ms cubic-bezier(0.2, 0.8, 0.3, 1) 500ms both !important;
+}
+:global(html.tv-lite) .screen .bandValue {
+  animation: loteriaiValueIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both !important;
+}
+:global(html.tv-lite) .screen .prizeCard {
+  animation: loteriaiSlideLeft 650ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(200ms + var(--slot) * 140ms) both, loteriaiCardFocus 9s ease-in-out calc(2.5s + var(--slot) * 2.2s) infinite !important;
+}
+:global(html.tv-lite) .screen .prizeCard::after {
+  animation: loteriaiCardSweep 9s ease-in-out calc(2.5s + var(--slot) * 2.2s) infinite !important;
+}
+:global(html.tv-lite) .screen .footer {
+  animation: loteriaiRise 650ms ease-out 300ms both !important;
+}
+
+/* ─── TV ultra leve (html.tv-ultra): sem os loops decorativos do lobby ────────
+ * Mesmo só com movimento/transparência, os 12 loops infinitos (brilhos, laço do
+ * contador girando, respiração do contador, destaque e varredura dos cards de
+ * prêmio) fazem a TV recalcular estilo e montar um quadro a cada 16ms enquanto o
+ * lobby está aberto — na TV fraca eram 0,5–0,9s de processador travado a cada
+ * 10s. No ultra ficam as entradas, a pulsação final do contador e o tremor do
+ * globo (avisos de que o sorteio vai começar). */
+:global(html.tv-ultra) .screen .timerLace,
+:global(html.tv-ultra) .screen .timerFrame {
+  animation: none !important;
+}
+
+:global(html.tv-ultra) .screen .glassGlint,
+:global(html.tv-ultra) .screen .globeGlint,
+:global(html.tv-ultra) .screen .prizeCard::after {
+  animation: none !important;
+  display: none;
+}
+
+:global(html.tv-ultra) .screen .prizeCard {
+  animation: loteriaiSlideLeft 650ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(200ms + var(--slot) * 140ms) both !important;
 }

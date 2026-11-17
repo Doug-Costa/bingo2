@@ -379,7 +379,7 @@
   width: 470px;
   height: 470px;
   margin: -235px 0 0 -235px;
-  background: url('/themes/bingo-show-paraguay/sm/decorative/nanduti.png') center / contain no-repeat;
+  background: url('/themes/bingo-show-paraguay/sm/decorative/nanduti.webp') center / contain no-repeat;
   opacity: 0.24;
   animation: paraguayNandutiStage 24s linear infinite;
 }

@@ -63,7 +63,7 @@ const NextDraws: React.FC<{ draws: NextDrawItem[] }> = ({ draws }) => {
   if (list.length === 0) {
     return (
       <div className={styles.drawsEmpty}>
-        <Image className={`${py.art} ${styles.emptyHarp}`} src={`${A}/decorative/harpa.png`} alt="" width={150} height={306} sizes="150px" />
+        <Image className={`${py.art} ${styles.emptyHarp}`} src={`${A}/decorative/harpa.webp`} alt="" width={150} height={306} sizes="150px" />
         <span>{t('lobby.waitingDraws')}</span>
       </div>
     );
@@ -156,7 +156,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
         {/* ─── HEADER ─────────────────────────────────────────────────────── */}
         <header className={`${py.panel} ${py.sweep} ${styles.header}`} style={{ '--sweep-delay': '2s' } as React.CSSProperties}>
           <div className={styles.brand}>
-            <Image className={`${py.art} ${styles.logoMain}`} src={`${A}/logos/logo-loteriai.png`} alt="Loteria'i" width={150} height={139} sizes="150px" priority />
+            <Image className={`${py.art} ${styles.logoMain}`} src={`${A}/logos/logo-loteriai.webp`} alt="Loteria'i" width={150} height={139} sizes="150px" priority />
           </div>
 
           <div className={styles.infoGroup}>
@@ -181,7 +181,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
           </div>
 
           <div className={styles.headerJackpot} style={{ '--d': '440ms' } as React.CSSProperties}>
-            <Image className={`${py.art} ${styles.headerCoins}`} src={`${A}/decorative/moedas-guarani.png`} alt="" width={150} height={96} sizes="150px" />
+            <Image className={`${py.art} ${styles.headerCoins}`} src={`${A}/decorative/moedas-guarani.webp`} alt="" width={150} height={96} sizes="150px" />
             <div className={styles.headerJackpotText}>
               <span className={styles.infoLabel}>{t('lobby.specialJackpot')}</span>
               <span key={mock.accumulatedPrize} className={`${py.goldValue} ${styles.headerJackpotValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [40, 34, 28]) }}>
@@ -213,7 +213,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
                   título continua centrado no painel). */}
               <span className={styles.titleRow}>
                 <span className={`${py.goldText} ${styles.drawTitle}`}>{drawTitle}</span>
-                <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={70} height={105} sizes="70px" />
+                <Image className={`${py.art} ${py.float} ${styles.guampa}`} src={`${A}/decorative/guampa-terere.webp`} alt="" width={70} height={105} sizes="70px" />
               </span>
               <span className={styles.startsIn}>{t('lobby.startsIn')}</span>
             </div>
@@ -221,7 +221,7 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
             <div className={styles.stage}>
               <span className={styles.stageNanduti} />
               <div className={styles.hourglassWrap}>
-                <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.png`} alt="" width={132} height={208} sizes="132px" />
+                <Image className={`${py.art} ${styles.hourglass}`} src={`${A}/icons/ampulheta.webp`} alt="" width={132} height={208} sizes="132px" />
               </div>
               <div className={styles.timerFrame}>
                 <span key={countdown} className={`${py.goldValue} ${styles.timer}`} style={{ fontSize: timerSize }} suppressHydrationWarning>
@@ -229,33 +229,33 @@ export const BingoShowLobbyScreenParaguay: React.FC = () => {
                 </span>
               </div>
               <div className={`${styles.globeWrap} ${near ? styles.globeNear : ''}`}>
-                <Image className={`${py.art} ${styles.globe}`} src={`${A}/decorative/globo.png`} alt="" width={210} height={195} sizes="210px" />
+                <Image className={`${py.art} ${styles.globe}`} src={`${A}/decorative/globo.webp`} alt="" width={210} height={195} sizes="210px" />
               </div>
             </div>
 
             <div className={`${py.panel} ${py.panelRed} ${py.sweep} ${styles.jackpotBand}`} style={{ '--sweep-delay': '7s' } as React.CSSProperties}>
-              <Image className={`${py.art} ${styles.bandCoins}`} src={`${A}/decorative/moedas-guarani.png`} alt="" width={150} height={96} sizes="150px" />
+              <Image className={`${py.art} ${styles.bandCoins}`} src={`${A}/decorative/moedas-guarani.webp`} alt="" width={150} height={96} sizes="150px" />
               <span className={styles.bandLabel}>{t('prize.jackpot')}</span>
               <span key={mock.accumulatedPrize} className={`${py.goldValue} ${styles.bandValue}`} style={{ fontSize: moneySize(mock.accumulatedPrize, [62, 54, 46]) }}>
                 {mock.accumulatedPrize}
               </span>
-              <Image className={`${py.art} ${styles.bandLapacho}`} src={`${A}/decorative/lapacho.png`} alt="" width={150} height={78} sizes="150px" />
+              <Image className={`${py.art} ${styles.bandLapacho}`} src={`${A}/decorative/lapacho.webp`} alt="" width={150} height={78} sizes="150px" />
             </div>
           </section>
 
           <section className={styles.right}>
-            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="cobalt" art={`${A}/sm/decorative/nanduti.png`} artW={110} artH={108} slot={0} />
-            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="pearl" art={`${A}/decorative/lapacho.png`} artW={170} artH={88} slot={1} />
-            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} tone="red" art={`${A}/decorative/moedas-guarani.png`} artW={170} artH={108} slot={2} />
+            <PrizeCard label={t('prize.line1')} value={mock.line1Prize} tone="cobalt" art={`${A}/sm/decorative/nanduti.webp`} artW={110} artH={108} slot={0} />
+            <PrizeCard label={t('prize.line2')} value={mock.line2Prize} tone="pearl" art={`${A}/decorative/lapacho.webp`} artW={170} artH={88} slot={1} />
+            <PrizeCard label={t('prize.bingo')} value={mock.bingoPrize} tone="red" art={`${A}/decorative/moedas-guarani.webp`} artW={170} artH={108} slot={2} />
           </section>
         </main>
 
         {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
         <footer className={`${py.panel} ${styles.footer}`}>
           <span className={`${py.tricolorLine} ${styles.footerLine}`} />
-          <Image className={`${py.art} ${styles.footerHarp}`} src={`${A}/decorative/harpa.png`} alt="" width={36} height={73} sizes="36px" />
+          <Image className={`${py.art} ${styles.footerHarp}`} src={`${A}/decorative/harpa.webp`} alt="" width={36} height={73} sizes="36px" />
           <span className={styles.footerText}>{footerText}</span>
-          <Image className={`${py.art} ${styles.footerGuampa}`} src={`${A}/decorative/guampa-terere.png`} alt="" width={46} height={69} sizes="46px" />
+          <Image className={`${py.art} ${styles.footerGuampa}`} src={`${A}/decorative/guampa-terere.webp`} alt="" width={46} height={69} sizes="46px" />
           <span className={`${py.tricolorLine} ${styles.footerLine}`} />
         </footer>
       </div>

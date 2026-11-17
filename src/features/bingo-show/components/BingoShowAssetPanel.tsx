@@ -23,22 +23,22 @@ export type BingoShowAssetPanelVariant =
   | 'topWinners';
 
 const BLUE_VARIANT_ASSET: Partial<Record<BingoShowAssetPanelVariant, string>> = {
-  glass: '/themes/bingo-show-blue/panels/panel-glass.png',
-  header: '/themes/bingo-show-blue/panels/panel-header.png',
-  footer: '/themes/bingo-show-blue/panels/panel-footer.png',
-  neon: '/themes/bingo-show-blue/panels/panel-neon.png',
-  dark: '/themes/bingo-show-blue/panels/panel-dark.png',
-  main: '/themes/bingo-show-blue/panels/panel-main.png',
-  modal: '/themes/bingo-show-blue/panels/panel-modal.png',
-  popup: '/themes/bingo-show-blue/panels/panel-popup.png',
-  sidebar: '/themes/bingo-show-blue/panels/panel-sidebar.png',
-  ranking: '/themes/bingo-show-blue/cards/card-ranking.png',
-  prize: '/themes/bingo-show-blue/cards/card-prize.png',
-  jackpot: '/themes/bingo-show-blue/cards/card-jackpot.png',
-  ticket: '/themes/bingo-show-blue/cards/card-ticket.png',
-  tableHeader: '/themes/bingo-show-blue/cards/card-table-header.png',
-  tableRow: '/themes/bingo-show-blue/cards/card-table-row.png',
-  topWinners: '/themes/bingo-show-blue/cards/card-ranking.png',
+  glass: '/themes/bingo-show-blue/panels/panel-glass.webp',
+  header: '/themes/bingo-show-blue/panels/panel-header.webp',
+  footer: '/themes/bingo-show-blue/panels/panel-footer.webp',
+  neon: '/themes/bingo-show-blue/panels/panel-neon.webp',
+  dark: '/themes/bingo-show-blue/panels/panel-dark.webp',
+  main: '/themes/bingo-show-blue/panels/panel-main.webp',
+  modal: '/themes/bingo-show-blue/panels/panel-modal.webp',
+  popup: '/themes/bingo-show-blue/panels/panel-popup.webp',
+  sidebar: '/themes/bingo-show-blue/panels/panel-sidebar.webp',
+  ranking: '/themes/bingo-show-blue/cards/card-ranking.webp',
+  prize: '/themes/bingo-show-blue/cards/card-prize.webp',
+  jackpot: '/themes/bingo-show-blue/cards/card-jackpot.webp',
+  ticket: '/themes/bingo-show-blue/cards/card-ticket.webp',
+  tableHeader: '/themes/bingo-show-blue/cards/card-table-header.webp',
+  tableRow: '/themes/bingo-show-blue/cards/card-table-row.webp',
+  topWinners: '/themes/bingo-show-blue/cards/card-ranking.webp',
 };
 
 const VARIANT_ASSET: Record<BingoShowAssetPanelVariant, string> = {

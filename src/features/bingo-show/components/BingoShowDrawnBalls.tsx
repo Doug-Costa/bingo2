@@ -21,7 +21,7 @@ export interface BingoShowDrawnBallsProps {
 
 const ALL_90_NUMBERS = Array.from({ length: 90 }, (_, i) => i + 1);
 
-export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
+const BingoShowDrawnBallsInner: React.FC<BingoShowDrawnBallsProps> = ({
   drawnBalls,
   style,
 }) => {
@@ -68,10 +68,10 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
       <div className={`${goldTheme.vars} ${goldTheme.panel} ${goldHistory.panel}`} style={style}>
         <div className={goldHistory.title}>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
+          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.webp" alt="" />
           <span className={goldTheme.goldText}>{t('draw.lastDrawn')}</span>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.png" alt="" />
+          <img className={goldHistory.paw} src="/themes/tema-ouro/sm/icons/pata.webp" alt="" />
         </div>
         <div className={goldHistory.grid}>
           {ALL_90_NUMBERS.map((num) => {
@@ -93,7 +93,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
   }
 
   const panelBg = isBlueTheme
-    ? `url(/themes/bingo-show-blue/panels/panel-main.png), ${theme.panelBg}`
+    ? `url(/themes/bingo-show-blue/panels/panel-main.webp), ${theme.panelBg}`
     : themeId === 'bingo-show'
     ? `url(${BingoShowAssets.jackpot.panel})`
     : theme.panelBg;
@@ -134,7 +134,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, position: 'relative', marginTop: -2, marginBottom: 8 }}>
         {/* Blue: título em ouro metálico compacto + glow verde discreto nos trevos
             (goldMetalText.module.css); demais temas inalterados. */}
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        <img src="/themes/bingo-show-blue/trevo.webp" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
         <span
           className={isBlueTheme || isOuro ? goldStyles.goldMetalTextCompact : undefined}
           style={{
@@ -149,7 +149,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
         >
           {t('draw.lastDrawn')}
         </span>
-        <img src="/themes/bingo-show-blue/trevo.png" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+        <img src="/themes/bingo-show-blue/trevo.webp" alt="trevo" className={isBlueTheme || isOuro ? goldStyles.cloverIcon : undefined} style={{ width: 22, height: 22, objectFit: 'contain' }} />
       </div>
 
       {isBlueTheme ? (
@@ -241,5 +241,7 @@ export const BingoShowDrawnBalls: React.FC<BingoShowDrawnBallsProps> = ({
     </div>
   );
 };
+
+export const BingoShowDrawnBalls = React.memo(BingoShowDrawnBallsInner);
 
 export default BingoShowDrawnBalls;

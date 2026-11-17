@@ -19,7 +19,7 @@ const PARTICLES = [
   { x: 98, s: 4, dur: 23000, delay: 5000, dx: 8, o: 0.55 },
 ];
 
-export const GoldBackground: React.FC = () => (
+const GoldBackgroundInner: React.FC = () => (
   <div className={styles.root} aria-hidden="true">
     <div className={styles.base} />
     <div className={styles.halo} />
@@ -44,5 +44,7 @@ export const GoldBackground: React.FC = () => (
     <div className={styles.vignette} />
   </div>
 );
+
+export const GoldBackground = React.memo(GoldBackgroundInner);
 
 export default GoldBackground;

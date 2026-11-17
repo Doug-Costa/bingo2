@@ -7,7 +7,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../../hooks/useFitText';
-import { useCountUp } from '../../hooks/useCountUp';
+import { CountUpText } from '../../hooks/useCountUp';
+import { useDeferredMount } from '../../hooks/useDeferredMount';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from '../BingoShowRoundWinnersBlue';
 import { useEsSkin } from '../esSkin';
 import { useT } from '@/contexts/TvConfigContext';
@@ -37,7 +38,6 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
-  const counting = useCountUp(w.prize, delay + 400, 1600);
   return (
     <div className={styles.card} style={{ '--d-card': `${delay}ms` } as React.CSSProperties}>
       <span className={styles.cardLabel}>{label}</span>
@@ -57,7 +57,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
             {w.prize}
           </span>
           <span className={`${styles.value} ${pyTheme.goldValue}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-            {counting}
+            <CountUpText text={w.prize} delayMs={delay + 400} durationMs={1600} />
           </span>
         </div>
       </div>
@@ -77,6 +77,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   const styles = skin.css.round;
   const TITLES: Record<RoundCategoryKey, string> = { line1: t('prize.line1'), line2: t('prize.line2'), bingo: skin.text.bingoLabel ?? t('prize.bingo') };
   const TONE: Record<RoundCategoryKey, string> = { line1: styles.gold ?? '', line2: styles.cyan ?? '', bingo: styles.green ?? '' };
+  // TV: colunas primeiro, cards no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -133,7 +135,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
         </div>
       ) : (
         <div key={page} className={`${styles.cards} ${mode >= 3 ? styles.cardsTop : ''}`}>
-          {list.map((w, j) => (
+          {contentReady && list.map((w, j) => (
             <RoundCard
               key={w.id}
               w={w}

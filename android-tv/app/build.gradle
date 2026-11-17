@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+}
+
+def keystoreProps = new Properties()
+def keystoreFile = rootProject.file('keystore/keystore.properties')
+if (keystoreFile.exists()) {
+    keystoreFile.withInputStream { keystoreProps.load(it) }
+}
+
+def versionProps = new Properties()
+rootProject.file('version.properties').withInputStream { versionProps.load(it) }
+def appVersionCode = versionProps['versionCode'].toInteger()
+
+android {
+    namespace 'com.bingoshow.tv'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.bingoshow.tv'
+        minSdk 21
+        targetSdk 34
+        versionCode appVersionCode
+        versionName "1.0.${appVersionCode}"
+        buildConfigField 'String', 'TV_URL', "\"${project.property('tvUrl')}\""
+        // Vazio desliga a busca por atualizações. O deploy.sh preenche.
+        buildConfigField 'String', 'UPDATE_URL', "\"${project.property('updateUrl')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    signingConfigs {
+        release {
+            if (keystoreFile.exists()) {
+                storeFile rootProject.file("keystore/${keystoreProps['storeFile']}")
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+}

@@ -292,3 +292,15 @@
     display: none;
   }
 }
+
+/* TV Android (modo leve/ultra): o brilho que passa (só usado no lobby) volta —
+ * só movimento/transparência. Mais específico que o modo leve em globals.css. */
+:global(html.tv-lite) .shimmer::after {
+  animation: loteriaiShimmerSweep 6.8s ease-in-out var(--shimmer-delay, 0s) infinite !important;
+}
+
+/* TV ultra leve: o brilho que passa em loop sai (ver o lobby do Loteria'i). */
+:global(html.tv-ultra) .shimmer::after {
+  animation: none !important;
+  display: none;
+}

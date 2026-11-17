@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { TV_STAGE_HEIGHT, TV_STAGE_WIDTH } from '@/components/tv/TvStageContext';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
 import Icon from '../Icon';
@@ -244,4 +244,4 @@ export function AnimatedActiveBall({
   );
 }
 
-export default AnimatedActiveBall;
+export default memo(AnimatedActiveBall);

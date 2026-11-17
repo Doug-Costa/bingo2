@@ -8,7 +8,7 @@
  * `isBingoShow ? X : Y` mantidos só onde o RN original também os tinha
  * (aqui viravam sempre o ramo `true` — mantido por fidelidade de leitura).
  */
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { alphaColor, type ThemeTokens } from '@/theme/themes';
 import { DecoStarGoldSm } from '../theme/svg/DecoStarGoldSm';
 
@@ -146,4 +146,4 @@ export function WinnerTicketCard({
   );
 }
 
-export default WinnerTicketCard;
+export default memo(WinnerTicketCard);

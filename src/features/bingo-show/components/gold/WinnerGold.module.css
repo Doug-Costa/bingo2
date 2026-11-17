@@ -55,7 +55,7 @@
   position: absolute;
   inset: 0;
   border: 30px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 30px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.webp') 230 fill / 30px stretch;
   pointer-events: none;
 }
 
@@ -112,7 +112,7 @@
   position: absolute;
   inset: 0;
   border: 34px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 34px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.webp') 170 fill / 34px stretch;
   pointer-events: none;
 }
 
@@ -229,7 +229,7 @@
   position: absolute;
   inset: 0;
   border: 24px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 24px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.webp') 230 fill / 24px stretch;
   pointer-events: none;
 }
 
@@ -280,7 +280,7 @@
   position: absolute;
   inset: 0;
   border: 26px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-metadata-gold.png') 200 fill / 26px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-metadata-gold.webp') 200 fill / 26px stretch;
   pointer-events: none;
 }
 
@@ -637,4 +637,39 @@
     animation-duration: 1ms;
     animation-delay: 0ms;
   }
+}
+
+/* ─── TV (html.tv-lite): cartela sem micro-animações por casa ────────────
+ * Cada casa animava sozinha (entrada, acender, borda, cor do número, ✓) em
+ * sequência: dezenas de camadas de GPU criadas e destruídas quadro a quadro, e
+ * na TV fraca cada uma força redesenho — era a travada ao abrir o card. Aqui as
+ * casas entram junto com o card; a casa vencedora ainda acende em sequência, só
+ * por opacidade (feita pela GPU); borda, cor e ✓ trocam de uma vez no mesmo
+ * instante. O brilho que varre a linha sai. */
+:global(html.tv-lite) .cell {
+  animation: none;
+}
+
+:global(html.tv-lite) .cellWin {
+  animation: winBorder 1ms linear var(--win-delay) both;
+}
+
+:global(html.tv-lite) .cellWin .cellNum,
+:global(html.tv-lite) .check {
+  animation-duration: 1ms;
+  animation-timing-function: linear;
+}
+
+:global(html.tv-lite) .cellGold {
+  animation: tvGoldFade 300ms ease-out var(--win-delay) both;
+}
+
+:global(html.tv-lite) .beam::after {
+  animation: none;
+  display: none;
+}
+
+@keyframes tvGoldFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

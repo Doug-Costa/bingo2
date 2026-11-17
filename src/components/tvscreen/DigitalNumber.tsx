@@ -3,6 +3,7 @@
  * `elevation` descartado, `includeFontPadding`/`textAlignVertical` (métricas
  * de texto Android-only) sem equivalente/necessidade na web — removidos.
  */
+import { memo } from 'react';
 import type { ThemeTokens } from '@/theme/themes';
 
 export interface DigitalNumberProps {
@@ -43,4 +44,4 @@ export function DigitalNumber({ value, theme, size = 64 }: DigitalNumberProps) {
   );
 }
 
-export default DigitalNumber;
+export default memo(DigitalNumber);

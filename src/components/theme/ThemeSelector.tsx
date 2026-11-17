@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { useLowPerfDevice } from '@/hooks/useLowPerfDevice';
 import { type ThemeOption } from '@/theme/themes';
 
 export interface ThemeSelectorProps {
@@ -67,6 +68,7 @@ export function ThemeSelector({
   align = 'right',
 }: ThemeSelectorProps) {
   const { themeId, setThemeId, availableThemes } = useAppTheme();
+  const lowPerf = useLowPerfDevice();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -144,8 +146,7 @@ export function ThemeSelector({
             fontSize: 13,
             fontWeight: 800,
             cursor: 'pointer',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            ...(lowPerf ? {} : { backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }),
             boxShadow: isOpen
               ? `0 0 20px ${primaryAccent}55, 0 4px 14px rgba(0, 0, 0, 0.6)`
               : '0 4px 12px rgba(0, 0, 0, 0.35)',
@@ -206,8 +207,7 @@ export function ThemeSelector({
               borderRadius: 18,
               padding: 10,
               boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(8, 127, 252, 0.2)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              ...(lowPerf ? {} : { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }),
               zIndex: 999999,
               display: 'flex',
               flexDirection: 'column',
@@ -420,8 +420,7 @@ export function ThemeSelector({
           borderRadius: 999,
           padding: 3,
           gap: 4,
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
+          ...(lowPerf ? {} : { backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }),
           ...style,
         }}
       >

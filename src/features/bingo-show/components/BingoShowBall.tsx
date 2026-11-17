@@ -78,7 +78,7 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
   const ballTexture = useMemo(() => {
     if (isBlue) {
       if (state === 'default') {
-        return `/themes/bingo-show-blue/balls/2x/ball-silver-default.png`;
+        return `/themes/bingo-show-blue/balls/2x/ball-silver-default.webp`;
       }
       const stateSuffix =
         state === 'winner'
@@ -86,7 +86,7 @@ export const BingoShowBall: React.FC<BingoShowBallProps> = ({
           : state === 'active'
           ? 'glow'
           : 'selected';
-      return `/themes/bingo-show-blue/balls/2x/ball-${colorName}-${stateSuffix}.png`;
+      return `/themes/bingo-show-blue/balls/2x/ball-${colorName}-${stateSuffix}.webp`;
     }
 
     switch (state) {

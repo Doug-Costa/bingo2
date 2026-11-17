@@ -6,6 +6,7 @@ import { buildBaseUrl, getDefaultIp, getDefaultPort, getCredentials } from '@/st
 import { applyResolvedSession, reloadTv } from '@/services/tvSession';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { useT } from '@/contexts/TvConfigContext';
+import { useLowPerfDevice } from '@/hooks/useLowPerfDevice';
  
 export type PinStatus = 'idle' | 'validating' | 'error' | 'success';
 
@@ -17,6 +18,7 @@ export interface PinVerificationScreenProps {
 export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerificationScreenProps) {
   const { themeId, theme, isBlue } = useAppTheme();
   const t = useT();
+  const lowPerf = useLowPerfDevice();
 
 
   const [pin, setPin] = useState(initialPin);
@@ -227,8 +229,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
               : status === 'success'
               ? '0 0 35px rgba(52, 211, 153, 0.45)'
               : `0 10px 40px ${glowColor}`,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          ...(lowPerf ? {} : { backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }),
           animation: isShaking ? 'bs-shake 0.5s ease-in-out' : 'none',
           transition: 'border-color 200ms ease, box-shadow 200ms ease',
         }}
@@ -598,6 +599,7 @@ export function PinVerificationScreen({ onSuccess, initialPin = '' }: PinVerific
           {status === 'validating' ? (
             <>
               <div
+                className="tv-keep-anim"
                 style={{
                   width: 20,
                   height: 20,

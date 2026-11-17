@@ -92,13 +92,13 @@ const HeroBall: React.FC<{ number: number }> = ({ number }) => (
       size="current"
       fontSizeOverride={104}
       diameterOverride={BALL_DIAMETER}
-      style={{ position: 'absolute', inset: 0 }}
+      style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
     />
     {/* Gradiente radial — volume/curvatura da esfera, sem tingir o número central. */}
     <div
       style={{
         position: 'absolute',
-        inset: 0,
+        top: 0, right: 0, bottom: 0, left: 0,
         background: `radial-gradient(circle at 50% 46%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.38) 100%)`,
         pointerEvents: 'none',
       }}
@@ -173,7 +173,7 @@ const CrescentBall: React.FC<{
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 0, right: 0, bottom: 0, left: 0,
           background: `linear-gradient(122deg, rgba(255,255,255,${0.3 * glow}) 0%, rgba(255,255,255,${0.1 * glow}) 38%, rgba(255,255,255,0) 75%)`,
           pointerEvents: 'none',
         }}
@@ -194,6 +194,8 @@ const CrescentBall: React.FC<{
   );
 };
 
+import { GLOBE_ANIMATED, GLOBE_STATIC, hasNativeGlobe, nativeBallEngine, nativeGlobeState, setGlobeStatus, nativeBallFor, setNativeBallNow, showNativeBall, showNativeGlobe } from '@/lib/nativeBall';
+import { announceBallNow } from '../hooks/useBingoAudio';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { useT } from '@/contexts/TvConfigContext';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
@@ -250,7 +252,7 @@ const ExitBall: React.FC<{ number: number }> = ({ number }) => {
         state="drawn"
         diameterOverride={EXIT_BALL_SIZE}
         fontSizeOverride={EXIT_BALL_FONT}
-        style={{ position: 'absolute', inset: 0 }}
+        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
       />
       <div
         style={{
@@ -478,7 +480,7 @@ const OuroRecentColumn: React.FC<{ balls: number[] }> = ({ balls }) => (
   </div>
 );
 
-export const DrawStage: React.FC<DrawStageProps> = ({
+const DrawStageInner: React.FC<DrawStageProps> = ({
   title: titleProp,
   currentNumber,
   nextBalls = [],
@@ -526,6 +528,8 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   useEffect(() => {
     const el = ringsRef.current;
     if (!stagedBall || reducedMotion || !el || typeof el.animate !== 'function') return;
+    // O brilho animado redesenha os anéis desfocados a cada quadro, bem no pouso.
+    if (document.documentElement.classList.contains('tv-lite')) return;
     const anim = el.animate(
       [
         { transform: 'scale(1)', filter: 'brightness(1)' },
@@ -537,6 +541,153 @@ export const DrawStage: React.FC<DrawStageProps> = ({
     return () => anim.cancel();
   }, [ballKey, stagedBall, reducedMotion]);
 
+  // Bola nativa (APK com TvBridge.ballShow): o Android anima a bola por cima do
+  // WebView; a página esconde a dela (html.tv-native-ball) e só manda número e
+  // posição. Popup aberto (overlay com conteúdo) esconde a bola; ao fechar ela
+  // volta parada no lugar.
+  const nativeRef = useRef<ReturnType<typeof nativeBallFor>>(null);
+  const numberRef = useRef(currentNumber);
+  numberRef.current = currentNumber;
+  const popupOpenRef = useRef(false);
+  // Loteria'i: globo ao lado esquerdo da bola; a bola nasce da gaiola dele.
+  const globeRef = useRef<HTMLDivElement>(null);
+  // No APK o globo animado é do Android (a página fica parada no voo): aqui fica a
+  // imagem parada. Sem APK (navegador) a página anima o WebP.
+  const [globeSrc, setGlobeSrc] = useState(GLOBE_STATIC);
+  // Animado na página quando o Android não anima o globo: navegador sem APK, APK
+  // antigo (sem globeShow) ou globo nativo que falhou (download/decodificação).
+  // Antes só o navegador ganhava o animado, e APK antigo ficava com a imagem parada.
+  useEffect(() => {
+    const bridge = (window as unknown as { TvBridge?: { globeShow?: unknown } }).TvBridge;
+    if (!bridge || typeof bridge.globeShow !== 'function') setGlobeSrc(GLOBE_ANIMATED);
+  }, []);
+  /** Ponto onde o GIF solta a bolinha (base do globo: 38% x 79% da imagem), em px
+   * do palco, relativo ao centro da bola — a bola nasce dali. */
+  const globeFrom = (stage: HTMLElement): { x: number; y: number } | undefined => {
+    const g = globeRef.current;
+    if (!g) return undefined;
+    const gr = g.getBoundingClientRect();
+    const sr = stage.getBoundingClientRect();
+    const k = stage.offsetWidth > 0 ? sr.width / stage.offsetWidth : 1;
+    return {
+      x: (gr.left + gr.width * 0.38 - (sr.left + sr.width / 2)) / k,
+      y: (gr.top + gr.height * 0.79 - (sr.top + sr.height / 2)) / k,
+    };
+  };
+  /** Bola já mostrada direto pelo SSE (antes do React). */
+  const preShownRef = useRef<number | null>(null);
+  useEffect(() => {
+    const nb = stagedBall ? nativeBallFor(themeId) : null;
+    if (!nb) return;
+    nativeRef.current = nb;
+    const root = document.documentElement;
+    root.classList.add('tv-native-ball');
+    nb.bridge.ballPreload(nb.spriteUrl);
+    // Globo animado pelo Android (APK 1.0.12+), no lugar reservado na página.
+    const nativeGlobe = isLt && hasNativeGlobe(nb);
+    // A posição é medida de novo (na montagem a tela ainda podia estar se ajustando
+    // ao tamanho da TV — o globo saía grande e fora do lugar). Só avisa o Android
+    // quando o retângulo muda de verdade: nada é reposicionado à toa no voo.
+    let lastGlobe = '';
+    const syncGlobe = (force = false) => {
+      const g = globeRef.current;
+      if (!nativeGlobe || !g || popupOpenRef.current) return;
+      const r = g.getBoundingClientRect();
+      if (r.width < 10) return;
+      const key = [r.left, r.top, r.width, r.height].map((v) => Math.round(v)).join(',');
+      if (!force && key === lastGlobe) return;
+      lastGlobe = key;
+      showNativeGlobe(nb, g);
+    };
+    const showGlobe = () => syncGlobe(true);
+    const globeTimers: ReturnType<typeof setTimeout>[] = [];
+    if (nativeGlobe) {
+      syncGlobe();
+      for (const ms of [600, 2000, 5000]) globeTimers.push(setTimeout(() => syncGlobe(), ms));
+      // A imagem da página só some quando o Android confirma que o globo está na
+      // tela (APK 1.0.16+: globeState). Se ele falhar, a página anima o globo.
+      // APK sem globeState: como antes (confia que o Android mostrou).
+      const state = nativeGlobeState(nb);
+      if (state === null) root.classList.add('tv-native-globe');
+      else {
+        const started = Date.now();
+        const poll = () => {
+          const st = nativeGlobeState(nb);
+          if (st === 'ok') {
+            root.classList.add('tv-native-globe');
+            setGlobeStatus('native');
+          } else if (st === 'fail' || Date.now() - started > 45000) {
+            nb.bridge.globeHide?.();
+            root.classList.remove('tv-native-globe');
+            setGlobeSrc(GLOBE_ANIMATED);
+            setGlobeStatus(`native-${st ?? 'timeout'}`);
+          } else globeTimers.push(setTimeout(poll, 500));
+        };
+        poll();
+      }
+    }
+    const overlay = document.querySelector('[data-tv-overlay]');
+    const syncPopup = () => {
+      const open = !!overlay && overlay.childElementCount > 0;
+      if (open === popupOpenRef.current) return;
+      popupOpenRef.current = open;
+      const stage = stageRef.current;
+      if (open) nb.bridge.globeHide?.();
+      else showGlobe();
+      if (open || !stage || numberRef.current <= 0) nb.bridge.ballHide();
+      else showNativeBall(nb, stage, numberRef.current, 'still', globeFrom(stage));
+    };
+    syncPopup();
+    const mo = overlay && typeof MutationObserver === 'function' ? new MutationObserver(syncPopup) : null;
+    if (overlay) mo?.observe(overlay, { childList: true });
+    // Bola nova direto do SSE: voo e voz já; a página alcança depois do pouso.
+    setNativeBallNow((n) => {
+      preShownRef.current = n;
+      numberRef.current = n;
+      announceBallNow(n);
+      const stage = stageRef.current;
+      if (!stage || popupOpenRef.current) return;
+      syncGlobe();
+      showNativeBall(nb, stage, n, root.classList.contains('tv-noanim') ? 'simple' : 'full', globeFrom(stage));
+    }, nativeBallEngine(nb));
+    return () => {
+      globeTimers.forEach(clearTimeout);
+      setNativeBallNow(null);
+      mo?.disconnect();
+      nb.bridge.ballHide();
+      root.classList.remove('tv-native-ball');
+      if (nativeGlobe) {
+        nb.bridge.globeHide?.();
+        root.classList.remove('tv-native-globe');
+      }
+      nativeRef.current = null;
+    };
+  }, [stagedBall, themeId]);
+
+  useEffect(() => {
+    const nb = nativeRef.current;
+    const stage = stageRef.current;
+    if (!nb || !stage) return;
+    if (currentNumber <= 0) {
+      nb.bridge.ballHide();
+      return;
+    }
+    if (popupOpenRef.current) return;
+    // Já voou quando o SSE chegou: o React só está alcançando.
+    if (preShownRef.current === currentNumber) {
+      preShownRef.current = null;
+      return;
+    }
+    showNativeBall(nb, stage, currentNumber, document.documentElement.classList.contains('tv-noanim') ? 'simple' : 'full', globeFrom(stage));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ballKey]);
+
+  // Medidor de desempenho (PerfMonitor): mede os quadros da chegada de cada bola.
+  useEffect(() => {
+    if (currentNumber > 0) window.dispatchEvent(new Event('tv-ball'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ballKey]);
+
   // Bola atual: bolas já sorteadas nesta rodada (vem do SSE via
   // `sequenceNumber` = drawnBalls.length) contra o total do bingo de 90.
   const drawnCount = Math.max(0, Math.min(TOTAL_BALLS, sequenceNumber ?? 0));
@@ -544,7 +695,10 @@ export const DrawStage: React.FC<DrawStageProps> = ({
   // "ÚLTIMAS BOLILLAS" sobre a coluna (largura da coluna + gap, ver .nextColumn).
   const isLt = es?.id === 'loteriai';
   const LT_COLUMN_W = 100;
-  const LT_STAGE_HALF = 186;
+  // Palco do Loteria'i 15% maior (ver --outer em DrawStageLoteriai.module.css).
+  const LT_STAGE_HALF = 214;
+  /** Loteria'i: bola deslocada um pouco à esquerda (metade disto). */
+  const LT_SHIFT = 70;
   const STAGE_GAP = 24;
 
   const content = (
@@ -562,7 +716,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
         }}
       >
         {/* CENTER TITLE */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...(isLt ? { paddingRight: LT_SHIFT } : {}) }}>
           {/* Blue: ouro metálico compacto (goldMetalText.module.css); demais temas
               mantêm o amarelo chapado. Tamanho/fonte/espaçamento iguais. */}
           <span className={isBlue || isOuro || isGold || isParaguay ? goldStyles.goldIcon : undefined} style={{ fontSize: 18, ...(isBlue || isOuro || isGold || isParaguay ? {} : { color: '#FFCF12' }) }}>★</span>
@@ -590,7 +744,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            ...(isLt ? { position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: `calc(50% + ${LT_STAGE_HALF + STAGE_GAP}px)` } : {}),
+            ...(isLt ? { position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 20 } : {}),
           }}
         >
           <span
@@ -633,16 +787,29 @@ export const DrawStage: React.FC<DrawStageProps> = ({
           gap: STAGE_GAP,
         }}
       >
+        {/* Loteria'i: globo ao lado esquerdo da bola (a bola nasce da gaiola). */}
+        {stagedBall && isLt && (
+          <div ref={globeRef} data-tv-globe="" className={sc.ltGlobe ?? ''} aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element -- globo animado do tema */}
+            <img className={sc.ltGlobeImg ?? ''} src={globeSrc} alt="" draggable={false} />
+          </div>
+        )}
         {stagedBall ? (
           <>
             {/* Loteria'i: espaçador do tamanho da coluna de últimas bolas, para a
                 bola sorteada ficar no centro do painel. */}
-            {isLt && <div aria-hidden="true" style={{ width: LT_COLUMN_W, flex: 'none' }} />}
+            {/* Loteria'i: últimas 3 bolas à ESQUERDA da bola (o globo fica à direita). */}
+            {isLt && (
+              // Encostada na borda esquerda do card (fora do fluxo: a bola fica livre).
+              <div style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', zIndex: 15 }}>
+                <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} css={sc} />
+              </div>
+            )}
             {/* Palco Blue em camadas (atmosfera → anel externo → anel interno →
                 reflexos → bola → número). Estilos em DrawStageBlue.module.css.
                 `key={ballKey}` remonta SÓ a bola quando chega uma bola real nova,
                 reiniciando a entrada; os anéis ficam fora da key e nunca reiniciam. */}
-            <div ref={stageRef} className={sc.blueDrawStage}>
+            <div ref={stageRef} className={sc.blueDrawStage} style={isLt ? { marginRight: LT_SHIFT } : undefined}>
               <div className={sc.stageAtmosphere} />
               <div ref={ringsRef} className={sc.ringsGroup}>
                 <div className={sc.outerRing}>{es ? ES_OUTER_DOTS[es.id] : BLUE_OUTER_DOTS}</div>
@@ -675,7 +842,9 @@ export const DrawStage: React.FC<DrawStageProps> = ({
 
             {/* Últimas bolas (valores/ordem de `nextBalls`, SSE): as antigas descem
                 uma posição; a nova só aparece no 1º slot quando a bola pousa. */}
-            <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} css={sc} />
+            {isLt ? null : (
+              <BlueRecentColumn ref={columnRef} balls={nextBalls} hidden={handoff.hidden} landed={handoff.landed} css={sc} />
+            )}
           </>
         ) : isGold ? (
           <>
@@ -741,7 +910,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 <div
                   style={{
                     position: 'absolute',
-                    inset: -30,
+                    top: -30, right: -30, bottom: -30, left: -30,
                     background: 'radial-gradient(circle, rgba(23, 200, 255, 0.28) 0%, rgba(8, 127, 252, 0.12) 45%, rgba(3, 17, 48, 0) 70%)',
                     pointerEvents: 'none',
                     borderRadius: '50%',
@@ -752,7 +921,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                 <div
                   style={{
                     position: 'absolute',
-                    inset: 0,
+                    top: 0, right: 0, bottom: 0, left: 0,
                     borderRadius: '50%',
                     border: '2.5px solid #17C8FF',
                     boxShadow: '0 0 24px rgba(23, 200, 255, 0.6), inset 0 0 16px rgba(23, 200, 255, 0.4)',
@@ -762,7 +931,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                   }}
                 >
                   {/* SVG LED Dots perimeter */}
-                  <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                  <svg width="260" height="260" viewBox="0 0 260 260" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none' }}>
                     <circle
                       cx="130"
                       cy="130"
@@ -930,7 +1099,11 @@ export const DrawStage: React.FC<DrawStageProps> = ({
             {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
             <img className={`${pyTheme.art} ${pyTheme.float} ${sc.stageCompanion ?? ''}`} src={es.art.stageCompanion} alt="" draggable={false} style={{ height: 70, width: 'auto' }} />
             {/* eslint-disable-next-line @next/next/no-img-element -- asset do tema */}
-            <img className={`${pyTheme.art} ${pyTheme.float} ${sc.stageGlobe ?? ''}`} src={es.art.globe} alt="Globo" draggable={false} style={{ height: 112, width: 'auto', ['--float-delay' as string]: '1.2s' }} />
+            {/* Loteria'i: o globo foi para o lado da bola (globo animado). */}
+            {!isLt && (
+              // eslint-disable-next-line @next/next/no-img-element -- asset do tema
+              <img className={`${pyTheme.art} ${pyTheme.float} ${sc.stageGlobe ?? ''}`} src={es.art.globe} alt="Globo" draggable={false} style={{ height: 112, width: 'auto', ['--float-delay' as string]: '1.2s' }} />
+            )}
           </div>
         ) : isGold ? (
           <div className={goldStage.catFrame}>
@@ -945,14 +1118,13 @@ export const DrawStage: React.FC<DrawStageProps> = ({
                verdade um banner "AQUI E SORTE!" mal nomeado; bingo-cage.jpg e'
                JPG opaco). Decisao confirmada com o usuario. Demais temas:
                inalterado (continuam com o bingo-cage.jpg de sempre). */
-            src={isBlue || isOuro ? '/themes/bingo-show-blue/globo-bingo.gif' : '/themes/bingo-show-blue/bingo-cage.jpg'}
+            src={isBlue || isOuro ? '/themes/bingo-show-blue/globo-bingo.webp' : '/themes/bingo-show-blue/bingo-cage.jpg'}
             alt="Globo de Bingo 3D"
             style={{
               height: isBlue || isOuro ? 118 : 80,
               width: 'auto',
               borderRadius: isBlue || isOuro ? 0 : 12,
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 10px rgba(8, 127, 252, 0.5))',
             }}
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = 'none';
@@ -1024,5 +1196,7 @@ export const DrawStage: React.FC<DrawStageProps> = ({
     </div>
   );
 };
+
+export const DrawStage = React.memo(DrawStageInner);
 
 export default DrawStage;

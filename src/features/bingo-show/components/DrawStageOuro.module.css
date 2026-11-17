@@ -287,3 +287,8 @@
     display: none;
   }
 }
+
+/* Modo leve: raios de ~750px girando ocupam a TV o tempo todo. */
+:global(html.tv-lite) .burst {
+  animation: none;
+}

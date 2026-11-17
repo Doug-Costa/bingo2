@@ -13,15 +13,32 @@ export interface BingoShowRealtimeLobby extends BingoShowLobbyMock {
   hasTriggerBallLimit: boolean;
 }
 
-export function useBingoShowRealtimeLobby(): BingoShowRealtimeLobby {
+/** Segundos até o próximo sorteio (horário agendado; sem ele, o `draw_closing`). */
+export function computeCountdownSeconds(current: DrawSSE | undefined, drawClosingSeconds: unknown, nowMs: number): number {
+  const fallback = typeof drawClosingSeconds === 'number' && drawClosingSeconds > 0 ? drawClosingSeconds : 0;
+  const sched = current?.scheduledAt || (current as any)?.scheduled_at;
+  if (!sched) return fallback;
+  const target = new Date(typeof sched === 'string' ? sched.replace(' ', 'T') : sched).getTime();
+  if (Number.isNaN(target)) return fallback;
+  return Math.max(0, Math.ceil((target - nowMs) / 1000));
+}
+
+/**
+ * `tick: false` — sem o relógio de 1s aqui dentro: a tela usa componentes com
+ * relógio próprio (só o texto do relógio/contador redesenha a cada segundo, não o
+ * lobby inteiro). `countdownSeconds`/`currentTime` ficam com o valor da montagem.
+ */
+export function useBingoShowRealtimeLobby(options: { tick?: boolean } = {}): BingoShowRealtimeLobby {
+  const tick = options.tick !== false;
   const { connected, jackpotAmount, triggerBallLimit, nextDraws, promotions, drawClosingSeconds } = useGameSocket();
   const t = useT();
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
+    if (!tick) return;
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [tick]);
 
   return useMemo<BingoShowRealtimeLobby>(() => {
     const current: DrawSSE | undefined = nextDraws[0];

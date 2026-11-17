@@ -169,6 +169,11 @@
     finalBallPulse 380ms ease-out 1180ms both;
 }
 
+/* TV fraca: animar box-shadow redesenha a bola inteira a cada quadro. */
+:global(html.tv-lite) .mainBingoBall {
+  animation: finalBallPulse 380ms ease-out 1180ms both;
+}
+
 /* Brilho largo e suave que acompanha a curvatura (canto superior esquerdo). */
 .mainBingoBall::before {
   content: '';
@@ -877,7 +882,7 @@
   border: none;
   filter: sepia(1) saturate(3) hue-rotate(-14deg) brightness(0.78) contrast(1.35)
     drop-shadow(0 0 1px rgba(150, 80, 0, 0.6));
-  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  background: url('/themes/loteriai/sm/decorative/nanduti.webp') center / contain no-repeat;
   opacity: 0.62;
   animation: loteriaiRingSpinBack 60s linear infinite;
 }
@@ -1127,4 +1132,245 @@
 .stageArt {
   position: relative;
   z-index: 1;
+}
+
+/* TV fraca: anéis parados; a chegada da bola continua animada. */
+:global(html.tv-lite) .outerRing,
+:global(html.tv-lite) .innerRing,
+:global(html.tv-lite) .stageRays {
+  animation: none;
+}
+
+/* Modo leve: animar `filter` refaz o desenho a cada quadro; fica só o movimento. */
+:global(html.tv-lite) .slotLanding {
+  animation-name: historySlotLandingLite;
+}
+
+:global(html.tv-lite) .seqBall {
+  animation-name: seqBallPulseLite;
+}
+
+@keyframes historySlotLandingLite {
+  0% { transform: scale(0.92); }
+  42% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes seqBallPulseLite {
+  0% { transform: scale(0.8); }
+  60% { transform: scale(1.08); }
+  100% { transform: none; }
+}
+
+/* ─── Modo ultra leve (html.tv-ultra) ─────────────────────────────────────
+ * TV com GPU muito fraca: a bola só voa e pousa. Saem o giro, o rastro, o brilho
+ * passando, o flash e o anel de impacto, os raios e a atmosfera do palco — cada
+ * uma dessas camadas é redesenhada pela GPU a cada quadro da chegada, bem na hora
+ * em que a voz começa. Ligado pelo PerfMonitor (automático ou pelo controle). */
+:global(html.tv-ultra) .stageAtmosphere,
+:global(html.tv-ultra) .stageRays,
+:global(html.tv-ultra) .ballGlint,
+:global(html.tv-ultra) .ballImpactFlash,
+:global(html.tv-ultra) .ballImpactRing,
+:global(html.tv-ultra) .handoffTrail,
+:global(html.tv-ultra) .ballFlight::before {
+  display: none !important;
+}
+
+:global(html.tv-ultra) .outerRing,
+:global(html.tv-ultra) .innerRing,
+:global(html.tv-ultra) .mainBingoBall,
+:global(html.tv-ultra) .ballSpin,
+:global(html.tv-ultra) .ballNumber,
+:global(html.tv-ultra) .slotLanding,
+:global(html.tv-ultra) .seqBall {
+  animation: none !important;
+}
+
+/* A bola ganha camada própria ANTES de começar a voar (o modo leve tira o
+ * will-change de tudo, e aí a TV montava a camada no 1º quadro: travadinha). */
+:global(html.tv-ultra.tv-lite) .ballFlight {
+  will-change: transform !important;
+}
+
+/* Ultra leve = caminho do movimento reduzido: a bola aparece em 180ms (sem voo de
+ * 1,3s) e a coluna de últimas bolas troca na hora. */
+:global(html.tv-ultra.tv-lite) .ballFlight {
+  animation: reducedBallArrival 180ms ease-out both !important;
+}
+
+:global(html.tv-ultra) .slot,
+:global(html.tv-ultra) .slotLeaving {
+  transition-duration: 1ms !important;
+}
+
+/* Ultra leve (3): bola aparece na hora — sem animação de entrada e sem desfoques.
+ * A voz espera a TV desenhar a bola (useBingoAudio). */
+:global(html.tv-ultra.tv-lite) .ballFlight {
+  animation: none !important;
+  will-change: auto !important;
+}
+
+:global(html.tv-ultra) .innerRing,
+:global(html.tv-ultra) .mainBingoBall::before,
+:global(html.tv-ultra) .ballSpecular,
+:global(html.tv-ultra) .ballReflection {
+  filter: none !important;
+}
+
+/* Ultra leve (4): entrada barata da bola — só move/escala/opacidade, que a GPU
+ * compõe sem redesenhar (a bola já não tem sombra nem desfoque). Pousa aos ~75%
+ * (450ms): é quando a voz sai (useBingoAudio, ULTRA_BALL_LAND_MS). */
+:global(html.tv-ultra.tv-lite) .ballFlight {
+  animation: ultraBallIn 600ms cubic-bezier(0.22, 0.8, 0.3, 1) both !important;
+  will-change: transform, opacity !important;
+}
+
+@keyframes ultraBallIn {
+  0% { transform: translate3d(-460px, -40px, 0) scale(0.55); opacity: 0; }
+  15% { opacity: 1; }
+  75% { transform: translate3d(8px, 0, 0) scale(1.04); }
+  100% { transform: none; opacity: 1; }
+}
+
+/* Ultra leve (5): coreografia original da bola, só transform/opacidade — voo em
+ * arco, giro, número se ajeitando, flash e anel no pouso (1000ms), pulso final.
+ * Rastro (blur), brilho (recorte arredondado) e anéis girando continuam fora.
+ * `html.tv-noanim` (tecla 4 no painel) volta para a entrada simples. */
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballFlight {
+  animation: ballFlightPath 1320ms linear both, ballFlightFade 160ms ease-out both !important;
+  will-change: transform, opacity !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballSpin {
+  animation: ballSpinRotate 1320ms linear both !important;
+  will-change: transform !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballNumber {
+  animation: stabilizeBallNumber 1320ms linear both !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .mainBingoBall {
+  animation: finalBallPulse 380ms ease-out 1180ms both !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballImpactFlash {
+  display: block !important;
+  animation: impactFlash 460ms ease-out 1000ms both !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballImpactRing {
+  display: block !important;
+  animation: impactRing 440ms ease-out 1000ms both !important;
+}
+
+/* TV Android (leve/ultra): o palco vira um contexto de empilhamento próprio, por
+ * cima do resto da tela. Sem isto a bola (z-index 4) era desenhada ANTES de partes
+ * do histórico/coluna/cupons (z 5–20); durante a animação o Chrome não sabe por
+ * onde a bola passa e separa em camadas tudo que vem depois dela ("assumed
+ * overlap"), redesenhando-as no início e no fim de cada bola — na Mali-450 isso
+ * custava 260ms+ por bola. Só o overlay de popups (z 999) fica acima. */
+:global(html.tv-lite) .blueDrawStage {
+  z-index: 900;
+  isolation: isolate;
+}
+
+/* Bola nativa do APK (html.tv-native-ball): a bola da página sai de cena por
+ * completo — sem layout, pintura nem animação. Seletor repetido para vencer as
+ * regras do ultra leve. */
+:global(html.tv-native-ball.tv-native-ball.tv-native-ball.tv-native-ball) .ballFlight,
+:global(html.tv-native-ball.tv-native-ball.tv-native-ball.tv-native-ball) .ballImpactFlash,
+:global(html.tv-native-ball.tv-native-ball.tv-native-ball.tv-native-ball) .ballImpactRing {
+  display: none !important;
+  animation: none !important;
+}
+
+/* Palco 15% maior (pedido: bola central maior). A bola nativa do APK mede o palco
+ * (--ball) a cada bola, então acompanha sozinha. */
+.blueDrawStage {
+  --outer: 428px;
+  --inner: 363px;
+  --ball: 290px;
+}
+
+.blueDrawStage .ballNumber {
+  font-size: calc(var(--ball) * 0.4365);
+}
+
+/* Globo ao lado esquerdo da bola (o palco fica no centro da linha). A gaiola
+ * (42% / 33% da imagem) é de onde a bola nativa nasce. No APK o globo animado é
+ * do Android (html.tv-native-globe): a imagem da página some. */
+.ltGlobe {
+  /* À direita da bola (que fica 35px à esquerda do centro); um pouco maior. */
+  position: absolute;
+  left: calc(50% + 183px);
+  top: calc(50% - 78px);
+  width: 190px;
+  height: 153px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.ltGlobeImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:global(html.tv-native-globe) .ltGlobeImg {
+  visibility: hidden;
+}
+
+/* Site (sem APK): a bola sai do globo, à DIREITA, sobe e desce em arco até o
+ * centro, girando no sentido do rolamento. No APK quem anima é o Android. */
+.ballFlight {
+  animation-name: ballFlightFromGlobe, ballFlightFade;
+}
+
+.ballSpin {
+  animation-name: ballSpinFromRight;
+}
+
+.ballFlight::before {
+  right: auto;
+  left: 55%;
+  transform-origin: left center;
+  transform: translateY(-50%) rotate(-13deg);
+  background: linear-gradient(90deg, rgba(255, 236, 150, 0.7), rgba(255, 205, 55, 0.2), transparent);
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballFlight {
+  animation: ballFlightFromGlobe 1320ms linear both, ballFlightFade 160ms ease-out both !important;
+}
+
+:global(html.tv-ultra.tv-lite:not(.tv-noanim)) .ballSpin {
+  animation: ballSpinFromRight 1320ms linear both !important;
+}
+
+@keyframes ballFlightFromGlobe {
+  /* gerado: curva única (Bézier para baixo) saindo da base do globo, uma só
+   * aceleração até o pouso (76%); depois só o tamanho assenta. */
+  0.0% { transform: translate3d(290.0px, 43.0px, 0) scale(0.140); }
+  6.33% { transform: translate3d(248.6px, 76.2px, 0) scale(0.283); }
+  12.67% { transform: translate3d(206.2px, 94.5px, 0) scale(0.424); }
+  19.0% { transform: translate3d(165.7px, 98.6px, 0) scale(0.555); }
+  25.33% { transform: translate3d(129.2px, 92.0px, 0) scale(0.670); }
+  31.67% { transform: translate3d(97.7px, 79.0px, 0) scale(0.767); }
+  38.0% { transform: translate3d(71.4px, 63.3px, 0) scale(0.846); }
+  44.33% { transform: translate3d(50.1px, 47.5px, 0) scale(0.909); }
+  50.67% { transform: translate3d(33.3px, 33.1px, 0) scale(0.959); }
+  57.0% { transform: translate3d(20.3px, 20.9px, 0) scale(0.996); }
+  63.33% { transform: translate3d(10.7px, 11.3px, 0) scale(1.024); }
+  69.67% { transform: translate3d(4.1px, 4.4px, 0) scale(1.043); }
+  76.0% { transform: translate3d(0.0px, 0.0px, 0) scale(1.055); animation-timing-function: ease-in-out; }
+  88% { transform: scale(0.98); animation-timing-function: ease-out; }
+  100% { transform: none; }
+}
+
+@keyframes ballSpinFromRight {
+  0% { transform: rotate(720deg); animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+  76% { transform: rotate(22deg); animation-timing-function: ease-in-out; }
+  88% { transform: rotate(-6deg); animation-timing-function: ease-out; }
+  100% { transform: none; }
 }

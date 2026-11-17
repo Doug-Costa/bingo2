@@ -49,9 +49,9 @@ const CardTicketsGrid: React.FC<{
     <BingoShowTopWinnersFrame style={{ width: '100%', height: '100%', ...style }}>
       <div className={`${css.root} ${count > 2 ? css.small : ''} ${count === 2 ? css.portrait : ''}`}>
         <div className={css.header}>
-          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.png" alt="" />
+          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.webp" alt="" />
           <span className={`${goldStyles.goldMetalText} ${css.title}`}>{t('draw.myCards')}</span>
-          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.png" alt="" />
+          <img className={css.ornament} src="/themes/bingo-show-blue/trevo.webp" alt="" />
         </div>
 
         <div className={css.grid} style={{ gridTemplateRows: count <= 2 ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>
@@ -103,7 +103,7 @@ const CardTicketsGrid: React.FC<{
 
         <div className={css.banner}>
           <img
-            src="/themes/bingo-show-blue/banner-luck.png"
+            src="/themes/bingo-show-blue/banner-luck.webp"
             alt="Aqui é Sorte! Todo dia!"
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = 'none';
@@ -130,7 +130,7 @@ function countMissing(ticket: TicketCardItem, drawnSet: Set<number>): number {
   return missing;
 }
 
-export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
+const BingoShowTicketsGridInner: React.FC<BingoShowTicketsGridProps> = ({
   tickets,
   drawnBalls = [],
   latestBall,
@@ -201,7 +201,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
       {/* HEADER: 🍀 MINHAS CARTELAS 🍀 */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
         <img
-          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
+          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.webp' : '/themes/bingo-show-blue/trevo.webp'}
           alt=""
           style={{ width: isGold || isParaguay ? 24 : 20, height: isParaguay ? 24 : 20, objectFit: 'contain' }}
         />
@@ -218,7 +218,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
           {t('draw.myCards')}
         </span>
         <img
-          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.png' : '/themes/bingo-show-blue/trevo.png'}
+          src={es ? es.art.ornament : isGold ? '/themes/tema-ouro/sm/icons/pata.webp' : '/themes/bingo-show-blue/trevo.webp'}
           alt=""
           style={{ width: isGold || isParaguay ? 24 : 20, height: isParaguay ? 24 : 20, objectFit: 'contain' }}
         />
@@ -334,7 +334,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
       {/* BANNER AQUI É SORTE! TODO DIA! */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
         <img
-          src={es ? es.art.logo : '/themes/bingo-show-blue/banner-luck.png'}
+          src={es ? es.art.logo : '/themes/bingo-show-blue/banner-luck.webp'}
           alt={isParaguay ? "Loteria'i" : 'Aqui é Sorte! Todo dia!'}
           style={{
             maxHeight: 48,
@@ -349,5 +349,7 @@ export const BingoShowTicketsGrid: React.FC<BingoShowTicketsGridProps> = ({
     </div>
   );
 };
+
+export const BingoShowTicketsGrid = React.memo(BingoShowTicketsGridInner);
 
 export default BingoShowTicketsGrid;

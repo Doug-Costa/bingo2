@@ -47,7 +47,7 @@ export const BingoShowBlueBenefitsStrip: React.FC = () => {
   return (
   <div className={styles.strip} aria-label={t('benefits.aria')}>
     {BENEFITS.map((b, i) => {
-      const src = `/themes/bingo-show-blue/footer/${b.asset}.png`;
+      const src = `/themes/bingo-show-blue/footer/${b.asset}.webp`;
       return (
         <div
           key={b.asset}

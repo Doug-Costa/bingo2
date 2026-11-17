@@ -53,7 +53,7 @@
   position: absolute;
   inset: 0;
   border: 30px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-metadata.png') 200 fill / 30px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-metadata.webp') 200 fill / 30px stretch;
   pointer-events: none;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .gold {
-  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-line1-gold.png');
+  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-line1-gold.webp');
   --col-bg: radial-gradient(ellipse 75% 60% at 50% 30%, rgba(120, 84, 8, 0.45) 0%, rgba(60, 40, 4, 0.2) 55%, transparent 80%);
   --tone: #ffd23f;
   --tone-soft: rgba(255, 210, 63, 0.18);
@@ -151,7 +151,7 @@
 }
 
 .cyan {
-  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-line2-cyan.png');
+  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-line2-cyan.webp');
   --col-bg: radial-gradient(ellipse 75% 60% at 50% 30%, rgba(10, 100, 140, 0.45) 0%, rgba(4, 50, 80, 0.2) 55%, transparent 80%);
   --tone: #2fd8ff;
   --tone-soft: rgba(47, 216, 255, 0.16);
@@ -159,7 +159,7 @@
 }
 
 .green {
-  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-bingo-green.png');
+  --col-frame: url('/bingoshow-v2/cards/4x/card-prize-bingo-green.webp');
   --col-bg: radial-gradient(ellipse 75% 60% at 50% 30%, rgba(12, 110, 44, 0.45) 0%, rgba(4, 56, 20, 0.2) 55%, transparent 80%);
   --tone: #2ee88a;
   --tone-soft: rgba(46, 232, 138, 0.16);
@@ -179,7 +179,7 @@
   position: absolute;
   inset: 0;
   border: 26px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 26px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.webp') 230 fill / 26px stretch;
   pointer-events: none;
 }
 
@@ -271,7 +271,7 @@
   position: absolute;
   inset: 0;
   border: 30px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize.png') 170 fill / 30px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize.webp') 170 fill / 30px stretch;
   pointer-events: none;
 }
 
@@ -334,7 +334,7 @@
   position: absolute;
   inset: 0;
   border: 20px solid transparent;
-  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.png') 230 fill / 20px stretch;
+  border-image: url('/bingoshow-v2/cards/4x/card-prize-value.webp') 230 fill / 20px stretch;
   pointer-events: none;
 }
 
@@ -828,7 +828,7 @@
   height: 330px;
   margin: -165px 0 0 -165px;
   z-index: -1;
-  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  background: url('/themes/loteriai/sm/decorative/nanduti.webp') center / contain no-repeat;
   filter: sepia(1) saturate(2.2) hue-rotate(-12deg);
   opacity: 0.26;
   pointer-events: none;

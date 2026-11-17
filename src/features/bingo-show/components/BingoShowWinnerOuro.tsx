@@ -17,7 +17,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../hooks/useFitText';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
+import { useDeferredMount } from '../hooks/useDeferredMount';
 import { WINNER_POPUP_MS } from '../timing';
 import { BingoShowAssets } from '../assets';
 import { BingoShowTopWinnersFrame } from './BingoShowTopWinnersFrame';
@@ -56,7 +57,6 @@ const OuroCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
   const enter = 650 + slot * CARD_STAGGER;
-  const counting = useCountUp(w.prize, enter + 450, 1700);
 
   const hasCard = Array.isArray(w.cardNumbers) && w.cardNumbers.length > 0;
   const winRows = new Set(w.paintedRows);
@@ -106,7 +106,7 @@ const OuroCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
               {w.prize}
             </span>
             <span className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-              {counting}
+              <CountUpText text={w.prize} delayMs={enter + 450} durationMs={1700} />
             </span>
           </div>
         </div>
@@ -173,6 +173,8 @@ const OuroCard: React.FC<{ w: GroupWinnerView; index: number; slot: number; tota
 
 export const BingoShowWinnerOuro: React.FC<BingoShowWinnerOuroProps> = ({ sealText, winners }) => {
   const t = useT();
+  // TV: casca primeiro, conteúdo pesado no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const pages = Math.max(1, Math.ceil(winners.length / GROUP_PAGE_SIZE));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -215,7 +217,7 @@ export const BingoShowWinnerOuro: React.FC<BingoShowWinnerOuroProps> = ({ sealTe
             </div>
           )}
           <div key={page} className={styles.cards} style={gridStyle}>
-            {list.map((w, i) => (
+            {contentReady && list.map((w, i) => (
               <OuroCard key={w.id} w={w} index={page * GROUP_PAGE_SIZE + i} slot={i} total={winners.length} density={density} style={spanOf(i)} />
             ))}
           </div>

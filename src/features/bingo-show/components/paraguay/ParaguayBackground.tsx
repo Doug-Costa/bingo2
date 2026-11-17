@@ -31,7 +31,7 @@ const PARTICLES = [
   { x: 98, s: 4, c: '#f3ce63', dur: 24000, delay: 5500, dx: 6, o: 0.6 },
 ];
 
-export const ParaguayBackground: React.FC = () => (
+const ParaguayBackgroundInner: React.FC = () => (
   <div className={styles.root} aria-hidden="true">
     {NANDUTI.map((n, i) => (
       <span
@@ -72,5 +72,7 @@ export const ParaguayBackground: React.FC = () => (
     <span className={styles.vignette} />
   </div>
 );
+
+export const ParaguayBackground = React.memo(ParaguayBackgroundInner);
 
 export default ParaguayBackground;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLowPerfDevice } from '@/hooks/useLowPerfDevice';
 import { BingoShowIcon } from './BingoShowIcon';
 
 export type BingoShowLogoVariant = 'gold' | 'blue' | 'white';
@@ -68,6 +69,7 @@ export const BingoShowLogo: React.FC<BingoShowLogoProps> = ({
   const palette = VARIANT_PALETTES[variant];
   const width = SIZE_WIDTH[size];
   const starIconSize = Math.round(width * 0.12);
+  const lowPerf = useLowPerfDevice();
 
   return (
     <div
@@ -81,7 +83,7 @@ export const BingoShowLogo: React.FC<BingoShowLogoProps> = ({
         border: `1.5px solid ${palette.containerBorder}`,
         backgroundColor: 'rgba(4, 8, 38, 0.65)',
         boxShadow: `0 0 12px ${palette.containerGlow}44`,
-        backdropFilter: 'blur(8px)',
+        ...(lowPerf ? {} : { backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }),
         width: width + 24,
         ...style,
       }}

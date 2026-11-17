@@ -9,7 +9,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useFitText } from '../hooks/useFitText';
-import { useCountUp } from '../hooks/useCountUp';
+import { CountUpText } from '../hooks/useCountUp';
+import { useDeferredMount } from '../hooks/useDeferredMount';
 import { BingoShowAssets } from '../assets';
 import type { BingoShowRoundWinnersBlueProps, RoundCategoryKey, RoundCategoryView, RoundWinnerView } from './BingoShowRoundWinnersBlue';
 import goldStyles from './goldMetalText.module.css';
@@ -39,7 +40,6 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
   const sz = SIZES[mode];
   const name = useFitText(w.name, sz.name[0], sz.name[1]);
   const value = useFitText(w.prize, sz.value[0], sz.value[1]);
-  const counting = useCountUp(w.prize, delay + 400, 1600);
   return (
     <div className={styles.card} style={{ '--d-card': `${delay}ms` } as React.CSSProperties}>
       <span className={styles.cardLabel}>{label}</span>
@@ -59,7 +59,7 @@ const RoundCard: React.FC<{ w: RoundWinnerView; label: string; mode: 1 | 2 | 3 |
             {w.prize}
           </span>
           <span className={`${styles.value} ${goldStyles.goldValueActive}`} style={{ fontSize: value.size }} aria-label={w.prize}>
-            {counting}
+            <CountUpText text={w.prize} delayMs={delay + 400} durationMs={1600} />
           </span>
         </div>
       </div>
@@ -75,6 +75,8 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
   totalDurationMs,
 }) => {
   const t = useT();
+  // TV: colunas primeiro, cards no quadro seguinte (ver useDeferredMount).
+  const contentReady = useDeferredMount();
   const total = category.winners.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const [page, setPage] = useState(0);
@@ -129,7 +131,7 @@ const Column: React.FC<{ category: RoundCategoryView; index: number; jackpotAmou
         </div>
       ) : (
         <div key={page} className={`${styles.cards} ${mode >= 3 ? styles.cardsTop : ''}`}>
-          {list.map((w, j) => (
+          {contentReady && list.map((w, j) => (
             <RoundCard
               key={w.id}
               w={w}

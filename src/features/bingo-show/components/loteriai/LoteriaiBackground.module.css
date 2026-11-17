@@ -38,7 +38,7 @@
   width: var(--s);
   height: var(--s);
   margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-  background: url('/themes/loteriai/sm/decorative/nanduti.png') center / contain no-repeat;
+  background: url('/themes/loteriai/sm/decorative/nanduti.webp') center / contain no-repeat;
   opacity: var(--o);
   filter: sepia(1) saturate(2) hue-rotate(-10deg) brightness(1.2);
 }
@@ -103,4 +103,11 @@
   .particle {
     display: none;
   }
+}
+
+/* TV fraca: fundo parado (os raios têm máscara em tela cheia). */
+:global(html.tv-lite) .rays,
+:global(html.tv-lite) .sheen,
+:global(html.tv-lite) .particle {
+  animation: none;
 }

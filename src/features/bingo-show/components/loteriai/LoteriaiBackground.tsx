@@ -26,7 +26,7 @@ const PARTICLES = [
   { x: 97.5, s: 4, dur: 26000, delay: 17000, dx: -6, o: 0.7 },
 ];
 
-export const LoteriaiBackground: React.FC = () => (
+const LoteriaiBackgroundInner: React.FC = () => (
   <div className={styles.root} aria-hidden="true">
     <span className={styles.rays} />
     {NANDUTI.map((n, i) => (
@@ -56,5 +56,7 @@ export const LoteriaiBackground: React.FC = () => (
     <span className={styles.vignette} />
   </div>
 );
+
+export const LoteriaiBackground = React.memo(LoteriaiBackgroundInner);
 
 export default LoteriaiBackground;

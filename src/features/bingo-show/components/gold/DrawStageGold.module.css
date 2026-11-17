@@ -383,3 +383,10 @@
     display: none;
   }
 }
+
+/* Modo leve: raios de ~1000px e contas girando ocupam a TV o tempo todo. */
+:global(html.tv-lite) .rays,
+:global(html.tv-lite) .raysB,
+:global(html.tv-lite) .beads {
+  animation: none;
+}
