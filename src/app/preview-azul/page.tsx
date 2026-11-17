@@ -99,7 +99,7 @@ export default function PreviewAzulPage() {
       <TvViewport>
         <TvStage>
           <BingoShowAmbientBackground brightness="light">
-            <AzulDrawView data={data} soundEnabled soundOn onToggleSound={() => {}} />
+            <AzulDrawView data={data} />
           </BingoShowAmbientBackground>
         </TvStage>
       </TvViewport>

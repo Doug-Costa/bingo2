@@ -10,7 +10,7 @@ Tema novo, separado de todos os outros. **Não muda o Loteria'i nem nenhum tema 
 
 ## Como ativar numa TV
 
-No painel, coloque o nome do tema como `bingo-show-azul`. Qualquer nome com "azul" também funciona. Depois faça o restart remoto da TV ou digite o PIN de novo. Idioma, moeda e som continuam vindo do PIN.
+No painel, coloque o nome do tema como `bingo-show-azul`. Qualquer nome com "azul" também funciona. Depois faça o restart remoto da TV ou digite o PIN de novo. Idioma, moeda e som continuam vindo do PIN. A tela não tem botão de som: ele liga e desliga só pelo `enableSound` do painel.
 
 ## Arquivos
 

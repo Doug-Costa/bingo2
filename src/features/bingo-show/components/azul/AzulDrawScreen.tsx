@@ -22,7 +22,6 @@ import { BingoShowAmbientBackground } from '../BingoShowAmbientBackground';
 import { BingoShowCouponsTable } from '../BingoShowCouponsTable';
 import { BingoShowTicketsGrid } from '../BingoShowTicketsGrid';
 import { BingoShowWinnerPopup } from '../BingoShowWinnerPopup';
-import { BingoShowIcon } from '../BingoShowIcon';
 import { useBingoShowRealtimeDraw, type BingoShowRealtimeDraw, type PrizeStatusType } from '../../hooks/useBingoShowRealtimeDraw';
 import { useBingoAudio, type PrizeType, type ShownPrize } from '../../hooks/useBingoAudio';
 import { useTvConfig, useT } from '@/contexts/TvConfigContext';
@@ -58,16 +57,10 @@ const AzulHeader = React.memo(function AzulHeader({
   drawNumber,
   donationAmount,
   drawTime,
-  soundEnabled,
-  soundOn,
-  onToggleSound,
 }: {
   drawNumber: string;
   donationAmount: string;
   drawTime: string;
-  soundEnabled: boolean;
-  soundOn: boolean;
-  onToggleSound: () => void;
 }) {
   const t = useT();
   // Dados do sorteio em cards no topo (sem data).
@@ -94,11 +87,6 @@ const AzulHeader = React.memo(function AzulHeader({
             <span className={css.infoValue}>{item.value}</span>
           </div>
         ))}
-        {soundEnabled && (
-          <div className={`${css.sound} ${soundOn ? '' : css.soundOff}`} onClick={onToggleSound}>
-            <BingoShowIcon name={soundOn ? 'sound' : 'speaker-off'} size={22} color="#FFFFFF" transparentBg />
-          </div>
-        )}
       </div>
 
       <div className={css.bubbles} aria-hidden="true">
@@ -323,12 +311,9 @@ export type AzulDrawData = Pick<
 
 export interface AzulDrawViewProps {
   data: AzulDrawData;
-  soundEnabled: boolean;
-  soundOn: boolean;
-  onToggleSound: () => void;
 }
 
-export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, soundOn, onToggleSound }) => {
+export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data }) => {
   const lastBalls = React.useMemo(() => {
     const list = data.drawnBalls;
     const withoutCurrent = data.currentBall && list[list.length - 1] === data.currentBall ? list.slice(0, -1) : list;
@@ -342,9 +327,6 @@ export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, 
         drawNumber={data.drawNumber}
         donationAmount={data.donationAmount}
         drawTime={data.timeStr}
-        soundEnabled={soundEnabled}
-        soundOn={soundOn}
-        onToggleSound={onToggleSound}
       />
       <AzulPrizes
         accumulatedPrize={data.accumulatedPrize}
@@ -376,21 +358,20 @@ export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, 
 export const AzulDrawScreen: React.FC = () => {
   const mock = useBingoShowRealtimeDraw();
   const { voice, soundEnabled } = useTvConfig();
-  const [soundOn, setSoundOn] = useState(true);
-  const toggleSound = React.useCallback(() => setSoundOn((prev) => !prev), []);
 
   // Mesma voz da tela clássica; sai quando a bola termina de entrar no palco.
   const [shownPrize, setShownPrize] = useState<ShownPrize | null>(null);
   const handlePrizeShown = React.useCallback((type: PrizeType) => setShownPrize((prev) => ({ type, seq: (prev?.seq ?? 0) + 1 })), []);
   const reducedMotion = usePrefersReducedMotion();
-  useBingoAudio(soundEnabled && soundOn, mock.currentBall, shownPrize, mock.isLive, mock.drawNumber, voice, reducedMotion ? 150 : 500);
+  // Sem botão de som na tela: liga/desliga só pelo painel (theme.enableSound).
+  useBingoAudio(soundEnabled, mock.currentBall, shownPrize, mock.isLive, mock.drawNumber, voice, reducedMotion ? 150 : 500);
 
   return (
     <BingoShowAmbientBackground brightness="light">
       <BingoShowTvLayout
         mainFlex={1}
         style={{ padding: 0 }}
-        fullBody={<AzulDrawView data={mock} soundEnabled={soundEnabled} soundOn={soundOn} onToggleSound={toggleSound} />}
+        fullBody={<AzulDrawView data={mock} />}
         overlay={
           <BingoShowWinnerPopup
             winners={mock.winners}

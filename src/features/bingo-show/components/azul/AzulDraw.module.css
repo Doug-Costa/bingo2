@@ -57,22 +57,6 @@
 }
 
 
-.sound {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-sizing: border-box;
-  background: radial-gradient(circle at 35% 30%, #ff6b7c 0%, var(--red) 45%, #9d0c20 100%);
-  border: 2px solid #ffffff;
-  box-shadow: 0 3px 8px rgba(6, 36, 95, 0.35);
-}
-
-.soundOff {
-  background: radial-gradient(circle at 35% 30%, #7f9cc6 0%, #3d5b8f 55%, #22375e 100%);
-}
 
 /* Relógio e dados do sorteio: cards claros no topo, ao lado do logo. */
 .infoCard {
