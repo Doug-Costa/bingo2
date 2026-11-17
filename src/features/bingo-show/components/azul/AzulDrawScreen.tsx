@@ -46,24 +46,47 @@ const LiveClock: React.FC = () => {
 
 // ─── Cabeçalho ───────────────────────────────────────────────────────────────
 
+/** Data de hoje (dd/mm/aaaa) para a pílula do relógio; a data do sorteio vai na faixa. */
+function today(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+}
+
+// Bolhas decorativas entre a faixa de dados e o logo; `d` desencontra a flutuação.
 const BUBBLES = [
-  { n: 15, x: 150, y: 4, s: 58 },
-  { n: 42, x: 300, y: 0, s: 64 },
-  { n: 63, x: 520, y: 10, s: 58 },
-  { n: 90, x: 680, y: 2, s: 72 },
+  { n: 15, x: 0, y: 6, s: 52, d: 0 },
+  { n: 42, x: 92, y: 0, s: 60, d: 900 },
+  { n: 63, x: 196, y: 10, s: 52, d: 1800 },
+  { n: 90, x: 290, y: 2, s: 64, d: 2700 },
 ];
 
 const AzulHeader = React.memo(function AzulHeader({
   dateStr,
+  drawNumber,
+  donationAmount,
+  drawDate,
+  drawTime,
   soundEnabled,
   soundOn,
   onToggleSound,
 }: {
   dateStr: string;
+  drawNumber: string;
+  donationAmount: string;
+  drawDate: string;
+  drawTime: string;
   soundEnabled: boolean;
   soundOn: boolean;
   onToggleSound: () => void;
 }) {
+  const t = useT();
+  const info = [
+    { label: t('azul.draw'), value: drawNumber },
+    { label: t('azul.value'), value: donationAmount },
+    { label: t('azul.date'), value: drawDate },
+    { label: t('azul.time'), value: drawTime },
+  ];
   return (
     <div className={css.header}>
       <div className={css.headerLeft}>
@@ -79,11 +102,24 @@ const AzulHeader = React.memo(function AzulHeader({
             <BingoShowIcon name={soundOn ? 'sound' : 'speaker-off'} size={22} color="#FFFFFF" transparentBg />
           </div>
         )}
+        {/* Dados do sorteio: faixa discreta no topo (antes eram 4 cards na coluna de prêmios). */}
+        <div className={css.infoStrip}>
+          {info.map((item) => (
+            <span key={item.label} className={css.infoItem}>
+              <span className={css.infoLabel}>{item.label}</span>
+              <span className={css.infoValue}>{item.value}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className={css.bubbles} aria-hidden="true">
         {BUBBLES.map((b) => (
-          <span key={b.n} className={css.bubble} style={{ left: b.x, top: b.y, '--s': `${b.s}px` } as React.CSSProperties}>
+          <span
+            key={b.n}
+            className={css.bubble}
+            style={{ left: b.x, top: b.y, '--s': `${b.s}px`, '--d': `${b.d}ms` } as React.CSSProperties}
+          >
             {b.n}
           </span>
         ))}
@@ -130,10 +166,6 @@ const AzulPrizes = React.memo(function AzulPrizes({
   line2Status,
   bingoPrize,
   bingoStatus,
-  drawNumber,
-  donationAmount,
-  dateStr,
-  timeStr,
 }: Pick<
   BingoShowRealtimeDraw,
   | 'accumulatedPrize'
@@ -145,23 +177,15 @@ const AzulPrizes = React.memo(function AzulPrizes({
   | 'line2Status'
   | 'bingoPrize'
   | 'bingoStatus'
-  | 'drawNumber'
-  | 'donationAmount'
-  | 'dateStr'
-  | 'timeStr'
 >) {
   const t = useT();
-  const tiles = [
-    { icon: `${A}/cartelas.webp`, label: t('azul.draw'), value: drawNumber },
-    { icon: '/themes/bingo-show-blue/moedas-pilha.webp', label: t('azul.value'), value: donationAmount },
-    { icon: '/themes/bingo-show-blue/calendario.webp', label: t('azul.date'), value: dateStr },
-    { icon: '/themes/bingo-show-blue/relogio-areia-dourado.webp', label: t('azul.time'), value: timeStr },
-  ];
   return (
     <div className={css.prizes}>
       <div className={css.jackpot}>
         {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
         <img className={css.trophy} src={`${A}/trofeu.webp`} alt="" />
+        {/* Brilho que passa pelo card (só transform; parado no ultra leve). */}
+        <span className={css.shine} aria-hidden="true" />
         <div className={css.jackpotText}>
           <span className={css.jackpotLabel}>{t('azul.jackpot1')}</span>
           <span className={css.jackpotLabel}>{t('azul.jackpot2')}</span>
@@ -180,16 +204,6 @@ const AzulPrizes = React.memo(function AzulPrizes({
       <PrizeRow label={t('azul.line2')} amount={line2Prize} state={rowState(line2Status)} />
       <PrizeRow label={t('azul.bingo')} amount={bingoPrize} state={rowState(bingoStatus)} />
 
-      {tiles.map((tile) => (
-        <div key={tile.label} className={css.tile}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img src={tile.icon} alt="" />
-          <div className={css.tileText}>
-            <span className={css.tileLabel}>{tile.label}</span>
-            <span className={css.tileValue}>{tile.value}</span>
-          </div>
-        </div>
-      ))}
     </div>
   );
 });
@@ -227,7 +241,8 @@ const AzulStage = React.memo(function AzulStage({
       </div>
       <div className={css.lastBalls}>
         {lastBalls.map((n, i) => (
-          <span key={`${i}-${n}`} className={`${css.gball} ${LAST_TONES[i % LAST_TONES.length]}`}>
+          // key pelo número: a bola que acabou de entrar na lista faz a entrada.
+          <span key={n} className={`${css.gball} ${LAST_TONES[i % LAST_TONES.length]} ${i === 0 ? css.gballEnter : ''}`}>
             {n}
           </span>
         ))}
@@ -238,6 +253,7 @@ const AzulStage = React.memo(function AzulStage({
       <div className={css.platform} />
       <div className={css.arena}>
         <div className={css.halo} />
+        <div className={css.haloSpin} />
         {/* key: a bola remonta (e faz a entrada) só quando o número muda. */}
         <div key={hasBall ? currentBall : 'none'} className={`${css.bigBall} ${hasBall ? css.ballPop : ''}`}>
           <div className={css.bigInner}>
@@ -249,7 +265,9 @@ const AzulStage = React.memo(function AzulStage({
       <img className={css.globeArt} src={`${A}/globo.webp`} alt="" />
 
       <div className={css.countPill}>
-        <span className={css.countBall}>{count}</span>
+        <span key={count} className={`${css.countBall} ${css.countPop}`}>
+          {count}
+        </span>
         <span className={css.countText}>{t('azul.ballOf', { n: count, total })}</span>
       </div>
     </div>
@@ -335,7 +353,16 @@ export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, 
 
   return (
     <div className={css.screen}>
-      <AzulHeader dateStr={data.dateStr} soundEnabled={soundEnabled} soundOn={soundOn} onToggleSound={onToggleSound} />
+      <AzulHeader
+        dateStr={today()}
+        drawNumber={data.drawNumber}
+        donationAmount={data.donationAmount}
+        drawDate={data.dateStr}
+        drawTime={data.timeStr}
+        soundEnabled={soundEnabled}
+        soundOn={soundOn}
+        onToggleSound={onToggleSound}
+      />
       <AzulPrizes
         accumulatedPrize={data.accumulatedPrize}
         triggerBallLimit={data.triggerBallLimit}
@@ -346,10 +373,6 @@ export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, 
         line2Status={data.line2Status}
         bingoPrize={data.bingoPrize}
         bingoStatus={data.bingoStatus}
-        drawNumber={data.drawNumber}
-        donationAmount={data.donationAmount}
-        dateStr={data.dateStr}
-        timeStr={data.timeStr}
       />
       <AzulStage currentBall={data.currentBall} lastBalls={lastBalls} count={data.drawnBalls.length} total={data.totalBalls} />
       <div className={css.side}>
