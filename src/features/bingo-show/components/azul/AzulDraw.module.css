@@ -410,21 +410,28 @@
   box-shadow: 0 6px 16px rgba(6, 36, 95, 0.38), inset 0 0 0 2px rgba(255, 255, 255, 0.45);
 }
 
-/* Raios azul-ciano saindo de trás da bola (estáticos). A máscara apaga os
- * raios perto das bordas e embaixo: a área da faixa branca fica limpa. */
-.stage::before {
-  content: '';
+/* Raios azul-ciano saindo de trás da bola, girando bem devagar. Camada
+ * quadrada própria, centrada na bola (43.5% / 256px do palco), que só gira
+ * (transform: a TV compõe, sem redesenhar). A máscara circular apaga os raios
+ * longe da bola, então a área da faixa branca fica limpa. */
+.rays {
   position: absolute;
-  inset: 0;
+  left: 43.5%;
+  top: 256px;
+  width: 1100px;
+  height: 1100px;
+  margin: -550px 0 0 -550px;
   opacity: 0.5;
+  pointer-events: none;
   background: repeating-conic-gradient(
-    from 0deg at 43.5% 43%,
+    from 0deg at 50% 50%,
     rgba(53, 214, 244, 0.55) 0deg 5deg,
     rgba(234, 251, 255, 0.35) 5deg 7deg,
     rgba(53, 214, 244, 0) 7deg 15deg
   );
-  -webkit-mask-image: radial-gradient(ellipse 62% 66% at 43.5% 40%, #000 30%, rgba(0, 0, 0, 0) 78%);
-  mask-image: radial-gradient(ellipse 62% 66% at 43.5% 40%, #000 30%, rgba(0, 0, 0, 0) 78%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 18%, rgba(0, 0, 0, 0) 48%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 18%, rgba(0, 0, 0, 0) 48%);
+  animation: azulSpin 90s linear infinite;
 }
 
 .stageTitleRow {
@@ -926,14 +933,15 @@
   .shine,
   .prizeActive::after,
   .glow,
-  .lightGold {
+  .lightGold,
+  .rays {
     animation: none;
   }
 }
 
 /* TV ultra leve: sem os raios do palco e sem as animações contínuas
  * (as entradas o globals.css já reduz a 1ms). */
-:global(html.tv-ultra) .stage::before,
+:global(html.tv-ultra) .rays,
 :global(html.tv-ultra) .shine {
   display: none;
 }

@@ -204,6 +204,7 @@ const AzulStage = React.memo(function AzulStage({
   const hasBall = currentBall > 0;
   return (
     <div className={css.stage}>
+      <div className={css.rays} aria-hidden="true" />
       <div className={css.stageTitleRow}>
         <span className={css.stageTitle}>
           <span className={css.star}>★</span>
