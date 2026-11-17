@@ -56,34 +56,6 @@
   margin-left: 12px;
 }
 
-.datePill {
-  display: flex;
-  align-items: center;
-  padding: 8px 18px;
-  border-radius: 26px;
-  background: linear-gradient(180deg, #ffffff 0%, #e3f3ff 100%);
-  border: 2px solid var(--edge);
-  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.28);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--navy);
-  font-variant-numeric: tabular-nums;
-}
-
-.datePill img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  margin-right: 10px;
-}
-
-.pipe {
-  margin: 0 12px;
-  width: 2px;
-  height: 22px;
-  background: rgba(9, 47, 114, 0.3);
-}
 
 .sound {
   width: 48px;
@@ -102,47 +74,60 @@
   background: radial-gradient(circle at 35% 30%, #7f9cc6 0%, #3d5b8f 55%, #22375e 100%);
 }
 
-/* Dados do sorteio: faixa discreta ao lado do relógio. */
-.infoStrip {
+/* Relógio e dados do sorteio: cards claros no topo, ao lado do logo. */
+.infoCard {
+  height: 64px;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-  padding: 6px;
-  border-radius: 24px;
-  background: rgba(6, 36, 95, 0.32);
-  border: 1px solid rgba(146, 220, 244, 0.55);
-}
-
-.infoItem {
-  display: flex;
-  align-items: baseline;
-  padding: 0 14px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #dcefff 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 4px 10px rgba(6, 36, 95, 0.28);
   white-space: nowrap;
 }
 
-.infoItem + .infoItem {
-  border-left: 1px solid rgba(234, 251, 255, 0.35);
+/* Card do relógio: ícone ao lado da hora. */
+.infoClock {
+  flex-direction: row;
+  align-items: center;
+}
+
+.infoClock img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 10px;
 }
 
 .infoLabel {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
-  color: #a9e6fb;
-  margin-right: 8px;
+  line-height: 1;
+  color: #3c6bb0;
 }
 
 .infoValue {
-  font-size: 22px;
+  margin-top: 3px;
+  font-size: 30px;
   font-weight: 900;
+  line-height: 1;
   letter-spacing: 0.5px;
-  color: #ffffff;
+  color: var(--navy);
   font-variant-numeric: tabular-nums;
+}
+
+.infoClock .infoValue {
+  margin-top: 0;
 }
 
 /* Bolhas decorativas do topo: flutuam devagar (só transform). */
 .bubbles {
   position: absolute;
-  left: 1220px;
+  right: 40px;
   top: 0;
   width: 360px;
   height: 88px;
@@ -179,6 +164,7 @@
   height: 84px;
   width: auto;
   object-fit: contain;
+  margin-right: 6px;
 }
 
 /* ─── Coluna de prêmios ─────────────────────────────────────────────────── */
@@ -391,6 +377,31 @@
   100% {
     transform: translateX(560px) skewX(-12deg);
   }
+}
+
+/* Prêmio concluído: apagado e fosco (cores chapadas, sem brilho nem sombra). */
+.prizeDone {
+  background: #d6e1ee;
+  border-color: rgba(146, 170, 200, 0.6);
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.prizeDone .prizeLabel {
+  background: #8e9db3;
+  border-color: #c9d3e0;
+  box-shadow: none;
+}
+
+.prizeDone .prizeValue {
+  background: #e6edf5;
+  border-color: rgba(146, 170, 200, 0.6);
+  box-shadow: none;
+  color: #5f7290;
+}
+
+.prizeDone .statusDone {
+  color: #4f7a63;
 }
 
 .prizeActive .prizeValue {

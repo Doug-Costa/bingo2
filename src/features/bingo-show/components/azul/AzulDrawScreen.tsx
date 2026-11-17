@@ -46,14 +46,7 @@ const LiveClock: React.FC = () => {
 
 // ─── Cabeçalho ───────────────────────────────────────────────────────────────
 
-/** Data de hoje (dd/mm/aaaa) para a pílula do relógio; a data do sorteio vai na faixa. */
-function today(): string {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-}
-
-// Bolhas decorativas entre a faixa de dados e o logo; `d` desencontra a flutuação.
+// Bolhas decorativas no canto direito do topo; `d` desencontra a flutuação.
 const BUBBLES = [
   { n: 15, x: 0, y: 6, s: 52, d: 0 },
   { n: 42, x: 92, y: 0, s: 60, d: 900 },
@@ -62,55 +55,50 @@ const BUBBLES = [
 ];
 
 const AzulHeader = React.memo(function AzulHeader({
-  dateStr,
   drawNumber,
   donationAmount,
-  drawDate,
   drawTime,
   soundEnabled,
   soundOn,
   onToggleSound,
 }: {
-  dateStr: string;
   drawNumber: string;
   donationAmount: string;
-  drawDate: string;
   drawTime: string;
   soundEnabled: boolean;
   soundOn: boolean;
   onToggleSound: () => void;
 }) {
   const t = useT();
+  // Dados do sorteio em cards no topo (sem data).
   const info = [
     { label: t('azul.draw'), value: drawNumber },
     { label: t('azul.value'), value: donationAmount },
-    { label: t('azul.date'), value: drawDate },
     { label: t('azul.time'), value: drawTime },
   ];
   return (
     <div className={css.header}>
       <div className={css.headerLeft}>
-        <div className={css.datePill}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- marca do tema */}
+        <img className={css.logo} src="/themes/bingo-show-blue/logos/logo-main.webp" alt="BINGO SHOW" />
+        <div className={`${css.infoCard} ${css.infoClock}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- ícone do tema */}
-          <img src="/themes/bingo-show-blue/calendario.webp" alt="" />
-          <span>{dateStr}</span>
-          <span className={css.pipe} />
-          <LiveClock />
+          <img src="/themes/bingo-show-blue/relogio.webp" alt="" />
+          <span className={css.infoValue}>
+            <LiveClock />
+          </span>
         </div>
+        {info.map((item) => (
+          <div key={item.label} className={css.infoCard}>
+            <span className={css.infoLabel}>{item.label}</span>
+            <span className={css.infoValue}>{item.value}</span>
+          </div>
+        ))}
         {soundEnabled && (
           <div className={`${css.sound} ${soundOn ? '' : css.soundOff}`} onClick={onToggleSound}>
             <BingoShowIcon name={soundOn ? 'sound' : 'speaker-off'} size={22} color="#FFFFFF" transparentBg />
           </div>
         )}
-        {/* Dados do sorteio: faixa discreta no topo (antes eram 4 cards na coluna de prêmios). */}
-        <div className={css.infoStrip}>
-          {info.map((item) => (
-            <span key={item.label} className={css.infoItem}>
-              <span className={css.infoLabel}>{item.label}</span>
-              <span className={css.infoValue}>{item.value}</span>
-            </span>
-          ))}
-        </div>
       </div>
 
       <div className={css.bubbles} aria-hidden="true">
@@ -124,9 +112,6 @@ const AzulHeader = React.memo(function AzulHeader({
           </span>
         ))}
       </div>
-
-      {/* eslint-disable-next-line @next/next/no-img-element -- marca do tema */}
-      <img className={css.logo} src="/themes/bingo-show-blue/logos/logo-main.webp" alt="BINGO SHOW" />
     </div>
   );
 });
@@ -144,7 +129,7 @@ function rowState(status: PrizeStatusType): RowState {
 const PrizeRow: React.FC<{ label: string; amount: string; state: RowState }> = ({ label, amount, state }) => {
   const t = useT();
   return (
-    <div className={`${css.prizeRow} ${state === 'active' ? css.prizeActive : ''}`}>
+    <div className={`${css.prizeRow} ${state === 'active' ? css.prizeActive : state === 'done' ? css.prizeDone : ''}`}>
       <div className={css.prizeLabelBox}>
         <span className={css.prizeLabel}>{label}</span>
         <span className={`${css.prizeStatus} ${state === 'done' ? css.statusDone : ''}`}>
@@ -354,10 +339,8 @@ export const AzulDrawView: React.FC<AzulDrawViewProps> = ({ data, soundEnabled, 
   return (
     <div className={css.screen}>
       <AzulHeader
-        dateStr={today()}
         drawNumber={data.drawNumber}
         donationAmount={data.donationAmount}
-        drawDate={data.dateStr}
         drawTime={data.timeStr}
         soundEnabled={soundEnabled}
         soundOn={soundOn}
