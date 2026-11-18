@@ -46,8 +46,6 @@ import { WinnerGold } from './gold/WinnerGold';
 import { RoundWinnersGold } from './gold/RoundWinnersGold';
 import { WinnerParaguay } from './paraguay/WinnerParaguay';
 import { RoundWinnersParaguay } from './paraguay/RoundWinnersParaguay';
-import { WinnerAzul } from './azul/WinnerAzul';
-import { RoundWinnersAzul } from './azul/RoundWinnersAzul';
 import { getEsSkin } from './esSkin';
 import { FINISH_SCREEN_HOLD_MS, ROUND_SUMMARY_DELAY_MS, ROUND_SUMMARY_MIN_MS, WINNER_POPUP_GAP_MS, WINNER_POPUP_MS } from '../timing';
 import { whenAudioIdle } from '../hooks/useBingoAudio';
@@ -1120,7 +1118,7 @@ const BingoShowWinnerPopupInner: React.FC<BingoShowWinnerPopupProps> = ({
   onPrizeShown,
   isLive = true,
 }) => {
-  const { isBlue, isAzul, themeId } = useAppTheme();
+  const { isBlue, themeId } = useAppTheme();
   const lowPerf = useLowPerfDevice();
   const onPrizeShownRef = useRef(onPrizeShown);
   onPrizeShownRef.current = onPrizeShown;
@@ -1407,7 +1405,7 @@ const BingoShowWinnerPopupInner: React.FC<BingoShowWinnerPopupProps> = ({
     // valores individuais do backend e mesmo tempo total — só a apresentação muda.
     // A key é a rodada + os ganhadores: só um novo resultado reinicia a sequência.
     // Ouro & Espaço usa os mesmos dados, com componente próprio.
-    if (isBlue || isAzul || isOuro || isGold || isParaguay) {
+    if (isBlue || isOuro || isGold || isParaguay) {
       const toView = (list: WinnerEvent[], defaultPrizeStr: string) =>
         list.map((w, idx) => ({
           id: `${winnerKey(w) || w.playerName || 'w'}-${idx}`,
@@ -1421,10 +1419,7 @@ const BingoShowWinnerPopupInner: React.FC<BingoShowWinnerPopupProps> = ({
         { key: 'line2', winners: toView(line2Winners, line2Prize) },
         { key: 'bingo', winners: toView(bingoWinners, bingoPrize) },
       ];
-      // Azul vem antes do Blue (o Azul também conta como família Blue).
-      const RoundWinners = isAzul
-        ? RoundWinnersAzul
-        : isParaguay
+      const RoundWinners = isParaguay
         ? RoundWinnersParaguay
         : isGold
         ? RoundWinnersGold
@@ -1629,9 +1624,8 @@ const BingoShowWinnerPopupInner: React.FC<BingoShowWinnerPopupProps> = ({
 
   // Ouro & Espaço: mesmo componente para 1 ou vários ganhadores, com o acabamento
   // dos cards de prêmio do tema. A key é o 1º ganhador do grupo.
-  // Azul: popup próprio (checado antes do Blue, que ele também conta como).
-  if (isAzul || isOuro || isGold || isParaguay) {
-    const Popup = isAzul ? WinnerAzul : isParaguay ? WinnerParaguay : isGold ? WinnerGold : BingoShowWinnerOuro;
+  if (isOuro || isGold || isParaguay) {
+    const Popup = isParaguay ? WinnerParaguay : isGold ? WinnerGold : BingoShowWinnerOuro;
     return (
       <Popup
         isBingo={normType === 'bingo'}

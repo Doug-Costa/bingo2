@@ -462,47 +462,6 @@
   background: linear-gradient(90deg, #d7192d 0 33.4%, #ffffff 33.4% 66.6%, #0648a8 66.6% 100%);
 }
 
-/* ─── Bingo Show Azul ────────────────────────────────────────────────────────
- * Moldura clara com aro ciano (linguagem do Azul); contador vermelho com aro
- * branco; barra royal → ciano. Fullscreen e regras inalterados. */
-.frameAzul {
-  border: 3px solid #92dcf4;
-  border-radius: 30px;
-  background: linear-gradient(180deg, #ffffff 0%, #e4f4ff 60%, #cfe9ff 100%);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.45), 0 0 32px rgba(53, 214, 244, 0.5), 0 24px 60px rgba(2, 12, 40, 0.55);
-  padding: 18px;
-}
-
-.frameAzul .content {
-  border-radius: 18px;
-  border: 2px solid #92dcf4;
-}
-
-.frameAzul .counter {
-  top: 34px;
-  right: 34px;
-  border: 3px solid #ffffff;
-  background: linear-gradient(180deg, #ff4a5f 0%, #e51d36 55%, #b0122a 100%);
-  box-shadow: 0 0 0 3px rgba(229, 29, 54, 0.35), 0 6px 14px rgba(2, 12, 40, 0.45);
-}
-
-.frameAzul .counterValue {
-  color: #ffffff;
-}
-
-.frameAzul .progressTrack {
-  left: 40px;
-  right: 40px;
-  bottom: 7px;
-  height: 6px;
-  background: rgba(9, 47, 114, 0.15);
-  z-index: 4;
-}
-
-.frameAzul .progressBar {
-  background: linear-gradient(90deg, #0757d6 0%, #0c8fe8 50%, #35d6f4 100%);
-}
-
 @keyframes backdropIn {
   from { opacity: 0; }
   to { opacity: 1; }

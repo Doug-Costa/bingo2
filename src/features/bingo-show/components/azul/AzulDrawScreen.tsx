@@ -4,7 +4,7 @@
  * Segue o mockup do tema: prêmios à esquerda, palco com a bola grande no
  * centro, quadro das 90 bolas embaixo e cupons (com as cartelas, quando há) à
  * direita. Os dados, a voz e os popups são os mesmos da tela clássica
- * (useBingoShowRealtimeDraw, useBingoAudio, BingoShowWinnerPopup); só a
+ * (useBingoShowRealtimeDraw, useBingoAudio; popups em AzulWinnerPopup); só a
  * apresentação é própria.
  *
  * `AzulDrawView` só desenha (recebe os dados prontos) — é o que a página
@@ -21,7 +21,7 @@ import { BingoShowTvLayout } from '../../layouts/BingoShowTvLayout';
 import { BingoShowAmbientBackground } from '../BingoShowAmbientBackground';
 import { BingoShowCouponsTable } from '../BingoShowCouponsTable';
 import { BingoShowTicketsGrid } from '../BingoShowTicketsGrid';
-import { BingoShowWinnerPopup } from '../BingoShowWinnerPopup';
+import { AzulWinnerPopup } from './AzulWinnerPopup';
 import { useBingoShowRealtimeDraw, type BingoShowRealtimeDraw, type PrizeStatusType } from '../../hooks/useBingoShowRealtimeDraw';
 import { useBingoAudio, type PrizeType, type ShownPrize } from '../../hooks/useBingoAudio';
 import { useTvConfig, useT } from '@/contexts/TvConfigContext';
@@ -394,7 +394,7 @@ export const AzulDrawScreen: React.FC = () => {
         style={{ padding: 0 }}
         fullBody={<AzulDrawView data={mock} />}
         overlay={
-          <BingoShowWinnerPopup
+          <AzulWinnerPopup
             winners={mock.winners}
             onPrizeShown={handlePrizeShown}
             isDrawFinished={mock.isDrawFinished}

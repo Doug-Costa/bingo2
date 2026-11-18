@@ -373,7 +373,6 @@ export const BingoShowPromoModal: React.FC = () => {
   const isGold = themeId === 'tema-ouro';
   const isParaguay = themeId === 'bingo-show-paraguay';
   const isLoteriai = themeId === 'loteriai';
-  const isAzul = themeId === 'bingo-show-azul';
   // Promoções do login por PIN: override do operador/sala (sem campos de banco)
   // vence o carrossel do SSE; linhas reais da sala só cobrem o SSE vazio.
   const { promotes: pinPromotes } = useTvConfig();
@@ -455,7 +454,7 @@ export const BingoShowPromoModal: React.FC = () => {
 
   return (
     <div className={styles.backdrop} role="dialog" aria-label={nonEmpty(promo.title) || t('promo.label')}>
-      <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''} ${isGold ? styles.frameGold : ''} ${isParaguay ? styles.frameParaguay : ''} ${isLoteriai ? styles.frameLoteriai : ''} ${isAzul ? styles.frameAzul : ''}`}>
+      <div key={`${promo.id}-${startedAt}`} className={`${styles.frame} ${isOuro ? styles.frameOuro : ''} ${isGold ? styles.frameGold : ''} ${isParaguay ? styles.frameParaguay : ''} ${isLoteriai ? styles.frameLoteriai : ''}`}>
         <PromoContent promo={promo} durationMs={durationMs} onGiveUp={skip} />
 
         <div className={styles.counter} aria-label={t('promo.endsIn', { s: seconds })}>
