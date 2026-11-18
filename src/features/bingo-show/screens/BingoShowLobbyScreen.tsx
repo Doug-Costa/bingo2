@@ -10,13 +10,19 @@
 import React from 'react';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import { BingoShowLobbyScreenBlue } from './BingoShowLobbyScreenBlue';
+import { AzulLobbyScreen } from '../components/azul/AzulLobbyScreen';
 import { BingoShowLobbyScreenDefault } from './BingoShowLobbyScreenDefault';
 import { BingoShowLobbyScreenGold } from './BingoShowLobbyScreenGold';
 import { BingoShowLobbyScreenParaguay } from './BingoShowLobbyScreenParaguay';
 import { BingoShowLobbyScreenLoteriai } from './BingoShowLobbyScreenLoteriai';
 
 export const BingoShowLobbyScreen: React.FC = () => {
-  const { themeId, isBlue } = useAppTheme();
+  const { themeId, isBlue, isAzul } = useAppTheme();
+
+  // Bingo Show Azul: lobby próprio (antes caía no lobby do Blue).
+  if (isAzul) {
+    return <AzulLobbyScreen />;
+  }
 
   const isBlueTheme = isBlue || themeId === 'bingo-show-blue' || themeId === 'blue';
 

@@ -59,6 +59,13 @@ const ptBR = {
     date: "DATA",
     time: "HORA",
     card: "CARTELA",
+    lobbyNextIn: "PRÓXIMO SORTEIO EM",
+    lobbyTotal: "PRÊMIO TOTAL",
+    lobbyTotalShort: "Prêmio total",
+    lobbyStart: "Início",
+    lobbyToday: "hoje, às {{time}}",
+    lobbyOnDate: "{{date}} às {{time}}",
+    lobbyCardPrice: "Valor da cartela",
   },
   common: {
     player: "Jogador",

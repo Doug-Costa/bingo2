@@ -61,6 +61,13 @@ const es: Dictionary = {
     date: "FECHA",
     time: "HORA",
     card: "CARTÓN",
+    lobbyNextIn: "PRÓXIMO SORTEO EN",
+    lobbyTotal: "PREMIO TOTAL",
+    lobbyTotalShort: "Premio total",
+    lobbyStart: "Inicio",
+    lobbyToday: "hoy, a las {{time}}",
+    lobbyOnDate: "{{date}} a las {{time}}",
+    lobbyCardPrice: "Valor del cartón",
   },
   common: {
     player: "Jugador",
