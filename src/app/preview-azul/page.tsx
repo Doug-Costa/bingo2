@@ -6,7 +6,8 @@
  *
  * O tema é forçado só nesta página (contexto próprio): não grava nada no
  * localStorage nem muda o tema salvo da TV. Uma bola nova sai a cada 4s;
- * `?cartelas=1` mostra também o quadro "MINHAS CARTELAS".
+ * `?cartelas=1` mostra também o quadro "MINHAS CARTELAS"; `?lobby=1` mostra o
+ * lobby (próximos sorteios) com a contagem regressiva andando.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { TvViewport } from '@/components/tv/TvViewport';
@@ -15,6 +16,9 @@ import ThemeContext from '@/contexts/ThemeContext';
 import { AVAILABLE_THEMES, resolveTheme } from '@/theme/themes';
 import { BingoShowAmbientBackground } from '@/features/bingo-show/components/BingoShowAmbientBackground';
 import { AzulDrawView, type AzulDrawData } from '@/features/bingo-show/components/azul/AzulDrawScreen';
+import { AzulLobbyView, type AzulLobbyData } from '@/features/bingo-show/components/azul/AzulLobbyScreen';
+import type { DrawSSE } from '@/contexts/SSEContext';
+import { formatCountdown } from '@/features/bingo-show/utils/countdown';
 import { formatBrl } from '@/features/bingo-show/utils/format';
 
 const THEME_ID = 'bingo-show-azul';
@@ -44,15 +48,46 @@ const TICKETS = [
   { id: 't2', name: 'Cartela 2', numbers: [[1, 16, 33, 52, 69], [5, 21, 41, 60, 76], [11, 29, 48, 67, 90]] },
 ];
 
+// Fila de exemplo do lobby: 6 sorteios a cada 10 min (2 páginas de 3).
+const LOBBY_DRAWS: DrawSSE[] = Array.from({ length: 6 }, (_, i) => ({
+  id: `d${i}`,
+  incrementalId: 4910 + i,
+  scheduledAt: `2026-11-18 ${String(14 + Math.floor((50 + i * 10) / 60)).padStart(2, '0')}:${String((50 + i * 10) % 60).padStart(2, '0')}:00`,
+  prizeLine1: 50000,
+  prizeLine2: 100000,
+  prizeLine3: 150000,
+}));
+
 export default function PreviewAzulPage() {
   const [count, setCount] = useState(START);
   const [withTickets, setWithTickets] = useState(false);
+  const [lobbyMode, setLobbyMode] = useState(false);
+  const [secs, setSecs] = useState(133);
 
   useEffect(() => {
     setWithTickets(/[?&]cartelas=1/.test(window.location.search));
+    setLobbyMode(/[?&]lobby=1/.test(window.location.search));
     const timer = setInterval(() => setCount((c) => (c >= ORDER.length ? START : c + 1)), 4000);
-    return () => clearInterval(timer);
+    const tick = setInterval(() => setSecs((s) => (s <= 0 ? 180 : s - 1)), 1000);
+    return () => {
+      clearInterval(timer);
+      clearInterval(tick);
+    };
   }, []);
+
+  const lobbyData: AzulLobbyData = {
+    nextNumber: '4910',
+    date: '18/11/2026',
+    accumulatedPrize: formatBrl(50000),
+    hasLimit: true,
+    triggerBallLimit: 68,
+    countdown: formatCountdown(secs),
+    line1Prize: formatBrl(50000),
+    line2Prize: formatBrl(100000),
+    bingoPrize: formatBrl(150000),
+    draws: LOBBY_DRAWS,
+    message: 'SUA SORTE, NOSSO BINGO! BOA SORTE!',
+  };
 
   const themeValue = useMemo(
     () => ({
@@ -99,7 +134,7 @@ export default function PreviewAzulPage() {
       <TvViewport>
         <TvStage>
           <BingoShowAmbientBackground brightness="light">
-            <AzulDrawView data={data} />
+            {lobbyMode ? <AzulLobbyView data={lobbyData} /> : <AzulDrawView data={data} />}
           </BingoShowAmbientBackground>
         </TvStage>
       </TvViewport>
