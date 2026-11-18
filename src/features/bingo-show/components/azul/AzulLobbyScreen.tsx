@@ -220,7 +220,7 @@ const CenterCountdown = React.memo(function CenterCountdown({ countdown }: { cou
         {/* eslint-disable-next-line @next/next/no-img-element -- arte do tema */}
         <img className={css.countArtL} src={`${A}/lobby-cartelas.webp`} alt="" />
         <div className={css.countPill}>
-          <span className={css.countValue} style={{ fontSize: countdown.length > 5 ? 128 : 160 }} suppressHydrationWarning>
+          <span className={css.countValue} style={{ fontSize: countdown.length > 5 ? 112 : 138 }} suppressHydrationWarning>
             {countdown}
           </span>
         </div>

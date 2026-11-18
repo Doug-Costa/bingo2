@@ -448,13 +448,13 @@
 
 /* Contador numa cápsula azul-noite com aro ciano. */
 .countPill {
-  min-width: 440px;
+  min-width: 480px;
   height: 200px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 44px;
+  padding: 0 76px;
   border-radius: 100px;
   background: linear-gradient(180deg, #0b3a96 0%, #062a73 55%, #041d55 100%);
   border: 5px solid var(--cyan);
