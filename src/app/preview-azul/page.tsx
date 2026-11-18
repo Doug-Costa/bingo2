@@ -7,7 +7,9 @@
  * O tema é forçado só nesta página (contexto próprio): não grava nada no
  * localStorage nem muda o tema salvo da TV. Uma bola nova sai a cada 4s;
  * `?cartelas=1` mostra também o quadro "MINHAS CARTELAS"; `?lobby=1` mostra o
- * lobby (próximos sorteios) com a contagem regressiva andando.
+ * lobby (próximos sorteios) com a contagem regressiva andando; `?ganhador=N`
+ * mostra o popup de ganhador com N ganhadores (1, 2, 5...); `?resumo=1` mostra
+ * o resumo "Ganhadores da Rodada".
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { TvViewport } from '@/components/tv/TvViewport';
@@ -19,6 +21,9 @@ import { AzulDrawView, type AzulDrawData } from '@/features/bingo-show/component
 import { AzulLobbyView, type AzulLobbyData } from '@/features/bingo-show/components/azul/AzulLobbyScreen';
 import type { DrawSSE } from '@/contexts/SSEContext';
 import { formatCountdown } from '@/features/bingo-show/utils/countdown';
+import { WinnerAzul } from '@/features/bingo-show/components/azul/WinnerAzul';
+import { RoundWinnersAzul } from '@/features/bingo-show/components/azul/RoundWinnersAzul';
+import type { GroupWinnerView } from '@/features/bingo-show/components/BingoShowWinnerGroupBlue';
 import { formatBrl } from '@/features/bingo-show/utils/format';
 
 const THEME_ID = 'bingo-show-azul';
@@ -58,15 +63,37 @@ const LOBBY_DRAWS: DrawSSE[] = Array.from({ length: 6 }, (_, i) => ({
   prizeLine3: 150000,
 }));
 
+const WINNER_NAMES = ['Ribas', 'BAR DA MARIA', 'Renato Silva', 'Choperia do Zeca', 'Leandro Ramos', 'Mercadinho Bom'];
+
+function mockWinners(n: number, prize: string): GroupWinnerView[] {
+  return Array.from({ length: n }, (_, i) => ({
+    id: `w${i}`,
+    name: WINNER_NAMES[i % WINNER_NAMES.length]!,
+    coupon: String(90025 + i * 7),
+    prize,
+    jackpot: false,
+    cardNumbers: [
+      [36, 40, 54, 71, 90],
+      [34, 49, 81, 82, 86],
+      [2, 11, 33, 51, 75],
+    ],
+    paintedRows: [0, 1],
+  }));
+}
+
 export default function PreviewAzulPage() {
   const [count, setCount] = useState(START);
   const [withTickets, setWithTickets] = useState(false);
   const [lobbyMode, setLobbyMode] = useState(false);
   const [secs, setSecs] = useState(133);
+  const [winnerCount, setWinnerCount] = useState(0);
+  const [summary, setSummary] = useState(false);
 
   useEffect(() => {
     setWithTickets(/[?&]cartelas=1/.test(window.location.search));
     setLobbyMode(/[?&]lobby=1/.test(window.location.search));
+    setWinnerCount(Number((/[?&]ganhador=(\d+)/.exec(window.location.search) ?? [])[1] ?? 0));
+    setSummary(/[?&]resumo=1/.test(window.location.search));
     const timer = setInterval(() => setCount((c) => (c >= ORDER.length ? START : c + 1)), 4000);
     const tick = setInterval(() => setSecs((s) => (s <= 0 ? 180 : s - 1)), 1000);
     return () => {
@@ -135,6 +162,34 @@ export default function PreviewAzulPage() {
         <TvStage>
           <BingoShowAmbientBackground brightness="light">
             {lobbyMode ? <AzulLobbyView data={lobbyData} /> : <AzulDrawView data={data} />}
+            {winnerCount > 0 && (
+              <WinnerAzul
+                sealText="2º PRÊMIO • 2 LINHAS"
+                prizeType="line2"
+                winners={mockWinners(winnerCount, formatBrl(winnerCount > 1 ? 100000 / winnerCount : 73.68))}
+              />
+            )}
+            {summary && (
+              <RoundWinnersAzul
+                drawNumber="4909"
+                dateStr="18/11/2026"
+                timeStr="21:30"
+                jackpotAmount={formatBrl(50000)}
+                totalDurationMs={20000}
+                onClose={() => setSummary(false)}
+                categories={[
+                  { key: 'line1', winners: [{ id: 'a', name: 'Ribas', coupon: '90025', prize: formatBrl(50000), jackpot: false }] },
+                  {
+                    key: 'line2',
+                    winners: [
+                      { id: 'b', name: 'BAR DA MARIA', coupon: '88234', prize: formatBrl(50000), jackpot: false },
+                      { id: 'c', name: 'Renato Silva', coupon: '88233', prize: formatBrl(50000), jackpot: false },
+                    ],
+                  },
+                  { key: 'bingo', winners: [] },
+                ]}
+              />
+            )}
           </BingoShowAmbientBackground>
         </TvStage>
       </TvViewport>

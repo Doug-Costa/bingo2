@@ -1,0 +1,507 @@
+/* WinnerAzul.module.css — popup de ganhador(es) do tema `bingo-show-azul`.
+ * Linguagem do Azul: palco azul luminoso, painel claro com filete ciano, selo
+ * royal com texto ouro, valor ouro em cápsula royal, cartela royal com células
+ * claras (vencedoras em ouro). Palco 1920×1080.
+ *
+ * WebView antiga (Chrome 66): sem blur/backdrop-filter, espaçamento de flex por
+ * margem, grid com `grid-gap`. Animações só de transform/opacity (uma vez); os
+ * raios giram devagar e somem no tv-ultra.
+ */
+
+.root {
+  --navy: #092f72;
+  --deep: #06245f;
+  --royal: #0757d6;
+  --vivid: #0c8fe8;
+  --cyan: #35d6f4;
+  --ice: #eafbff;
+  --edge: #92dcf4;
+  --gold: #f7c948;
+  --red: #e51d36;
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background: radial-gradient(ellipse 75% 70% at 50% 45%, rgba(47, 143, 224, 0.96) 0%, rgba(9, 47, 114, 0.97) 60%, rgba(4, 22, 64, 0.98) 100%);
+  font-family: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+  color: var(--navy);
+  animation: azWFade 350ms ease-out both;
+}
+
+/* Raios ciano girando bem devagar atrás do painel (só transform). */
+.rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2400px;
+  height: 2400px;
+  margin: -1200px 0 0 -1200px;
+  opacity: 0.35;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(53, 214, 244, 0.6) 0deg 5deg,
+    rgba(234, 251, 255, 0.3) 5deg 7deg,
+    rgba(53, 214, 244, 0) 7deg 15deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 10%, rgba(0, 0, 0, 0) 45%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 10%, rgba(0, 0, 0, 0) 45%);
+  animation: azWSpin 120s linear infinite;
+}
+
+/* ─── Painel ─────────────────────────────────────────────────────────────── */
+
+.frame {
+  position: absolute;
+  left: 56px;
+  right: 56px;
+  top: 100px;
+  bottom: 44px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 72px 36px 30px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, #ffffff 0%, #e4f4ff 60%, #cfe9ff 100%);
+  border: 3px solid var(--edge);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.45), 0 0 40px rgba(53, 214, 244, 0.55), 0 24px 50px rgba(2, 12, 40, 0.55);
+  animation: azWFrameIn 450ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* Selo do prêmio: cápsula royal com aro branco/ciano e texto ouro. */
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 52px;
+  z-index: 3;
+  transform: translateX(-50%);
+  padding: 20px 76px 18px;
+  white-space: nowrap;
+  border-radius: 60px;
+  background: linear-gradient(180deg, #0d4fc4 0%, #0a3a9c 55%, var(--deep) 100%);
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 4px var(--cyan), 0 0 26px rgba(53, 214, 244, 0.7), 0 10px 20px rgba(2, 12, 40, 0.5);
+  animation: azWSealIn 650ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 250ms both;
+}
+
+.sealText {
+  display: block;
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+  color: var(--gold);
+  text-shadow: 0 3px 0 #7a4b00, 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.subtitle {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--navy);
+  animation: azWRise 450ms ease-out 550ms both;
+}
+
+.star {
+  color: var(--gold);
+  margin: 0 12px;
+  text-shadow: 0 1px 0 #7a4b00;
+}
+
+.cards {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-gap: 20px;
+  gap: 20px;
+}
+
+/* ─── Card de um ganhador ───────────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  grid-column-gap: 22px;
+  column-gap: 22px;
+  align-items: center;
+  padding: 20px 24px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #dcefff 100%);
+  border: 2px solid var(--edge);
+  box-shadow: 0 6px 14px rgba(6, 36, 95, 0.25);
+  animation: azWCardIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--enter) both;
+}
+
+/* Um ganhador só: o próprio painel é o card. */
+.cardSolo {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.badge {
+  position: absolute;
+  top: -14px;
+  left: 22px;
+  padding: 5px 14px;
+  border-radius: 10px;
+  background: var(--red);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.info > * + * {
+  margin-top: 10px;
+}
+
+.soloTitle {
+  display: flex;
+  align-items: center;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--navy);
+}
+
+.nameBox {
+  width: 100%;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  color: var(--navy);
+  font-weight: 900;
+  line-height: 1.06;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 3px 0 rgba(255, 255, 255, 0.9);
+}
+
+.nameWrap {
+  white-space: normal;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Cupom numa pílula vermelha (selo do Azul). */
+.coupon {
+  padding: 5px 20px 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff4a5f 0%, var(--red) 55%, #b0122a 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(176, 18, 42, 0.35);
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.prizeLabel {
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #3c6bb0;
+}
+
+.valueRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.soloArt {
+  flex: none;
+  height: 150px;
+  width: 150px;
+  object-fit: contain;
+  margin-right: 16px;
+  animation: azWArtIn 600ms cubic-bezier(0.2, 0.9, 0.3, 1.2) var(--enter) both;
+}
+
+/* Valor ouro numa cápsula royal com aro ciano. */
+.valueCapsule {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 14px 26px 12px;
+  display: flex;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0b3a96 0%, #062a73 55%, #041d55 100%);
+  border: 3px solid var(--cyan);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 16px rgba(53, 214, 244, 0.5), 0 8px 16px rgba(6, 36, 95, 0.35);
+}
+
+.valueBox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.value {
+  display: block;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.08;
+  white-space: nowrap;
+  color: var(--gold);
+  text-shadow: 0 3px 0 #7a4b00, 0 0 14px rgba(247, 201, 72, 0.35);
+}
+
+.jackpotTag {
+  padding: 4px 16px;
+  border-radius: 999px;
+  background: var(--gold);
+  border: 2px solid #ffffff;
+  color: var(--deep);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* ─── Cartela ───────────────────────────────────────────────────────────── */
+
+.cartela {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 16px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #0d4fc4 0%, #0a3a9c 55%, var(--deep) 100%);
+  border: 3px solid var(--edge);
+  box-shadow: 0 8px 18px rgba(6, 36, 95, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.cardSolo .cartela {
+  max-height: 640px;
+  align-self: center;
+}
+
+.cartelaTitle {
+  flex: none;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 0 #7a4b00;
+}
+
+.head {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 6px;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.headCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 0;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(180deg, var(--vivid) 0%, var(--royal) 100%);
+  border: 1.5px solid var(--edge);
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 6px;
+  gap: 6px;
+}
+
+/* Célula comum: clara, número navy. */
+.cell {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+  color: var(--navy);
+  font-weight: 900;
+  background: linear-gradient(180deg, #ffffff 0%, #dcefff 100%);
+  border: 1.5px solid var(--edge);
+  animation: azWCellIn 260ms ease-out var(--in-delay) both;
+}
+
+/* Vencedora: placa ouro que acende na vez dela. */
+.cellGold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #fff4b8 0%, #ffd76a 30%, var(--gold) 55%, #d9a514 80%, #b97808 100%);
+  opacity: 0;
+  animation: azWGoldOn 420ms ease-out var(--win-delay) both;
+}
+
+.cellNum {
+  position: relative;
+}
+
+.cellWin {
+  border-color: #ffffff;
+}
+
+.check {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  color: var(--red);
+  font-size: 0.42em;
+  font-weight: 900;
+  opacity: 0;
+  animation: azWCheckIn 300ms ease-out var(--win-delay) both;
+}
+
+/* ─── Confete ───────────────────────────────────────────────────────────── */
+
+.piece {
+  position: absolute;
+  top: -30px;
+  width: 14px;
+  height: 22px;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+  animation: azWFall var(--dur) ease-in var(--delay) both;
+}
+
+/* ─── Animações ─────────────────────────────────────────────────────────── */
+
+@keyframes azWFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes azWSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes azWFrameIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWSealIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.85); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+
+@keyframes azWRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWCardIn {
+  from { opacity: 0; transform: translateY(36px) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWArtIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWCellIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWGoldOn {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes azWCheckIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes azWFall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--dx), 1150px, 0) rotate(var(--rot)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .piece {
+    display: none;
+  }
+
+  .root,
+  .frame,
+  .seal,
+  .subtitle,
+  .card,
+  .soloArt,
+  .cell {
+    animation: none;
+  }
+
+  .cellGold,
+  .check {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* TV ultra leve: sem raios e sem confete. */
+:global(html.tv-ultra) .rays,
+:global(html.tv-ultra) .piece {
+  display: none;
+}
