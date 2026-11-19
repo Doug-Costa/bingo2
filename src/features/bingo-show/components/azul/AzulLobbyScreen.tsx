@@ -196,6 +196,11 @@ const NextDrawsColumn = React.memo(function NextDrawsColumn({ draws }: { draws: 
           {list.map((d, i) => (
             <DrawCard key={d.id || `${page}-${i}`} draw={d} index={i} />
           ))}
+          {/* Página com menos de 3 sorteios: espaço livre (invisível) no lugar
+              dos que faltam, para os cards não esticarem. */}
+          {Array.from({ length: PAGE_SIZE - list.length }).map((_, i) => (
+            <div key={`gap-${i}`} className={css.drawGap} aria-hidden="true" />
+          ))}
         </div>
       )}
       {pages.length > 1 && (

@@ -9,7 +9,8 @@
  * `?cartelas=1` mostra também o quadro "MINHAS CARTELAS"; `?lobby=1` mostra o
  * lobby (próximos sorteios) com a contagem regressiva andando; `?ganhador=N`
  * mostra o popup de ganhador com N ganhadores (1, 2, 5...); `?resumo=1` mostra
- * o resumo "Ganhadores da Rodada".
+ * o resumo "Ganhadores da Rodada"; `?fila=N` (com lobby=1) põe N sorteios na fila
+ * (0 a 12; padrão 6).
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { TvViewport } from '@/components/tv/TvViewport';
@@ -54,7 +55,7 @@ const TICKETS = [
 ];
 
 // Fila de exemplo do lobby: 6 sorteios a cada 10 min (2 páginas de 3).
-const LOBBY_DRAWS: DrawSSE[] = Array.from({ length: 6 }, (_, i) => ({
+const LOBBY_DRAWS: DrawSSE[] = Array.from({ length: 12 }, (_, i) => ({
   id: `d${i}`,
   incrementalId: 4910 + i,
   scheduledAt: `2026-11-18 ${String(14 + Math.floor((50 + i * 10) / 60)).padStart(2, '0')}:${String((50 + i * 10) % 60).padStart(2, '0')}:00`,
@@ -88,12 +89,15 @@ export default function PreviewAzulPage() {
   const [secs, setSecs] = useState(133);
   const [winnerCount, setWinnerCount] = useState(0);
   const [summary, setSummary] = useState(false);
+  const [queueSize, setQueueSize] = useState(6);
 
   useEffect(() => {
     setWithTickets(/[?&]cartelas=1/.test(window.location.search));
     setLobbyMode(/[?&]lobby=1/.test(window.location.search));
     setWinnerCount(Number((/[?&]ganhador=(\d+)/.exec(window.location.search) ?? [])[1] ?? 0));
     setSummary(/[?&]resumo=1/.test(window.location.search));
+    const fila = (/[?&]fila=(\d+)/.exec(window.location.search) ?? [])[1];
+    if (fila !== undefined) setQueueSize(Math.min(12, Number(fila)));
     const timer = setInterval(() => setCount((c) => (c >= ORDER.length ? START : c + 1)), 4000);
     const tick = setInterval(() => setSecs((s) => (s <= 0 ? 180 : s - 1)), 1000);
     return () => {
@@ -112,7 +116,7 @@ export default function PreviewAzulPage() {
     line1Prize: formatBrl(50000),
     line2Prize: formatBrl(100000),
     bingoPrize: formatBrl(150000),
-    draws: LOBBY_DRAWS,
+    draws: LOBBY_DRAWS.slice(0, queueSize),
     message: 'SUA SORTE, NOSSO BINGO! BOA SORTE!',
   };
 

@@ -254,6 +254,13 @@
   animation-delay: calc(var(--i, 0) * 110ms);
 }
 
+/* Lugar de um sorteio que não veio: ocupa o espaço de um card, sem desenhar nada. */
+.drawGap {
+  flex: 1;
+  min-height: 0;
+  visibility: hidden;
+}
+
 .drawHead {
   display: flex;
   align-items: center;
